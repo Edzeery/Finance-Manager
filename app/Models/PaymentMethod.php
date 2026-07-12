@@ -129,4 +129,31 @@ class PaymentMethod extends Model
     {
         return $this->type === PaymentMethodType::AutoComplete;
     }
+
+    public function requiredFields(): array
+    {
+        $gatewayClass = $this->resolveGatewayClass();
+        if ($gatewayClass && method_exists($gatewayClass, 'requiredFields')) {
+            return $gatewayClass::requiredFields();
+        }
+        return [];
+    }
+
+    private function resolveGatewayClass(): ?string
+    {
+        return match ($this->key) {
+            'baridimob' => \App\Services\Payments\BaridiMobGateway::class,
+            'redotpay' => \App\Services\Payments\RedotPayGateway::class,
+            'cash' => \App\Services\Payments\CashGateway::class,
+            'delivery' => \App\Services\Payments\DeliveryGateway::class,
+            'noest' => \App\Services\Payments\Noest\NoestGateway::class,
+            'chargily' => \App\Services\Payments\Chargily\ChargilyGateway::class,
+            'paypal' => \App\Services\Payments\PayPalGateway::class,
+            'stripe' => \App\Services\Payments\StripeGateway::class,
+            'wise' => \App\Services\Payments\WiseGateway::class,
+            'wise_manual' => \App\Services\Payments\WiseManualGateway::class,
+            'payoneer' => \App\Services\Payments\PayoneerGateway::class,
+            default => null,
+        };
+    }
 }

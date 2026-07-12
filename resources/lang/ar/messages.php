@@ -118,6 +118,7 @@ return [
     'import_partial' => 'تم الاستيراد مع بعض الأخطاء. تم استيراد :count سجلاً.',
     'import_row_error' => 'الصف :row: :error',
     'personal_plan_new_users_only' => 'خطة Personal متاحة للحسابات الجديدة فقط.',
+    'free_plan_new_users_only' => 'الخطة المجانية متاحة للحسابات الجديدة فقط.',
     'downgrade_too_many_users' => 'لا يمكن تخفيض الخطة: :current مستخدم يتجاوز الحد الأقصى :max.',
     'auth.login' => 'قام المستخدم بتسجيل الدخول',
     'auth.logout' => 'قام المستخدم بتسجيل الخروج',

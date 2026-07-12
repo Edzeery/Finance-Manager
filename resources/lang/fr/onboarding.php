@@ -53,6 +53,7 @@ return [
     'finish' => 'Terminer la configuration',
     'skip' => 'Passer pour l\'instant',
     'continue' => 'Continuer',
+    'start_free_trial' => 'Essai Gratuit',
     'save_amount' => 'Économisez :amount/an',
     'save_percent' => 'Économisez :percent%',
     'manual_payment_instructions' => 'Veuillez envoyer le paiement via :method et télécharger la preuve ci-dessous :',
@@ -86,6 +87,8 @@ return [
     'coupon_min_amount' => 'Le montant minimum de :amount n\'est pas atteint.',
     'coupon_fully_covered' => 'Le code promo couvre la totalité du montant ! Aucun paiement nécessaire.',
     'coupon_applied' => 'Code promo appliqué avec succès.',
+    'coupon_requires_gateway' => 'Veuillez d\'abord sélectionner un moyen de paiement.',
+    'coupon_not_for_gateway' => 'Ce code promo n\'est pas valide pour le moyen de paiement sélectionné.',
     'plan_price' => 'Prix du forfait',
     'coupon_discount' => 'Réduction',
     'total' => 'Total',
@@ -143,6 +146,11 @@ return [
     'noest_clear' => 'Effacer',
     'noest_no_desks_for_wilaya' => 'Aucun bureau de livraison disponible dans cette wilaya.',
 
+    // Delivery method
+    'delivery_info' => 'Adresse de livraison',
+    'delivery_address' => 'Adresse',
+    'delivery_phone' => 'Numéro de téléphone',
+
     // Verification details
     'proof_details_title' => 'Détails de la preuve soumise',
     'receipt_preview' => 'Aperçu du reçu',
@@ -174,7 +182,21 @@ return [
     'show_more' => 'Afficher plus',
     'show_less' => 'Afficher moins',
 
+    'payment_pending' => 'Paiement en attente',
+    'payment_pending_desc' => 'Votre paiement est en cours de traitement. Veuillez attendre la confirmation.',
     'check_status' => 'Vérifier le statut',
+
+    // Trust & Security
+    'secure_payment' => 'Vos paiements sont sécurisés par chiffrement',
+    'encrypted' => 'Toutes les transactions sont cryptées et sécurisées',
+    'multiple_methods' => 'Nous proposons plusieurs moyens de paiement sécurisés',
+    'redirecting_secure' => 'Redirection vers une passerelle de paiement sécurisée...',
+
+    // Pending payment banner
+    'pending_payment_title' => 'Paiement en attente trouvé',
+    'pending_plan_banner' => 'Vous avez un paiement en attente pour le forfait « :plan ». La sélection d\'un forfait différent annulera le paiement en cours.',
+    'resume_payment' => 'Reprendre le paiement',
+    'change_plan' => 'Changer de forfait',
 
     // Development
     'force_complete' => 'Finaliser le paiement (Développement)',

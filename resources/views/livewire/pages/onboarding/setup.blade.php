@@ -29,9 +29,9 @@ new #[Layout('layouts.guest')] class extends Component
                 ->first();
 
             if ($pendingOnline) {
-                $this->redirect(route('payment.resume', $pendingOnline, absolute: false), navigate: true);
+                $this->redirect(route('payment.status', $pendingOnline, absolute: false), navigate: true);
             } else {
-                $this->redirect(route('onboarding.payment', absolute: false), navigate: true);
+                $this->redirect(route('onboarding.plan', absolute: false), navigate: true);
             }
             return;
         }

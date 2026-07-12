@@ -4,6 +4,7 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
+use App\Services\Payments\ValidationResult;
 
 class RedotPayGateway implements PaymentGateway
 {
@@ -12,6 +13,19 @@ class RedotPayGateway implements PaymentGateway
     public function name(): string
     {
         return 'redotpay';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        if (!$this->gatewaySetting('account_id', config('payment.gateways.redotpay.wallet_address'))) {
+            return ValidationResult::invalid('RedotPay is not configured. Please contact support.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return [];
     }
 
     public function charge(array $data): PaymentResult

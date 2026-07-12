@@ -40,7 +40,7 @@ class CheckoutController extends Controller
         if (!$result->success) {
             $fallbackRoute = $payment->subscription_id
                 ? 'account.subscriptions'
-                : 'onboarding.payment';
+                : 'onboarding.plan';
 
             return redirect()->route($fallbackRoute)
                 ->with('error', $result->message);

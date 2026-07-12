@@ -177,7 +177,12 @@ new #[Layout('layouts.guest')] class extends Component
 
     public function switchGateway(): void
     {
-        $this->redirect(route('onboarding.payment', absolute: false), navigate: true);
+        $this->redirect(route('onboarding.plan', absolute: false), navigate: true);
+    }
+
+    public function changePlan(): void
+    {
+        $this->redirect(route('onboarding.plan', absolute: false), navigate: true);
     }
 
     public function proceed(): void
@@ -219,7 +224,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         session()->flash('success', __('onboarding.payment_cancelled_change_method'));
 
-        $this->redirect(route('onboarding.payment', absolute: false), navigate: true);
+        $this->redirect(route('onboarding.plan', absolute: false), navigate: true);
     }
 
     public function getReceiptDataUrlProperty(): ?string
@@ -329,6 +334,9 @@ new #[Layout('layouts.guest')] class extends Component
             </button>
             <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
                 <i class="bi bi-arrow-left-right me-1"></i>{{ __('onboarding.switch_gateway') }}
+            </button>
+            <button wire:click="changePlan" class="btn btn-outline-secondary btn-custom">
+                <i class="bi bi-grid me-1"></i>{{ __('onboarding.change_plan') }}
             </button>
         </div>
 

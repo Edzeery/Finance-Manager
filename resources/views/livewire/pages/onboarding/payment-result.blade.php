@@ -49,7 +49,7 @@ new #[Layout('layouts.guest')] class extends Component
         $paymentId = session('pending_payment_id');
         if ($paymentId) {
             $this->payment = Payment::withoutWorkspace()->find($paymentId);
-            if ($this->payment) {
+            if ($this->payment && $this->payment->user_id === auth()->id()) {
                 $this->loadPaymentRelations();
                 if (request()->query('cancel')) {
                     $this->handleCancel();
@@ -180,15 +180,9 @@ new #[Layout('layouts.guest')] class extends Component
             return;
         }
 
-        if (!OnboardingService::isOnline($payment->method)) {
-            $this->cancelPaymentAndCleanup($payment);
-            $this->view = 'canceled';
-            $this->isPending = false;
-            return;
-        }
-
-        $gateway = app(GatewayManager::class)->driver($payment->method);
+        // Verify with gateway for ALL methods (including manual) before canceling
         try {
+            $gateway = app(GatewayManager::class)->driver($payment->method);
             $result = $gateway->verify($payment);
 
             if ($result->success && ($result->metadata['status'] ?? '') === 'paid') {
@@ -196,20 +190,18 @@ new #[Layout('layouts.guest')] class extends Component
                 $this->redirect(route('onboarding.setup', absolute: false), navigate: true);
                 return;
             }
-
-            $this->cancelPaymentAndCleanup($payment);
-            $this->view = 'canceled';
-            $this->isPending = false;
         } catch (\Throwable $e) {
             Log::warning('Cancel verify failed', [
                 'payment_id' => $payment->id,
                 'method' => $payment->method,
                 'error' => $e->getMessage(),
             ]);
-            $this->cancelPaymentAndCleanup($payment);
-            $this->view = 'canceled';
-            $this->isPending = false;
+            // Continue with cancellation even if verify fails
         }
+
+        $this->cancelPaymentAndCleanup($payment);
+        $this->view = 'canceled';
+        $this->isPending = false;
     }
 
     private function cancelPaymentAndCleanup(Payment $payment): void
@@ -265,8 +257,8 @@ new #[Layout('layouts.guest')] class extends Component
 
         $url = match ($this->view) {
             'completed' => route('onboarding.setup', absolute: false),
-            'failed' => route('payment.retry', ['payment' => $this->payment?->id ?? 0], absolute: false),
-            'canceled' => route('payment.retry', ['payment' => $this->payment?->id ?? 0], absolute: false),
+            'failed' => route('payment.status', ['payment' => $this->payment?->id ?? 0], absolute: false),
+            'canceled' => route('payment.status', ['payment' => $this->payment?->id ?? 0], absolute: false),
             default => null,
         };
 
@@ -342,7 +334,7 @@ new #[Layout('layouts.guest')] class extends Component
 
     public function switchGateway(): void
     {
-        $this->redirect(route('onboarding.payment', absolute: false), navigate: true);
+        $this->redirect(route('onboarding.plan', absolute: false), navigate: true);
     }
 
     public function proceed(): void

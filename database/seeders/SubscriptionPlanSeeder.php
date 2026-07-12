@@ -12,13 +12,35 @@ class SubscriptionPlanSeeder extends Seeder
     public function run(): void
     {
         $plans = [
-            'personal' => [
-                'name' => 'Personal',
-                'description' => __('Free forever for individuals — basic finance management at no cost.', [], 'en'),
+            'free' => [
+                'name' => 'Free',
+                'description' => 'Free forever — basic finance management for individuals.',
                 'sort_order' => 0,
                 'is_free' => true,
+                'trial_days' => null,
                 'is_public' => true,
                 'button_text' => 'Get Started Free',
+                'plan_features' => [
+                    ['slug' => 'workspaces', 'value' => '1'],
+                    ['slug' => 'users', 'value' => '1'],
+                    ['slug' => 'reports', 'value' => 'basic'],
+                    ['slug' => 'support', 'value' => 'community'],
+                    ['slug' => 'transactions_per_month', 'value' => '100'],
+                ],
+                'prices' => [
+                    ['billing_period' => 'monthly', 'currency' => 'USD', 'price' => 0],
+                ],
+            ],
+
+            'personal' => [
+                'name' => 'Personal',
+                'description' => 'Start with a free 30-day trial — then unlock premium finance management for individuals.',
+                'sort_order' => 1,
+                'is_free' => false,
+                'trial_days' => 30,
+                'is_public' => true,
+                'yearly_discount_percent' => 17,
+                'button_text' => 'Start Free Trial',
                 'plan_features' => [
                     ['slug' => 'workspaces', 'value' => '1'],
                     ['slug' => 'users', 'value' => '1'],
@@ -27,15 +49,17 @@ class SubscriptionPlanSeeder extends Seeder
                     ['slug' => 'transactions_per_month', 'value' => '500'],
                 ],
                 'prices' => [
-                    ['billing_period' => 'monthly', 'currency' => 'USD', 'price' => 0],
+                    ['billing_period' => 'monthly', 'currency' => 'USD', 'price' => 3.99],
+                    ['billing_period' => 'yearly', 'currency' => 'USD', 'price' => 39.99],
                 ],
             ],
 
             'business' => [
                 'name' => 'Business',
                 'description' => 'business_plan_description', // This should be replaced with the actual description or a translation key
-                'sort_order' => 1,
+                'sort_order' => 2,
                 'is_free' => false,
+                'trial_days' => null,
                 'is_public' => true,
                 'yearly_discount_percent' => 17,
                 'button_text' => 'Subscribe',
@@ -67,8 +91,9 @@ class SubscriptionPlanSeeder extends Seeder
             'professional' => [
                 'name' => 'Professional',
                 'description' => 'For growing organizations with advanced management needs.',
-                'sort_order' => 2,
+                'sort_order' => 3,
                 'is_free' => false,
+                'trial_days' => null,
                 'is_public' => true,
                 'yearly_discount_percent' => 17,
                 'button_text' => 'Subscribe',
@@ -103,8 +128,9 @@ class SubscriptionPlanSeeder extends Seeder
             'enterprise' => [
                 'name' => 'Enterprise',
                 'description' => 'Custom workspaces, custom users, custom pricing — tailored for your organization.',
-                'sort_order' => 3,
+                'sort_order' => 4,
                 'is_free' => false,
+                'trial_days' => null,
                 'is_public' => false,
                 'button_text' => 'Contact Us',
                 'button_link' => '/contact',

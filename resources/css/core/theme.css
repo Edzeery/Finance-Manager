@@ -1,45 +1,48 @@
 html {
-  transition: background-color var(--transition-base), color var(--transition-base);
+    transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 html[data-theme="dark"] {
-  color-scheme: dark;
+    color-scheme: dark;
 }
 
 ::selection {
-  background: var(--accent);
-  color: #fff;
+    background: var(--accent);
+    color: #fff;
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  transition: background-color var(--transition-base), color var(--transition-base);
+    background: var(--bg);
+    color: var(--text);
+    transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    scrollbar-width: thin;
+    scrollbar-color: #15b76c6e #00000000;
+    color: #000;
 }
 
 *::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+    width: 5px;
+    height: 5px;
 }
 
 *::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 8px;
+    background: var(--border);
+    border-radius: 8px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+    background: var(--text-muted);
 }
 
 [x-cloak] {
-  display: none !important;
+    display: none !important;
 }

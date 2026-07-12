@@ -53,6 +53,7 @@ return [
     'finish' => 'Terminer la configuration',
     'skip' => 'Passer pour l\'instant',
     'continue' => 'Continuer',
+    'start_free_trial' => 'Essai Gratuit',
     'save_amount' => 'Économisez :amount/an',
     'save_percent' => 'Économisez :percent%',
     'manual_payment_instructions' => 'Veuillez envoyer le paiement via :method et télécharger la preuve ci-dessous :',
@@ -174,9 +175,23 @@ return [
     'show_more' => 'Afficher plus',
     'show_less' => 'Afficher moins',
 
+    'payment_pending' => 'Paiement en attente',
+    'payment_pending_desc' => 'Votre paiement est en cours de traitement. Veuillez attendre la confirmation.',
     'check_status' => 'Vérifier le statut',
 
     // Development
     'force_complete' => 'Finaliser le paiement (Développement)',
     'force_complete_hint' => 'Développement uniquement : finaliser le paiement et activer l\'abonnement.',
+
+    // Trust & Security
+    'secure_payment' => 'Vos paiements sont sécurisés par chiffrement',
+    'encrypted' => 'Toutes les transactions sont cryptées et sécurisées',
+    'multiple_methods' => 'Nous proposons plusieurs moyens de paiement sécurisés',
+    'redirecting_secure' => 'Redirection vers une passerelle de paiement sécurisée...',
+
+    // Pending payment banner
+    'pending_payment_title' => 'Paiement en attente trouvé',
+    'pending_plan_banner' => 'Vous avez un paiement en attente pour le forfait « :plan ». La sélection d\'un forfait différent annulera le paiement en cours.',
+    'resume_payment' => 'Reprendre le paiement',
+    'change_plan' => 'Changer de forfait',
 ];

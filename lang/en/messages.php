@@ -122,5 +122,6 @@ return [
     'import_partial' => 'Imported with some errors. :count records imported.',
     'import_row_error' => 'Row :row: :error',
     'personal_plan_new_users_only' => 'The Personal plan is only available for new accounts.',
+    'free_plan_new_users_only' => 'The Free plan is only available for new accounts.',
     'downgrade_too_many_users' => 'Cannot downgrade: :current users exceed the plan limit of :max.',
 ];

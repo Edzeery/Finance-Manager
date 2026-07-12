@@ -28,26 +28,31 @@ use Livewire\Volt\Volt;
 Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->group(function () {
     Route::prefix('onboarding')->name('onboarding.')->group(function () {
         Volt::route('/plan', 'pages.onboarding.plan')->name('plan');
-        Volt::route('/payment', 'pages.onboarding.payment')
-            ->middleware('throttle:web-sensitive')->name('payment');
         Volt::route('/manual-proof/{payment}', 'pages.onboarding.manual-proof')
             ->middleware('throttle:web-proof')->name('manual-proof');
         Volt::route('/setup', 'pages.onboarding.setup')->name('setup');
         Route::permanentRedirect('/complete', '/dashboard')->name('complete');
+        // Redirect old /onboarding/payment to /onboarding/plan
+        Route::permanentRedirect('/payment', '/onboarding/plan')->name('payment.redirect');
     });
 
-    // Payment resume (pending payment — no spinner, shows details immediately)
-    Volt::route('/payment/resume/{payment}', 'pages.onboarding.payment-resume')->name('payment.resume');
+    // Unified payment status page (replaces payment-resume + payment-retry)
+    Volt::route('/payment/status/{payment}', 'pages.onboarding.payment-status')->name('payment.status');
+
+    // Redirect old routes to new unified status page
+    Route::permanentRedirect('/payment/resume/{payment}', '/payment/status/{payment}');
+    Route::permanentRedirect('/payment/retry/{payment}', '/payment/status/{payment}');
 
     // Payment return pages — each online gateway has its own result route
-    Volt::route('/payment/retry/{payment}', 'pages.onboarding.payment-retry')->name('payment.retry');
     Volt::route('/payment/chargily/result/{payment?}', 'pages.onboarding.payment-result')->name('chargily.back');
     Volt::route('/payment/paypal/result/{payment?}', 'pages.onboarding.payment-result')->name('paypal.back');
+    // Unified return route (clean name, same component)
+    Volt::route('/payment/return/{payment?}', 'pages.onboarding.payment-result')->name('payment.return');
 
     // Payment gateway redirect (Charge via gateway-manager route)
     Route::get('/payment/checkout/{payment}', [CheckoutController::class, 'redirect'])->name('payment.checkout');
     // Payment status polling (used by Volt payment-success component)
-    Route::get('/payment/status/{payment}', [PaymentReturnController::class, 'checkStatus'])->name('payment.check-status');
+    Route::get('/payment/check-status/{payment}', [PaymentReturnController::class, 'checkStatus'])->name('payment.check-status');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->middleware('permission:dashboard.view')

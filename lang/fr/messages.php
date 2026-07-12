@@ -122,5 +122,6 @@ return [
     'import_partial' => 'Importé avec certaines erreurs. :count enregistrements importés.',
     'import_row_error' => 'Ligne :row : :error',
     'personal_plan_new_users_only' => 'Le plan Personal est uniquement disponible pour les nouveaux comptes.',
+    'free_plan_new_users_only' => 'Le plan Gratuit est uniquement disponible pour les nouveaux comptes.',
     'downgrade_too_many_users' => 'Impossible de rétrograder : :current utilisateurs dépasse la limite de :max.',
 ];

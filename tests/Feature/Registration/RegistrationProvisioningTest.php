@@ -142,6 +142,6 @@ class RegistrationProvisioningTest extends TestCase
         app(WorkspaceService::class)->createForUser($user);
         $this->actingAs($user);
 
-        $this->get(route('onboarding.setup'))->assertRedirect(route('onboarding.payment'));
+        $this->get(route('onboarding.setup'))->assertRedirect(route('onboarding.plan'));
     }
 }

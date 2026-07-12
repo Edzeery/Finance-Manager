@@ -47,7 +47,7 @@
                         <i class="bi bi-credit-card me-1"></i>{{ __('settings.complete_payment') }}
                     </a>
                 @else
-                    <a href="{{ route('payment.resume', $pendingPayment) }}" class="btn btn-warning btn-custom btn-sm">
+                    <a href="{{ route('payment.status', $pendingPayment) }}" class="btn btn-warning btn-custom btn-sm">
                         <i class="bi bi-credit-card me-1"></i>{{ __('settings.complete_payment') }}
                     </a>
                 @endif

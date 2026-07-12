@@ -17,7 +17,8 @@ return [
     'personal_new_users_only'  => 'The Personal plan is available for new accounts only.',
     'personal_existing_users'  => 'The Personal plan is not available for existing accounts.',
     'personal_existing_users_desc' => 'You are currently on a paid plan. The Personal plan is only available for new accounts. Please contact support if you wish to downgrade.',
-    'personal_plan_description' => 'Free month trial for individuals and personal use.',
+
+    'personal_plan_description' => 'Start with a free 30-day trial — then unlock premium finance management for individuals.',
     'business_plan_description'  => 'For small businesses and teams needing multiple workspaces.',
 
 ];

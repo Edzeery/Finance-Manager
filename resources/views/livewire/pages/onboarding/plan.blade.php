@@ -36,21 +36,32 @@ new #[Layout('layouts.guest')] class extends Component
     public array $noestWilayas = [];
     public array $noestDesks = [];
 
+    public string $deliveryAddress = '';
+    public string $deliveryPhone = '';
+
+    public ?Payment $pendingPayment = null;
+    public ?array $pendingPlanInfo = null;
+
     public function mount(OnboardingService $onboardingService): void
     {
         $user = auth()->user();
         $workspace = $user->currentWorkspace;
 
-        if ($workspace) {
-            $pendingPayment = Payment::withoutWorkspace()
-                ->where('workspace_id', $workspace->id)
+        // Load pending payment info for banner (no redirect)
+        if ($user->pending_plan_id) {
+            $this->pendingPayment = Payment::withoutWorkspace()
+                ->where('workspace_id', $workspace?->id)
+                ->where('user_id', $user->id)
                 ->where('status', PaymentStatus::CheckoutPending->value)
                 ->latest()
                 ->first();
 
-            if ($pendingPayment) {
-                $this->redirect(route('payment.resume', $pendingPayment), navigate: true);
-                return;
+            if ($this->pendingPayment) {
+                $pendingPlan = \App\Models\SubscriptionPlan::find($user->pending_plan_id);
+                $this->pendingPlanInfo = $pendingPlan ? [
+                    'name' => $pendingPlan->name,
+                    'id' => $pendingPlan->id,
+                ] : null;
             }
         }
 
@@ -91,6 +102,7 @@ new #[Layout('layouts.guest')] class extends Component
                 ? __("onboarding.method_{$m->key}")
                 : $m->name,
             'icon' => $m->icon ?? 'bi-credit-card',
+            'required_fields' => $m->requiredFields(),
         ])->toArray();
 
         $user = auth()->user();
@@ -187,6 +199,7 @@ new #[Layout('layouts.guest')] class extends Component
         $this->paymentMethod = null;
         $this->redirectUrl = null;
         $this->errorMessage = null;
+        $this->couponCode = null;
         $this->couponValidation = null;
         $this->findSelectedPlan();
     }
@@ -194,12 +207,18 @@ new #[Layout('layouts.guest')] class extends Component
     public function setPaymentMethod(string $method): void
     {
         $this->paymentMethod = $method;
+        if ($method !== 'delivery') {
+            $this->deliveryAddress = '';
+            $this->deliveryPhone = '';
+        }
+        $this->validateCouponCode();
     }
 
     public function toggleBilling(): void
     {
         $this->billingPeriod = $this->billingPeriod === 'monthly' ? 'yearly' : 'monthly';
         $this->couponValidation = null;
+        $this->validateCouponCode();
     }
 
     public function updatedCouponCode(): void
@@ -287,7 +306,14 @@ new #[Layout('layouts.guest')] class extends Component
                 return;
             }
             $pm = \App\Models\PaymentMethod::where('key', $this->paymentMethod)->first();
-            if ($pm && !$coupon->paymentMethods()->where('payment_method_id', $pm->id)->exists()) {
+            if (!$pm || !$pm->is_active) {
+                $this->couponValidation = [
+                    'valid' => false,
+                    'message' => __('onboarding.coupon_not_for_gateway'),
+                ];
+                return;
+            }
+            if (!$coupon->paymentMethods()->where('payment_method_id', $pm->id)->exists()) {
                 $this->couponValidation = [
                     'valid' => false,
                     'message' => __('onboarding.coupon_not_for_gateway'),
@@ -327,6 +353,22 @@ new #[Layout('layouts.guest')] class extends Component
         $this->redirect(route('onboarding.setup', absolute: false), navigate: true);
     }
 
+    public function proceedTrial(): void
+    {
+        $this->validate(['selectedPlanId' => 'required']);
+
+        $user = auth()->user();
+        $plan = SubscriptionPlan::find($this->selectedPlanId);
+
+        if (!$plan || $plan->is_free || !$plan->hasTrial()) {
+            return;
+        }
+
+        app(OnboardingService::class)->selectPlan($user, $plan->slug);
+        app(OnboardingService::class)->processTrialPlan($user);
+        $this->redirect(route('onboarding.setup', absolute: false), navigate: true);
+    }
+
     public function pay(): void
     {
         $rules = [
@@ -334,11 +376,18 @@ new #[Layout('layouts.guest')] class extends Component
             'paymentMethod' => 'required',
         ];
 
-        if ($this->paymentMethod === 'noest') {
-            $rules['noestClient'] = ['required', 'string', 'max:255'];
-            $rules['noestPhone'] = ['required', 'string', 'regex:/^(05|06|07)[0-9]{8}$/'];
-            $rules['noestWilaya'] = ['required', 'string'];
-            $rules['noestAdresse'] = ['required', 'string', 'max:500'];
+        // ✅ التحقق الديناميكي حسب الحقول المطلوبة لكل بوابة
+        $pm = \App\Models\PaymentMethod::where('key', $this->paymentMethod)->first();
+        foreach (optional($pm)->requiredFields() ?? [] as $field) {
+            $rules[$field] = match ($field) {
+                'noestClient' => ['required', 'string', 'max:255'],
+                'noestPhone' => ['required', 'string', 'regex:/^(05|06|07)[0-9]{8}$/'],
+                'noestWilaya' => ['required', 'string'],
+                'noestAdresse' => ['required', 'string', 'max:500'],
+                'deliveryAddress' => ['required', 'string', 'max:500'],
+                'deliveryPhone' => ['required', 'string', 'max:20'],
+                default => ['required'],
+            };
         }
 
         $this->validate($rules);
@@ -356,10 +405,16 @@ new #[Layout('layouts.guest')] class extends Component
                 return;
             }
 
+            // If same plan as pending payment, just redirect to status page
+            if ($this->pendingPayment && $this->pendingPlanInfo && $this->pendingPlanInfo['id'] === $plan->id) {
+                $this->redirect(route('payment.status', $this->pendingPayment), navigate: true);
+                return;
+            }
+
             app(OnboardingService::class)->selectPlan($user, $plan->slug);
 
-            $gatewayData = $this->paymentMethod === 'noest'
-                ? [
+            $gatewayData = match ($this->paymentMethod) {
+                'noest' => [
                     'noest_client'        => trim($this->noestClient),
                     'noest_phone'         => trim($this->noestPhone),
                     'noest_phone_2'       => trim($this->noestPhone2),
@@ -369,8 +424,13 @@ new #[Layout('layouts.guest')] class extends Component
                     'noest_station_code'  => $this->noestDeskId ?: null,
                     'noest_remboursement' => true,
                     'noest_can_open'      => false,
-                ]
-                : [];
+                ],
+                'delivery' => [
+                    'address' => trim($this->deliveryAddress),
+                    'phone'   => trim($this->deliveryPhone),
+                ],
+                default => [],
+            };
 
             $payment = app(OnboardingService::class)->initiatePaidPlanPayment(
                 $user,
@@ -525,6 +585,25 @@ new #[Layout('layouts.guest')] class extends Component
         <p class="onboarding-desc">{{ __('onboarding.plan_description') }}</p>
     </div>
 
+    @if ($pendingPayment && $pendingPlanInfo)
+        <div class="alert alert-warning d-flex align-items-start gap-3 mb-4 p-3 rounded-3 border-0 shadow-sm" style="background: #fff3cd; border: 1px solid #ffc107;">
+            <div class="flex-shrink-0">
+                <i class="bi bi-exclamation-triangle-fill fs-4" style="color: #856404;"></i>
+            </div>
+            <div class="flex-grow-1">
+                <strong class="d-block mb-1" style="color: #856404;">{{ __('onboarding.pending_payment_title') }}</strong>
+                <p class="mb-2 small" style="color: #856404;">
+                    {{ __('onboarding.pending_plan_banner', ['plan' => $pendingPlanInfo['name'] ?? '']) }}
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('payment.status', $pendingPayment) }}" class="btn btn-sm btn-warning text-dark fw-semibold">
+                        <i class="bi bi-arrow-right-circle"></i> {{ __('onboarding.resume_payment') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="billing-toggle">
         <span class="billing-label {{ $billingPeriod === 'monthly' ? 'active' : '' }}">{{ __('onboarding.monthly') }}</span>
         <button type="button" class="toggle-switch {{ $billingPeriod === 'yearly' ? 'active' : '' }}"
@@ -585,7 +664,7 @@ new #[Layout('layouts.guest')] class extends Component
                 @endif
 
                 @if ($plan['description'] ?? null)
-                    <p class="plan-desc">{{ $plan['description'] }}</p>
+                    <p class="plan-desc">{{ __('subscription.'.$plan['description']) }}</p>
                 @endif
 
                 <ul class="plan-features">
@@ -615,8 +694,8 @@ new #[Layout('layouts.guest')] class extends Component
                             </li>
                         @endforeach
                         @if (count($features) > 5)
-                            <li class="plan-features-toggle" style="list-style:none;text-align:center;padding:4px 0 0">
-                                <button type="button" @click.stop="showAll = !showAll" style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;padding:4px 0">
+                            <li class="plan-features-toggle">
+                                <button type="button" class="plan-features-btn" @click.stop="showAll = !showAll">
                                     <span x-show="!showAll">{{ __('onboarding.show_more') }} ({{ count($features) - 5 }}) <i class="bi bi-chevron-down"></i></span>
                                     <span x-show="showAll" x-cloak>{{ __('onboarding.show_less') }} <i class="bi bi-chevron-up"></i></span>
                                 </button>
@@ -645,13 +724,15 @@ new #[Layout('layouts.guest')] class extends Component
         <div class="onboarding-error">{{ $message }}</div>
     @enderror
 
-   @if ($selectedPlan && !($selectedPlan['is_free'] ?? false))
+    @php $isTrialPlan = $selectedPlan && !($selectedPlan['is_free'] ?? false) && ($selectedPlan['trial_days'] ?? 0) > 0; @endphp
+
+    @if ($selectedPlan && !($selectedPlan['is_free'] ?? false) && !$isTrialPlan)
         <div class="payment-section">
             <div class="payment-section-header">
                 <i class="bi bi-credit-card-2-front"></i>
                 <span>{{ __('onboarding.select_payment') }}</span>
             </div>
-            <div style="font-size:12px;color:var(--text-muted,#888);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+            <div class="payment-currency-info">
                 <i class="bi bi-info-circle"></i>
                 {{ __('onboarding.payment_methods_for_currency', ['currency' => \App\Services\CurrencyHelper::symbol(session('currency', auth()->user()?->currency ?? config('finance.currency', 'DZD')))]) }}
             </div>
@@ -681,6 +762,25 @@ new #[Layout('layouts.guest')] class extends Component
             @if ($paymentMethod && App\Services\OnboardingService::isManual($paymentMethod))
                 <div class="alert alert-info py-2 small mb-0 d-flex align-items-center gap-2">
                     <i class="bi bi-info-circle me-1"></i>{{ __('onboarding.manual_confirm_hint') }}
+                </div>
+            @endif
+
+            @if ($paymentMethod === 'delivery')
+                <div class="noest-form mb-3">
+                    <div class="noest-form-header">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>{{ __('onboarding.delivery_info') }}</span>
+                    </div>
+                    <div class="form-floating-group mb-3">
+                        <input type="text" id="delivery_address" class="form-control" wire:model="deliveryAddress" placeholder=" " @disabled($isProcessing)>
+                        <label for="delivery_address">{{ __('onboarding.delivery_address') }} <span class="text-danger">*</span></label>
+                        @error('deliveryAddress') <div class="text-danger small">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="form-floating-group">
+                        <input type="text" id="delivery_phone" class="form-control" wire:model="deliveryPhone" placeholder=" " @disabled($isProcessing)>
+                        <label for="delivery_phone">{{ __('onboarding.delivery_phone') }} <span class="text-danger">*</span></label>
+                        @error('deliveryPhone') <div class="text-danger small">{{ $message }}</div> @enderror
+                    </div>
                 </div>
             @endif
 
@@ -863,6 +963,28 @@ new #[Layout('layouts.guest')] class extends Component
             wire:click="proceed" wire:loading.attr="disabled" wire:target="proceed">
             {{ __('onboarding.continue') }}
         </button>
+    @elseif ($isTrialPlan)
+        <button type="button" class="btn btn-accent btn-custom w-100 proceed-btn"
+            wire:click="proceedTrial" wire:loading.attr="disabled" wire:target="proceedTrial">
+            <i class="bi bi-rocket-takeoff me-1"></i>{{ __('onboarding.start_free_trial') }}
+        </button>
+    @endif
+
+    @if ($selectedPlan && !($selectedPlan['is_free'] ?? false))
+        <div class="trust-banner mt-4">
+            <div class="trust-item">
+                <i class="bi bi-shield-check"></i>
+                <span>{{ __('onboarding.secure_payment') }}</span>
+            </div>
+            <div class="trust-item">
+                <i class="bi bi-lock"></i>
+                <span>{{ __('onboarding.encrypted') }}</span>
+            </div>
+            <div class="trust-item">
+                <i class="bi bi-credit-card-2-front"></i>
+                <span>{{ __('onboarding.multiple_methods') }}</span>
+            </div>
+        </div>
     @endif
 
     <div class="onboarding-footer">

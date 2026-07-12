@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\SubscriptionPlan;
 use App\Models\Workspace;
 use App\Services\Payments\GatewayManager;
+use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\DB;
 
 class SubscriptionPaymentService
@@ -26,30 +27,41 @@ class SubscriptionPaymentService
         string $successUrl,
         string $failureUrl,
     ): Payment {
-        $payment = $this->paymentService->chargeForPlan(
-            workspace: $workspace,
-            plan: $plan,
-            billingPeriod: $billingPeriod,
-            couponCode: $couponCode,
-            paymentMethod: $paymentMethod,
-            userId: $userId,
-        );
-
         $gateway = $this->gatewayManager->driver($paymentMethod);
 
-        if ($gateway->isOnline() && $payment->isPending()) {
-            $result = $gateway->charge([
-                'amount' => $payment->amount,
-                'currency' => $payment->currency,
-                'payment_id' => $payment->id,
-                'user_id' => $userId,
-                'workspace_id' => $workspace->id,
-                'success_url' => $successUrl,
-                'failure_url' => $failureUrl,
-                'webhook_url' => route('payment.webhook.' . $paymentMethod),
-            ]);
+        // ✅ Validate before creating any payment record
+        $validation = $gateway->validate([]);
+        if ($validation->fails()) {
+            throw new \RuntimeException($validation->message());
+        }
 
-            if ($result->success) {
+        // ✅ Wrap Payment creation + gateway charge in a single transaction
+        return DB::transaction(function () use ($workspace, $plan, $billingPeriod, $couponCode, $paymentMethod, $userId, $successUrl, $failureUrl, $gateway) {
+            $payment = $this->paymentService->chargeForPlan(
+                workspace: $workspace,
+                plan: $plan,
+                billingPeriod: $billingPeriod,
+                couponCode: $couponCode,
+                paymentMethod: $paymentMethod,
+                userId: $userId,
+            );
+
+            if ($gateway->isOnline() && $payment->isPending()) {
+                $result = $gateway->charge([
+                    'amount' => $payment->amount,
+                    'currency' => $payment->currency,
+                    'payment_id' => $payment->id,
+                    'user_id' => $userId,
+                    'workspace_id' => $workspace->id,
+                    'success_url' => $successUrl,
+                    'failure_url' => $failureUrl,
+                    'webhook_url' => route('payment.webhook.' . $paymentMethod),
+                ]);
+
+                if (!$result->success) {
+                    throw new \RuntimeException($result->message);
+                }
+
                 $payment->update([
                     'transaction_id' => $result->transactionId,
                     'gateway_reference' => $result->reference,
@@ -57,9 +69,9 @@ class SubscriptionPaymentService
                     'chargily_checkout_id' => $result->metadata['chargily_checkout_id'] ?? null,
                 ]);
             }
-        }
 
-        return $payment->fresh();
+            return $payment->fresh();
+        });
     }
 
     public function activateFromWebhook(Payment $payment, string $billingPeriod = 'monthly'): void

@@ -5,12 +5,32 @@ namespace App\Services\Payments\Noest;
 use App\Models\Payment;
 use App\Services\Payments\PaymentGateway;
 use App\Services\Payments\PaymentResult;
+use App\Services\Payments\ValidationResult;
 
 class NoestGateway implements PaymentGateway
 {
     public function name(): string
     {
         return 'noest';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        if (empty(config('payment.gateways.noest.api_token'))) {
+            return ValidationResult::invalid('Noest gateway is not configured. Please contact support.');
+        }
+        if (!empty($data['noest_phone']) && !preg_match('/^(05|06|07)[0-9]{8}$/', $data['noest_phone'])) {
+            return ValidationResult::invalid('Invalid phone number format. Must start with 05, 06, or 07 and be 10 digits.');
+        }
+        if (empty($data['noest_wilaya'])) {
+            return ValidationResult::invalid('Wilaya is required.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return ['noestClient', 'noestPhone', 'noestWilaya', 'noestAdresse'];
     }
 
     public function charge(array $data): PaymentResult

@@ -3,12 +3,23 @@
 namespace App\Services\Payments;
 
 use App\Models\Payment;
+use App\Services\Payments\ValidationResult;
 
 class CashGateway implements PaymentGateway
 {
     public function name(): string
     {
         return 'cash';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return [];
     }
 
     public function charge(array $data): PaymentResult

@@ -4,6 +4,7 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
+use App\Services\Payments\ValidationResult;
 
 class WiseManualGateway implements PaymentGateway
 {
@@ -12,6 +13,19 @@ class WiseManualGateway implements PaymentGateway
     public function name(): string
     {
         return 'wise_manual';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        if (!$this->gatewaySetting('account_email')) {
+            return ValidationResult::invalid('Wise (manual transfer) is not configured. Please contact support.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return [];
     }
 
     public function charge(array $data): PaymentResult

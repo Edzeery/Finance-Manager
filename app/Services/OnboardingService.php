@@ -12,6 +12,7 @@ use App\Enums\PaymentMethodType;
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
 use App\Services\Payments\GatewayManager;
+use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\DB;
 
 class OnboardingService
@@ -92,6 +93,48 @@ class OnboardingService
         });
     }
 
+    public function processTrialPlan(User $user): bool
+    {
+        $plan = SubscriptionPlan::find($user->pending_plan_id);
+        if (!$plan || $plan->is_free || !$plan->hasTrial()) return false;
+
+        $workspace = $this->ensureWorkspace($user);
+        if ($this->subscriptionService->hasPendingPayment($workspace)) {
+            return false;
+        }
+
+        return DB::transaction(function () use ($user, $plan) {
+            $user = $user->fresh();
+            $workspace = $this->ensureWorkspace($user);
+            $workspace = $workspace->fresh();
+
+            $currentSub = $workspace->allSubscriptions()->lockForUpdate()->first();
+            if ($currentSub) {
+                $currentSub->update(['status' => SubscriptionStatus::Canceled->value, 'canceled_at' => now()]);
+            }
+
+            $trialDays = $plan->trial_days ?? config('finance.trial_days', 30);
+            $trialEndsAt = now()->addDays($trialDays);
+
+            $workspace->allSubscriptions()->create([
+                'user_id' => $user->id,
+                'subscription_plan_id' => $plan->id,
+                'status' => SubscriptionStatus::Trialing->value,
+                'starts_at' => now(),
+                'ends_at' => $trialEndsAt,
+                'trial_ends_at' => $trialEndsAt,
+                'payment_method' => 'free',
+                'billing_period' => 'monthly',
+                'plan_price_amount' => 0,
+                'auto_renew' => false,
+            ]);
+
+            $user->markPlanConfirmed();
+
+            return true;
+        });
+    }
+
     private const FALLBACK_MANUAL = ['baridimob', 'redotpay', 'wise_manual', 'cash', 'delivery'];
     private const FALLBACK_ONLINE = ['chargily', 'paypal', 'stripe', 'wise', 'payoneer'];
     private const FALLBACK_AUTO_COMPLETE = ['noest'];
@@ -141,9 +184,16 @@ class OnboardingService
         array $gatewayData = [],
     ): ?Payment {
         $plan = SubscriptionPlan::find($user->pending_plan_id);
-        if (!$plan || $plan->is_free) return null;
+        if (!$plan || $plan->is_free || $plan->hasTrial()) return null;
 
         $workspace = $this->ensureWorkspace($user);
+
+        // ✅ التحقق المسبق: لا يتم إنشاء أي سجل Payment حتى يمر validation
+        $gateway = $this->gatewayManager->driver($paymentMethod);
+        $validation = $gateway->validate($gatewayData);
+        if ($validation->fails()) {
+            throw new \RuntimeException($validation->message());
+        }
 
         if ($this->subscriptionService->hasPendingPayment($workspace)) {
             Payment::withoutWorkspace()
@@ -160,66 +210,76 @@ class OnboardingService
             ]);
         }
 
-        $payment = $this->paymentService->chargeForPlan(
-            workspace: $workspace,
-            plan: $plan,
-            billingPeriod: $billingPeriod,
-            couponCode: $couponCode,
-            paymentMethod: $paymentMethod,
-            userId: $user->id,
-        );
+        // ✅ Transaction واحدة: إنشاء Payment + استدعاء Gateway معاً
+        // إذا فشل الـ Gateway يتم التراجع عن الـ Payment تلقائياً
+        try {
+            $result = DB::transaction(function () use ($workspace, $plan, $billingPeriod, $couponCode, $paymentMethod, $user, $gateway, $gatewayData) {
+                $payment = $this->paymentService->chargeForPlan(
+                    workspace: $workspace,
+                    plan: $plan,
+                    billingPeriod: $billingPeriod,
+                    couponCode: $couponCode,
+                    paymentMethod: $paymentMethod,
+                    userId: $user->id,
+                );
 
-        if ($payment->amount <= 0) {
-            logger()->channel('payments')->info('Zero-amount payment completed', [
-                'payment_id' => $payment->id,
-                'plan_id' => $plan->id,
-                'coupon_id' => $payment->coupon_id,
-                'user_id' => $user->id,
-            ]);
-            $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
-            $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
-            $user->markPlanConfirmed();
-            session()->put('pending_payment_id', $payment->id);
-            return $payment;
+                if ($payment->amount <= 0) {
+                    logger()->channel('payments')->info('Zero-amount payment completed', [
+                        'payment_id' => $payment->id,
+                        'plan_id' => $plan->id,
+                        'coupon_id' => $payment->coupon_id,
+                        'user_id' => $user->id,
+                    ]);
+                    $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
+                    $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
+                    $user->markPlanConfirmed();
+                    session()->put('pending_payment_id', $payment->id);
+                    return $payment;
+                }
+
+                $result = $gateway->charge(array_merge([
+                    'amount' => $payment->amount,
+                    'currency' => $payment->currency,
+                    'payment_id' => $payment->id,
+                    'user_id' => $user->id,
+                    'workspace_id' => $workspace->id,
+                ], $gatewayData));
+
+                if (!$result->success && !$result->isPending()) {
+                    throw new \RuntimeException($result->message);
+                }
+
+                $payment->update([
+                    'transaction_id' => $result->transactionId,
+                    'gateway_reference' => $result->reference,
+                    'gateway_payload' => $result->metadata,
+                    'chargily_checkout_id' => $result->metadata['chargily_checkout_id'] ?? null,
+                    'metadata' => array_merge($payment->metadata ?? [], [
+                        'redirect_url' => $result->redirectUrl,
+                        'gateway_response' => $result->metadata ?? [],
+                    ]),
+                ]);
+
+                $payment->refresh();
+
+                if ($result->isPending()) {
+                    // لا تُفعّل الاشتراك — قيد الانتظار (مثلاً Noest بانتظار التسليم)
+                } elseif (self::isAutoComplete($paymentMethod) && $payment->transaction_id) {
+                    $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
+                    $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
+                    $user->markPlanConfirmed();
+                }
+
+                session()->put('pending_payment_id', $payment->id);
+
+                return $payment;
+            });
+        } catch (\RuntimeException $e) {
+            // Transaction تم rollback — لم يتم إنشاء سجل Payment
+            throw $e;
         }
 
-        $gateway = $this->gatewayManager->driver($paymentMethod);
-        $result = $gateway->charge(array_merge([
-            'amount' => $payment->amount,
-            'currency' => $payment->currency,
-            'payment_id' => $payment->id,
-            'user_id' => $user->id,
-            'workspace_id' => $workspace->id,
-        ], $gatewayData));
-
-        if ($result->success || $result->isPending()) {
-            $payment->update([
-                'transaction_id' => $result->transactionId,
-                'gateway_reference' => $result->reference,
-                'gateway_payload' => $result->metadata,
-                'chargily_checkout_id' => $result->metadata['chargily_checkout_id'] ?? null,
-                'metadata' => array_merge($payment->metadata ?? [], [
-                    'redirect_url' => $result->redirectUrl,
-                    'gateway_response' => $result->metadata ?? [],
-                ]),
-            ]);
-
-            $payment->refresh();
-
-            if ($result->isPending()) {
-                // لا تُفعّل الاشتراك — قيد الانتظار (مثلاً Noest بانتظار التسليم)
-            } elseif (self::isAutoComplete($paymentMethod) && $payment->transaction_id) {
-                $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
-                $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
-                $user->markPlanConfirmed();
-            }
-        } else {
-            throw new \RuntimeException($result->message);
-        }
-
-        session()->put('pending_payment_id', $payment->id);
-
-        return $payment;
+        return $result;
     }
 
     public function handlePaymentSuccess(User $user, Payment $payment): void

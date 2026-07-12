@@ -12,7 +12,7 @@ class SubscriptionPlan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'description', 'sort_order', 'is_free',
+        'name', 'slug', 'description', 'sort_order', 'is_free', 'trial_days',
         'yearly_discount_percent',
         'is_active', 'is_public', 'button_text', 'button_link',
     ];
@@ -25,7 +25,21 @@ class SubscriptionPlan extends Model
             'is_free' => 'boolean',
             'is_active' => 'boolean',
             'is_public' => 'boolean',
+            'trial_days' => 'integer',
         ];
+    }
+
+    public function hasTrial(): bool
+    {
+        $days = $this->attributes['trial_days'] ?? null;
+        return $days !== null && (int) $days > 0;
+    }
+
+    public function getTrialDaysAttribute(): ?int
+    {
+        $days = $this->attributes['trial_days'] ?? null;
+        if ($days === null) return null;
+        return (int) $days > 0 ? (int) $days : null;
     }
 
     public function getMonthlyPriceAttribute(): float

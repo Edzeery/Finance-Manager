@@ -6,6 +6,7 @@ use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
 use App\Services\Payments\PaymentGateway;
 use App\Services\Payments\PaymentResult;
+use App\Services\Payments\ValidationResult;
 
 class ChargilyGateway implements PaymentGateway
 {
@@ -18,6 +19,22 @@ class ChargilyGateway implements PaymentGateway
     public function name(): string
     {
         return 'chargily';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        $this->checkoutService->setMethod($this->_cachedMethod ?? null);
+        $publicKey = $this->gatewaySetting('public_key', config('payment.gateways.chargily.public_key'));
+        $secretKey = $this->gatewaySetting('secret_key', config('payment.gateways.chargily.secret_key'));
+        if (!$publicKey || !$secretKey) {
+            return ValidationResult::invalid('Chargily gateway not configured.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return [];
     }
 
     public function charge(array $data): PaymentResult

@@ -53,6 +53,7 @@ return [
     'finish' => 'Finish Setup',
     'skip' => 'Skip for Now',
     'continue' => 'Continue',
+    'start_free_trial' => 'Start Free Trial',
     'save_amount' => 'Save :amount/year',
     'save_percent' => 'Save :percent%',
     'manual_payment_instructions' => 'Please send the payment of :method and upload the proof below:',
@@ -174,9 +175,23 @@ return [
     'show_more' => 'Show more',
     'show_less' => 'Show less',
 
+    'payment_pending' => 'Payment Pending',
+    'payment_pending_desc' => 'Your payment is being processed. Please wait for confirmation.',
     'check_status' => 'Check Status',
 
     // Development
     'force_complete' => 'Complete Payment (Dev)',
     'force_complete_hint' => 'Development only: complete the payment and activate subscription.',
+
+    // Trust & Security
+    'secure_payment' => 'Your payments are secured with encryption',
+    'encrypted' => 'All transactions are encrypted and secure',
+    'multiple_methods' => 'We offer multiple secure payment methods',
+    'redirecting_secure' => 'Redirecting to secure payment gateway...',
+
+    // Pending payment banner
+    'pending_payment_title' => 'Pending Payment Found',
+    'pending_plan_banner' => 'You have a pending payment for plan \":plan\". Selecting a different plan will cancel the current payment.',
+    'resume_payment' => 'Resume Payment',
+    'change_plan' => 'Change Plan',
 ];

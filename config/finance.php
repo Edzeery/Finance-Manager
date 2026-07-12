@@ -29,6 +29,7 @@ return [
 
     'expiry_reminder_days' => (int) env('EXPIRY_REMINDER_DAYS', 3),
     'grace_period_days'    => (int) env('GRACE_PERIOD_DAYS', 3),
+    'trial_days'           => (int) env('TRIAL_DAYS', 30),
 
     /*
     |--------------------------------------------------------------------------

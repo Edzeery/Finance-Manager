@@ -4,6 +4,7 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
+use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\Http;
 
 class StripeGateway implements PaymentGateway
@@ -23,6 +24,19 @@ class StripeGateway implements PaymentGateway
     private function baseUrl(): string
     {
         return 'https://api.stripe.com/v1';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        if (!$this->secretKey()) {
+            return ValidationResult::invalid('Stripe gateway not configured.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return [];
     }
 
     public function charge(array $data): PaymentResult

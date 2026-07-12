@@ -10,6 +10,10 @@ interface PaymentGateway
 
     public function charge(array $data): PaymentResult;
 
+    public function validate(array $data): ValidationResult;
+
+    public static function requiredFields(): array;
+
     public function refund(Payment $payment, ?float $amount = null): PaymentResult;
 
     public function verify(Payment $payment): PaymentResult;

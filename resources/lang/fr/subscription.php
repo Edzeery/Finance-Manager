@@ -15,4 +15,7 @@ return [
     'downgrade_min_days'       => 'Vous ne pouvez rétrograder qu\'après :days jours depuis le début.',
     'downgrade_min_discount'   => 'La différence de prix entre les deux plans est trop faible (:current% seulement). La réduction doit être d\'au moins :min%.',
     'personal_new_users_only'  => 'Le plan Personal est réservé aux nouveaux comptes.',
+
+    'personal_plan_description' => ' Commencez par un essai gratuit de 30 jours — puis débloquez la gestion financière premium pour les particuliers.',
+    'business_plan_description'  => ' Pour les petites entreprises et les équipes ayant besoin de plusieurs espaces de travail.',
 ];

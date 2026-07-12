@@ -53,6 +53,7 @@ return [
     'finish' => 'إنهاء الإعداد',
     'skip' => 'تخطي الآن',
     'continue' => 'متابعة',
+    'start_free_trial' => 'ابدأ التجربة المجانية',
     'save_amount' => 'وفر :amount/سنة',
     'save_percent' => 'وفر :percent%',
     'manual_payment_instructions' => 'يرجى إرسال الدفع عبر :method ورفع الإثبات أدناه:',
@@ -174,9 +175,23 @@ return [
     'show_more' => 'عرض المزيد',
     'show_less' => 'عرض أقل',
 
+    'payment_pending' => 'الدفع معلق',
+    'payment_pending_desc' => 'يتم معالجة دفعتك. يرجى انتظار التأكيد.',
     'check_status' => 'تحقق من الحالة',
 
     // Development
     'force_complete' => 'إكمال الدفع (تجريبي)',
     'force_complete_hint' => 'للتطوير فقط: إكمال الدفع وتفعيل الاشتراك.',
+
+    // Trust & Security
+    'secure_payment' => 'مدفوعاتك محمية بتقنية التشفير',
+    'encrypted' => 'جميع المعاملات مشفرة وآمنة',
+    'multiple_methods' => 'نوفر لك طرق دفع آمنة متعددة',
+    'redirecting_secure' => 'جارٍ التوجيه إلى بوابة دفع آمنة...',
+
+    // Pending payment banner
+    'pending_payment_title' => 'يوجد دفع معلق',
+    'pending_plan_banner' => 'لديك دفع معلق لخطة «:plan». اختيار خطة مختلفة سيلغي الدفع الحالي.',
+    'resume_payment' => 'متابعة الدفع',
+    'change_plan' => 'تغيير الخطة',
 ];

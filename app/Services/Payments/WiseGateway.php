@@ -4,6 +4,7 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
+use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\Http;
 
 class WiseGateway implements PaymentGateway
@@ -26,6 +27,19 @@ class WiseGateway implements PaymentGateway
         return $isSandbox === true || $isSandbox === '1' || $isSandbox === 'true'
             ? 'https://api.sandbox.transferwise.tech'
             : 'https://api.transferwise.com';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        if (!$this->apiKey()) {
+            return ValidationResult::invalid('Wise gateway not configured.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return [];
     }
 
     public function charge(array $data): PaymentResult

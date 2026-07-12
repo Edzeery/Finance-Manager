@@ -4,6 +4,7 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
+use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\Http;
 
 class PayPalGateway implements PaymentGateway
@@ -56,6 +57,22 @@ class PayPalGateway implements PaymentGateway
         return $isSandbox === true || $isSandbox === '1' || $isSandbox === 'true'
             ? 'https://api-m.sandbox.paypal.com'
             : 'https://api-m.paypal.com';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        if (!$this->gatewaySetting('client_id', config('payment.gateways.paypal.client_id'))) {
+            return ValidationResult::invalid('PayPal gateway not configured.');
+        }
+        if (!$this->gatewaySetting('secret', config('payment.gateways.paypal.secret'))) {
+            return ValidationResult::invalid('PayPal gateway not configured.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return [];
     }
 
     public function charge(array $data): PaymentResult

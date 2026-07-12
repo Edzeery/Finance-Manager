@@ -19,10 +19,10 @@ class EnsureOnboardingCompleted
         'payment.webhook.*',
         'chargily.back',
         'paypal.back',
-        'payment.resume',
-        'payment.retry',
         'payment.checkout',
         'payment.check-status',
+        'payment.status',
+        'payment.return',
         'super.admin.*',
         'locale.switch',
         'theme.switch',
@@ -35,7 +35,8 @@ class EnsureOnboardingCompleted
      */
     protected array $postOnboardingAllowed = [
         'onboarding.manual-proof',
-        'onboarding.payment',
+        'onboarding.plan',
+        'payment.status',
     ];
 
     public function handle(Request $request, Closure $next): Response
@@ -68,11 +69,7 @@ class EnsureOnboardingCompleted
         }
 
         if ($routeName && $this->inExceptArray($routeName)) {
-            if ($routeName === 'onboarding.plan' && $user->pending_plan_id) {
-                // Fall through to redirect logic below
-            } else {
-                return $next($request);
-            }
+            return $next($request);
         }
         Log::debug('Onboarding redirect', ['route' => $routeName, 'referer' => $request->headers->get('referer')]);
 
@@ -98,7 +95,7 @@ class EnsureOnboardingCompleted
             }
 
             if ($pendingPayment) {
-                return redirect()->route('payment.resume', $pendingPayment);
+                return redirect()->route('payment.status', $pendingPayment);
             }
 
             $completedPayment = Payment::withoutWorkspace()
@@ -111,7 +108,7 @@ class EnsureOnboardingCompleted
                 return redirect()->route('onboarding.setup');
             }
 
-            return redirect()->route('onboarding.payment');
+            return redirect()->route('onboarding.plan');
         }
 
         return redirect()->route('onboarding.plan');

@@ -38,7 +38,7 @@ class PaymentReturnController extends Controller
 
             return response()->json([
                 'status' => $status,
-                'redirect' => route('onboarding.payment'),
+                'redirect' => route('onboarding.plan'),
             ]);
         }
 

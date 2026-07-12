@@ -233,6 +233,72 @@ Noest هي `auto_complete` في الـ DB، و `NoestGateway::charge()` يرجع
 
 ---
 
+## 🆕 تحديث 12 يوليو 2026 — مراجعة تدفق الدفع في Onboarding (Payment Flow Refactoring)
+
+### المشاكل المكتشفة
+
+| # | المشكلة | الملف/المكان | التفاصيل |
+|---|---------|-------------|----------|
+| 1 | **لا يمكن تغيير الخطة عند وجود دفع معلق** | `EnsureOnboardingCompleted` middleware + `plan.mount()` | عندما يكون هناك `pending_plan_id`، الـ middleware يمنع الوصول إلى `/onboarding/plan` و `plan.mount()` يعيد التوجيه إلى `payment.resume`. المستخدم عالق — لا يستطيع تغيير الخطة أو طريقة الدفع. |
+| 2 | **تكرار الصفحات** — 5 صفحات منفصلة لنفس المهمة | `payment`, `payment-resume`, `payment-retry`, `payment-result`, `manual-proof` | كل صفحة تتعامل مع حالة دفع مختلفة لكن المنطق متكرر: نفس `loadNoestData()`, `validateCouponCode()`, `getFeeBreakdownProperty()`, `pay()`. |
+| 3 | **صفحة payment.blade.php مكررة بالكامل** | `resources/views/livewire/pages/onboarding/payment.blade.php` | نفس محتوى `plan.blade.php` بالضبط. فرق واحد: وصف الباقة. نفس `mount()` يقبل `$plan_id` من URL. |
+| 4 | **`?cancel` بدون تحقق من البوابة** | `payment-result.blade.php:183` | أي بوابة (حتى اليدوية) يمكنها إلغاء الدفع عبر `?cancel` في URL دون استدعاء `$gateway->verify()`. |
+| 5 | **Session fallback بدون ownership check** | `payment-result.blade.php` | `session('pending_payment_id')` يُستخدم لحل الدفعة عند غياب `{payment}` parameter، لكن لا يوجد تحقق من أن الدفعة تخص هذا المستخدم. |
+| 6 | **لا يوجد state/nonce في return URL** | `plan.blade.php:pay()` | رابط العودة لا يحتوي على token للتحقق من أن الطلب أصلي (anti-CSRF للـ return). |
+
+### خطة إعادة الهيكلة المعتمدة
+
+```
+التدفق القديم (7 صفحات):
+  payment.blade.php ← payment-resume.blade.php ← payment-retry.blade.php
+                                                     ↘
+                     payment-result.blade.php ← manual-proof.blade.php
+
+التدفق الجديد (5 صفحات):
+  plan.blade.php ← payment.status.blade.php ← payment-return.blade.php
+                                                     ↘
+                     manual-proof.blade.php
+```
+
+| خطوة | الإجراء | ملفات/أماكن التأثير |
+|------|---------|-------------------|
+| 1 | **تعديل middleware للسماح بدخول `/onboarding/plan` مع pending payment + عرض Banner** | `EnsureOnboardingCompleted.php:handle()`, `plan.blade.php` (إضافة `pendingPayment` + banner) |
+| 2 | **إضافة `change_plan` إلى `plan.blade.php`** — خيار جديد في `pay()` يلغي الدفع القديم تلقائياً | `plan.blade.php` |
+| 3 | **إنشاء `payment.status.blade.php`** — يدمج payment-resume + payment-retry | مسار `payment/status/{payment}`. يعرض أزراراً حسب حالة الدفع: `pending` (متابعة/تغيير طريقة/تغيير خطة)، `failed` (إعادة محاولة/تغيير طريقة)، `canceled` (إعادة محاولة/تغيير طريقة/تغيير خطة) |
+| 4 | **حذف `payment.blade.php`** — مكرر بالكامل مع `plan.blade.php` | `resources/views/livewire/pages/onboarding/payment.blade.php` + مساره في `routes/tenant.php` |
+| 5 | **تحديث fee breakdown** — استخدام `fee_breakdown_status` المخزّن من سجل الدفع بدلاً من إعادة الحساب | `payment.status.blade.php` |
+| 6 | **إضافة trust signal badges** — شعار أمان في `plan.blade.php` و `payment.status.blade.php` و `manual-proof.blade.php` | 3 صفحات: أيقونة قفل + "مدفوعاتك مشفرة" + "بوابات دفع آمنة" + "طرق دفع متعددة" |
+| 7 | **إعادة تسمية `payment-result.blade.php` ← `payment-return.blade.php`** | اسم أوضح يعكس أنها صفحة عودة من بوابة الدفع وليست "نتيجة" |
+| 8 | **إضافة `$gateway->verify()` قبل أي `?cancel`** | `payment-return.blade.php:mount()` — حتى للطرق اليدوية |
+| 9 | **إضافة ownership validation للـ session fallback** | التحقق من `$payment->user_id === auth()->id()` عند استخدام `session('pending_payment_id')` |
+| 10 | **تحديث التوثيق** | `docs/test_manual.md` ✅, `database/seeders/TestChecklistSeeder.php` ✅, `docs/audit-report-v2.md` ✅ |
+
+### تأثير الاختبارات
+
+| الاختبار | الحالة القديمة | الحالة الجديدة |
+|----------|---------------|---------------|
+| `pending_block` | يمنع الدخول ← يعيد التوجيه إلى `payment.resume` | يسمح بالدخول مع banner تحذيري |
+| `resume_continue` | موجود | تم الدمج في `status_continue` |
+| `resume_cancel` | موجود | تم الدمج في `status_cancel_change_plan` |
+| `resume_switch` | موجود | تم الدمج في `status_switch_method` |
+| `fee_breakdown_payment` | موجودة | تم حذفها (صفحة `payment` محذوفة) |
+| `fee_breakdown_retry` | موجودة | تم الاستبدال بـ `fee_breakdown_status` |
+| جديد — `change_plan` | غير موجود | تغيير الخطة مع دفع معلق |
+| جديد — `status_page` | غير موجود | صفحة حالة الدفع الموحدة |
+| جديد — `trust_banner.*` | غير موجود | 3 اختبارات لأشرطة الثقة |
+| جديد — `cancel_verify_manual` | غير موجود | ?cancel يستدعي verify() حتى للطُرق اليدوية |
+| جديد — `session_resolution_safe` | غير موجود | التحقق من ملكية الدفعة في session |
+
+### حالة التنفيذ
+
+- ✅ **مخطط معتمد** من المطور
+- ✅ `docs/test_manual.md` — تم التحديث
+- ✅ `database/seeders/TestChecklistSeeder.php` — تم التحديث
+- ✅ `docs/audit-report-v2.md` — هذا القسم
+- ⏳ **التنفيذ الفعلي** — لم يبدأ بعد
+
+---
+
 ## الخلاصة — هل المشروع جاهز للإطلاق؟
 
 ### ❌ لا — هناك مشاكل حرجة يجب حلها أولاً:

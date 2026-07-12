@@ -23,8 +23,12 @@ class SubscriptionActivationService
     public function activateFromPayment(Payment $payment, SubscriptionPlan $plan, ?string $billingPeriod = null): Subscription
     {
         return DB::transaction(function () use ($payment, $plan, $billingPeriod) {
-            $payment->fresh();
-            $plan->fresh();
+            $payment = $payment->fresh();
+            $plan = $plan->fresh();
+
+            if (!$payment || !$plan) {
+                throw new SubscriptionException('Payment or plan not found for activation');
+            }
 
             $period = $billingPeriod ?? ($payment->metadata['billing_period'] ?? 'monthly');
             $planPrice = $plan->activePrices()->forPeriod($period)->first();

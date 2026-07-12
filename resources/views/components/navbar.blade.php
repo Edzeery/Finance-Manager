@@ -17,7 +17,7 @@
             </a>
             <div class="guest-navbar-controls">
                 <x-language-switcher variant="dropdown-bs" triggerClass="topbar-btn dropdown-toggle" />
-                @if ((Route::has('onboarding.plan') && Route::has('onboarding.payment'))  || Route::has(!'verification.notice') )
+                @if (Route::has('onboarding.plan') || Route::has('verification.notice'))
                     <x-currency-switcher variant="dropdown-bs" triggerClass="topbar-btn" />
                 @endif
 

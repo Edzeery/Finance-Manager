@@ -144,10 +144,10 @@ class PaymentService
         if (!$coupon || !$coupon->isValid()) return null;
         if ($amount && $coupon->min_amount && $amount < $coupon->min_amount) return null;
 
-        // التحقق من قيود طريقة الدفع
         if ($paymentMethod) {
             $pm = PaymentMethod::where('key', $paymentMethod)->first();
-            if ($pm && $coupon->paymentMethods()->exists()) {
+            if (!$pm || !$pm->is_active) return null;
+            if ($coupon->paymentMethods()->exists()) {
                 $allowed = $coupon->paymentMethods()->where('payment_method_id', $pm->id)->exists();
                 if (!$allowed) return null;
             }

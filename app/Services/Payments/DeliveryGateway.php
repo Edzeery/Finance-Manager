@@ -3,12 +3,26 @@
 namespace App\Services\Payments;
 
 use App\Models\Payment;
+use App\Services\Payments\ValidationResult;
 
 class DeliveryGateway implements PaymentGateway
 {
     public function name(): string
     {
         return 'delivery';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        if (empty($data['address'])) {
+            return ValidationResult::invalid('Delivery address is required.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return ['deliveryAddress', 'deliveryPhone'];
     }
 
     public function charge(array $data): PaymentResult

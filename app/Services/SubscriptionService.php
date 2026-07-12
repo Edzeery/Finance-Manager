@@ -48,9 +48,10 @@ class SubscriptionService
         }
 
         if ($paymentMethod) {
+            $pm = \App\Models\PaymentMethod::where('key', $paymentMethod)->first();
+            if (!$pm || !$pm->is_active) return null;
             if ($coupon->paymentMethods()->exists()) {
-                $pm = \App\Models\PaymentMethod::where('key', $paymentMethod)->first();
-                if ($pm && !$coupon->paymentMethods()->where('payment_method_id', $pm->id)->exists()) {
+                if (!$coupon->paymentMethods()->where('payment_method_id', $pm->id)->exists()) {
                     return null;
                 }
             }
@@ -184,7 +185,7 @@ class SubscriptionService
                     'subscription' => null,
                     'payment' => null,
                     'redirect_url' => null,
-                    'message' => __('messages.personal_plan_new_users_only'),
+                    'message' => __('messages.free_plan_new_users_only'),
                 ];
             }
         }

@@ -19,14 +19,15 @@ class ExpireSubscriptions extends Command
     {
         $count = 0;
         $graceCount = 0;
+        $trialCount = 0;
 
+        // معالجة الاشتراكات النشطة المنتهية
         Subscription::withoutWorkspace()
             ->where('status', SubscriptionStatus::Active->value)
             ->whereNotNull('ends_at')
             ->where('ends_at', '<', now())
             ->chunk(100, function ($subscriptions) use (&$count, &$graceCount) {
                 foreach ($subscriptions as $subscription) {
-                    // لا نُنهي الاشتراك إذا كان لديه دفعة معلقة (قد تكتمل ويُمدد)
                     $hasPending = Payment::where('subscription_id', $subscription->id)
                         ->where('status', PaymentStatus::CheckoutPending->value)
                         ->exists();
@@ -44,7 +45,19 @@ class ExpireSubscriptions extends Command
                 $count += $subscriptions->count();
             });
 
-        $this->info("Processed {$count} expired subscriptions. {$graceCount} entered grace period.");
+        // معالجة الاشتراكات التجريبية المنتهية
+        Subscription::withoutWorkspace()
+            ->where('status', SubscriptionStatus::Trialing->value)
+            ->whereNotNull('trial_ends_at')
+            ->where('trial_ends_at', '<', now())
+            ->chunk(100, function ($subscriptions) use (&$trialCount) {
+                foreach ($subscriptions as $subscription) {
+                    $subscription->update(['status' => SubscriptionStatus::Expired->value]);
+                    $trialCount++;
+                }
+            });
+
+        $this->info("Processed {$count} active + {$trialCount} trial expired subscriptions. {$graceCount} entered grace period.");
 
         return self::SUCCESS;
     }

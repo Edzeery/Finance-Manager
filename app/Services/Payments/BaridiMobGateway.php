@@ -4,6 +4,7 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
+use App\Services\Payments\ValidationResult;
 
 class BaridiMobGateway implements PaymentGateway
 {
@@ -12,6 +13,19 @@ class BaridiMobGateway implements PaymentGateway
     public function name(): string
     {
         return 'baridimob';
+    }
+
+    public function validate(array $data): ValidationResult
+    {
+        if (!$this->gatewaySetting('rip_number')) {
+            return ValidationResult::invalid('BaridiMob is not configured. Please contact support.');
+        }
+        return ValidationResult::valid();
+    }
+
+    public static function requiredFields(): array
+    {
+        return [];
     }
 
     public function charge(array $data): PaymentResult
