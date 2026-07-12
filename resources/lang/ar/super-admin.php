@@ -635,6 +635,8 @@ return [
     'tab_zakat' => 'الزكاة والتقارير',
     'tab_settings' => 'الإعدادات',
     'tab_infrastructure' => 'البنية التحتية',
+    'tab_admin_panel' => 'لوحة الإدارة',
+    'tab_user_panel' => 'لوحة المستخدم',
 
     // Settings page tabs
     'tab_general' => 'عام',

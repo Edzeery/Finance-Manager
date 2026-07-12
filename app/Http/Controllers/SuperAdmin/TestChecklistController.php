@@ -76,13 +76,52 @@ class TestChecklistController extends Controller
     public static function getTabDefinitions(): array
     {
         return [
-            ['id' => 'environment', 'label' => 'super-admin.tab_environment', 'categories' => ['1. البيئة والإعدادات']],
-            ['id' => 'auth', 'label' => 'super-admin.tab_auth', 'categories' => ['2. التسجيل والمصادقة', '3. الإعداد الأولي']],
-            ['id' => 'payments', 'label' => 'super-admin.tab_payments', 'categories' => ['4.1 Chargily', '4.2 Stripe', '4.3 PayPal', '4.4 Noest', '4.5 Manual', '5. الاشتراكات والفواتير']],
-            ['id' => 'assets', 'label' => 'super-admin.tab_assets', 'categories' => ['6. إدارة الأصول', '7. الإيرادات والمصروفات', '8. الميزانيات', '9. الديون']],
-            ['id' => 'zakat', 'label' => 'super-admin.tab_zakat', 'categories' => ['10. الزكاة', '11. لوحة التحكم والتقارير', '12. البحث العام']],
-            ['id' => 'settings', 'label' => 'super-admin.tab_settings', 'categories' => ['13. إعدادات المستخدم', '14. الصلاحيات والأدوار']],
-            ['id' => 'infrastructure', 'label' => 'super-admin.tab_infrastructure', 'categories' => ['15. مهام الخلفية', '16. الأمان', '17. البريد الإلكتروني', '18. النسخ الاحتياطي', '19. الأداء والتوافق']],
+            [
+                'id' => 'admin',
+                'label' => 'super-admin.tab_admin_panel',
+                'categories' => [
+                    'لوحة الإدارة | 1. البيئة والإعدادات',
+                    'لوحة الإدارة | 2. إدارة المستخدمين',
+                    'لوحة الإدارة | 3. إدارة مساحات العمل',
+                    'لوحة الإدارة | 4. إدارة الباقات والخطط',
+                    'لوحة الإدارة | 5. إدارة الاشتراكات',
+                    'لوحة الإدارة | 6. إدارة المدفوعات',
+                    'لوحة الإدارة | 7. إدارة بوابات الدفع',
+                    'لوحة الإدارة | 8. إدارة الكوبونات',
+                    'لوحة الإدارة | 9. إدارة الضرائب والرسوم',
+                    'لوحة الإدارة | 10. الأدوار والصلاحيات',
+                    'لوحة الإدارة | 11. الإعدادات العامة',
+                    'لوحة الإدارة | 12. الإعلانات',
+                    'لوحة الإدارة | 13. النسخ الاحتياطي',
+                    'لوحة الإدارة | 14. الصفحة التعريفية',
+                ],
+            ],
+            [
+                'id' => 'user',
+                'label' => 'super-admin.tab_user_panel',
+                'categories' => [
+                    'لوحة المستخدم | 1. التسجيل والمصادقة',
+                    'لوحة المستخدم | 2. الإعداد الأولي',
+                    'لوحة المستخدم | 3. لوحة التحكم والتقارير',
+                    'لوحة المستخدم | 4. الأصول',
+                    'لوحة المستخدم | 5. الإيرادات',
+                    'لوحة المستخدم | 6. المصروفات',
+                    'لوحة المستخدم | 7. الفئات',
+                    'لوحة المستخدم | 8. الميزانيات',
+                    'لوحة المستخدم | 9. الديون',
+                    'لوحة المستخدم | 10. الأهداف المالية',
+                    'لوحة المستخدم | 11. الزكاة',
+                    'لوحة المستخدم | 12. المعاملات',
+                    'لوحة المستخدم | 13. البحث العام',
+                    'لوحة المستخدم | 14. الاشتراكات والفواتير',
+                    'لوحة المستخدم | 15. بوابات الدفع',
+                    'لوحة المستخدم | 16. الأعضاء والصلاحيات',
+                    'لوحة المستخدم | 17. إعدادات المستخدم',
+                    'لوحة المستخدم | 18. إعدادات مساحة العمل',
+                    'لوحة المستخدم | 19. سجل النشاط',
+                    'لوحة المستخدم | 20. مهام الخلفية',
+                ],
+            ],
         ];
     }
 
@@ -218,101 +257,113 @@ class TestChecklistController extends Controller
     {
         $items = TestChecklistItem::orderBy('sort_order')->get();
         $groups = $items->groupBy('category');
+        $tabs = self::getTabDefinitions();
 
         $lines = [];
-        $lines[] = '# 📋 FMZS — قائمة التحقق اليدوي (Admin)';
+        $lines[] = '# 📋 FMZS — قائمة التحقق اليدوي';
         $lines[] = '';
-        $lines[] = '> **الهدف:** التحقق من جاهزية المنصة للإطلاق من منظور الإدارة.';
+        $lines[] = '> **الهدف:** التحقق من جاهزية المنصة للإطلاق من منظور الإدارة والمستخدم.';
         $lines[] = '> يتم تنفيذ القائمة كاملة على بيئة **staging** ثم **production**.';
         $lines[] = '';
         $lines[] = '---';
         $lines[] = '';
 
-        $categoryTotals = [];
-        $categoryPassed = [];
-
-        foreach ($groups as $category => $catItems) {
-            $isSubCategory = preg_match('/^\d+\.\d+/', $category);
-
-            if ($isSubCategory) {
-                $lines[] = "### {$category}";
-            } else {
-                $lines[] = "## ✅ {$category}";
-            }
+        foreach ($tabs as $tab) {
+            $lines[] = "## 🗂️ {$tab['label']}";
+            $lines[] = '';
+            $lines[] = '---';
             $lines[] = '';
 
-            foreach ($catItems as $item) {
-                $checkbox = match ($item->status) {
-                    'passed' => 'x',
-                    'failed' => '~',
-                    'skipped' => '-',
-                    default => ' ',
-                };
-                $lines[] = "- [{$checkbox}] {$item->description}";
-                if ($item->details) {
-                    $lines[] = "    > {$item->details}";
+            foreach ($tab['categories'] as $category) {
+                $catItems = $groups[$category] ?? collect();
+
+                if ($catItems->isEmpty()) {
+                    continue;
+                }
+
+                $lines[] = "### ✅ {$category}";
+                $lines[] = '';
+
+                foreach ($catItems as $item) {
+                    $checkbox = match ($item->status) {
+                        'passed' => 'x',
+                        'failed' => '~',
+                        'skipped' => '-',
+                        default => ' ',
+                    };
+                    $lines[] = "- [{$checkbox}] {$item->description}";
+                    if ($item->details) {
+                        $lines[] = "    > {$item->details}";
+                    }
+                }
+                $lines[] = '';
+            }
+
+            $tabItems = collect();
+            foreach ($tab['categories'] as $category) {
+                if (isset($groups[$category])) {
+                    $tabItems = $tabItems->merge($groups[$category]);
                 }
             }
+            $tabTotal = $tabItems->count();
+            $tabPassed = $tabItems->where('status', 'passed')->count();
+
+            $lines[] = '---';
             $lines[] = '';
+            $lines[] = "### 🏁 جدول النتائج — {$tab['label']}";
+            $lines[] = '';
+            $lines[] = '| القسم | العلامة |';
+            $lines[] = '|-------|---------|';
 
-            $mainCategory = $isSubCategory ? preg_replace('/\..*/', '', $category) : null;
+            $grandTabTotal = 0;
+            $grandTabPassed = 0;
 
-            if ($mainCategory) {
-                $categoryTotals[$mainCategory] = ($categoryTotals[$mainCategory] ?? 0) + $catItems->count();
-                $categoryPassed[$mainCategory] = ($categoryPassed[$mainCategory] ?? 0) + $catItems->where('status', 'passed')->count();
-            } else {
-                $categoryTotals[$category] = $catItems->count();
-                $categoryPassed[$category] = $catItems->where('status', 'passed')->count();
+            foreach ($tab['categories'] as $category) {
+                $catItems = $groups[$category] ?? collect();
+                if ($catItems->isEmpty()) {
+                    continue;
+                }
+                $total = $catItems->count();
+                $passed = $catItems->where('status', 'passed')->count();
+                $shortName = preg_replace('/^لوحة (الإدارة|المستخدم) \| /', '', $category);
+                $lines[] = "| {$shortName} | {$passed}/{$total} |";
+                $grandTabTotal += $total;
+                $grandTabPassed += $passed;
             }
+
+            $lines[] = '| **المجموع** | **' . $grandTabPassed . '/' . $grandTabTotal . '** |';
+            $lines[] = '';
         }
+
+        $grandTotal = $items->count();
+        $grandPassed = $items->where('status', 'passed')->count();
+        $overallPercent = $grandTotal > 0 ? round(($grandPassed / $grandTotal) * 100) : 0;
 
         $lines[] = '---';
         $lines[] = '';
-        $lines[] = '## 🏁 جدول النتائج';
+        $lines[] = '## 🏆 النتيجة الإجمالية';
         $lines[] = '';
-        $lines[] = '| القسم | العلامة |';
-        $lines[] = '|-------|---------|';
+        $lines[] = '| التبويب | العلامة |';
+        $lines[] = '|---------|---------|';
 
-        $grandTotal = 0;
-        $grandPassed = 0;
-        $categoryLabels = [
-            '1. البيئة والإعدادات' => '1. البيئة',
-            '2. التسجيل والمصادقة' => '2. التسجيل',
-            '3. الإعداد الأولي' => '3. الإعداد الأولي',
-            '4' => '4. بوابات الدفع',
-            '5. الاشتراكات والفواتير' => '5. الاشتراكات',
-            '6. إدارة الأصول' => '6. الأصول',
-            '7. الإيرادات والمصروفات' => '7. الإيرادات والمصروفات',
-            '8. الميزانيات' => '8. الميزانيات',
-            '9. الديون' => '9. الديون',
-            '10. الزكاة' => '10. الزكاة',
-            '11. لوحة التحكم والتقارير' => '11. لوحة التحكم',
-            '12. البحث العام' => '12. البحث',
-            '13. إعدادات المستخدم' => '13. الإعدادات',
-            '14. الصلاحيات والأدوار' => '14. الصلاحيات',
-            '15. مهام الخلفية' => '15. المهام',
-            '16. الأمان' => '16. الأمان',
-            '17. البريد الإلكتروني' => '17. البريد',
-            '18. النسخ الاحتياطي' => '18. النسخ الاحتياطي',
-            '19. الأداء والتوافق' => '19. الأداء',
-        ];
-
-        foreach ($categoryTotals as $catKey => $total) {
-            $passed = $categoryPassed[$catKey] ?? 0;
-            $label = $categoryLabels[$catKey] ?? $catKey;
-            $lines[] = "| {$label} | {$passed}/{$total} |";
-            $grandTotal += $total;
-            $grandPassed += $passed;
+        foreach ($tabs as $tab) {
+            $tabItems = collect();
+            foreach ($tab['categories'] as $category) {
+                if (isset($groups[$category])) {
+                    $tabItems = $tabItems->merge($groups[$category]);
+                }
+            }
+            $tabTotal = $tabItems->count();
+            $tabPassed = $tabItems->where('status', 'passed')->count();
+            $lines[] = "| {$tab['label']} | {$tabPassed}/{$tabTotal} |";
         }
 
-        $lines[] = '| **المجموع** | **' . $grandPassed . '/' . $grandTotal . '** |';
+        $lines[] = '| **المجموع الكلي** | **' . $grandPassed . '/' . $grandTotal . '** |';
         $lines[] = '';
         $lines[] = '**النتيجة النهائية:**';
 
-        $overallPercent = $grandTotal > 0 ? round(($grandPassed / $grandTotal) * 100) : 0;
-
         if ($overallPercent >= 90) {
-            $lines[] = '- ✅ **جاهز للإطلاق** — ≥ 90% (' . $grandPassed . '+' . ' نقطة)';
+            $lines[] = '- ✅ **جاهز للإطلاق** — ≥ 90%';
         } elseif ($overallPercent >= 70) {
             $lines[] = '- 🔄 **تحسينات قبل الإطلاق** — 70%-89%';
         } else {

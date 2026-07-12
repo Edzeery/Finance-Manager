@@ -11,6 +11,7 @@ class TestChecklistItem extends Model
         'category',
         'item_key',
         'description',
+        'details',
         'status',
         'notes',
         'sort_order',

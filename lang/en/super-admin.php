@@ -627,6 +627,8 @@ return [
     'tab_zakat' => 'Zakat & Reports',
     'tab_settings' => 'Settings',
     'tab_infrastructure' => 'Infrastructure',
+    'tab_admin_panel' => 'Admin Panel',
+    'tab_user_panel' => 'User Panel',
 
     // Settings page tabs
     'tab_general' => 'General',

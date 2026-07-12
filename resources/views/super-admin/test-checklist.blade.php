@@ -162,7 +162,7 @@
     <script>
         window.checklistApp = function () {
             return {
-                activeTab: 'environment',
+                activeTab: 'admin',
                 openCategories: [],
                 editingNotes: null,
                 showDetails: null,
