@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             PaymentGatewaySeeder::class,
             PaymentMethodSeeder::class,
             DemoDataSeeder::class,
+
         ]);
 
         $admin = User::factory()->create([
