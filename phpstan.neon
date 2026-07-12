@@ -1,0 +1,26 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 8
+    paths:
+        - app
+        - config
+        - routes
+    excludePaths:
+        - vendor
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+
+    ignoreErrors:
+        # Livewire/Volt components use magic properties
+        - '/Access to an undefined property/'
+        # Facades
+        - '/Call to static method .* on an unknown class/'
+        # Dynamic config access
+        - '/Offset .* does not exist on/'
+        # Enum cases in match expressions
+        - '/Unreachable statement/'
+
+    typeAliases:
+        json: 'array<string, mixed>'

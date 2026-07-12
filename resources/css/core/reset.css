@@ -1,0 +1,44 @@
+html {
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-en);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+body.landing-page {
+  overflow: visible;
+  height: auto;
+}
+
+[dir="rtl"] body {
+  font-family: var(--font-ar);
+}
+
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 12px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #15b76c;
+  border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #15b76b8f;
+}

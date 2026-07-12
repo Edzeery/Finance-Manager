@@ -1,0 +1,21 @@
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.empty-state i {
+  font-size: 30px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.empty-state h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}

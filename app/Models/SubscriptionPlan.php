@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class SubscriptionPlan extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name', 'slug', 'description', 'sort_order', 'is_free',
+        'yearly_discount_percent',
+        'is_active', 'is_public', 'button_text', 'button_link',
+    ];
+
+    protected $appends = ['yearly_price'];
+
+    protected function casts(): array
+    {
+        return [
+            'is_free' => 'boolean',
+            'is_active' => 'boolean',
+            'is_public' => 'boolean',
+        ];
+    }
+
+    public function getMonthlyPriceAttribute(): float
+    {
+        $price = $this->activePrices()->forPeriod('monthly')->value('price');
+        if ($price !== null) {
+            return (float) $price;
+        }
+        return (float) ($this->attributes['monthly_price'] ?? 0);
+    }
+
+    public function getYearlyPriceAttribute(): float
+    {
+        $price = $this->activePrices()->forPeriod('yearly')->value('price');
+        if ($price !== null) {
+            return (float) $price;
+        }
+        $monthly = (float) ($this->attributes['monthly_price'] ?? $this->getPrice('monthly') ?? 0);
+        $discount = (float) ($this->attributes['yearly_discount_percent'] ?? $this->getFeatureValue('yearly_discount_percent') ?? 0);
+        if ($discount > 0 && $monthly > 0) {
+            return round($monthly * 12 * (1 - $discount / 100), 2);
+        }
+        return round($monthly * 12, 2);
+    }
+
+    public function getPrice(string $billingPeriod, string $currency = 'USD'): ?float
+    {
+        $price = $this->activePrices()
+            ->forPeriod($billingPeriod)
+            ->forCurrency($currency)
+            ->value('price');
+        if ($price !== null) {
+            return (float) $price;
+        }
+        if ($billingPeriod === 'monthly') {
+            return $this->monthly_price ?: null;
+        }
+        return $this->yearly_price ?: null;
+    }
+
+    public function getMaxUsersAttribute(): ?int
+    {
+        $val = $this->getFeatureValue('users');
+        if ($val === null || $val === 'custom' || $val === 'unlimited') return null;
+        return (int) $val;
+    }
+
+    public function getMaxWorkspacesAttribute(): ?int
+    {
+        $val = $this->getFeatureValue('workspaces');
+        if ($val === null || $val === 'custom' || $val === 'unlimited') return null;
+        return (int) $val;
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function planFeatures(): BelongsToMany
+    {
+        return $this->belongsToMany(PlanFeature::class, 'plan_plan_feature', 'plan_id', 'plan_feature_id')
+            ->withPivot(['value', 'sort_order'])
+            ->withTimestamps()
+            ->orderBy('plan_plan_feature.sort_order');
+    }
+
+    public function planPrices(): HasMany
+    {
+        return $this->hasMany(PlanPrice::class, 'plan_id');
+    }
+
+    public function activePrices(): HasMany
+    {
+        return $this->hasMany(PlanPrice::class, 'plan_id')->where('is_active', true);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopePublic($query)
+    {
+        return $query->where('is_public', true);
+    }
+
+    public function isFree(): bool
+    {
+        return (bool) $this->is_free;
+    }
+
+    public function isPaid(): bool
+    {
+        return !$this->isFree();
+    }
+
+    public function getFeatureValue(string $slug): ?string
+    {
+        if (!$this->relationLoaded('planFeatures')) {
+            return $this->planFeatures()->where('slug', $slug)->value('plan_plan_feature.value');
+        }
+
+        $feature = $this->planFeatures->firstWhere('slug', $slug);
+        return $feature?->pivot->value;
+    }
+
+    public function hasFeature(string $slug): bool
+    {
+        if (!$this->relationLoaded('planFeatures')) {
+            return $this->planFeatures()->where('slug', $slug)->exists();
+        }
+
+        return $this->planFeatures->contains(fn($f) => $f->slug === $slug);
+    }
+
+    public function featureSlugs(): array
+    {
+        if (!$this->relationLoaded('planFeatures')) {
+            return $this->planFeatures()->pluck('slug')->toArray();
+        }
+
+        return $this->planFeatures->pluck('slug')->toArray();
+    }
+}

@@ -1,0 +1,54 @@
+.permission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.permission-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.permission-card:hover {
+  border-color: var(--accent);
+}
+
+.permission-card .perm-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.permission-card .perm-guard {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.permission-card .perm-indicator {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.perm-indicator.granted {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.perm-indicator.denied {
+  background: var(--danger-light);
+  color: var(--danger);
+}

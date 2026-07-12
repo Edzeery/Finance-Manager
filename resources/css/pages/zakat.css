@@ -1,0 +1,19 @@
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+}
+.result-row hr {
+    margin: 4px 0;
+}
+
+@media (max-width: 576px) {
+    .result-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        padding: 8px 0;
+    }
+}

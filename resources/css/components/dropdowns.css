@@ -1,0 +1,21 @@
+[dir="rtl"] .dropdown-menu-end {
+  right: auto;
+  left: 0;
+}
+
+.dropdown-custom {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.dropdown-custom .dropdown-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.dropdown-custom .dropdown-item:hover {
+  background: var(--bg);
+}

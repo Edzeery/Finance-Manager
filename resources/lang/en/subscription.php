@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'renew'                    => 'Renew Subscription',
+    'grace_subject'            => 'Your subscription has ended – Grace Period Active',
+    'grace_intro'              => 'Your subscription has ended. You are in a grace period and can still access your account.',
+    'grace_expires'            => 'Your grace period ends on :date. Renew now to avoid losing access.',
+    'expiry_reminder_subject'  => 'Your subscription expires soon',
+    'expiry_reminder_intro'    => 'Your subscription will expire on :date.',
+    'expiry_reminder_date'     => 'Renew before :date to avoid interruption.',
+    'cancel_immediate'         => 'Cancel Immediately',
+    'cancel_end_of_period'     => 'Cancel at End of Billing Period',
+    'cancel_no_refund'         => 'No refund will be issued for immediate cancellation.',
+    'cancel_scheduled'         => 'Your subscription will be canceled at the end of the current billing period.',
+    'downgrade_min_days'       => 'You can only downgrade your plan after :days days from subscription start.',
+    'downgrade_min_discount'   => 'The price difference between the two plans is too small (:current% only). The discount must be at least :min%.',
+    'personal_new_users_only'  => 'The Personal plan is available for new accounts only.',
+    'personal_existing_users'  => 'The Personal plan is not available for existing accounts.',
+    'personal_existing_users_desc' => 'You are currently on a paid plan. The Personal plan is only available for new accounts. Please contact support if you wish to downgrade.',
+    'personal_plan_description' => 'Free month trial for individuals and personal use.',
+    'business_plan_description'  => 'For small businesses and teams needing multiple workspaces.',
+
+];

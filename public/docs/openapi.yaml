@@ -1,0 +1,964 @@
+openapi: 3.0.3
+info:
+  title: Finance Manager API
+  description: Multi-tenant personal finance management API with Sanctum token authentication, workspace isolation, subscription billing, and RBAC.
+  version: 1.0.0
+  contact:
+    email: support@finance-manager.app
+
+servers:
+  - url: /api
+    description: Local development
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: plaintext
+      description: Sanctum token. Obtain via POST /auth/login or POST /auth/register.
+
+  schemas:
+    # ─── Auth ──────────────────────────────────────────────────────────
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: user@example.com }
+        password: { type: string, format: password, example: secret123 }
+        device_name: { type: string, maxLength: 255, example: mobile-app }
+
+    RegisterRequest:
+      type: object
+      required: [name, email, password, password_confirmation]
+      properties:
+        name: { type: string, maxLength: 255, example: John Doe }
+        email: { type: string, format: email, example: user@example.com }
+        password: { type: string, format: password, minLength: 8 }
+        password_confirmation: { type: string }
+        currency: { type: string, minLength: 3, maxLength: 3, example: DZD }
+        timezone: { type: string, maxLength: 64, example: Africa/Algiers }
+
+    TokenResponse:
+      type: object
+      properties:
+        user: { $ref: '#/components/schemas/User' }
+        token: { type: string, example: 1|abcdef12345... }
+
+    # ─── Models ────────────────────────────────────────────────────────
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string, format: email }
+        currency: { type: string }
+        timezone: { type: string }
+        is_active: { type: boolean }
+        is_super_admin: { type: boolean }
+        created_at: { type: string, format: date-time }
+        workspaces: { type: array, items: { $ref: '#/components/schemas/Workspace' } }
+
+    Workspace:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        type: { type: string, enum: [personal, business] }
+        currency: { type: string }
+        is_active: { type: boolean }
+        plan: { type: string, nullable: true }
+        role: { type: string }
+
+    Asset:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        type: { type: string, enum: [cash, bank_account, ccp, gold, silver, real_estate, stocks, crypto, other] }
+        total_value: { type: number, format: float }
+        description: { type: string, nullable: true }
+        quantity: { type: number, nullable: true }
+        unit_price: { type: number, nullable: true }
+        bank_name: { type: string, nullable: true }
+        account_number: { type: string, nullable: true }
+        is_liquid: { type: boolean }
+        is_zakatable: { type: boolean }
+        notes: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    Income:
+      type: object
+      properties:
+        id: { type: integer }
+        category_id: { type: integer }
+        amount: { type: number, format: float }
+        date: { type: string, format: date }
+        description: { type: string, nullable: true }
+        is_recurring: { type: boolean }
+        recurring_frequency: { type: string, nullable: true, enum: [daily, weekly, monthly, yearly] }
+        created_at: { type: string, format: date-time }
+
+    Expense:
+      type: object
+      properties:
+        id: { type: integer }
+        category_id: { type: integer }
+        amount: { type: number, format: float }
+        date: { type: string, format: date }
+        description: { type: string, nullable: true }
+        is_recurring: { type: boolean }
+        recurring_frequency: { type: string, nullable: true, enum: [daily, weekly, monthly, yearly] }
+        created_at: { type: string, format: date-time }
+
+    Debt:
+      type: object
+      properties:
+        id: { type: integer }
+        type: { type: string, enum: [owed, owing] }
+        counterparty_name: { type: string }
+        total_amount: { type: number, format: float }
+        paid_amount: { type: number, format: float }
+        description: { type: string, nullable: true }
+        due_date: { type: string, format: date, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    Goal:
+      type: object
+      properties:
+        id: { type: integer }
+        name_en: { type: string }
+        name_ar: { type: string, nullable: true }
+        name_fr: { type: string, nullable: true }
+        target_amount: { type: number, format: float }
+        current_amount: { type: number, format: float }
+        target_date: { type: string, format: date, nullable: true }
+        status: { type: string, enum: [in_progress, completed, cancelled] }
+        created_at: { type: string, format: date-time }
+
+    Budget:
+      type: object
+      properties:
+        id: { type: integer }
+        name_en: { type: string }
+        name_ar: { type: string, nullable: true }
+        name_fr: { type: string, nullable: true }
+        total_amount: { type: number, format: float }
+        type: { type: string, enum: [monthly, yearly, custom] }
+        start_date: { type: string, format: date, nullable: true }
+        end_date: { type: string, format: date, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    Transaction:
+      type: object
+      properties:
+        id: { type: integer }
+        type: { type: string, enum: [income, expense] }
+        amount: { type: number, format: float }
+        date: { type: string, format: date }
+        description: { type: string, nullable: true }
+        category: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    DashboardKpi:
+      type: object
+      properties:
+        total_income: { type: number }
+        total_expense: { type: number }
+        net_balance: { type: number }
+        total_assets: { type: number }
+        total_debts: { type: number }
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string, nullable: true }
+        sort_order: { type: integer }
+        is_free: { type: boolean }
+        monthly_price: { type: number }
+        yearly_price: { type: number }
+        currency: { type: string }
+        max_users: { type: integer }
+        features: { type: object }
+        is_active: { type: boolean }
+        is_public: { type: boolean }
+
+    CurrentSubscription:
+      type: object
+      properties:
+        id: { type: integer }
+        status: { type: string, enum: [active, trialing, past_due, canceled, expired] }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time, nullable: true }
+        auto_renew: { type: boolean }
+        plan: { $ref: '#/components/schemas/SubscriptionPlan' }
+
+    CouponValidateResult:
+      type: object
+      properties:
+        valid: { type: boolean }
+        code: { type: string }
+        type: { type: string, enum: [fixed, percentage] }
+        value: { type: number }
+        discount: { type: number }
+
+  # ─── Request Bodies ──────────────────────────────────────────────────
+  requestBodies:
+    AssetStore:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name, type, total_value]
+            properties:
+              name: { type: string, maxLength: 255, example: Savings Account }
+              type: { type: string, enum: [cash, bank_account, ccp, gold, silver, real_estate, stocks, crypto, other] }
+              total_value: { type: number, minimum: 0, example: 50000.00 }
+              description: { type: string, nullable: true }
+              is_liquid: { type: boolean, default: false }
+              is_zakatable: { type: boolean, default: false }
+
+    IncomeStore:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [category_id, amount, date]
+            properties:
+              category_id: { type: integer, example: 1 }
+              amount: { type: number, minimum: 0, example: 2500.00 }
+              date: { type: string, format: date, example: 2026-06-19 }
+              description: { type: string, nullable: true }
+              is_recurring: { type: boolean, default: false }
+              recurring_frequency: { type: string, nullable: true, enum: [daily, weekly, monthly, yearly] }
+
+    ExpenseStore:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [category_id, amount, date]
+            properties:
+              category_id: { type: integer, example: 1 }
+              amount: { type: number, minimum: 0, example: 150.00 }
+              date: { type: string, format: date, example: 2026-06-19 }
+              description: { type: string, nullable: true }
+              is_recurring: { type: boolean, default: false }
+              recurring_frequency: { type: string, nullable: true, enum: [daily, weekly, monthly, yearly] }
+
+    DebtStore:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [type, counterparty_name, total_amount]
+            properties:
+              type: { type: string, enum: [owed, owing] }
+              counterparty_name: { type: string, maxLength: 255, example: Bank XYZ }
+              total_amount: { type: number, minimum: 0, example: 10000.00 }
+              description: { type: string, nullable: true }
+              due_date: { type: string, format: date, nullable: true }
+
+    GoalStore:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name_en, target_amount]
+            properties:
+              name_en: { type: string, maxLength: 255, example: Buy a Car }
+              name_ar: { type: string, nullable: true }
+              name_fr: { type: string, nullable: true }
+              target_amount: { type: number, minimum: 0, example: 20000.00 }
+              current_amount: { type: number, minimum: 0, example: 5000.00 }
+              target_date: { type: string, format: date, nullable: true }
+              status: { type: string, enum: [in_progress, completed, cancelled], default: in_progress }
+
+    BudgetStore:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name_en, total_amount, type]
+            properties:
+              name_en: { type: string, maxLength: 255, example: Monthly Groceries }
+              name_ar: { type: string, nullable: true }
+              name_fr: { type: string, nullable: true }
+              total_amount: { type: number, minimum: 0, example: 5000.00 }
+              type: { type: string, enum: [monthly, yearly, custom] }
+              start_date: { type: string, format: date, nullable: true }
+              end_date: { type: string, format: date, nullable: true }
+
+    ChangePlanRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [plan_slug, billing]
+            properties:
+              plan_slug: { type: string, example: premium }
+              billing: { type: string, enum: [monthly, yearly] }
+              coupon: { type: string, nullable: true, example: SAVE20 }
+              payment_method: { type: string, nullable: true, example: paypal }
+
+    ValidateCouponRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [code]
+            properties:
+              code: { type: string, example: SAVE20 }
+              amount: { type: number, nullable: true, example: 99.99 }
+
+paths:
+  # ─── Auth ────────────────────────────────────────────────────────────
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login and receive Sanctum token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        200:
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        422:
+          description: Validation error or invalid credentials
+
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        201:
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        422:
+          description: Validation error
+
+  /auth/user:
+    get:
+      tags: [Authentication]
+      summary: Get authenticated user with workspaces
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: User data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Revoke current token
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Token revoked
+
+  # ─── Workspaces ──────────────────────────────────────────────────────
+  /workspaces:
+    get:
+      tags: [Workspaces]
+      summary: List all workspaces for the user
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Workspace list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Workspace'
+    post:
+      tags: [Workspaces]
+      summary: Create a new workspace
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, example: My Business }
+                type: { type: string, enum: [personal, business] }
+                currency: { type: string, example: DZD }
+                timezone: { type: string, example: Africa/Algiers }
+      responses:
+        201:
+          description: Workspace created
+
+  /workspaces/{workspace}/switch:
+    post:
+      tags: [Workspaces]
+      summary: Switch active workspace
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200:
+          description: Workspace switched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workspace_id: { type: integer }
+        403:
+          description: Unauthorized
+
+  # ─── Workspace-scoped Resources ──────────────────────────────────────
+  /workspace/dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Get dashboard KPIs and chart data
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  kpis: { $ref: '#/components/schemas/DashboardKpi' }
+                  chart: { type: object }
+
+  # ─── Assets ──────────────────────────────────────────────────────────
+  /workspace/assets:
+    get:
+      tags: [Assets]
+      summary: List all assets
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Asset list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+    post:
+      tags: [Assets]
+      summary: Create an asset
+      security: [{ BearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/AssetStore' }
+      responses:
+        201:
+          description: Asset created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+
+  /workspace/assets/{id}:
+    get:
+      tags: [Assets]
+      summary: Get asset by ID
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Asset data }
+        404: { description: Not found }
+    put:
+      tags: [Assets]
+      summary: Update an asset
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                type: { type: string }
+                total_value: { type: number }
+                description: { type: string }
+      responses:
+        200: { description: Asset updated }
+        404: { description: Not found }
+    delete:
+      tags: [Assets]
+      summary: Delete an asset
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Asset deleted }
+        404: { description: Not found }
+
+  # ─── Incomes ─────────────────────────────────────────────────────────
+  /workspace/incomes:
+    get:
+      tags: [Incomes]
+      summary: List incomes
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: category
+          in: query
+          schema: { type: integer }
+        - name: date_from
+          in: query
+          schema: { type: string, format: date }
+        - name: date_to
+          in: query
+          schema: { type: string, format: date }
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        200:
+          description: Income list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Income'
+    post:
+      tags: [Incomes]
+      summary: Create an income
+      security: [{ BearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/IncomeStore' }
+      responses:
+        201: { description: Income created }
+
+  /workspace/incomes/{id}:
+    get:
+      tags: [Incomes]
+      summary: Get income by ID
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Income data }
+        404: { description: Not found }
+    put:
+      tags: [Incomes]
+      summary: Update an income
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Income updated }
+        404: { description: Not found }
+    delete:
+      tags: [Incomes]
+      summary: Delete an income
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Income deleted }
+        404: { description: Not found }
+
+  # ─── Expenses ────────────────────────────────────────────────────────
+  /workspace/expenses:
+    get:
+      tags: [Expenses]
+      summary: List expenses
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: category
+          in: query
+          schema: { type: integer }
+        - name: date_from
+          in: query
+          schema: { type: string, format: date }
+        - name: date_to
+          in: query
+          schema: { type: string, format: date }
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        200:
+          description: Expense list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Expense'
+    post:
+      tags: [Expenses]
+      summary: Create an expense
+      security: [{ BearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/ExpenseStore' }
+      responses:
+        201: { description: Expense created }
+
+  /workspace/expenses/{id}:
+    get:
+      tags: [Expenses]
+      summary: Get expense by ID
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Expense data }
+        404: { description: Not found }
+    put:
+      tags: [Expenses]
+      summary: Update an expense
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Expense updated }
+        404: { description: Not found }
+    delete:
+      tags: [Expenses]
+      summary: Delete an expense
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Expense deleted }
+        404: { description: Not found }
+
+  # ─── Debts ───────────────────────────────────────────────────────────
+  /workspace/debts:
+    get:
+      tags: [Debts]
+      summary: List debts
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Debt list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Debt'
+    post:
+      tags: [Debts]
+      summary: Create a debt
+      security: [{ BearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/DebtStore' }
+      responses:
+        201: { description: Debt created }
+
+  /workspace/debts/{id}:
+    get:
+      tags: [Debts]
+      summary: Get debt by ID
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Debt data }
+        404: { description: Not found }
+    put:
+      tags: [Debts]
+      summary: Update a debt
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Debt updated }
+        404: { description: Not found }
+    delete:
+      tags: [Debts]
+      summary: Delete a debt
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Debt deleted }
+        404: { description: Not found }
+
+  # ─── Goals ───────────────────────────────────────────────────────────
+  /workspace/goals:
+    get:
+      tags: [Goals]
+      summary: List financial goals
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Goal list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Goal'
+    post:
+      tags: [Goals]
+      summary: Create a goal
+      security: [{ BearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/GoalStore' }
+      responses:
+        201: { description: Goal created }
+
+  /workspace/goals/{id}:
+    get:
+      tags: [Goals]
+      summary: Get goal by ID
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Goal data }
+        404: { description: Not found }
+    put:
+      tags: [Goals]
+      summary: Update a goal
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Goal updated }
+        404: { description: Not found }
+    delete:
+      tags: [Goals]
+      summary: Delete a goal
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Goal deleted }
+        404: { description: Not found }
+
+  # ─── Budgets ─────────────────────────────────────────────────────────
+  /workspace/budgets:
+    get:
+      tags: [Budgets]
+      summary: List budgets
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Budget list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Budget'
+    post:
+      tags: [Budgets]
+      summary: Create a budget
+      security: [{ BearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/BudgetStore' }
+      responses:
+        201: { description: Budget created }
+
+  /workspace/budgets/{id}:
+    get:
+      tags: [Budgets]
+      summary: Get budget by ID
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Budget data }
+        404: { description: Not found }
+    put:
+      tags: [Budgets]
+      summary: Update a budget
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Budget updated }
+        404: { description: Not found }
+    delete:
+      tags: [Budgets]
+      summary: Delete a budget
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        200: { description: Budget deleted }
+        404: { description: Not found }
+
+  # ─── Transactions ────────────────────────────────────────────────────
+  /workspace/transactions:
+    get:
+      tags: [Transactions]
+      summary: List combined income/expense transactions
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        200:
+          description: Transaction list sorted by date desc
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+
+  # ─── Subscriptions ───────────────────────────────────────────────────
+  /plans:
+    get:
+      tags: [Subscriptions]
+      summary: List all active public subscription plans
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Plans list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubscriptionPlan'
+
+  /workspace/subscription:
+    get:
+      tags: [Subscriptions]
+      summary: Get current workspace subscription
+      security: [{ BearerAuth: [] }]
+      responses:
+        200:
+          description: Current subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentSubscription'
+        400: { description: No workspace selected }
+        404: { description: No active subscription }
+
+  /workspace/subscription/change-plan:
+    post:
+      tags: [Subscriptions]
+      summary: Change subscription plan
+      security: [{ BearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/ChangePlanRequest' }
+      responses:
+        201: { description: Plan changed }
+        400: { description: No workspace selected }
+        404: { description: Plan not found }
+        422: { description: Validation or downgrade error }
+        500: { description: Plan change failed }
+
+  /workspace/subscription/cancel:
+    post:
+      tags: [Subscriptions]
+      summary: Cancel current subscription
+      security: [{ BearerAuth: [] }]
+      responses:
+        200: { description: Subscription canceled }
+        400: { description: No workspace selected }
+        404: { description: No active subscription }
+
+  /coupon/validate:
+    post:
+      tags: [Subscriptions]
+      summary: Validate a coupon code
+      security: [{ BearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/ValidateCouponRequest' }
+      responses:
+        200:
+          description: Coupon validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CouponValidateResult'
+        404: { description: Invalid or expired coupon }

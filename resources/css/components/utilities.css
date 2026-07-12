@@ -1,0 +1,57 @@
+mark {
+  background: rgba(21,183,108,0.25);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.bg-success-subtle { background: rgba(34,197,94,0.12); }
+.bg-danger-subtle { background: rgba(239,68,68,0.12); }
+.bg-warning-subtle { background: rgba(245,158,11,0.12); }
+.bg-info-subtle { background: rgba(59,130,246,0.12); }
+.bg-purple-subtle { background: rgba(139,92,246,0.12); }
+.text-purple { color: #8B5CF6; }
+.bg-accent-subtle { background: rgba(21,183,108,0.12); }
+
+.text-sm { font-size: 13px; }
+
+[dir="rtl"] .breadcrumb-separator {
+  transform: rotate(180deg);
+}
+
+hr { border-color: var(--border); opacity: 1; }
+
+.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform var(--transition-fast);
+}
+
+.icon-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-text > i,
+.icon-text > svg {
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.icon-text.icon-text-lg {
+  gap: 8px;
+}
+
+.icon-text.icon-text-sm {
+  gap: 4px;
+}

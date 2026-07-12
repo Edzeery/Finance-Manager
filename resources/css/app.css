@@ -1,0 +1,55 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+@import 'core/variables.css';
+@import 'core/reset.css';
+@import 'core/typography.css';
+@import 'core/theme.css';
+@import 'core/animations.css';
+
+@import 'layouts/admin-layout.css';
+@import 'layouts/super-admin-layout.css';
+@import 'layouts/auth-layout.css';
+@import 'layouts/landing-layout.css';
+
+@import 'components/sidebar.css';
+@import 'components/topbar.css';
+@import 'components/cards.css';
+@import 'components/forms.css';
+@import 'components/buttons.css';
+@import 'components/tables.css';
+@import 'components/badges.css';
+@import 'components/dropdowns.css';
+@import 'components/modals.css';
+@import 'components/pagination.css';
+@import 'components/alerts.css';
+@import 'components/filters.css';
+@import 'components/empty-state.css';
+@import 'components/utilities.css';
+@import 'components/toggle-switch.css';
+@import 'components/toasts.css';
+@import 'components/breadcrumb.css';
+@import 'components/navbar.css';
+@import 'components/print.css';
+
+@import 'pages/auth.css';
+@import 'pages/landing.css';
+@import 'pages/dashboard.css';
+@import 'pages/users.css';
+@import 'pages/roles.css';
+@import 'pages/permissions.css';
+@import 'pages/subscriptions.css';
+@import 'pages/billing.css';
+@import 'pages/settings.css';
+@import 'pages/profile.css';
+@import 'pages/zakat.css';
+@import 'pages/goal.css';
+@import 'pages/debt.css';
+@import 'pages/budget.css';
+@import 'pages/onboarding.css';
+@import 'pages/errors.css';
+@import 'pages/api-docs.css';
+
+@import 'panels/super-admin.css';
+@import 'panels/admin.css';
+@import 'panels/manager.css';

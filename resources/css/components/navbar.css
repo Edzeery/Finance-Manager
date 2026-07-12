@@ -1,0 +1,79 @@
+.guest-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+
+.guest-navbar-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.guest-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.guest-navbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.guest-navbar-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.guest-navbar-btn:hover {
+  background: var(--bg);
+  border-color: var(--accent);
+}
+
+.guest-navbar-btn .bi {
+  font-size: 15px;
+}
+
+body.auth-page {
+  padding-top: 60px;
+}
+
+@media (max-width: 576px) {
+  .guest-navbar-inner {
+    padding: 8px 12px;
+  }
+
+  .guest-navbar-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  body.auth-page {
+    padding-top: 52px;
+  }
+}

@@ -1,0 +1,20 @@
+<x-mail::message>
+# {{ __('emails.subscription_downgraded_subject') }}
+
+{{ __('emails.hello') }}
+
+{{ __('emails.subscription_downgraded_line', ['old_plan' => $oldPlanName, 'new_plan' => $subscription->plan->name]) }}
+
+<x-mail::panel>
+- **{{ __('emails.old_plan') }}:** {{ $oldPlanName }}
+- **{{ __('emails.new_plan') }}:** {{ $subscription->plan->name }}
+- **{{ __('emails.effective_date') }}:** {{ $subscription->next_billing_at?->format('Y-m-d') ?? __('emails.now') }}
+</x-mail::panel>
+
+<x-mail::button :url="route('account.subscriptions')">
+{{ __('emails.view_subscriptions') }}
+</x-mail::button>
+
+{{ __('emails.regards') }}
+{{ config('app.name') }}
+</x-mail::message>

@@ -1,0 +1,77 @@
+@media print {
+  body {
+    font-size: 11pt;
+    color: #000;
+    background: #fff !important;
+  }
+
+  .sidebar,
+  .sidebar-overlay,
+  .topbar,
+  .bulk-bar,
+  .filter-bar,
+  .pagination,
+  .action-group,
+  .action-btn,
+  .btn,
+  .btn-custom,
+  .btn-accent,
+  button,
+  form,
+  .d-print-none {
+    display: none !important;
+  }
+
+  .app-layout .main-content,
+  .super-admin-layout .main-content {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+  }
+
+  .card-custom {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  .table-responsive {
+    overflow: visible !important;
+  }
+
+  .table-custom {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-custom th,
+  .table-custom td {
+    padding: 6px 8px;
+    border: 1px solid #333;
+    font-size: 10pt;
+    color: #000;
+  }
+
+  .table-custom th {
+    background: #f0f0f0 !important;
+    font-weight: 700;
+  }
+
+  .page-title {
+    font-size: 16pt;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #000;
+  }
+
+  .page-description {
+    font-size: 10pt;
+    margin-bottom: 16px;
+    color: #333;
+  }
+
+  @page {
+    margin: 12mm 15mm;
+    size: A4 portrait;
+  }
+}

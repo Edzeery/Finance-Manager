@@ -1,0 +1,71 @@
+<?php
+
+return [
+    'debt_reminder_subject' => 'Rappel de paiement de dette',
+    'debt_reminder_subject_with_name' => 'Rappel de dette — :name',
+    'payment_receipt_subject' => 'Reçu de paiement',
+    'payment_receipt_subject_with_ref' => 'Reçu de paiement — :ref',
+    'welcome_subject' => 'Bienvenue sur :app',
+    'hello' => 'Bonjour,',
+    'hello_name' => 'Bonjour :name,',
+    'regards' => 'Cordialement,',
+    'counterparty' => 'Contrepartie',
+    'total_amount' => 'Montant total',
+    'paid_amount' => 'Montant payé',
+    'remaining' => 'Restant',
+    'due_date' => 'Date d\'échéance',
+    'type' => 'Type',
+    'view_details' => 'Voir les détails',
+    'amount' => 'Montant',
+    'method' => 'Méthode',
+    'reference' => 'Référence',
+    'na' => 'N/A',
+    'date' => 'Date',
+    'status' => 'Statut',
+    'log_in' => 'Connexion',
+    'debt_reminder_line' => 'Ceci est un rappel qu\'un paiement de dette est dû.',
+    'payment_receipt_line' => 'Un paiement a été traité pour votre abonnement.',
+    'welcome_line' => 'Merci d\'avoir rejoint :app. Nous sommes ravis de vous compter parmi nous !',
+
+    'welcome_greeting' => 'Bienvenue à bord, :name !',
+    'welcome_intro' => 'Merci d\'avoir créé un compte sur :app. Nous sommes vraiment ravis de vous accueillir dans notre communauté !',
+    'welcome_get_started' => 'Commencer',
+    'welcome_benefits_title' => 'Voici ce que vous pouvez faire :',
+    'welcome_benefits_track' => 'Suivez vos revenus et dépenses en toute simplicité',
+    'welcome_benefits_manage' => 'Gérez actifs, dettes et budgets en un seul endroit',
+    'welcome_benefits_zakat' => 'Calculez votre Zakat automatiquement',
+    'welcome_benefits_reports' => 'Consultez des rapports et graphiques pertinents',
+    'welcome_support' => 'Si vous avez des questions, répondez simplement à cet e-mail — nous sommes là pour vous aider !',
+    'welcome_team' => 'L\'équipe :app',
+
+    'two_factor_code_subject' => 'Votre code d\'authentification à deux facteurs — :app',
+    'two_factor_code_line' => 'Votre code d\'authentification à deux facteurs est :',
+    'two_factor_code_expires' => 'Ce code expirera dans 10 minutes.',
+    'two_factor_code_ignore' => 'Si vous n\'avez pas demandé ce code, vous pouvez ignorer cet e-mail.',
+
+    'verify_subject' => 'Vérifiez votre adresse e-mail — :app',
+    'verify_greeting' => 'Bonjour :name,',
+    'verify_line' => 'Veuillez cliquer sur le bouton ci-dessous pour vérifier votre adresse e-mail.',
+    'verify_action' => 'Vérifier l\'adresse e-mail',
+    'verify_ignore' => 'Si vous n\'avez pas créé de compte, aucune action n\'est requise.',
+
+    'locale' => 'Préférence linguistique',
+    'welcome' => 'Bienvenue',
+    'team' => 'L\'équipe :app',
+
+    'subscription_cancelled_subject' => 'Abonnement annulé — :app',
+    'subscription_cancelled_line' => 'Votre abonnement :plan a été annulé. Vous conserverez l\'accès jusqu\'à la fin de votre période de facturation.',
+
+    'payment_failed_subject' => 'Paiement échoué — :app',
+    'payment_failed_line' => 'Une tentative de paiement a échoué. Veuillez vérifier votre moyen de paiement et réessayer.',
+    'retry_payment' => 'Réessayer le paiement',
+
+    'payment_canceled_subject' => 'Paiement annulé — :app',
+    'payment_canceled_line' => 'Votre paiement a été annulé. Si vous n\'aviez pas l\'intention d\'annuler, vous pouvez réessayer.',
+
+    'subscription_upgraded_subject' => 'Abonnement amélioré — :app',
+    'subscription_upgraded_line' => 'Votre abonnement a été amélioré de :old_plan à :new_plan.',
+
+    'subscription_downgraded_subject' => 'Abonnement rétrogradé — :app',
+    'subscription_downgraded_line' => 'Votre abonnement sera rétrogradé de :old_plan à :new_plan à la fin de votre période de facturation.',
+];

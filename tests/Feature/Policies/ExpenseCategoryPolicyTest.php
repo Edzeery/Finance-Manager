@@ -1,0 +1,95 @@
+<?php
+
+namespace Tests\Feature\Policies;
+
+use App\Models\ExpenseCategory;
+use App\Models\User;
+use App\Models\Workspace;
+use App\Policies\ExpenseCategoryPolicy;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class ExpenseCategoryPolicyTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private ExpenseCategoryPolicy $policy;
+    private Workspace $workspace;
+    private User $user;
+    private User $otherUser;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->policy = new ExpenseCategoryPolicy;
+        $this->workspace = Workspace::factory()->create();
+        $this->user = User::factory()->create(['current_workspace_id' => $this->workspace->id]);
+        $this->user->workspaces()->attach($this->workspace->id);
+        $this->otherUser = User::factory()->create();
+    }
+
+    public function test_view_returns_true_for_owner(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => $this->user->id]);
+        $this->assertTrue($this->policy->view($this->user, $category));
+    }
+
+    public function test_view_returns_true_for_global_category(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => null]);
+        $this->assertTrue($this->policy->view($this->user, $category));
+    }
+
+    public function test_view_returns_true_for_other_user_global(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => null]);
+        $this->assertTrue($this->policy->view($this->otherUser, $category));
+    }
+
+    public function test_view_returns_false_for_other_user_private(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => $this->user->id]);
+        $this->assertFalse($this->policy->view($this->otherUser, $category));
+    }
+
+    public function test_create_returns_true(): void
+    {
+        $this->assertTrue($this->policy->create($this->user));
+    }
+
+    public function test_update_returns_true_for_owner(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => $this->user->id]);
+        $this->assertTrue($this->policy->update($this->user, $category));
+    }
+
+    public function test_update_returns_false_for_global_category(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => null]);
+        $this->assertFalse($this->policy->update($this->user, $category));
+    }
+
+    public function test_update_returns_false_for_other_user(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => $this->user->id]);
+        $this->assertFalse($this->policy->update($this->otherUser, $category));
+    }
+
+    public function test_delete_returns_true_for_owner(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => $this->user->id]);
+        $this->assertTrue($this->policy->delete($this->user, $category));
+    }
+
+    public function test_delete_returns_false_for_global_category(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => null]);
+        $this->assertFalse($this->policy->delete($this->user, $category));
+    }
+
+    public function test_delete_returns_false_for_other_user(): void
+    {
+        $category = ExpenseCategory::factory()->create(['user_id' => $this->user->id]);
+        $this->assertFalse($this->policy->delete($this->otherUser, $category));
+    }
+}

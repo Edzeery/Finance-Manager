@@ -1,0 +1,95 @@
+.billing-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.billing-stat {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.billing-stat .b-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.billing-stat .b-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.payment-method-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  color: var(--text);
+}
+
+.gateway-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: all 0.2s;
+}
+
+.gateway-card:hover {
+  border-color: var(--accent);
+}
+
+.gateway-card .gateway-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gateway-card .gateway-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: var(--bg-subtle);
+  color: var(--text);
+}
+
+.gateway-card .gateway-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.gateway-card .gateway-status {
+  font-size: 12px;
+}
+
+@media (max-width: 576px) {
+  .gateway-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .gateway-card .gateway-info {
+    width: 100%;
+  }
+}

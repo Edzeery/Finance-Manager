@@ -1,0 +1,242 @@
+<?php
+
+namespace App\Services\Payments\Chargily;
+
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentWebhookLogStatus;
+use App\Enums\SubscriptionStatus;
+use App\Models\Payment;
+use App\Models\PaymentWebhookLog;
+use App\Models\Subscription;
+use App\Services\Payments\Chargily\Exceptions\ChargilyException;
+use App\Services\SubscriptionActivationService;
+use App\Services\SubscriptionService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
+
+class ChargilyWebhookService
+{
+    public function __construct(
+        private readonly ChargilySignatureValidator $signatureValidator,
+        private readonly SubscriptionService $subscriptionService,
+        private readonly SubscriptionActivationService $activationService,
+    ) {}
+
+    public function process(): void
+    {
+        $result = $this->signatureValidator->validate();
+        $webhookElement = $result['webhook_element'];
+        $rawPayload = $result['raw_payload'];
+        $payload = json_decode($rawPayload, true) ?? [];
+
+        $checkoutElement = $webhookElement->getData();
+
+        if (!$checkoutElement) {
+            throw ChargilyException::unhandledEvent('No checkout data');
+        }
+
+        $metadata = $checkoutElement->getMetadata();
+        $paymentId = $metadata['payment_id'] ?? null;
+
+        if (!$paymentId) {
+            throw ChargilyException::unhandledEvent('Missing payment_id in metadata');
+        }
+
+        $eventType = $webhookElement->getType();
+        $checkoutId = $checkoutElement->getId();
+
+        if ($this->alreadyProcessed($checkoutId, $eventType)) {
+            return;
+        }
+
+        $payment = Payment::withoutWorkspace()->find($paymentId);
+
+        if (!$payment) {
+            throw ChargilyException::unhandledEvent("Payment not found: {$paymentId}");
+        }
+
+        $this->logWebhook($webhookElement, $paymentId, $payload);
+
+        match ($eventType) {
+            'checkout.paid' => $this->handlePaid($payment, $checkoutElement, $payload),
+            'checkout.failed' => $this->handleFailed($payment, $payload),
+            'checkout.canceled' => $this->handleCanceled($payment, $payload),
+            'checkout.expired' => $this->handleExpired($payment, $payload),
+            default => throw ChargilyException::unhandledEvent($eventType),
+        };
+    }
+
+    private function alreadyProcessed(string $checkoutId, string $eventType): bool
+    {
+        return PaymentWebhookLog::where('checkout_id', $checkoutId)
+            ->where('event_type', $eventType)
+            ->where('status', PaymentWebhookLogStatus::Processed->value)
+            ->exists();
+    }
+
+    private function handlePaid(Payment $payment, $checkoutElement, array $payload): void
+    {
+        if (in_array($payment->status, [PaymentStatus::CheckoutPaid, PaymentStatus::CheckoutFailed, PaymentStatus::CheckoutCanceled])) {
+            return;
+        }
+
+        // التحقق من صحة المبلغ المستلم مقابل المبلغ المخزّن
+        $checkoutAmount = (float) ($checkoutElement->getAmount() ?? 0);
+        $expectedAmount = (float) $payment->amount;
+        $tolerance = 0.01;
+
+        if ($checkoutAmount > 0 && abs($checkoutAmount - $expectedAmount) > $tolerance) {
+            throw ChargilyException::unhandledEvent(sprintf(
+                'Amount mismatch: received %s, expected %s',
+                $checkoutAmount,
+                $expectedAmount
+            ));
+        }
+
+        DB::transaction(function () use ($payment, $checkoutElement, $payload) {
+            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+            if (!$payment || $payment->isCompleted()) {
+                return;
+            }
+
+            $checkoutId = $checkoutElement->getId();
+            $paymentMethod = $checkoutElement->getPaymentMethod();
+
+            $updateData = [
+                'status' => PaymentStatus::CheckoutPaid,
+                'transaction_id' => $checkoutId,
+                'gateway_reference' => $checkoutId,
+                'webhook_payload' => $payload,
+                'paid_at' => now(),
+                'webhook_processed_at' => now(),
+            ];
+
+            if ($paymentMethod) {
+                $updateData['payment_method_type'] = strtolower($paymentMethod);
+            }
+
+            $payment->update($updateData);
+
+            if ($payment->subscription_id) {
+                $sub = Subscription::withoutWorkspace()->find($payment->subscription_id);
+                if ($sub && $sub->status === SubscriptionStatus::PastDue && $sub->plan) {
+                    $this->activationService->activateFromPayment(
+                        $payment,
+                        $sub->plan,
+                        $sub->billing_period ?? 'monthly',
+                    );
+                }
+            }
+
+            $this->updateWebhookLogStatus($payment, 'checkout.paid');
+
+            Event::dispatch(new \App\Events\PaymentCompleted($payment, $payload));
+        });
+    }
+
+    private function handleFailed(Payment $payment, array $payload): void
+    {
+        DB::transaction(function () use ($payment, $payload) {
+            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+
+            if (!$payment || $payment->isCompleted()) {
+                return;
+            }
+
+            $payment->update([
+                'status' => PaymentStatus::CheckoutFailed,
+                'webhook_payload' => $payload,
+                'failed_at' => now(),
+                'webhook_processed_at' => now(),
+            ]);
+
+            $this->cancelPastDueSubscription($payment);
+
+            $this->updateWebhookLogStatus($payment, 'checkout.failed');
+
+            Event::dispatch(new \App\Events\PaymentFailed($payment, $payload));
+        });
+    }
+
+    private function handleCanceled(Payment $payment, array $payload): void
+    {
+        DB::transaction(function () use ($payment, $payload) {
+            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+
+            if (!$payment || $payment->isCompleted()) {
+                return;
+            }
+
+            $payment->update([
+                'status' => PaymentStatus::CheckoutCanceled,
+                'webhook_payload' => $payload,
+                'canceled_at' => now(),
+                'webhook_processed_at' => now(),
+            ]);
+
+            $this->cancelPastDueSubscription($payment);
+
+            $this->updateWebhookLogStatus($payment, 'checkout.canceled');
+
+            Event::dispatch(new \App\Events\PaymentFailed($payment, $payload));
+        });
+    }
+
+    private function handleExpired(Payment $payment, array $payload): void
+    {
+        DB::transaction(function () use ($payment, $payload) {
+            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+
+            if (!$payment || $payment->isCompleted()) {
+                return;
+            }
+
+            $payment->update([
+                'status' => PaymentStatus::CheckoutExpired,
+                'webhook_payload' => $payload,
+                'failed_at' => now(),
+                'webhook_processed_at' => now(),
+            ]);
+
+            $this->cancelPastDueSubscription($payment);
+
+            $this->updateWebhookLogStatus($payment, 'checkout.expired');
+
+            Event::dispatch(new \App\Events\PaymentFailed($payment, $payload));
+        });
+    }
+
+    private function cancelPastDueSubscription(Payment $payment): void
+    {
+        if ($payment->subscription_id) {
+            $sub = Subscription::withoutWorkspace()->find($payment->subscription_id);
+            if ($sub && $sub->status === SubscriptionStatus::PastDue) {
+                $sub->update(['status' => SubscriptionStatus::Canceled->value, 'canceled_at' => now()]);
+            }
+        }
+    }
+
+    private function logWebhook($webhookElement, int $paymentId, array $payload): void
+    {
+        $checkoutElement = $webhookElement->getData();
+
+        PaymentWebhookLog::create([
+            'gateway' => 'chargily',
+            'event_type' => $webhookElement->getType(),
+            'checkout_id' => $checkoutElement ? $checkoutElement->getId() : null,
+            'payment_id' => $paymentId,
+            'payload' => $payload,
+            'status' => PaymentWebhookLogStatus::Received->value,
+        ]);
+    }
+
+    private function updateWebhookLogStatus(Payment $payment, string $eventType): void
+    {
+        PaymentWebhookLog::where('payment_id', $payment->id)
+            ->where('event_type', $eventType)
+            ->where('status', PaymentWebhookLogStatus::Received->value)
+            ->latest()
+            ->limit(1)
+            ->update(['status' => PaymentWebhookLogStatus::Processed->value]);
+    }
+}

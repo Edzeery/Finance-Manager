@@ -1,0 +1,28 @@
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--text-muted); }
+.info-value { font-weight: 500; text-align: right; }
+.budget-card {
+    transition: transform 0.15s;
+}
+.budget-card:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 576px) {
+    .info-row {
+        flex-direction: column;
+        gap: 2px;
+        padding: 10px 0;
+    }
+
+    .info-value {
+        text-align: start;
+    }
+}

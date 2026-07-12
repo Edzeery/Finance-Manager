@@ -1,0 +1,40 @@
+.admin-panel {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-panel .panel-content {
+  flex: 1;
+  margin-left: var(--sidebar-width, 260px);
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+[dir="rtl"] .admin-panel .panel-content {
+  margin-left: 0;
+  margin-right: var(--sidebar-width, 260px);
+}
+
+.admin-panel .panel-header {
+  height: var(--topbar-height, 64px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.admin-panel .panel-body {
+  padding: 24px;
+}
+
+@media (max-width: 991.98px) {
+  .admin-panel .panel-content {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+}

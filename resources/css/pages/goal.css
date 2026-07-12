@@ -1,0 +1,41 @@
+.goal-card {
+    transition: transform 0.15s;
+}
+.goal-card:hover {
+    transform: translateY(-2px);
+}
+.goal-card .card-body {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+.goal-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.goal-progress-ring {
+    position: relative;
+    flex-shrink: 0;
+}
+.goal-progress-ring .progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+@media (max-width: 576px) {
+    .goal-card .card-body {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .goal-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\RecurringFrequency;
+use App\Models\Concerns\BelongsToWorkspace;
+use App\Models\Scopes\WorkspaceScope;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Income extends Model
+{
+    use HasFactory, SoftDeletes, BelongsToWorkspace;
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new WorkspaceScope);
+    }
+
+    protected $fillable = [
+        'user_id', 'workspace_id', 'category_id', 'amount', 'description', 'date',
+        'is_recurring', 'recurring_frequency', 'recurring_end_date',
+        'is_archived', 'receipt_path', 'notes',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'decimal:2',
+            'date' => 'date',
+            'is_recurring' => 'boolean',
+            'recurring_frequency' => RecurringFrequency::class,
+            'is_archived' => 'boolean',
+            'recurring_end_date' => 'date',
+        ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(IncomeCategory::class, 'category_id');
+    }
+
+    public function scopeForPeriod($query, $start, $end)
+    {
+        return $query->whereBetween('date', [$start, $end]);
+    }
+
+    public function scopeThisMonth($query)
+    {
+        return $query->whereMonth('date', now()->month)->whereYear('date', now()->year);
+    }
+
+    public function scopeArchived($query)
+    {
+        return $query->where('is_archived', true);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
+
+    public function scopeByType($query, $type)
+    {
+        if ($type === 'recurring') {
+            return $query->where('is_recurring', true);
+        }
+        return $query->whereHas('category', fn($q) => $q->where('type', $type));
+    }
+}
