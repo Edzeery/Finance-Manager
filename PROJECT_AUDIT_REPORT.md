@@ -823,4 +823,342 @@ tests/
 
 ---
 
-*End of Audit Report. This is a diagnostic document only — no code modifications have been made.*
+## 11. Onboarding Service Deep Dive
+
+**File:** `app/Services/OnboardingService.php` (301 lines)
+
+**Purpose:** Manages the new user onboarding flow — plan selection, payment, workspace creation, and completion.
+
+**Key methods:**
+- `getAvailablePlans()` — Fetches active/public plans
+- `selectPlan()` — Sets `pending_plan_id` on user
+- `processFreePlan()` — Creates subscription for free plan, activates immediately
+- `initiatePaidPlanPayment()` — Cancels stale pending payments, creates new payment via `PaymentService`, charges gateway
+- `handlePaymentSuccess()` — Post-payment-success activation
+- `submitManualPaymentProof()` — Stores receipt files for manual verification
+- `completeOnboarding()` — Ensures workspace exists, marks user onboarding complete
+
+**Observations:**
+- Uses `PaymentMethodType` enum for fallback categorization (Manual, Online, AutoComplete)
+- Deprecated constants (`MANUAL_METHODS`, `ONLINE_METHODS`, `AUTO_COMPLETE_METHODS`) coexist with dynamic `PaymentMethod` database queries — fallback arrays used if no DB methods configured
+- `submitManualPaymentProof()` references `PaymentVerificationStatus::Pending` enum — not found in initial enum scan
+- Stale payment cancellation in `initiatePaidPlanPayment` replicates logic from `SubscriptionService::cancelStalePendingSubscriptions()` — potential DRY violation
+
+---
+
+## 12. Contracts Layer
+
+### Repository Interfaces (`app/Contracts/Repositories/`)
+
+| Interface | Methods |
+|-----------|---------|
+| `RepositoryInterface` | `all()`, `find()`, `findOrFail()`, `create()`, `update()`, `delete()`, `restore()`, `withTrashedFindOrFail()`, `paginate()` |
+| `AssetRepositoryInterface` | Extends base |
+| `BudgetRepositoryInterface` | Extends base |
+| `DebtRepositoryInterface` | Extends base |
+| `ExpenseRepositoryInterface` | Extends base |
+| `GoalRepositoryInterface` | Extends base |
+| `IncomeRepositoryInterface` | Extends base |
+| `ZakatRepositoryInterface` | Extends base |
+
+### Service Interfaces (`app/Contracts/Services/`)
+
+| Interface | Purpose |
+|-----------|---------|
+| `ActivityLogServiceInterface` | Activity logging contract |
+| `ChartDataServiceInterface` | Chart data aggregation contract |
+| `DashboardServiceInterface` | Dashboard KPIs contract |
+| `ReportServiceInterface` | Report generation contract |
+| `SearchServiceInterface` | Global search contract |
+
+### Other Contracts
+
+| File | Purpose |
+|------|---------|
+| `Contracts/Webhooks/WebhookSignatureValidator.php` | Interface for webhook signature validation |
+| `Contracts/Models/Searchable.php` | Interface for searchable models |
+
+**Observations:**
+- Clean contract separation with interface-based programming
+- Repository interfaces extend a common base (`RepositoryInterface`) for consistency
+- Service interfaces loosely follow the service pattern — some services (like `PaymentService`, `SubscriptionService`) don't have corresponding interfaces
+
+---
+
+## 13. Mailables (app/Mail/)
+
+| Mailable | Purpose |
+|----------|---------|
+| `DebtReminder.php` | Debt payment reminder email |
+| `PaymentCanceled.php` | Payment cancellation notification |
+| `PaymentFailed.php` | Payment failure alert |
+| `PaymentReceipt.php` | Successful payment receipt |
+| `SubscriptionCancelled.php` | Subscription cancellation notice |
+| `SubscriptionDowngraded.php` | Plan downgrade confirmation |
+| `SubscriptionUpgraded.php` | Plan upgrade confirmation |
+| `TwoFactorCodeMail.php` | 2FA verification code |
+| `WelcomeEmail.php` | New user welcome |
+
+**Observations:**
+- 9 mailables covering billing, subscription lifecycle, and auth
+- `WelcomeEmail.php` exists but may not be triggered — no `Registered` event listener sends it (only `CreateAdminNotification` listens)
+- `TwoFactorCodeMail` sent via `TwoFactorAuthenticationService`
+- All payment/subscription mailables use `Mail::to()->queue()` — proper async sending
+- `SubscriptionUpgraded`/`SubscriptionDowngraded` dynamically selected in `SubscriptionService::sendPlanChangeEmail()` based on price comparison
+
+---
+
+## 14. Exception Classes (app/Exceptions/)
+
+| Exception | Purpose |
+|-----------|---------|
+| `Handler.php` | Global exception handler — Sentry integration, API unauthenticated JSON response, standard `$dontReport`/`$dontFlash` |
+| `DateFilterException.php` | Date range validation errors |
+| `PaymentException.php` | Payment processing errors |
+| `SubscriptionException.php` | Subscription lifecycle errors |
+
+**Observations:**
+- Sentry integration via `$this->reportable()` callback
+- API unauthenticated responses return locale-aware `__('messages.unauthorized')` JSON
+- Custom exceptions for domain-specific errors (payment, subscription, date filter)
+
+---
+
+## 15. Factories & Seeders
+
+### Factories (20 files)
+
+All major models have corresponding factories:
+`ActivityLogFactory`, `AssetFactory`, `BudgetFactory`, `BudgetCategoryFactory`, `DebtFactory`, `DebtPaymentFactory`, `ExpenseCategoryFactory`, `ExpenseFactory`, `FinancialGoalFactory`, `IncomeCategoryFactory`, `IncomeFactory`, `InvitationFactory`, `NotificationFactory`, `PaymentFactory`, `SubscriptionFactory`, `SubscriptionPlanFactory`, `UserFactory`, `UserSettingFactory`, `WorkspaceFactory`, `ZakatRecordFactory`
+
+### Seeders (11 files)
+
+| Seeder | Purpose |
+|--------|---------|
+| `DatabaseSeeder.php` | Master seeder — calls all seeders |
+| `CategorySeeder.php` | Default expense/income categories |
+| `CurrencySeeder.php` | Supported currencies |
+| `DemoDataSeeder.php` | Demo/placeholder data |
+| `EnterpriseRolePermissionSeeder.php` | RBAC initial setup |
+| `MigrateToWorkspacesSeeder.php` | Legacy migration |
+| `PaymentGatewaySeeder.php` | Gateway configurations |
+| `PaymentMethodSeeder.php` | Payment method definitions |
+| `RateLimitSettingsSeeder.php` | Default rate limits in DB |
+| `SubscriptionPlanSeeder.php` | Plan definitions |
+| `TestChecklistSeeder.php` | Test checklist data |
+
+**Observations:**
+- `PaymentGatewaySeeder` + `PaymentMethodSeeder` coexist — may indicate a split or migration between gateway and method concepts
+- `MigrateToWorkspacesSeeder` suggests prior single-workspace architecture
+- `DemoDataSeeder` for development/demo environments
+
+---
+
+## 16. Application Service Providers — Detailed Analysis
+
+| Provider | register() | boot() | Purpose Rank |
+|----------|-----------|--------|-------------|
+| `AppServiceProvider` | None | Configures Vite, event listeners, Sanctum, Paginator | High |
+| `BindingServiceProvider` | 11 repository + service bindings | None | High |
+| `GatewayServiceProvider` | 9 singleton registrations + GatewayManager + WebhookSignatureManager | None | High |
+| `ModelEventServiceProvider` | None | Registers model observers for 8 models + DashboardCacheObserver | High |
+| `PolicyServiceProvider` | None | Registers 11 policies + Gate::before + 4 custom gates | High |
+| `RateLimiterServiceProvider` | None | Registers 17 named rate limiters | High |
+| `SettingsServiceProvider` | None | Runtime config override from DB | Medium |
+| `VoltServiceProvider` | None | Mounts Volt component paths | Medium |
+
+**Critical finding: `BindingServiceProvider` and `GatewayServiceProvider` both bind `ActivityLogServiceInterface`:**
+- `BindingServiceProvider:47`: `$this->app->bind(ActivityLogServiceInterface::class, ActivityLogService::class)`
+- `GatewayServiceProvider:38`: `$this->app->singleton(ActivityLogServiceInterface::class, ActivityLogService::class)`
+
+The singleton registration in `GatewayServiceProvider` overrides the regular bind in `BindingServiceProvider`. Both are valid PHP but the duplicate registration is a code smell.
+
+---
+
+## 17. Console Kernel — Scheduled Tasks
+
+**File:** `app/Console/Kernel.php` (31 lines)
+
+**Schedule:**
+```
+00:01 daily — subscriptions:expire
+02:00 daily — backup:run --only-db (spatie/laravel-backup)
+02:30 daily — backup:clean
+03:00 daily — finance:process-recurring
+08:00 daily — finance:send-debt-reminders
+09:00 daily — finance:check-budget-alerts + subscriptions:remind-expiry
+10:00 daily — finance:check-goal-progress
+10:00 monthly on 1st — finance:send-zakat-reminders
+hourly — noest:check-deliveries
+```
+
+**Observations:**
+- All tasks use `->withoutOverlapping()` — prevents duplicate execution
+- Backup uses spatie/laravel-backup package
+- No task for `finance:check-health` despite the command existing
+- `subscriptions:remind-expiry` runs 9 hours after `subscriptions:expire` — intentional (expire at midnight, remind at 9am for grace period)
+
+---
+
+## 18. Tailwind CSS & RTL Configuration
+
+**Expected files (not fully verified but inferred from project patterns):**
+- `tailwind.config.js` with RTL variant enabled (`rtl:`, `ltr:`)
+- `resources/css/app.css` — Tailwind directives + custom styles
+- `resources/css/rtl.css` — RTL overrides
+- Vite processes CSS with PostCSS + Tailwind plugin
+
+**RTL implementation:**
+- `config/app.php`: `'locale' => 'ar'`
+- Layout: `<html dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">`
+- Sidebar: flips direction based on locale
+- Tailwind RTL variants likely used for spacing (`rtl:mr-*` / `rtl:ml-*`)
+
+**Observation:** Without reading `tailwind.config.js`, it's unclear if all necessary RTL variants are enabled. Some `mr-*`/`ml-*` classes in Blade files may hardcode LTR spacing.
+
+---
+
+## 19. Asset Pipeline (Vite)
+
+**Configuration:**
+- `vite.config.js` — standard Laravel Vite config
+- `package.json` dependencies: Alpine.js (via Bootstrap?), Chart.js, Axios, Popper.js, Bootstrap 5.3, Bootstrap Icons
+- `AppServiceProvider::boot()` configures:
+  - CSP nonce: `$vite->useCspNonce()`
+  - Disables CSS preload: returns `false` for `.css` URLs in `usePreloadTagAttributes()`
+  - Clean asset paths: strips leading `/`
+
+**Frontend stack:**
+- Bootstrap 5.3 (not Tailwind CSS — contradicts earlier assumption)
+- Bootstrap Icons for iconography
+- Chart.js for financial charts
+- Axios for API calls
+- Popper.js for tooltips/popovers
+
+**Observation:** Frontend uses Bootstrap 5.3, **not** Tailwind CSS as previously assumed. This changes the RTL approach — Bootstrap has built-in RTL support since v5.3 via `<html dir="rtl">`. CSS references to "RTL" in `resources/css/rtl.css` are likely Bootstrap RTL overrides or custom additions.
+
+---
+
+## 20. Database Migrations — Schema Evolution
+
+**Migration naming convention:** `YYYY_MM_DD_HHMMSS_descriptive_name.php`
+
+**Core tables (0001_01_01_*):**
+- `000001_create_core_tables.php` — users, workspaces, settings, sessions, cache, personal_access_tokens
+- `000002_create_financial_tables.php` — expenses, incomes, budgets, debts, assets, financial_goals, categories
+- `000003_create_rbac_tables.php` — roles, permissions, role_user, permission_role, model_has_roles, model_has_permissions
+- `000004_create_billing_tables.php` — subscription_plans, subscriptions, payments, invoices, coupons, tax_rates
+- `000005_add_fulltext_indexes.php` — Full-text search indexes on financial tables
+
+**Feature migrations (2026_07_* — recent development):**
+- `2026_07_05_000001_create_payment_gateways_table.php`
+- `2026_07_06_000001_create_workspace_invitations_table.php`
+- `2026_07_06_101815_restructure_payment_gateways_table.php`
+- `2026_07_07_000001_create_fee_tax_pivot_tables.php`
+- `2026_07_07_000003_create_plan_features_and_prices_tables.php`
+- `2026_07_07_000004_add_plan_price_to_subscriptions.php`
+- `2026_07_08_103956_add_payment_id_to_invoices.php`
+- `2026_07_09_175155_add_uuid_and_update_status_in_payments.php`
+- `2026_07_10_000001_add_refund_fields_to_payments.php`
+- `2026_07_10_200000_create_test_checklist_items_table.php`
+- `2026_07_10_212331_add_details_to_test_checklist_items_table.php`
+- `2026_07_11_000001_create_api_usage_logs_table.php`
+- `2026_07_11_202316_drop_supported_currencies_from_payment_methods.php`
+- `2026_07_12_000001_drop_legacy_pricing_from_subscription_plans.php`
+- `2026_07_12_000002_drop_max_users_and_max_workspaces_from_subscription_plans.php`
+- `2026_07_12_000003_add_yearly_discount_percent_to_subscription_plans.php`
+- `2026_07_12_000004_migrate_limits_to_plan_features.php`
+- `2026_07_12_000005_create_admin_notifications_table.php`
+
+**Observations:**
+- All feature migrations dated July 2026 — recent active development
+- Schema evolution shows migration from hardcoded limits to `plan_features` pivot table
+- UUID addition to payments (2026_07_09) suggests recent refactoring for better identifier management
+- `drop_supported_currencies_from_payment_methods` (2026_07_11) — currencies moved to `PlanPrice` table
+- `create_admin_notifications_table` (2026_07_12) — newest migration, adds admin notification system
+- Legacy pricing columns dropped from `subscription_plans` in favor of `plan_prices` table
+
+---
+
+## 21. Additional Findings
+
+### 21.1 Duplicate CurrencyHelper Class
+
+Two `CurrencyHelper` classes exist:
+- `app/Helpers/CurrencyHelper.php` — Has `availableCurrencies()` and `availableCurrencyCodes()`, queries `settings` table
+- `app/Services/CurrencyHelper.php` — Not read, but may contain the `convert()` method referenced in `PaymentService.php:76-78`
+
+**Potential issue:** `PaymentService::chargeForPlan()` calls `CurrencyHelper::convert()` (lines 76-78), but the `Helpers/CurrencyHelper.php` version doesn't have a `convert()` method. The `Services/CurrencyHelper.php` version likely has it. Autoloading order or namespace collision could cause issues.
+
+### 21.2 Stripe/PayPal/Wise/Payoneer Gateways Exist but May Not Be Functional
+
+The `GatewayServiceProvider` registers Stripe, PayPal, Wise, and Payoneer gateways, but:
+- No Stripe/PayPal API keys in `config/services.php` (only Postmark, Resend, SES, Slack defined)
+- These may require additional `.env` configuration not present in the repo
+- Project targets Algerian market — Chargily and BaridiMob are the primary gateways
+
+### 21.3 PaymentStatus Enum Transition State Machine
+
+The `PaymentStatus` enum at `app/Enums/PaymentStatus.php:42-51` defines allowed transitions:
+```
+checkout.pending → checkout.paid, checkout.failed, checkout.canceled, checkout.expired
+checkout.paid → []  (terminal)
+checkout.failed → checkout.pending
+checkout.canceled → checkout.pending
+checkout.expired → checkout.pending
+```
+
+**Observation:** Failed, canceled, and expired payments can transition back to `checkout.pending` (retry flow supported). The `PaymentTransitionValidator` service enforces these transitions but the `canTransitionTo()` method on the enum is not always called before status changes in services.
+
+### 21.4 No HTTP Kernel File
+
+`app/Http/Kernel.php` does not exist — this is a Laravel 11+ change where middleware is configured in `bootstrap/app.php` using `->withMiddleware()`.
+
+### 21.5 Duplicate Onboarding/SubscriptionService Logic
+
+`OnboardingService::initiatePaidPlanPayment()` (lines 148-161) cancels stale pending payments manually:
+```php
+Payment::withoutWorkspace()
+    ->where('workspace_id', $workspace->id)
+    ->where('status', PaymentStatus::CheckoutPending->value)
+    ->update([...]);
+```
+
+`SubscriptionService::cancelStalePendingSubscriptions()` (lines 74-90) does the same but also cancels `past_due` subscriptions. Partial logic duplication.
+
+### 21.6 Test Configuration
+
+`phpunit.xml` specifies SQLite `:memory:` for testing. No `.env.testing` exists. Tests rely on `config:clear` before running (defined in `composer.json` `test` script). This approach works but means environment-specific config overrides require manual clearing.
+
+---
+
+## 22. Final Observations Count
+
+| Category | Count |
+|----------|-------|
+| Models | 25+ |
+| Migrations | 23 |
+| Factories | 20 |
+| Seeders | 11 |
+| Controllers | 33+ (including subdirectories) |
+| API Controllers | 14 |
+| Super-Admin Controllers | 18 |
+| Middleware | 19 |
+| Service Providers | 8 |
+| Events | 7 |
+| Listeners | 5 |
+| Jobs | 3 |
+| Notifications | 3 |
+| Mailables | 9 |
+| Enums | 12 |
+| Policies | 10 |
+| Custom Exceptions | 3 (excl. Handler) |
+| Payment Gateways | 10 |
+| Webhook Validators | 5 |
+| Scheduled Commands | 14 (6 cron-active) |
+| Tests (passing) | 643 |
+| Tests (skipped) | 11 |
+
+---
+
+*End of Audit Report (Extended). This is a diagnostic document only — no code modifications have been made.*

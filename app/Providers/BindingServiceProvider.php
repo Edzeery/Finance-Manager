@@ -9,7 +9,6 @@ use App\Contracts\Repositories\ExpenseRepositoryInterface;
 use App\Contracts\Repositories\GoalRepositoryInterface;
 use App\Contracts\Repositories\IncomeRepositoryInterface;
 use App\Contracts\Repositories\ZakatRepositoryInterface;
-use App\Contracts\Services\ActivityLogServiceInterface;
 use App\Contracts\Services\ChartDataServiceInterface;
 use App\Contracts\Services\DashboardServiceInterface;
 use App\Contracts\Services\ReportServiceInterface;
@@ -21,7 +20,6 @@ use App\Repositories\ExpenseRepository;
 use App\Repositories\GoalRepository;
 use App\Repositories\IncomeRepository;
 use App\Repositories\ZakatRepository;
-use App\Services\ActivityLogService;
 use App\Services\ChartDataService;
 use App\Services\DashboardService;
 use App\Services\ReportService;
@@ -44,6 +42,5 @@ class BindingServiceProvider extends ServiceProvider
         $this->app->bind(DashboardServiceInterface::class, DashboardService::class);
         $this->app->bind(ChartDataServiceInterface::class, ChartDataService::class);
         $this->app->bind(ReportServiceInterface::class, ReportService::class);
-        $this->app->bind(ActivityLogServiceInterface::class, ActivityLogService::class);
     }
 }
