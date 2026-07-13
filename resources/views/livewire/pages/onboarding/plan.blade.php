@@ -9,6 +9,7 @@ use App\Services\OnboardingService;
 use App\Services\Payments\Noest\NoestErrorHandler;
 use App\Services\Payments\Noest\NoestService;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -38,29 +39,33 @@ new #[Layout('layouts.guest')] class extends Component {
     public string $deliveryAddress = '';
     public string $deliveryPhone = '';
 
-    public ?Payment $pendingPayment = null;
-    public ?array $pendingPlanInfo = null;
+    #[Computed(persist: false)]
+    public function pendingPayment(): ?Payment
+    {
+        $user = auth()->user();
+        if (!$user || !$user->pending_plan_id) return null;
+
+        return Payment::withoutWorkspace()
+            ->where('user_id', $user->id)
+            ->where('status', PaymentStatus::CheckoutPending->value)
+            ->latest()
+            ->first();
+    }
+
+    #[Computed(persist: false)]
+    public function pendingPlanInfo(): ?array
+    {
+        $payment = $this->pendingPayment;
+        if (!$payment) return null;
+
+        $pendingPlan = \App\Models\SubscriptionPlan::find(auth()->user()->pending_plan_id);
+        return $pendingPlan
+            ? ['name' => $pendingPlan->name, 'id' => $pendingPlan->id]
+            : null;
+    }
 
     public function mount(OnboardingService $onboardingService): void
     {
-        $user = auth()->user();
-        $workspace = $user->currentWorkspace;
-
-        // Load pending payment info for banner (no redirect)
-        if ($user->pending_plan_id) {
-            $this->pendingPayment = Payment::withoutWorkspace()->where('workspace_id', $workspace?->id)->where('user_id', $user->id)->where('status', PaymentStatus::CheckoutPending->value)->latest()->first();
-
-            if ($this->pendingPayment) {
-                $pendingPlan = \App\Models\SubscriptionPlan::find($user->pending_plan_id);
-                $this->pendingPlanInfo = $pendingPlan
-                    ? [
-                        'name' => $pendingPlan->name,
-                        'id' => $pendingPlan->id,
-                    ]
-                    : null;
-            }
-        }
-
         $this->plans = $onboardingService->getAvailablePlans();
 
         $planModels = SubscriptionPlan::active()

@@ -113,4 +113,7 @@ return [
     'preferences_redirect' => 'التفضيلات الشخصية تُدار الآن من إعدادات الحساب.',
     'tab_preferences' => 'التفضيلات',
     'tab_security' => 'الأمان',
+    'premium' => 'مميز',
+    'premium_feature' => 'ميزة مميزة',
+    'premium_feature_upgrade' => 'هذه ميزة مميزة. يرجى ترقية باقتك للوصول إليها.',
 ];

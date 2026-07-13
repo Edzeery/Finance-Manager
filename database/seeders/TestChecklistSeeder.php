@@ -95,7 +95,7 @@ class TestChecklistSeeder extends Seeder
             ['category' => 'لوحة الإدارة | 4. إدارة الباقات والخطط', 'item_key' => 'admin.plans.delete', 'description' => 'حذف باقة', 'details' => 'احذف باقة. الاشتراكات المرتبطة تبقى لكن بعلاقة مقطوعة. يجب تأكيد الحذف.'],
 
             // ----------------------------------------------------------------
-            // SA.5  إدارة الاشتراكات  (7 items)
+            // SA.5  إدارة الاشتراكات  (9 items)
             // ----------------------------------------------------------------
             ['category' => 'لوحة الإدارة | 5. إدارة الاشتراكات', 'item_key' => 'admin.subscriptions.list', 'description' => 'عرض جميع الاشتراكات مع التصفية (الحالة، الخطة، الفترة)', 'details' => 'اذهب إلى super-admin → الاشتراكات. تظهر كل الاشتراكات. فلتر حسب: نشط، منتهي، ملغي، past_due. فلتر حسب الباقة. بحث باسم مساحة العمل.'],
             ['category' => 'لوحة الإدارة | 5. إدارة الاشتراكات', 'item_key' => 'admin.subscriptions.view', 'description' => 'عرض تفاصيل الاشتراك (الفاتورة، المدفوعات، التواريخ)', 'details' => 'اختر اشتراكاً. تظهر: الباقة، المدة، تاريخ البدء/الانتهاء، المدفوعات المرتبطة، الفواتير، حالة التجديد التلقائي.'],
@@ -104,6 +104,8 @@ class TestChecklistSeeder extends Seeder
             ['category' => 'لوحة الإدارة | 5. إدارة الاشتراكات', 'item_key' => 'admin.subscriptions.change_plan', 'description' => 'تغيير باقة الاشتراك من الإدارة', 'details' => 'اختر اشتراك. غيّر الباقة. يُحسب proration إن لزم. تُنشأ فاتورة.'],
             ['category' => 'لوحة الإدارة | 5. إدارة الاشتراكات', 'item_key' => 'admin.subscriptions.stats', 'description' => 'عرض إحصائيات الاشتراكات (النشط، المنتهي، الإيرادات)', 'details' => 'في صفحة الاشتراكات: عدد النشط، المنتهي، الملغي. إجمالي الإيرادات الشهرية/السنوية.'],
             ['category' => 'لوحة الإدارة | 5. إدارة الاشتراكات', 'item_key' => 'admin.subscriptions.export', 'description' => 'تصدير الاشتراكات إلى Excel/CSV', 'details' => 'زر التصدير. الملف يحتوي على: مساحة العمل، الباقة، الحالة، تاريخ البدء، تاريخ الانتهاء، المبلغ.'],
+            ['category' => 'لوحة الإدارة | 5. إدارة الاشتراكات', 'item_key' => 'admin.subscriptions.auto_renew_run', 'description' => 'تشغيل التجديد التلقائي يدوياً (subscriptions:renew)', 'details' => 'شغّل php artisan subscriptions:renew. يجب أن يعالج الاشتراكات النشطة ذات auto_renew=true والتي ends_at خلال يوم واحد. تُنشأ دفعات جديدة. تُمَدّد تواريخ الاشتراك.'],
+            ['category' => 'لوحة الإدارة | 5. إدارة الاشتراكات', 'item_key' => 'admin.subscriptions.remind_expiry', 'description' => 'تشغيل تذكير انتهاء الاشتراك (subscriptions:remind-expiry)', 'details' => 'شغّل php artisan subscriptions:remind-expiry. يُرسل بريد تذكير للاشتراكات التي ستنتهي خلال 3-5 أيام. يُنشئ إشعارات داخلية للاشتراكات غير المجددة تلقائياً.'],
 
             // ----------------------------------------------------------------
             // SA.6  إدارة المدفوعات  (8 items)
@@ -339,7 +341,7 @@ class TestChecklistSeeder extends Seeder
             ['category' => 'لوحة المستخدم | 13. البحث العام', 'item_key' => 'search.no_results', 'description' => 'بحث بدون نتائج ← رسالة', 'details' => 'اكتب نصاً عشوائياً ← "لا توجد نتائج". لا أخطاء.'],
 
             // ----------------------------------------------------------------
-            // US.14  الاشتراكات والفواتير  (18 items)
+            // US.14  الاشتراكات والفواتير  (25 items)
             // ----------------------------------------------------------------
             ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'subscriptions.activation', 'description' => 'بعد دفع ناجح ← اشتراك Active + فاتورة Paid', 'details' => 'بعد أي دفع ناجح: تحقق من subscriptions — سجل Active مع starts_at/ends_at. تحقق من invoices — فاتورة Paid.'],
             ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'subscriptions.cancel', 'description' => 'إلغاء الاشتراك ← Canceled + بريد تأكيد الإلغاء', 'details' => 'الإعدادات → الاشتراك → إلغاء. حالة الاشتراك ← Canceled. فترة السماح سارية. يُرسل بريد.'],
@@ -367,9 +369,14 @@ class TestChecklistSeeder extends Seeder
             ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'trial.downgrade_to_free_blocked', 'description' => 'بعد Trial ـ لا يمكن الرجوع إلى Free (لوجود سجل)', 'details' => 'أنشئ حساباً واختر Personal (trial). اذهب إلى /account/subscriptions. Free لا يظهر في القائمة.'],
             ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'upgrade.free_to_personal_trial', 'description' => 'ترقية من Free إلى Personal Trial', 'details' => 'أنشئ حساباً بخطة Free. اذهب إلى /account/subscriptions. اختر Personal. يُنشأ اشتراك Trialing.'],
             ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'plans.landing_show_new_hierarchy', 'description' => 'صفحة landing تعرض Free + Personal (بسعر) + Business + Professional + Enterprise', 'details' => 'اذهب إلى /. تظهر Free بسعر 0. Personal بسعر $3.99/شهر مع شعار "Start Free Trial". Business كـ Popular.'],
-
-            // ----------------------------------------------------------------
-            // US.15  بوابات الدفع (وجهة مستخدم)  (19 items)
+            ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'change_plan.zero_price_immediate', 'description' => 'تغيير الخطة بسعر 0 بعد proration ← تفعيل فوري بدون دفع', 'details' => 'اختر خطة أعلى سعراً، ثم غيّر إلى خطة أقل. إذا كان رصيد proration يغطي السعر الجديد بالكامل (السعر <= 0)، يُفعّل الاشتراك فوراً. تُنشأ فاتورة بمبلغ 0. لا يُطلب إدخال طريقة دفع. تحقق من أن ends_at محسوب من remaining_days.'],
+            ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'cancel.no_grace_on_switch', 'description' => 'إلغاء الاشتراك الحالي عند التبديل ← ends_at فوري بدون فترة سماح', 'details' => 'عند تغيير الخطة، يُلغى الاشتراك القديم مع ends_at = now(). لا يدخل فترة سماح (grace). تحقق من أن grace_ends_at = null. الاشتراك الجديد يبدأ فوراً.'],
+            ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'resume.restores_active', 'description' => 'استئناف الاشتراك يعيد الحالة Active ويمسح grace_ends_at', 'details' => 'ألغِ اشتراك. اذهب إلى /account/subscriptions. اضغط استئناف. تحقق: status = Active, canceled_at = null, grace_ends_at = null. الاشتراك يعمل بكامل ميزاته.'],
+            ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'expiry_alert.persistent_dashboard', 'description' => 'تنبيه انتهاء الاشتراك يظهر في dashboard مع أيام متبقية', 'details' => 'عدّل ends_at لاشتراك نشط إلى تاريخ خلال 3 أيام. اذهب إلى /dashboard. يظهر تنبيه "سينتهي اشتراكك خلال X أيام في YYYY-MM-DD". مع زر "ذكرني بعد يوم". يختفي التنبيه بعد تجاوز تاريخ الانتهاء أو عند snooze.'],
+            ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'expiry_alert.snooze', 'description' => 'زر "ذكرني بعد يوم" يخفي التنبيه لمدة 24 ساعة', 'details' => 'عند ظهور تنبيه انتهاء الاشتراك، اضغط "ذكرني بعد يوم". يُرسل POST /account/subscriptions/snooze-expiry. يختفي التنبيه فوراً. خلال 24 ساعة لا يظهر التنبيه. بعد 24 ساعة يعود الظهور.'],
+            ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'auto_renew.process_payment', 'description' => 'التجديد التلقائي يُنشئ دفعة ويشحن البوابة ويمدد dates', 'details' => 'تأكد من اشتراك Active مع auto_renew=true و ends_at خلال يوم واحد. شغّل php artisan subscriptions:renew. تحقق: تُنشأ دفعة جديدة. يتم شحن البوابة (للمدفوعات online/auto_complete). يتم تمديد starts_at/ends_at. تُنشأ فاتورة جديدة.'],
+            ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'auto_renew.failure_handling', 'description' => 'فشل التجديد التلقائي ← تسجيل فشل + إشعار', 'details' => 'اجعل اشتراكاً مع auto_renew=true لكن بدون طريقة دفع صالحة أو مع بوابة لا تستجيب. شغّل subscriptions:renew. تحقق: الاشتراك يبقى Active لكن مع ends_at قديم. يُسجل فشل. يُرسل إشعار للمستخدم.'],
+            ['category' => 'لوحة المستخدم | 14. الاشتراكات والفواتير', 'item_key' => 'auto_renew.notification_non_renew', 'description' => 'إشعارات داخلية للاشتراكات غير المجددة تلقائياً', 'details' => 'اجعل اشتراكاً مع auto_renew=false و ends_at خلال 3-5 أيام. شغّل php artisan subscriptions:remind-expiry. تحقق: لا يُرسل بريد تجديد (لأن auto_renew=false). تُنشأ إشعارات داخلية في جدول notifications مع نص "اشتراكك سينتهي قريباً".'],
             // ----------------------------------------------------------------
             ['category' => 'لوحة المستخدم | 15. بوابات الدفع', 'item_key' => 'chargily.checkout', 'description' => 'Chargily: إنشاء Checkout ← التوجيه إلى صفحة Chargily', 'details' => 'اختر Chargily كطريقة دفع. يُنشأ checkout. يُوجّه إلى صفحة Chargily.'],
             ['category' => 'لوحة المستخدم | 15. بوابات الدفع', 'item_key' => 'chargily.payment_success', 'description' => 'Chargily: دفع ناجح ← اشتراك Active + فاتورة Paid', 'details' => 'استخدم CIB أو Edahabia. بعد الدفع، يُوجّه إلى /payment/return. تتحدّث حالة payment.'],

@@ -98,21 +98,67 @@
             </button>
 
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
-                <a href="<?php echo e(route('dashboard')); ?>" class="btn btn-accent btn-custom mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-grid-1x2-fill me-1"></i><?php echo e(__('general.dashboard')); ?>
 
-                </a>
+                <?php if (isset($component)) { $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.button','data' => ['variant' => 'accent','href' => route('dashboard'),'icon' => 'bi bi-grid-1x2-fill','iconPosition' => 'left']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('button'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['variant' => 'accent','href' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('dashboard')),'icon' => 'bi bi-grid-1x2-fill','icon-position' => 'left']); ?><?php echo e(__('general.dashboard')); ?> <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $attributes = $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $component = $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
             <?php else: ?>
-                <a href="<?php echo e(route('login')); ?>"
-                    class="btn btn-outline-secondary btn-custom mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-box-arrow-in-right me-1"></i><?php echo e(__('general.login')); ?>
+                <?php if (isset($component)) { $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.button','data' => ['variant' => 'outline','href' => route('login'),'icon' => 'bi bi-box-arrow-in-right','iconPosition' => 'left']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('button'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['variant' => 'outline','href' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('login')),'icon' => 'bi bi-box-arrow-in-right','icon-position' => 'left']); ?><?php echo e(__('general.login')); ?> <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $attributes = $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $component = $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
 
-                </a>
-                <a href="<?php echo e(route('register')); ?>"
-                    class="btn btn-accent btn-custom d-none d-sm-inline-flex mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-person-plus me-1"></i><?php echo e(__('general.register')); ?>
-
-                </a>
+                <?php if (isset($component)) { $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.button','data' => ['variant' => 'accent','href' => route('register'),'icon' => 'bi bi-person-plus','iconPosition' => 'left']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('button'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['variant' => 'accent','href' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('register')),'icon' => 'bi bi-person-plus','icon-position' => 'left']); ?><?php echo e(__('general.register')); ?> <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $attributes = $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $component = $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
+            
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     </nav>
@@ -125,11 +171,25 @@
             <p><?php echo e(__('welcome.hero_description')); ?></p>
             <div class="hero-actions">
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
-                    <a href="<?php echo e(route('dashboard')); ?>"
-                        class="btn btn-accent btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-grid-1x2-fill me-2"></i><?php echo e(__('general.dashboard')); ?>
-
-                    </a>
+                    <?php if (isset($component)) { $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.button','data' => ['variant' => 'accent','href' => route('dashboard'),'icon' => 'bi bi-grid-1x2-fill','iconPosition' => 'left']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('button'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['variant' => 'accent','href' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('dashboard')),'icon' => 'bi bi-grid-1x2-fill','icon-position' => 'left']); ?><?php echo e(__('general.dashboard')); ?> <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $attributes = $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $component = $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
                     <a href="<?php echo e(route('api.documentation')); ?>"
                         class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
                         <i class="bi bi-book me-2"></i>API
@@ -421,7 +481,7 @@
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <h3><?php echo e($plan->name); ?></h3>
                     <p class="pricing-desc">
-                        <?php echo e($plan->description  ??  __('subscription.' . $plan->slug . '_plan_description')); ?></p>
+                        <?php echo e($plan->description ?? __('subscription.' . $plan->slug . '_plan_description')); ?></p>
                     <div class="pricing-amount">
                         <span class="pricing-price">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($plan->is_free): ?>

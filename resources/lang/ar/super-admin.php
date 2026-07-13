@@ -871,4 +871,5 @@ return [
     'perm_zakat_restore' => 'استعادة زكاة',
     'perm_zakat_update' => 'تحديث زكاة',
     'perm_zakat_view' => 'عرض زكاة',
+    'linked_gateways' => 'البوابات المرتبطة',
 ];

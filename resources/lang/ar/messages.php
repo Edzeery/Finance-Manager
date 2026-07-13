@@ -124,4 +124,11 @@ return [
     'auth.logout' => 'قام المستخدم بتسجيل الخروج',
     'auth.registered' => 'تم تسجيل المستخدم',
     'auth.password_reset' => 'تم إعادة تعيين كلمة المرور',
+    'plan_upgrade_required' => 'يتطلب الوصول إلى هذه الميزة ترقية خطتك. يرجى الترقية للاستمرار.',
+    'rate_limited' => 'لقد تجاوزت الحد المسموح به من الطلبات. يرجى المحاولة مرة أخرى لاحقًا.',
+    'payment_method_updated' => 'تم تحديث طريقة الدفع بنجاح.',
+    'payment_cancelled' => 'تم إلغاء الدفع بنجاح.',
+    'payment_not_pending' => 'هذا الدفع لم يعد معلقًا.',
+    'subscription_resumed' => 'تم استئناف اشتراكك.',
+    'subscription_not_cancelled' => ' اشتراكك غير ملغى حالياً.',
 ];

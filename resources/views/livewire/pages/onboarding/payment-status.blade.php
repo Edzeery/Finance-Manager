@@ -263,52 +263,6 @@ new #[Layout('layouts.guest')] class extends Component
 
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
 
-            @php
-                $hasFees = $payment && ($payment->gateway_fee > 0 || $payment->tax_added > 0 || $payment->tax_disclosed > 0);
-            @endphp
-            @if ($payment && $hasFees)
-            <div class="price-breakdown mb-3">
-                <div class="price-row original">
-                    <span>{{ __('onboarding.plan_price') }}</span>
-                    <span>{{ $this->formatAmount((float) ($payment->original_amount ?: $payment->amount)) }}</span>
-                </div>
-                @if ($payment->discount_amount > 0)
-                <div class="price-row discount">
-                    <span>{{ __('onboarding.coupon_discount') }}</span>
-                    <span>-{{ $this->formatAmount((float) $payment->discount_amount) }}</span>
-                </div>
-                @endif
-                @if ($payment->gateway_fee > 0)
-                <div class="price-row fee">
-                    <span>{{ __('onboarding.gateway_fee') }}</span>
-                    <span>+{{ $this->formatAmount((float) $payment->gateway_fee) }}</span>
-                </div>
-                @endif
-                @if ($payment->tax_added > 0)
-                <div class="price-row fee">
-                    <span>{{ __('onboarding.tax_added') }}</span>
-                    <span>+{{ $this->formatAmount((float) $payment->tax_added) }}</span>
-                </div>
-                @endif
-                @if ($payment->tax_disclosed > 0)
-                <div class="price-row">
-                    <span>{{ __('onboarding.tax_disclosed') }}</span>
-                    <span>{{ $this->formatAmount((float) $payment->tax_disclosed) }}</span>
-                </div>
-                @endif
-                <div class="price-divider"></div>
-                <div class="price-row total">
-                    <span>{{ __('onboarding.total') }}</span>
-                    <span>{{ $this->formatAmount((float) $payment->amount) }}</span>
-                </div>
-            </div>
-            @elseif ($payment)
-            <div class="info-row mb-3">
-                <span class="info-label fw-bold">{{ __('onboarding.total') }}</span>
-                <span class="info-value fw-bold">{{ $this->formatAmount((float) $payment->amount) }}</span>
-            </div>
-            @endif
-
             <div class="d-grid gap-2 mt-3">
                 <button wire:click="continueWithGateway" class="btn btn-accent btn-custom">
                     <i class="bi bi-arrow-right me-1"></i>{{ __('onboarding.continue_payment') ?? __('onboarding.resume_payment') }}

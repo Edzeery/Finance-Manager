@@ -59,18 +59,16 @@
             </button>
 
             @auth
-                <a href="{{ route('dashboard') }}" class="btn btn-accent btn-custom mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-grid-1x2-fill me-1"></i>{{ __('general.dashboard') }}
-                </a>
+
+                <x-button variant="accent" :href="route('dashboard')" icon="bi bi-grid-1x2-fill"
+                    icon-position="left">{{ __('general.dashboard') }}</x-button>
             @else
-                <a href="{{ route('login') }}"
-                    class="btn btn-outline-secondary btn-custom mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-box-arrow-in-right me-1"></i>{{ __('general.login') }}
-                </a>
-                <a href="{{ route('register') }}"
-                    class="btn btn-accent btn-custom d-none d-sm-inline-flex mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-person-plus me-1"></i>{{ __('general.register') }}
-                </a>
+                <x-button variant="outline" :href="route('login')" icon="bi bi-box-arrow-in-right"
+                    icon-position="left">{{ __('general.login') }}</x-button>
+
+                <x-button variant="accent" :href="route('register')" icon="bi bi-person-plus"
+                    icon-position="left">{{ __('general.register') }}</x-button>
+            
             @endauth
         </div>
     </nav>
@@ -83,10 +81,8 @@
             <p>{{ __('welcome.hero_description') }}</p>
             <div class="hero-actions">
                 @auth
-                    <a href="{{ route('dashboard') }}"
-                        class="btn btn-accent btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-grid-1x2-fill me-2"></i>{{ __('general.dashboard') }}
-                    </a>
+                    <x-button variant="accent" :href="route('dashboard')" icon="bi bi-grid-1x2-fill"
+                        icon-position="left">{{ __('general.dashboard') }}</x-button>
                     <a href="{{ route('api.documentation') }}"
                         class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
                         <i class="bi bi-book me-2"></i>API
@@ -371,7 +367,7 @@
                     @endif
                     <h3>{{ $plan->name }}</h3>
                     <p class="pricing-desc">
-                        {{ $plan->description  ??  __('subscription.' . $plan->slug . '_plan_description') }}</p>
+                        {{ $plan->description ?? __('subscription.' . $plan->slug . '_plan_description') }}</p>
                     <div class="pricing-amount">
                         <span class="pricing-price">
                             @if ($plan->is_free)

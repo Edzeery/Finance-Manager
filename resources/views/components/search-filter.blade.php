@@ -55,5 +55,6 @@
             width:100%;
         "
         placeholder="{{ $placeholder }}"
+        autocomplete="off" value=""
     >
 </div>

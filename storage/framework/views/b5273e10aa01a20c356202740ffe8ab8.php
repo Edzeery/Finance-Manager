@@ -92,6 +92,7 @@ unset($__defined_vars, $__key, $__value); ?>
             width:100%;
         "
         placeholder="<?php echo e($placeholder); ?>"
+        autocomplete="off" value=""
     >
 </div>
 <?php /**PATH C:\laragon\www\Finance-Manager\resources\views/components/search-filter.blade.php ENDPATH**/ ?>

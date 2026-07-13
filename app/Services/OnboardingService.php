@@ -195,20 +195,18 @@ class OnboardingService
             throw new \RuntimeException($validation->message());
         }
 
-        if ($this->subscriptionService->hasPendingPayment($workspace)) {
-            Payment::withoutWorkspace()
-                ->where('workspace_id', $workspace->id)
-                ->where('status', PaymentStatus::CheckoutPending->value)
-                ->update([
-                    'status' => PaymentStatus::CheckoutCanceled,
-                    'canceled_at' => now(),
-                ]);
-            logger()->channel('payments')->info('Cancelled stale pending payment(s) before new payment', [
-                'user_id' => $user->id,
-                'workspace_id' => $workspace->id,
-                'plan_id' => $plan->id,
+        Payment::withoutWorkspace()
+            ->where('user_id', $user->id)
+            ->where('status', PaymentStatus::CheckoutPending->value)
+            ->update([
+                'status' => PaymentStatus::CheckoutCanceled,
+                'canceled_at' => now(),
             ]);
-        }
+        logger()->channel('payments')->info('Cancelled stale pending payment(s) before new payment', [
+            'user_id' => $user->id,
+            'workspace_id' => $workspace->id,
+            'plan_id' => $plan->id,
+        ]);
 
         // ✅ Transaction واحدة: إنشاء Payment + استدعاء Gateway معاً
         // إذا فشل الـ Gateway يتم التراجع عن الـ Payment تلقائياً
