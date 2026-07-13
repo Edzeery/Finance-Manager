@@ -15,4 +15,8 @@ return [
     'downgrade_min_days'       => 'Vous ne pouvez rétrograder qu\'après :days jours depuis le début.',
     'downgrade_min_discount'   => 'La différence de prix entre les deux plans est trop faible (:current% seulement). La réduction doit être d\'au moins :min%.',
     'personal_new_users_only'  => 'Le plan Personal est réservé aux nouveaux comptes.',
+    'expiry_alert_title'       => 'Votre abonnement expire bientôt',
+    'expiry_alert_message'     => 'Votre abonnement expirera dans :days jours le :date. Renouvelez maintenant pour éviter toute interruption.',
+    'expiry_alert_snoozed'     => 'Nous vous rappellerons demain.',
+    'expiry_alert_snooze'      => 'Rappelez-moi demain',
 ];

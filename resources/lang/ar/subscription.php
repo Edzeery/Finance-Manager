@@ -15,6 +15,10 @@ return [
     'downgrade_min_days'       => 'لا يمكن تخفيض الخطة إلا بعد :days أيام من بدء الاشتراك.',
     'downgrade_min_discount'   => 'الفرق السعري بين الخطتين صغير جداً (:current% فقط). يجب أن يكون الخصم على الأقل :min%.',
     'personal_new_users_only'  => 'خطة Personal متاحة للحسابات الجديدة فقط.',
+    'expiry_alert_title'       => 'اشتراكك على وشك الانتهاء',
+    'expiry_alert_message'     => 'سينتهي اشتراكك خلال :days أيام في :date. جدد الآن لتجنب انقطاع الخدمة.',
+    'expiry_alert_snoozed'     => 'سنذكرك مرة أخرى غداً.',
+    'expiry_alert_snooze'      => 'ذكرني بعد يوم',
 
     'personal_plan_description' => ' ابدأ بتجربة مجانية لمدة 30 يومًا — ثم افتح إدارة مالية متميزة للأفراد.',
     'business_plan_description'  => 'للشركات الصغيرة والفرق التي تحتاج إلى مساحات عمل متعددة.',
