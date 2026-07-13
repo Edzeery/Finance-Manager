@@ -1,0 +1,118 @@
+/* ── Shared ── */
+.tabs-nav {
+  display: flex;
+  gap: 0;
+  white-space: nowrap;
+}
+
+.tabs-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.tabs-tab:hover { text-decoration: none; }
+
+.tabs-count {
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* ── Underline style (plans-form) ── */
+.tabs-underline .tabs-nav {
+  border-bottom: 2px solid var(--border);
+  overflow-x: auto;
+}
+
+.tabs-underline .tabs-tab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tabs-underline .tabs-tab:hover {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.tabs-underline .tabs-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tabs-underline .tabs-count {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.tabs-underline .tabs-tab.active .tabs-count {
+  background: var(--accent);
+  color: var(--primary);
+}
+
+/* ── Pills style (test-checklist) ── */
+.tabs-pills .tabs-nav {
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs-pills .tabs-tab {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-muted);
+}
+
+.tabs-pills .tabs-tab:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.tabs-pills .tabs-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(21, 183, 108, 0.25);
+}
+
+.tabs-pills .tabs-count {
+  opacity: 0.7;
+  background: transparent;
+  color: inherit;
+  padding: 0 4px;
+}
+
+.tabs-pills .tabs-tab.active .tabs-count {
+  opacity: 0.9;
+}
+
+/* ── Responsive ── */
+@media (max-width: 575.98px) {
+  .tabs-pills .tabs-nav,
+  .tabs-underline .tabs-nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs-pills .tabs-tab,
+  .tabs-underline .tabs-tab {
+    white-space: nowrap;
+  }
+}

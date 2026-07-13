@@ -22,15 +22,15 @@ class OnboardingFlowTest extends TestCase
     {
         parent::setUp();
 
-        $adminRole = Role::create(['slug' => 'workspace_admin', 'name' => 'Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 1]);
-        Role::create(['slug' => 'workspace_deputy_admin', 'name' => 'Deputy Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 2]);
+        $adminRole = Role::create(['slug' => 'workspace_admin', 'name_en' => 'Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 1]);
+        Role::create(['slug' => 'workspace_deputy_admin', 'name_en' => 'Deputy Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 2]);
 
-        $dashboardPerm = Permission::create(['slug' => 'dashboard.view', 'name' => 'View Dashboard', 'module' => 'dashboard']);
+        $dashboardPerm = Permission::create(['slug' => 'dashboard.view', 'name_en' => 'View Dashboard', 'module' => 'dashboard']);
         $adminRole->permissions()->attach($dashboardPerm->id);
 
         SubscriptionPlan::create([
             'slug' => 'personal',
-            'name' => 'Personal',
+            'name_en' => 'Personal',
             'description' => 'Free personal plan',
             'is_free' => true,
             'is_active' => true,
@@ -40,7 +40,7 @@ class OnboardingFlowTest extends TestCase
 
         $premium = SubscriptionPlan::create([
             'slug' => 'premium',
-            'name' => 'Premium',
+            'name_en' => 'Premium',
             'description' => 'Premium plan',
             'is_free' => false,
             'yearly_discount_percent' => 17,

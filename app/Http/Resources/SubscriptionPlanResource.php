@@ -24,7 +24,7 @@ class SubscriptionPlanResource extends JsonResource
             ]),
             'features' => $this->planFeatures->map(fn($f) => [
                 'slug' => $f->slug,
-                'name' => $f->name_en,
+                'name' => $f->{'name_' . app()->getLocale()} ?? $f->name_en,
                 'value' => $f->pivot->value,
                 'icon' => $f->icon,
                 'type' => $f->type,

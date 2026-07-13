@@ -21,7 +21,7 @@ class SubscriptionPlanTest extends TestCase
     {
         parent::setUp();
         $this->seed(EnterpriseRolePermissionSeeder::class);
-        $this->admin = User::factory()->create(['two_factor_confirmed_at' => now()]);
+        $this->admin = User::factory()->create(['two_factor_confirmed_at' => now(), 'locale' => 'en']);
         $this->admin->roles()->attach(Role::where('slug', 'super_admin')->first());
         $this->member = User::factory()->create();
     }
@@ -35,7 +35,7 @@ class SubscriptionPlanTest extends TestCase
 
     public function test_index_displays_plans(): void
     {
-        SubscriptionPlan::factory()->create(['name' => 'Gold']);
+        SubscriptionPlan::factory()->create(['name_en' => 'Gold']);
 
         $this->actingAs($this->admin)
             ->get(route('super.admin.plans.index'))
@@ -65,9 +65,9 @@ class SubscriptionPlanTest extends TestCase
         $this->actingAs($this->admin);
 
         $response = $this->post(route('super.admin.plans.store'), [
-            'name' => 'Silver Plan',
+            'name_en' => 'Silver Plan',
             'slug' => 'silver-plan',
-            'description' => 'A silver plan',
+            'description_en' => 'A silver plan',
             'yearly_discount_percent' => 17,
             'is_active' => true,
             'is_public' => true,
@@ -81,7 +81,7 @@ class SubscriptionPlanTest extends TestCase
     {
         $this->actingAs($this->member)
             ->post(route('super.admin.plans.store'), [
-                'name' => 'Test',
+                'name_en' => 'Test',
                 'slug' => 'test',
             ])
             ->assertForbidden();
@@ -104,20 +104,20 @@ class SubscriptionPlanTest extends TestCase
             ->get(route('super.admin.plans.edit', $plan))
             ->assertOk()
             ->assertViewIs('super-admin.plans-form')
-            ->assertSee($plan->name);
+            ->assertSee($plan->name_en);
     }
 
     public function test_update_plan(): void
     {
         $this->actingAs($this->admin);
-        $plan = SubscriptionPlan::factory()->create(['name' => 'Old Name']);
+        $plan = SubscriptionPlan::factory()->create(['name_en' => 'Old Name']);
 
         $this->put(route('super.admin.plans.update', $plan), [
-            'name' => 'New Name',
+            'name_en' => 'New Name',
             'slug' => $plan->slug,
         ])->assertRedirect(route('super.admin.plans.index'));
 
-        $this->assertEquals('New Name', $plan->fresh()->name);
+        $this->assertEquals('New Name', $plan->fresh()->name_en);
     }
 
     public function test_destroy_plan(): void

@@ -22,7 +22,6 @@ body {
     scrollbar-color: var(--border) transparent;
     scrollbar-width: thin;
     scrollbar-color: #15b76c6e #00000000;
-    color: #000;
 }
 
 *::-webkit-scrollbar {

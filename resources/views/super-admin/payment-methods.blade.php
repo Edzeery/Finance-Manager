@@ -20,6 +20,7 @@
                     <div class="data-grid-toolbar-left">
                         <form method="GET" action="{{ route('super.admin.payment-methods.index') }}" class="d-flex flex-wrap align-items-center gap-2">
                             <x-search-filter name="search" placeholder="{{ __('super-admin.search_payment_method') }}..." value="{{ request('search') }}" />
+
                             <x-select-filter name="type" :options="[
                                 'online' => __('super-admin.online'),
                                 'manual' => __('super-admin.manual'),

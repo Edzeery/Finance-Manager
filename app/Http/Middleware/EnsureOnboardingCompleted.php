@@ -35,7 +35,6 @@ class EnsureOnboardingCompleted
      */
     protected array $postOnboardingAllowed = [
         'onboarding.manual-proof',
-        'onboarding.plan',
         'payment.status',
     ];
 

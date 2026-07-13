@@ -18,4 +18,7 @@ return [
 
     'personal_plan_description' => ' Commencez par un essai gratuit de 30 jours — puis débloquez la gestion financière premium pour les particuliers.',
     'business_plan_description'  => ' Pour les petites entreprises et les équipes ayant besoin de plusieurs espaces de travail.',
+    'professional_plan_description' => ' Pour les professionnels et les entreprises ayant besoin de fonctionnalités avancées et d\'un support prioritaire.',
+    'enterprise_plan_description' => ' Pour les grandes entreprises ayant besoin de fonctionnalités personnalisées et d\'un support dédié.',
+    'free_plan_description' => 'Plan gratuit avec des fonctionnalités limitées pour les particuliers et les petites équipes.',
 ];

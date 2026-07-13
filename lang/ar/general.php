@@ -280,4 +280,6 @@ return [
     'your_token' => 'رمزك المميز',
     'copied' => 'نسخ',
     'remove' => 'إزالة',
+    'previous' => 'السابق',
+    'next' => 'التالي',
 ];

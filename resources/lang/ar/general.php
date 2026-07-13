@@ -282,4 +282,6 @@ return [
     'remove' => 'إزالة',
     'show_more' => 'عرض المزيد',
     'show_less' => 'عرض أقل',
+    'previous' => 'السابق',
+    'next' => 'التالي',
 ];

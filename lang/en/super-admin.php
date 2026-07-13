@@ -576,6 +576,7 @@ return [
     'prices_select_plan_hint' => 'Select a plan above to view and manage its prices.',
     'plan_prices' => 'Plan Prices',
     'prices_manage_hint' => 'Manage multi-currency and multi-period pricing for this plan.',
+    'prices_manage_create_hint' => 'Fill in the fields below and click Add to create a price.',
     'yearly_discount' => 'Yearly Discount %',
     'yearly_discount_hint' => 'Auto-calculates yearly price: monthly × 12 × (1 − discount%)',
     'manage_prices' => 'Manage Prices',

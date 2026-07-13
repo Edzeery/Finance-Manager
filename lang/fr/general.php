@@ -279,4 +279,6 @@ return [
     'your_token' => 'Votre jeton',
     'copied' => 'Copié',
     'remove' => 'Supprimer',
+    'previous' => 'Précédent',
+    'next' => 'Suivant',
 ];

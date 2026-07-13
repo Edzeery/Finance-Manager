@@ -11,13 +11,80 @@ class SubscriptionPlan extends Model
 {
     use HasFactory;
 
+    protected $attributes = [
+        'sort_order' => 0,
+        'trial_days' => null,
+    ];
+
     protected $fillable = [
-        'name', 'slug', 'description', 'sort_order', 'is_free', 'trial_days',
+        'name', 'name_en', 'name_ar', 'name_fr',
+        'slug',
+        'description', 'description_en', 'description_ar', 'description_fr',
+        'sort_order', 'is_free', 'trial_days',
         'yearly_discount_percent',
-        'is_active', 'is_public', 'button_text', 'button_link',
+        'is_active', 'is_public',
+        'button_text', 'button_text_en', 'button_text_ar', 'button_text_fr',
+        'button_link',
     ];
 
     protected $appends = ['yearly_price'];
+
+    public function getNameAttribute(): string
+    {
+        $locale = app()->getLocale();
+        $column = "name_{$locale}";
+        return $this->attributes[$column] ?? $this->name_en;
+    }
+
+    public function setNameAttribute(string $value): void
+    {
+        $this->attributes['name'] = $value;
+        $this->attributes['name_en'] = $value;
+    }
+
+    public function setNameEnAttribute(string $value): void
+    {
+        $this->attributes['name_en'] = $value;
+        $this->attributes['name'] = $value;
+    }
+
+    public function getDescriptionAttribute(): ?string
+    {
+        $locale = app()->getLocale();
+        $column = "description_{$locale}";
+        return $this->attributes[$column] ?? $this->description_en;
+    }
+
+    public function setDescriptionAttribute(?string $value): void
+    {
+        $this->attributes['description'] = $value;
+        $this->attributes['description_en'] = $value;
+    }
+
+    public function setDescriptionEnAttribute(?string $value): void
+    {
+        $this->attributes['description_en'] = $value;
+        $this->attributes['description'] = $value;
+    }
+
+    public function getButtonTextAttribute(): ?string
+    {
+        $locale = app()->getLocale();
+        $column = "button_text_{$locale}";
+        return $this->attributes[$column] ?? $this->button_text_en;
+    }
+
+    public function setButtonTextAttribute(?string $value): void
+    {
+        $this->attributes['button_text'] = $value;
+        $this->attributes['button_text_en'] = $value;
+    }
+
+    public function setButtonTextEnAttribute(?string $value): void
+    {
+        $this->attributes['button_text_en'] = $value;
+        $this->attributes['button_text'] = $value;
+    }
 
     protected function casts(): array
     {

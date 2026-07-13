@@ -584,6 +584,7 @@ return [
     'prices_select_plan_hint' => 'اختر خطة أعلاه لعرض وإدارة أسعارها.',
     'plan_prices' => 'أسعار الخطة',
     'prices_manage_hint' => 'إدارة الأسعار متعددة العملات والفترات لهذه الخطة.',
+    'prices_manage_create_hint' => 'املأ الحقول أدناه ثم اضغط إضافة لإنشاء سعر.',
     'yearly_discount' => 'نسبة الخصم السنوي %',
     'yearly_discount_hint' => 'يحسب السعر السنوي تلقائياً: شهري × 12 × (1 − نسبة الخصم%)',
     'manage_prices' => 'إدارة الأسعار',

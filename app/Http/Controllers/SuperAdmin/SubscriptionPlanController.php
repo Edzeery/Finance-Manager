@@ -25,7 +25,7 @@ class SubscriptionPlanController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+                $q->where('name_en', 'like', "%{$search}%")
                   ->orWhere('slug', 'like', "%{$search}%");
             });
         }
@@ -94,26 +94,49 @@ class SubscriptionPlanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_ar' => ['nullable', 'string', 'max:255'],
+            'name_fr' => ['nullable', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:100', 'unique:subscription_plans,slug'],
-            'description' => ['nullable', 'string', 'max:1000'],
+            'description_en' => ['nullable', 'string', 'max:1000'],
+            'description_ar' => ['nullable', 'string', 'max:1000'],
+            'description_fr' => ['nullable', 'string', 'max:1000'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_free' => ['boolean'],
             'is_active' => ['boolean'],
             'is_public' => ['boolean'],
             'yearly_discount_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'button_text' => ['nullable', 'string', 'max:100'],
+            'button_text_en' => ['nullable', 'string', 'max:100'],
+            'button_text_ar' => ['nullable', 'string', 'max:100'],
+            'button_text_fr' => ['nullable', 'string', 'max:100'],
             'button_link' => ['nullable', 'string', 'max:500'],
             'plan_features' => ['nullable', 'array'],
             'plan_features.*.feature_id' => ['required_with:plan_features', 'exists:plan_features,id'],
             'plan_features.*.value' => ['nullable', 'string', 'max:255'],
             'plan_features.*.sort_order' => ['nullable', 'integer', 'min:0'],
+            'prices' => ['nullable', 'array'],
+            'prices.*.billing_period' => ['required_with:prices.*', 'in:monthly,yearly'],
+            'prices.*.currency' => ['required_with:prices.*', 'string', 'max:10'],
+            'prices.*.price' => ['required_with:prices.*', 'numeric', 'min:0'],
+            'prices.*.is_active' => ['boolean'],
         ]);
 
-        $planFeatures = $validated['plan_features'] ?? [];
+        $prices = $validated['prices'] ?? [];
+        unset($validated['prices']);
+
+        $validated['sort_order'] ??= 0;
+        $validated['yearly_discount_percent'] ??= null;
+
+        $planFeatures = collect($validated['plan_features'] ?? [])
+            ->filter(fn($item) => isset($item['feature_id']))
+            ->toArray();
         unset($validated['plan_features']);
 
         $plan = SubscriptionPlan::create($validated);
+
+        foreach ($prices as $priceData) {
+            $plan->planPrices()->create($priceData);
+        }
 
         $this->syncPlanFeatures($plan, $planFeatures);
 
@@ -148,15 +171,21 @@ class SubscriptionPlanController extends Controller
     public function update(Request $request, SubscriptionPlan $plan)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_ar' => ['nullable', 'string', 'max:255'],
+            'name_fr' => ['nullable', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:100', 'unique:subscription_plans,slug,' . $plan->id],
-            'description' => ['nullable', 'string', 'max:1000'],
+            'description_en' => ['nullable', 'string', 'max:1000'],
+            'description_ar' => ['nullable', 'string', 'max:1000'],
+            'description_fr' => ['nullable', 'string', 'max:1000'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_free' => ['boolean'],
             'is_active' => ['boolean'],
             'is_public' => ['boolean'],
             'yearly_discount_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'button_text' => ['nullable', 'string', 'max:100'],
+            'button_text_en' => ['nullable', 'string', 'max:100'],
+            'button_text_ar' => ['nullable', 'string', 'max:100'],
+            'button_text_fr' => ['nullable', 'string', 'max:100'],
             'button_link' => ['nullable', 'string', 'max:500'],
             'plan_features' => ['nullable', 'array'],
             'plan_features.*.feature_id' => ['required_with:plan_features', 'exists:plan_features,id'],
@@ -164,7 +193,12 @@ class SubscriptionPlanController extends Controller
             'plan_features.*.sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $planFeatures = $validated['plan_features'] ?? [];
+        $validated['sort_order'] ??= 0;
+        $validated['yearly_discount_percent'] ??= null;
+
+        $planFeatures = collect($validated['plan_features'] ?? [])
+            ->filter(fn($item) => isset($item['feature_id']))
+            ->toArray();
         unset($validated['plan_features']);
 
         $plan->update($validated);
@@ -201,9 +235,14 @@ class SubscriptionPlanController extends Controller
         }
 
         $coreFeatureIds = PlanFeature::where('is_core', true)->pluck('id');
+        $existingPivot = $plan->planFeatures()->whereIn('plan_features.id', $coreFeatureIds)->get()->keyBy('id');
         foreach ($coreFeatureIds as $coreId) {
             if (!isset($syncData[$coreId])) {
-                $syncData[$coreId] = ['value' => null, 'sort_order' => 0];
+                $existing = $existingPivot->get($coreId);
+                $syncData[$coreId] = [
+                    'value' => $existing?->pivot->value ?? null,
+                    'sort_order' => $existing?->pivot->sort_order ?? 0,
+                ];
             }
         }
 

@@ -1,8 +1,13 @@
 {{-- resources\views\landing.blade.php --}}
 @php
-    $landingCurrency = session('currency', auth()->check() ? auth()->user()->currency : config('finance.currency', 'USD'));
+    $landingCurrency = session(
+        'currency',
+        auth()->check() ? auth()->user()->currency : config('finance.currency', 'USD'),
+    );
     $displayLandingPrice = function (float $usdAmount) use ($landingCurrency) {
-        if ($usdAmount <= 0) return __('welcome.pricing_free');
+        if ($usdAmount <= 0) {
+            return __('welcome.pricing_free');
+        }
         $converted = \App\Services\CurrencyHelper::fromUsd($usdAmount, $landingCurrency);
         return number_format($converted, 2) . ' ' . \App\Services\CurrencyHelper::symbol($landingCurrency);
     };
@@ -13,8 +18,8 @@
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-      dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}"
-      data-theme="{{ session('theme', 'light') }}">
+    dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}" data-theme="{{ session('theme', 'light') }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,11 +29,14 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
+
 <body class="landing-page" x-data="">
     <nav class="landing-nav">
         <a href="/" class="nav-logo">
@@ -51,14 +59,16 @@
             </button>
 
             @auth
-                <a href="{{ route('dashboard') }}"  class="btn btn-accent btn-custom mb-0 d-flex align-items-center gap-2">
+                <a href="{{ route('dashboard') }}" class="btn btn-accent btn-custom mb-0 d-flex align-items-center gap-2">
                     <i class="bi bi-grid-1x2-fill me-1"></i>{{ __('general.dashboard') }}
                 </a>
             @else
-                <a href="{{ route('login') }}"  class="btn btn-outline-secondary btn-custom mb-0 d-flex align-items-center gap-2">
+                <a href="{{ route('login') }}"
+                    class="btn btn-outline-secondary btn-custom mb-0 d-flex align-items-center gap-2">
                     <i class="bi bi-box-arrow-in-right me-1"></i>{{ __('general.login') }}
                 </a>
-                <a href="{{ route('register') }}"  class="btn btn-accent btn-custom d-none d-sm-inline-flex mb-0 d-flex align-items-center gap-2">
+                <a href="{{ route('register') }}"
+                    class="btn btn-accent btn-custom d-none d-sm-inline-flex mb-0 d-flex align-items-center gap-2">
                     <i class="bi bi-person-plus me-1"></i>{{ __('general.register') }}
                 </a>
             @endauth
@@ -73,17 +83,21 @@
             <p>{{ __('welcome.hero_description') }}</p>
             <div class="hero-actions">
                 @auth
-                    <a href="{{ route('dashboard') }}"  class="btn btn-accent btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
+                    <a href="{{ route('dashboard') }}"
+                        class="btn btn-accent btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
                         <i class="bi bi-grid-1x2-fill me-2"></i>{{ __('general.dashboard') }}
                     </a>
-                    <a href="{{ route('api.documentation') }}" class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
+                    <a href="{{ route('api.documentation') }}"
+                        class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
                         <i class="bi bi-book me-2"></i>API
                     </a>
                 @else
-                    <a href="{{ route('register') }}"  class="btn btn-accent btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
+                    <a href="{{ route('register') }}"
+                        class="btn btn-accent btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
                         <i class="bi bi-person-plus me-2"></i>{{ __('welcome.hero_cta_started') }}
                     </a>
-                    <a href="#features" class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
+                    <a href="#features"
+                        class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
                         <i class="bi bi-play-circle me-2"></i>{{ __('welcome.hero_cta_demo') }}
                     </a>
                 @endauth
@@ -95,10 +109,15 @@
                     <div class="hero-card-dots"><span></span><span></span><span></span></div>
                 </div>
                 <div class="hero-card-body">
-                    <div class="hc-row"><span class="hc-label">{{ __('general.monthly') }} {{ __('general.income') }}</span><span class="hc-value hc-up">+$4,250</span></div>
-                    <div class="hc-row"><span class="hc-label">{{ __('general.monthly') }} {{ __('general.expense') }}</span><span class="hc-value hc-down">-$3,180</span></div>
-                    <div class="hc-bar"><div class="hc-bar-fill" style="width:75%"></div></div>
-                    <div class="hc-row"><span class="hc-label">{{ __('general.budget') }}</span><span class="hc-value">75%</span></div>
+                    <div class="hc-row"><span class="hc-label">{{ __('general.monthly') }}
+                            {{ __('general.income') }}</span><span class="hc-value hc-up">+$4,250</span></div>
+                    <div class="hc-row"><span class="hc-label">{{ __('general.monthly') }}
+                            {{ __('general.expense') }}</span><span class="hc-value hc-down">-$3,180</span></div>
+                    <div class="hc-bar">
+                        <div class="hc-bar-fill" style="width:75%"></div>
+                    </div>
+                    <div class="hc-row"><span class="hc-label">{{ __('general.budget') }}</span><span
+                            class="hc-value">75%</span></div>
                 </div>
             </div>
             <div class="hero-card hero-card-float hero-card-1">
@@ -319,13 +338,16 @@
         </div>
         <div style="text-align:center;max-width:600px;margin:0 auto">
             <div style="font-size:48px;margin-bottom:24px;color:var(--accent)">⚡</div>
-            <p style="font-size:16px;color:var(--text-muted);margin-bottom:24px">{{ __('welcome.api_description') }}</p>
+            <p style="font-size:16px;color:var(--text-muted);margin-bottom:24px">{{ __('welcome.api_description') }}
+            </p>
             <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="{{ route('api.documentation') }}" class="btn btn-accent btn-custom d-inline-flex align-items-center gap-2">
+                <a href="{{ route('api.documentation') }}"
+                    class="btn btn-accent btn-custom d-inline-flex align-items-center gap-2">
                     <i class="bi bi-book me-1"></i>{{ __('developer.api_documentation_link') }}
                 </a>
                 @auth
-                    <a href="{{ route('account.settings.developer') }}" class="btn btn-outline-secondary btn-custom d-inline-flex align-items-center gap-2">
+                    <a href="{{ route('account.settings.developer') }}"
+                        class="btn btn-outline-secondary btn-custom d-inline-flex align-items-center gap-2">
                         <i class="bi bi-key me-1"></i>{{ __('developer.api_tokens') }}
                     </a>
                 @endauth
@@ -342,16 +364,17 @@
         </div>
 
         <div class="pricing-grid">
-            @foreach($plans as $plan)
-                <div class="pricing-card @if($plan->slug === 'business') pricing-featured @endif">
-                    @if($plan->slug === 'business')
+            @foreach ($plans as $plan)
+                <div class="pricing-card @if ($plan->slug === 'business') pricing-featured @endif">
+                    @if ($plan->slug === 'business')
                         <div class="pricing-badge">{{ __('general.popular') }}</div>
                     @endif
                     <h3>{{ $plan->name }}</h3>
-                    <p class="pricing-desc">{{ $plan->description }}</p>
+                    <p class="pricing-desc">
+                        {{ $plan->description  ??  __('subscription.' . $plan->slug . '_plan_description') }}</p>
                     <div class="pricing-amount">
                         <span class="pricing-price">
-                            @if($plan->is_free)
+                            @if ($plan->is_free)
                                 {{ __('welcome.pricing_free') }}
                             @elseif($plan->monthly_price > 0)
                                 {{ $displayLandingPrice($plan->monthly_price) }}
@@ -359,42 +382,38 @@
                                 {{ __('welcome.pricing_custom') }}
                             @endif
                         </span>
-                        @if($plan->monthly_price > 0)
+                        @if ($plan->monthly_price > 0)
                             <span class="pricing-period">/{{ __('general.month') }}</span>
                         @endif
                     </div>
                     <ul class="pricing-features" x-data="{ showAll: false }">
-                        @if($plan->max_workspaces)
-                            <li><i class="bi bi-check-lg me-1"></i>{{ $plan->max_workspaces }} {{ __('workspace.title') }}{{ $plan->max_workspaces > 1 ? 's' : '' }}</li>
-                        @else
-                            <li><i class="bi bi-check-lg me-1"></i>{{ __('welcome.pricing_custom_workspaces') }}</li>
-                        @endif
-                        @if($plan->max_users)
-                            <li><i class="bi bi-check-lg me-1"></i>{{ __('welcome.pricing_up_to') }} {{ $plan->max_users }} {{ __('workspace.members') }}</li>
-                        @else
-                            <li><i class="bi bi-check-lg me-1"></i>{{ __('welcome.pricing_unlimited_users') }}</li>
-                        @endif
                         @php $allFeatures = $plan->planFeatures; @endphp
-                        @if($allFeatures->isNotEmpty())
-                            @foreach($allFeatures as $index => $feature)
-                                <li x-show="showAll || {{ $index < 3 ? 'true' : 'false' }}" x-transition:enter.duration.200ms>
-                                    <i class="bi bi-check-lg me-1"></i>{{ $landingFeatureName($feature) }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
+                        @if ($allFeatures->isNotEmpty())
+                            @foreach ($allFeatures as $index => $feature)
+                                <li x-show="showAll || {{ $index < 3 ? 'true' : 'false' }}"
+                                    x-transition:enter.duration.200ms>
+                                    <i
+                                        class="bi bi-check-lg me-1"></i>{{ $landingFeatureName($feature) }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
                                 </li>
                             @endforeach
                         @endif
-                        @if($allFeatures->count() > 3)
+                        @if ($allFeatures->count() > 3)
                             <li>
-                                <button @click="showAll = !showAll" type="button" class="btn btn-link p-0" style="font-size:13px;color:var(--accent);text-decoration:none">
-                                    <span x-show="!showAll">{{ __('general.show_more') }} ({{ $allFeatures->count() - 3 }})</span>
+                                <button @click="showAll = !showAll" type="button" class="btn btn-link p-0"
+                                    style="font-size:13px;color:var(--accent);text-decoration:none">
+                                    <span x-show="!showAll">{{ __('general.show_more') }}
+                                        ({{ $allFeatures->count() - 3 }})</span>
                                     <span x-show="showAll">{{ __('general.show_less') }}</span>
                                 </button>
                             </li>
                         @endif
                     </ul>
                     @auth
-                        <a href="{{ route('dashboard') }}"  class="btn btn-accent btn-custom w-100">{{ __('general.dashboard') }}</a>
+                        <a href="{{ route('dashboard') }}"
+                            class="btn btn-accent btn-custom w-100">{{ __('general.dashboard') }}</a>
                     @else
-                        <a href="{{ route('register') }}"  class="btn btn-accent btn-custom w-100">{{ $plan->button_text ?? __('welcome.pricing_cta') }}</a>
+                        <a href="{{ route('register') }}"
+                            class="btn btn-accent btn-custom w-100">{{ $plan->button_text ?? __('welcome.pricing_cta') }}</a>
                     @endauth
                 </div>
             @endforeach
@@ -461,11 +480,13 @@
             <h2>{{ __('welcome.cta_title') }}</h2>
             <p>{{ __('welcome.cta_description') }}</p>
             @auth
-                <a href="{{ route('dashboard') }}"  class="btn btn-accent btn-custom btn-lg d-flex align-items-center gap-2 mx-auto" style="width:220px">
+                <a href="{{ route('dashboard') }}"
+                    class="btn btn-accent btn-custom btn-lg d-flex align-items-center gap-2 mx-auto" style="width:220px">
                     <i class="bi bi-grid-1x2-fill me-2"></i>{{ __('general.dashboard') }}
                 </a>
             @else
-                <a href="{{ route('register') }}"  class="btn btn-accent btn-custom btn-lg d-flex align-items-center gap-2 mx-auto" style="width:220px">
+                <a href="{{ route('register') }}"
+                    class="btn btn-accent btn-custom btn-lg d-flex align-items-center gap-2 mx-auto" style="width:220px">
                     <i class="bi bi-person-plus me-2"></i>{{ __('welcome.hero_cta_started') }}
                 </a>
             @endauth
@@ -516,4 +537,5 @@
     @livewireScripts
     @stack('scripts')
 </body>
+
 </html>

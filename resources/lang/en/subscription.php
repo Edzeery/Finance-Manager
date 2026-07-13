@@ -20,5 +20,7 @@ return [
 
     'personal_plan_description' => 'Start with a free 30-day trial — then unlock premium finance management for individuals.',
     'business_plan_description'  => 'For small businesses and teams needing multiple workspaces.',
-
+    'professional_plan_description' => 'For professionals and businesses needing advanced features and priority support.',
+    'enterprise_plan_description' => 'For large enterprises needing custom features and dedicated support.',
+    'free_plan_description' => 'Free plan with limited features for individuals and small teams.',
 ];

@@ -13,13 +13,19 @@ class SubscriptionPlanSeeder extends Seeder
     {
         $plans = [
             'free' => [
-                'name' => 'Free',
+                'name_en' => 'Free',
+                'name_ar' => 'مجاني',
+                'name_fr' => 'Gratuit',
                 'description' => 'Free forever — basic finance management for individuals.',
+                'description_ar' => 'مجاني للأبد — إدارة مالية أساسية للأفراد.',
+                'description_fr' => 'Gratuit à vie — gestion financière de base pour les particuliers.',
                 'sort_order' => 0,
                 'is_free' => true,
                 'trial_days' => null,
                 'is_public' => true,
                 'button_text' => 'Get Started Free',
+                'button_text_ar' => 'ابدأ مجاناً',
+                'button_text_fr' => 'Commencez gratuitement',
                 'plan_features' => [
                     ['slug' => 'workspaces', 'value' => '1'],
                     ['slug' => 'users', 'value' => '1'],
@@ -33,14 +39,20 @@ class SubscriptionPlanSeeder extends Seeder
             ],
 
             'personal' => [
-                'name' => 'Personal',
+                'name_en' => 'Personal',
+                'name_ar' => 'شخصي',
+                'name_fr' => 'Personnel',
                 'description' => 'Start with a free 30-day trial — then unlock premium finance management for individuals.',
+                'description_ar' => 'ابدأ بفترة تجريبية مجانية لمدة 30 يوماً — ثم احصل على إدارة مالية متميزة للأفراد.',
+                'description_fr' => 'Commencez par un essai gratuit de 30 jours — puis débloquez une gestion financière premium pour les particuliers.',
                 'sort_order' => 1,
                 'is_free' => false,
                 'trial_days' => 30,
                 'is_public' => true,
                 'yearly_discount_percent' => 17,
                 'button_text' => 'Start Free Trial',
+                'button_text_ar' => 'ابدأ التجربة المجانية',
+                'button_text_fr' => 'Commencez l\'essai gratuit',
                 'plan_features' => [
                     ['slug' => 'workspaces', 'value' => '1'],
                     ['slug' => 'users', 'value' => '1'],
@@ -55,14 +67,20 @@ class SubscriptionPlanSeeder extends Seeder
             ],
 
             'business' => [
-                'name' => 'Business',
-                'description' => 'business_plan_description', // This should be replaced with the actual description or a translation key
+                'name_en' => 'Business',
+                'name_ar' => 'أعمال',
+                'name_fr' => 'Business',
+                'description' => 'For small businesses and teams needing multiple workspaces.',
+                'description_ar' => 'للشركات الصغيرة والفرق التي تحتاج إلى مساحات عمل متعددة.',
+                'description_fr' => 'Pour les petites entreprises et les équipes ayant besoin de plusieurs espaces de travail.',
                 'sort_order' => 2,
                 'is_free' => false,
                 'trial_days' => null,
                 'is_public' => true,
                 'yearly_discount_percent' => 17,
                 'button_text' => 'Subscribe',
+                'button_text_ar' => 'اشترك',
+                'button_text_fr' => 'S\'abonner',
                 'plan_features' => [
                     ['slug' => 'workspaces', 'value' => '2'],
                     ['slug' => 'users', 'value' => '10'],
@@ -89,14 +107,20 @@ class SubscriptionPlanSeeder extends Seeder
             ],
 
             'professional' => [
-                'name' => 'Professional',
+                'name_en' => 'Professional',
+                'name_ar' => 'احترافي',
+                'name_fr' => 'Professionnel',
                 'description' => 'For growing organizations with advanced management needs.',
+                'description_ar' => 'للمؤسسات المتنامية ذات احتياجات الإدارة المتقدمة.',
+                'description_fr' => 'Pour les organisations en croissance ayant des besoins de gestion avancés.',
                 'sort_order' => 3,
                 'is_free' => false,
                 'trial_days' => null,
                 'is_public' => true,
                 'yearly_discount_percent' => 17,
                 'button_text' => 'Subscribe',
+                'button_text_ar' => 'اشترك',
+                'button_text_fr' => 'S\'abonner',
                 'plan_features' => [
                     ['slug' => 'workspaces', 'value' => '3'],
                     ['slug' => 'users', 'value' => '50'],
@@ -126,13 +150,19 @@ class SubscriptionPlanSeeder extends Seeder
             ],
 
             'enterprise' => [
-                'name' => 'Enterprise',
+                'name_en' => 'Enterprise',
+                'name_ar' => 'مؤسسات',
+                'name_fr' => 'Enterprise',
                 'description' => 'Custom workspaces, custom users, custom pricing — tailored for your organization.',
+                'description_ar' => 'مساحات عمل مخصصة، مستخدمون مخصصون، تسعير مخصص — مصمم خصيصاً لمؤسستك.',
+                'description_fr' => 'Espaces de travail personnalisés, utilisateurs personnalisés, tarification personnalisée — adapté à votre organisation.',
                 'sort_order' => 4,
                 'is_free' => false,
                 'trial_days' => null,
                 'is_public' => false,
                 'button_text' => 'Contact Us',
+                'button_text_ar' => 'اتصل بنا',
+                'button_text_fr' => 'Contactez-nous',
                 'button_link' => '/contact',
                 'plan_features' => [
                     ['slug' => 'workspaces', 'value' => 'custom'],

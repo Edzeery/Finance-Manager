@@ -41,7 +41,8 @@
             name="{{ $name ?? 'input' }}"
             @if(!is_null($value)) value="{{ $value }}" @endif
         @endif
-        autocomplete="off"
+
+
         class="form-control"
         style="
             padding-block:7px;

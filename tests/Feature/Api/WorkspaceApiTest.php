@@ -35,7 +35,7 @@ class WorkspaceApiTest extends TestCase
             $this->user->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $workspace->id]);
         }
         $plan = SubscriptionPlan::create([
-            'slug' => 'personal', 'name' => 'Personal', 'is_free' => true,
+            'slug' => 'personal', 'name_en' => 'Personal', 'is_free' => true,
         ]);
         $feature = \App\Models\PlanFeature::firstOrCreate(
             ['slug' => 'transactions_per_month'],
@@ -67,11 +67,11 @@ class WorkspaceApiTest extends TestCase
     {
         $response = $this->withToken($this->token)
             ->postJson('/api/workspaces', [
-                'name' => 'New Workspace',
+                'name_en' => 'New Workspace',
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonFragment(['name' => 'New Workspace']);
+            ->assertJsonFragment(['name_en' => 'New Workspace']);
     }
 
     public function test_income_crud(): void

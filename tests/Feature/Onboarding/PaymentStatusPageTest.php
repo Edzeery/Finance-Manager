@@ -29,10 +29,10 @@ class PaymentStatusPageTest extends TestCase
 
         $this->seed(PaymentGatewaySeeder::class);
 
-        Role::create(['slug' => 'workspace_admin', 'name' => 'Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 1]);
+        Role::create(['slug' => 'workspace_admin', 'name_en' => 'Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 1]);
 
         $plan = SubscriptionPlan::create([
-            'slug' => 'premium', 'name' => 'Premium', 'is_free' => false,
+            'slug' => 'premium', 'name_en' => 'Premium', 'is_free' => false,
             'yearly_discount_percent' => 17,
             'is_active' => true, 'is_public' => true, 'sort_order' => 1,
         ]);

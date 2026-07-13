@@ -282,4 +282,6 @@ return [
     'your_token' => 'Your Token',
     'copied' => 'Copied',
     'remove' => 'Remove',
+    'previous' => 'Previous',
+    'next' => 'Next',
 ];

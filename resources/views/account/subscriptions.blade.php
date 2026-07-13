@@ -363,7 +363,7 @@
 
                         @forelse($plans as $plan)
                             @php $isCurrent = $currentPlan && $currentPlan->slug === $plan->slug && $hasActive; @endphp
-                            <div class="plan-card mb-3 {{ $isCurrent ? 'plan-current' : '' }}" style="border:1px solid {{ $isCurrent ? 'var(--accent)' : 'var(--border)' }};border-radius:12px;padding:16px;transition:all 0.2s">
+                            <div class="plan-card mb-3 {{ $isCurrent ? 'plan-current' : '' }}" style="border:1px solid {{ $isCurrent ? 'var(--accent)' : 'var(--border)' }};border-radius:12px;padding:16px;transition:all 0.2s" x-data="{ showAll: false }">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
                                         <h6 style="font-weight:600;margin-bottom:2px;font-size:14px">{{ $plan->name }}</h6>
@@ -387,28 +387,22 @@
                                     @endif
                                 </div>
 
-                                @php $features = $plan->planFeatures; $visibleFeatures = $features->take(5); $hiddenFeatures = $features->slice(5); @endphp
+                                @php $features = $plan->planFeatures; @endphp
                                 @if($features->isNotEmpty())
                                     <div style="margin-bottom:12px">
-                                        @foreach($visibleFeatures as $feature)
+                                        @foreach($features as $index => $feature)
                                             @php $fName = $feature->{'name_' . app()->getLocale()} ?? $feature->name_en; @endphp
-                                            <div style="font-size:12px;color:var(--text-muted);padding:2px 0">
+                                            <div style="font-size:12px;color:var(--text-muted);padding:2px 0"
+                                                x-show="showAll || {{ $index < 5 ? 'true' : 'false' }}"
+                                                x-transition:enter.duration.200ms>
                                                 <i class="bi bi-check-circle" style="color:var(--success);margin-inline-end:6px;font-size:11px"></i>
                                                 {{ $fName }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
                                             </div>
                                         @endforeach
-                                        @if($hiddenFeatures->isNotEmpty())
-                                            <div class="plan-extra-features-{{ $plan->id }} d-none">
-                                                @foreach($hiddenFeatures as $feature)
-                                                    @php $fName = $feature->{'name_' . app()->getLocale()} ?? $feature->name_en; @endphp
-                                                    <div style="font-size:12px;color:var(--text-muted);padding:2px 0">
-                                                        <i class="bi bi-check-circle" style="color:var(--success);margin-inline-end:6px;font-size:11px"></i>
-                                                        {{ $fName }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                            <button type="button" class="btn btn-link p-0 plan-toggle-features" data-plan="{{ $plan->id }}" data-expanded="false" style="font-size:12px;color:var(--accent);text-decoration:none">
-                                                {{ __('general.show_more') }} ({{ $hiddenFeatures->count() }})
+                                        @if($features->count() > 5)
+                                            <button type="button" class="btn btn-link p-0" @click="showAll = !showAll" style="font-size:12px;color:var(--accent);text-decoration:none">
+                                                <span x-show="!showAll">{{ __('general.show_more') }} ({{ $features->count() - 5 }})</span>
+                                                <span x-show="showAll">{{ __('general.show_less') }}</span>
                                             </button>
                                         @endif
                                     </div>
@@ -630,20 +624,7 @@
             });
         });
 
-        document.querySelectorAll('.plan-toggle-features').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var planId = this.dataset.plan;
-                var extras = document.querySelector('.plan-extra-features-' + planId);
-                if (!extras) return;
-                var expanded = this.dataset.expanded === 'true';
-                extras.classList.toggle('d-none', expanded);
-                this.dataset.expanded = !expanded;
-                var hiddenCount = extras.querySelectorAll('div').length;
-                this.textContent = expanded
-                    ? '{{ __('general.show_more') }} (' + hiddenCount + ')'
-                    : '{{ __('general.show_less') }}';
-            });
-        });
+
     }
     initSubscriptions();
 

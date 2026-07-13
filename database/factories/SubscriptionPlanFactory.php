@@ -14,7 +14,9 @@ class SubscriptionPlanFactory extends Factory
     {
         $name = fake()->word();
         return [
-            'name' => $name,
+            'name_en' => $name,
+            'name_ar' => $name,
+            'name_fr' => $name,
             'slug' => fake()->unique()->slug(),
             'yearly_discount_percent' => 17,
             'is_active' => true,
@@ -62,7 +64,9 @@ class SubscriptionPlanFactory extends Factory
     public function enterprise(): static
     {
         return $this->state(fn(array $attrs) => [
-            'name' => 'Enterprise',
+            'name_en' => 'Enterprise',
+            'name_ar' => 'مؤسسات',
+            'name_fr' => 'Enterprise',
             'slug' => 'enterprise',
             'is_free' => false,
             'is_public' => false,

@@ -576,6 +576,7 @@ return [
     'prices_select_plan_hint' => 'Sélectionnez un abonnement ci-dessus pour voir et gérer ses prix.',
     'plan_prices' => 'Prix de l\'abonnement',
     'prices_manage_hint' => 'Gérer les prix multi-devises et multi-périodes pour cet abonnement.',
+    'prices_manage_create_hint' => 'Remplissez les champs ci-dessous et cliquez sur Ajouter pour créer un prix.',
     'yearly_discount' => 'Remise annuelle %',
     'yearly_discount_hint' => 'Calcule automatiquement le prix annuel : mensuel × 12 × (1 − remise%)',
     'manage_prices' => 'Gérer les prix',

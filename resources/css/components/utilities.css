@@ -29,6 +29,17 @@ mark {
   transform: rotate(180deg);
 }
 
+[dir="rtl"] .bi-chevron-left,
+[dir="rtl"] .bi-chevron-right,
+[dir="rtl"] .bi-arrow-left,
+[dir="rtl"] .bi-arrow-right,
+[dir="rtl"] .bi-caret-left-fill,
+[dir="rtl"] .bi-caret-right-fill,
+[dir="rtl"] .bi-caret-left,
+[dir="rtl"] .bi-caret-right {
+  transform: scaleX(-1);
+}
+
 hr { border-color: var(--border); opacity: 1; }
 
 .rotate-180 {

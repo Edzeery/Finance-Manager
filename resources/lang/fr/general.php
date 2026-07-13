@@ -281,4 +281,6 @@ return [
     'remove' => 'Supprimer',
     'show_more' => 'Voir plus',
     'show_less' => 'Voir moins',
+    'previous' => 'Précédent',
+    'next' => 'Suivant',
 ];

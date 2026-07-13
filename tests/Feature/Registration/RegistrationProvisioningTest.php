@@ -20,19 +20,19 @@ class RegistrationProvisioningTest extends TestCase
     {
         parent::setUp();
 
-        $adminRole = Role::create(['slug' => 'workspace_admin', 'name' => 'Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 1]);
-        Role::create(['slug' => 'workspace_deputy_admin', 'name' => 'Deputy Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 2]);
-        Role::create(['slug' => 'workspace_finance_manager', 'name' => 'Finance Manager', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 3]);
-        Role::create(['slug' => 'workspace_accountant', 'name' => 'Accountant', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 4]);
-        Role::create(['slug' => 'workspace_editor', 'name' => 'Editor', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 5]);
-        Role::create(['slug' => 'workspace_viewer', 'name' => 'Viewer', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 6]);
+        $adminRole = Role::create(['slug' => 'workspace_admin', 'name_en' => 'Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 1]);
+        Role::create(['slug' => 'workspace_deputy_admin', 'name_en' => 'Deputy Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 2]);
+        Role::create(['slug' => 'workspace_finance_manager', 'name_en' => 'Finance Manager', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 3]);
+        Role::create(['slug' => 'workspace_accountant', 'name_en' => 'Accountant', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 4]);
+        Role::create(['slug' => 'workspace_editor', 'name_en' => 'Editor', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 5]);
+        Role::create(['slug' => 'workspace_viewer', 'name_en' => 'Viewer', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 6]);
 
-        $dashboardPerm = Permission::create(['slug' => 'dashboard.view', 'name' => 'View Dashboard', 'module' => 'dashboard']);
+        $dashboardPerm = Permission::create(['slug' => 'dashboard.view', 'name_en' => 'View Dashboard', 'module' => 'dashboard']);
         $adminRole->permissions()->attach($dashboardPerm->id);
 
         SubscriptionPlan::create([
             'slug' => 'personal',
-            'name' => 'Personal',
+            'name_en' => 'Personal',
             'description' => 'Free personal plan',
             'is_free' => true,
         ]);
@@ -100,7 +100,7 @@ class RegistrationProvisioningTest extends TestCase
 
         $perm = \App\Models\Permission::updateOrCreate(
             ['slug' => 'dashboard.view'],
-            ['name' => 'View Dashboard', 'module' => 'dashboard']
+            ['name_en' => 'View Dashboard', 'module' => 'dashboard']
         );
 
         $workspaceAdmin->permissions()->syncWithoutDetaching($perm->id);
@@ -113,7 +113,7 @@ class RegistrationProvisioningTest extends TestCase
     public function test_api_registration_creates_workspace(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'API User',
+            'name_en' => 'API User',
             'email' => 'apiuser@example.com',
             'password' => 'Password1',
             'password_confirmation' => 'Password1',
@@ -132,7 +132,7 @@ class RegistrationProvisioningTest extends TestCase
     {
         $plan = SubscriptionPlan::create([
             'slug' => 'basic',
-            'name' => 'Basic',
+            'name_en' => 'Basic',
             'is_free' => false,
             'yearly_discount_percent' => 17,
 

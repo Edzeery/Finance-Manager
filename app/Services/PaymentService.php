@@ -177,7 +177,7 @@ class PaymentService
     public function verifyPayment(Payment $payment, string $status, ?int $adminId, ?string $notes = null, ?string $transactionReference = null): ?PaymentVerification
     {
         return DB::transaction(function () use ($payment, $status, $adminId, $notes, $transactionReference) {
-            $existing = $payment->verification;
+            $existing = PaymentVerification::withoutWorkspace()->where('payment_id', $payment->id)->first();
 
             $data = [
                 'verified_by' => $adminId,
@@ -202,6 +202,7 @@ class PaymentService
                 return $existing;
             }
 
+            $data['workspace_id'] = $payment->workspace_id;
             $verification = $payment->verification()->create($data);
             $this->applyPaymentSideEffects($payment, $status);
 
@@ -212,7 +213,7 @@ class PaymentService
     public function applyPaymentSideEffects(Payment $payment, string $status): void
     {
         DB::transaction(function () use ($payment, $status) {
-            $payment = Payment::lockForUpdate()->find($payment->id);
+            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
             if (!$payment) return;
 
             if ($status === 'approved') {
