@@ -43,25 +43,23 @@ new #[Layout('layouts.guest')] class extends Component {
     public function pendingPayment(): ?Payment
     {
         $user = auth()->user();
-        if (!$user || !$user->pending_plan_id) return null;
+        if (!$user || !$user->pending_plan_id) {
+            return null;
+        }
 
-        return Payment::withoutWorkspace()
-            ->where('user_id', $user->id)
-            ->where('status', PaymentStatus::CheckoutPending->value)
-            ->latest()
-            ->first();
+        return Payment::withoutWorkspace()->where('user_id', $user->id)->where('status', PaymentStatus::CheckoutPending->value)->latest()->first();
     }
 
     #[Computed(persist: false)]
     public function pendingPlanInfo(): ?array
     {
         $payment = $this->pendingPayment;
-        if (!$payment) return null;
+        if (!$payment) {
+            return null;
+        }
 
         $pendingPlan = \App\Models\SubscriptionPlan::find(auth()->user()->pending_plan_id);
-        return $pendingPlan
-            ? ['name' => $pendingPlan->name, 'id' => $pendingPlan->id]
-            : null;
+        return $pendingPlan ? ['name' => $pendingPlan->name, 'id' => $pendingPlan->id] : null;
     }
 
     public function mount(OnboardingService $onboardingService): void
@@ -692,7 +690,7 @@ new #[Layout('layouts.guest')] class extends Component {
                         </div>
                     @endif
                     @php
-                        $des_plan =  $plan['description'] ?? __('subscription.' . $plan['description']);
+                        $des_plan = $plan['description'] ?? __('subscription.' . $plan['description']);
                     @endphp
                     @if ($des_plan ?? null)
                         <p class="plan-desc"> {{ $des_plan }} </p>
