@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-      dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}"
-      data-theme="{{ session('theme', 'light') }}">
+    dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}" data-theme="{{ session('theme', 'light') }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,14 +15,16 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap"
+        rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     @stack('styles')
 </head>
-<body class="super-admin-layout" x-data="superAdminLayout"
-      :class="{ 'sidebar-collapsed': sidebarCollapsed }">
+
+<body class="super-admin-layout" x-data="superAdminLayout" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
     @include('layouts.super-admin.partials.sidebar')
 
     <div class="main-content">
@@ -48,20 +50,90 @@
     </div>
 
     <x-command-palette :items="[
-        ['title' => __('super-admin.dashboard'), 'description' => __('super-admin.overview'), 'icon' => 'bi bi-grid-1x2-fill', 'url' => route('super.admin.dashboard')],
-        ['title' => __('super-admin.users'), 'description' => __('super-admin.manage_users'), 'icon' => 'bi bi-people', 'url' => route('super.admin.users.index')],
-        ['title' => __('super-admin.workspaces'), 'description' => __('super-admin.manage_workspaces'), 'icon' => 'bi bi-layers', 'url' => route('super.admin.workspaces.index')],
-        ['title' => __('super-admin.subscriptions'), 'description' => __('super-admin.manage_subscriptions'), 'icon' => 'bi bi-credit-card', 'url' => route('super.admin.subscriptions.index')],
-        ['title' => __('super-admin.plans'), 'description' => __('super-admin.manage_plans'), 'icon' => 'bi bi-box', 'url' => route('super.admin.plans.index')],
-        ['title' => __('super-admin.invoices'), 'description' => __('super-admin.view_invoices'), 'icon' => 'bi bi-receipt', 'url' => route('super.admin.invoices.index')],
-        ['title' => __('super-admin.payments'), 'description' => __('super-admin.view_payments'), 'icon' => 'bi bi-currency-dollar', 'url' => route('super.admin.payments.index')],
-        ['title' => __('super-admin.payment_methods'), 'description' => __('super-admin.payment_methods_desc'), 'icon' => 'bi bi-credit-card-2-front', 'url' => route('super.admin.payment-methods.index')],
-        ['title' => __('super-admin.coupons'), 'description' => __('super-admin.manage_coupons'), 'icon' => 'bi bi-percent', 'url' => route('super.admin.coupons-tax-rates.index')],
-        ['title' => __('super-admin.roles'), 'description' => __('super-admin.manage_roles'), 'icon' => 'bi bi-shield', 'url' => route('super.admin.roles.index')],
-        ['title' => __('super-admin.test_checklist'), 'description' => __('super-admin.test_checklist_cmd'), 'icon' => 'bi bi-check2-square', 'url' => route('super.admin.test-checklist.index')],
-        ['title' => __('super-admin.activity_log'), 'description' => __('super-admin.view_activity'), 'icon' => 'bi bi-activity', 'url' => route('super.admin.activity-log')],
-        ['title' => __('super-admin.settings'), 'description' => __('super.admin.system_settings'), 'icon' => 'bi bi-gear', 'url' => route('super.admin.settings.index')],
-        ['title' => __('general.dashboard'), 'description' => __('general.go_to_user_dashboard'), 'icon' => 'bi bi-person', 'url' => route('dashboard')],
+        [
+            'title' => __('super-admin.dashboard'),
+            'description' => __('super-admin.overview'),
+            'icon' => 'bi bi-grid-1x2-fill',
+            'url' => route('super.admin.dashboard'),
+        ],
+        [
+            'title' => __('super-admin.users'),
+            'description' => __('super-admin.manage_users'),
+            'icon' => 'bi bi-people',
+            'url' => route('super.admin.users.index'),
+        ],
+        [
+            'title' => __('super-admin.workspaces'),
+            'description' => __('super-admin.manage_workspaces'),
+            'icon' => 'bi bi-layers',
+            'url' => route('super.admin.workspaces.index'),
+        ],
+        [
+            'title' => __('super-admin.subscriptions'),
+            'description' => __('super-admin.manage_subscriptions'),
+            'icon' => 'bi bi-credit-card',
+            'url' => route('super.admin.subscriptions.index'),
+        ],
+        [
+            'title' => __('super-admin.plans'),
+            'description' => __('super-admin.manage_plans'),
+            'icon' => 'bi bi-box',
+            'url' => route('super.admin.plans.index'),
+        ],
+        [
+            'title' => __('super-admin.invoices'),
+            'description' => __('super-admin.view_invoices'),
+            'icon' => 'bi bi-receipt',
+            'url' => route('super.admin.invoices.index'),
+        ],
+        [
+            'title' => __('super-admin.payments'),
+            'description' => __('super-admin.view_payments'),
+            'icon' => 'bi bi-currency-dollar',
+            'url' => route('super.admin.payments.index'),
+        ],
+        [
+            'title' => __('super-admin.payment_methods'),
+            'description' => __('super-admin.payment_methods_desc'),
+            'icon' => 'bi bi-credit-card-2-front',
+            'url' => route('super.admin.payment-methods.index'),
+        ],
+        [
+            'title' => __('super-admin.coupons'),
+            'description' => __('super-admin.manage_coupons'),
+            'icon' => 'bi bi-percent',
+            'url' => route('super.admin.coupons-tax-rates.index'),
+        ],
+        [
+            'title' => __('super-admin.roles'),
+            'description' => __('super-admin.manage_roles'),
+            'icon' => 'bi bi-shield',
+            'url' => route('super.admin.roles.index'),
+        ],
+        [
+            'title' => __('super-admin.test_checklist'),
+            'description' => __('super-admin.test_checklist_cmd'),
+            'icon' => 'bi bi-check2-square',
+            'url' => route('super.admin.test-checklist.index'),
+        ],
+        [
+            'title' => __('super-admin.activity_log'),
+            'description' => __('super-admin.view_activity'),
+            'icon' => 'bi bi-activity',
+            'url' => route('super.admin.activity-log'),
+        ],
+        [
+            'title' => __('super-admin.settings'),
+            'description' => __('super.admin.system_settings'),
+            'icon' => 'bi bi-gear',
+            'url' => route('super.admin.settings.index'),
+        ],
+        [
+            'title' => __('general.dashboard'),
+            'description' => __('general.go_to_user_dashboard'),
+            'icon' => 'bi bi-person',
+            'url' => route('dashboard'),
+        ],
     ]" />
 
     <x-toast />
@@ -96,8 +168,11 @@
 
                 fetchNotifications() {
                     fetch('{{ route('super.admin.notifications.index') }}', {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-                    })
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            }
+                        })
                         .then(r => r.json())
                         .then(data => {
                             this.notifications = data.notifications || [];
@@ -109,14 +184,20 @@
                 markRead(id) {
                     fetch(`/super-admin/notifications/${id}/read`, {
                         method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'X-Requested-With': 'XMLHttpRequest' }
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
                     }).then(() => this.fetchNotifications());
                 },
 
                 markAllRead() {
                     fetch('{{ route('super.admin.notifications.mark-all-read') }}', {
                         method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'X-Requested-With': 'XMLHttpRequest' }
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
                     }).then(() => this.fetchNotifications());
                 },
 
@@ -154,5 +235,8 @@
             };
         }
     </script>
+    <script type="module" src="https://esm.sh/ionicons@latest/loader"></script>
+    <script nomodule src="https://esm.sh/ionicons@latest/loader"></script>
 </body>
+
 </html>

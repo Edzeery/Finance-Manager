@@ -8,6 +8,12 @@
         "framework"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Edzeery/mystatuskit"
+        }
+    ],
     "require": {
         "edzeery/mystatuskit": "^1.0",
         "php": "^8.3",

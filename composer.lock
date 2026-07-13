@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b929e2858755da3ef79815816f65c6c",
+    "content-hash": "d20c0381b43fe01e291e4b9f1990e1db",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -994,6 +994,65 @@
                 }
             ],
             "time": "2025-10-31T18:51:33+00:00"
+        },
+        {
+            "name": "edzeery/mystatuskit",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Edzeery/mystatuskit.git",
+                "reference": "68ed77795e596ac4aef47f15086e2c3950bc89e7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Edzeery/mystatuskit/zipball/68ed77795e596ac4aef47f15086e2c3950bc89e7",
+                "reference": "68ed77795e596ac4aef47f15086e2c3950bc89e7",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Edzeery\\MyStatusKit\\StatusKitServiceProvider"
+                    ],
+                    "aliases": {
+                        "Status": "Edzeery\\MyStatusKit\\Facades\\Status",
+                        "Icon": "Edzeery\\MyStatusKit\\Facades\\Icon"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Edzeery\\MyStatusKit\\": "src/"
+                },
+                "files": [
+                    "src/Helpers/helpers.php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "مكتبة موحّدة لإدارة ألوان وأيقونات الحالات (Status Colors & Icons) في مشاريع Laravel، بدون اعتماد على Filament أو أي حزمة UI خارجية.",
+            "keywords": [
+                "badge",
+                "bootstrap-icons",
+                "colors",
+                "fontawesome",
+                "heroicons",
+                "icons",
+                "ionicons",
+                "laravel",
+                "status"
+            ],
+            "support": {
+                "source": "https://github.com/Edzeery/mystatuskit/tree/v1.0.3",
+                "issues": "https://github.com/Edzeery/mystatuskit/issues"
+            },
+            "time": "2026-07-13T23:04:06+00:00"
         },
         {
             "name": "egulias/email-validator",

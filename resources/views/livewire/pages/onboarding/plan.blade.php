@@ -1067,5 +1067,7 @@ new #[Layout('layouts.guest')] class extends Component {
             <i class="bi bi-box-arrow-right me-1"></i>{{ __('onboarding.sign_out') }}
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+
+        
     </div>
 </div>

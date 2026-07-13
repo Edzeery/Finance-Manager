@@ -158,7 +158,7 @@
 <?php $component = $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
 <?php unset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
 <?php endif; ?>
-            
+
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     </nav>
@@ -673,6 +673,8 @@
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
 
     <?php echo $__env->yieldPushContent('scripts'); ?>
+    <script type="module" src="https://esm.sh/ionicons@latest/loader"></script>
+    <script nomodule src="https://esm.sh/ionicons@latest/loader"></script>
 </body>
 
 </html>

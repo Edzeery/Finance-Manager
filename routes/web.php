@@ -10,6 +10,10 @@ Route::get('/', function () {
     $plans = \App\Models\SubscriptionPlan::active()->public()->with('planFeatures')->orderBy('sort_order')->get();
     return view('landing', compact('plans'));
 })->name('landing');
+Route::get('/mystatuskit', function () {
+    return view('mystatuskit');
+})->name('mystatuskit');
+
 
 Route::post('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
@@ -31,10 +35,10 @@ Route::view('/api/documentation', 'api-docs.index')
     ->name('api.documentation');
 
 // Webhook endpoints (payment gateways — no CSRF, see app.php except list)
-require __DIR__.'/webhooks.php';
+require __DIR__ . '/webhooks.php';
 
 // Tenant (workspace) routes — main application
-require __DIR__.'/tenant.php';
+require __DIR__ . '/tenant.php';
 
 // Authentication routes
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -90,9 +90,9 @@
                                     @endif
                                 </div>
                                 <div class="text-end flex-shrink-0">
-                                    <span class="badge" style="background:rgba(255,255,255,0.2);color:#fff;font-size:12px;padding:6px 14px;border-radius:20px;font-weight:600">
-                                        {{ $subscription->status->label() }}
-                                    </span>
+
+                                    <x-status-badge domain="subscription" status="{{$subscription->status}}" set="bi" />
+                                    <x-status-badge domain="subscription" status="{{$subscription->status}}" set="bi" />
                                 </div>
                             </div>
                         </div>

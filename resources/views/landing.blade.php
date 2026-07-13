@@ -68,7 +68,7 @@
 
                 <x-button variant="accent" :href="route('register')" icon="bi bi-person-plus"
                     icon-position="left">{{ __('general.register') }}</x-button>
-            
+
             @endauth
         </div>
     </nav>
@@ -532,6 +532,8 @@
 
     @livewireScripts
     @stack('scripts')
+    <script type="module" src="https://esm.sh/ionicons@latest/loader"></script>
+    <script nomodule src="https://esm.sh/ionicons@latest/loader"></script>
 </body>
 
 </html>
