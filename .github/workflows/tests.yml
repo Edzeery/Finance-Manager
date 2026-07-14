@@ -61,13 +61,13 @@ jobs:
         run: php artisan migrate --force --env=testing || echo "Migrations skipped (no DB)"
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: :memory:
+          DB_DATABASE: memory:
 
       - name: Run tests
         run: php artisan test --parallel --without-tty || php artisan test
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: :memory:
+          DB_DATABASE: memory:
 
       - name: Run tests with MySQL
         if: ${{ false }} # disabled until MySQL service is properly configured
