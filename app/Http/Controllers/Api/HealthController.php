@@ -28,6 +28,7 @@ class HealthController extends Controller
     {
         try {
             DB::connection()->getPdo();
+
             return ['passed' => true, 'message' => 'Connected'];
         } catch (\Exception $e) {
             return ['passed' => false, 'message' => $e->getMessage()];
@@ -37,10 +38,11 @@ class HealthController extends Controller
     private function checkStorage(): array
     {
         try {
-            $testFile = '.health-' . uniqid();
+            $testFile = '.health-'.uniqid();
             Storage::disk('local')->put($testFile, 'ok');
             $exists = Storage::disk('local')->exists($testFile);
             Storage::disk('local')->delete($testFile);
+
             return ['passed' => $exists, 'message' => $exists ? 'Writable' : 'Not writable'];
         } catch (\Exception $e) {
             return ['passed' => false, 'message' => $e->getMessage()];

@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
-use App\Models\SubscriptionPlan;
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Payments\GatewayManager;
@@ -28,14 +27,14 @@ class WorkspaceController extends Controller
     {
         $workspace = auth()->user()->currentWorkspace;
 
-        if (!$workspace || !auth()->user()->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.unauthorized'));
         }
 
         $targetPlan = $this->subscriptionService->getPlan($request->input('plan_slug'));
 
-        if (!$targetPlan) {
+        if (! $targetPlan) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.plan_not_found'));
         }
@@ -52,7 +51,7 @@ class WorkspaceController extends Controller
 
         if ($currentPlan && $targetPlan->sort_order < $currentPlan->sort_order) {
             $check = $this->subscriptionService->canDowngrade($workspace, $targetPlan, $currentSub);
-            if (!$check['can_downgrade']) {
+            if (! $check['can_downgrade']) {
                 return redirect()->route('account.subscriptions')
                     ->with('error', implode(' ', $check['errors']));
             }
@@ -66,7 +65,7 @@ class WorkspaceController extends Controller
             $validated['payment_method'] ?? null,
         );
 
-        if (!$result['subscription']) {
+        if (! $result['subscription']) {
             return redirect()->route('account.subscriptions')
                 ->with('error', $result['message']);
         }
@@ -95,13 +94,13 @@ class WorkspaceController extends Controller
     {
         $workspace = auth()->user()->currentWorkspace;
 
-        if (!$workspace || !auth()->user()->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.unauthorized'));
         }
 
         $subscription = $workspace->owner()?->first()?->activeSubscription();
-        if (!$subscription || $subscription->isExpired()) {
+        if (! $subscription || $subscription->isExpired()) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.no_active_subscription'));
         }
@@ -116,7 +115,7 @@ class WorkspaceController extends Controller
     {
         $workspace = auth()->user()->currentWorkspace;
 
-        if (!$workspace || !auth()->user()->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
             return redirect()->route('settings.index')
                 ->with('error', __('messages.unauthorized'));
         }
@@ -146,7 +145,7 @@ class WorkspaceController extends Controller
     {
         $workspace = auth()->user()->currentWorkspace;
 
-        if (!$workspace || !auth()->user()->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
             return redirect()->route('settings.index')
                 ->with('error', __('messages.unauthorized'));
         }
@@ -157,7 +156,7 @@ class WorkspaceController extends Controller
 
         $changed = $this->workspaceService->changeRole($workspace, $user, $validated['role']);
 
-        if (!$changed) {
+        if (! $changed) {
             return redirect()->route('settings.index')
                 ->with('error', __('messages.role_change_failed'));
         }
@@ -170,14 +169,14 @@ class WorkspaceController extends Controller
     {
         $workspace = auth()->user()->currentWorkspace;
 
-        if (!$workspace || !auth()->user()->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
             return redirect()->route('settings.index')
                 ->with('error', __('messages.unauthorized'));
         }
 
         $removed = $this->workspaceService->removeUser($workspace, $user);
 
-        if (!$removed) {
+        if (! $removed) {
             return redirect()->route('settings.index')
                 ->with('error', __('messages.remove_failed'));
         }
@@ -190,7 +189,7 @@ class WorkspaceController extends Controller
     {
         $workspace = auth()->user()->currentWorkspace;
 
-        if (!$workspace || !auth()->user()->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
             return redirect()->route('settings.index')
                 ->with('error', __('messages.unauthorized'));
         }
@@ -203,7 +202,7 @@ class WorkspaceController extends Controller
 
         $transferred = $this->workspaceService->transferOwnership($workspace, $newOwner);
 
-        if (!$transferred) {
+        if (! $transferred) {
             return redirect()->route('settings.index')
                 ->with('error', __('messages.transfer_failed'));
         }
@@ -246,7 +245,7 @@ class WorkspaceController extends Controller
     {
         $workspace = auth()->user()->currentWorkspace;
 
-        if (!$workspace || !auth()->user()->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
             return redirect()->route('settings.index')
                 ->with('error', __('messages.unauthorized'));
         }

@@ -286,4 +286,6 @@ return [
     'show_less' => 'Show Less',
     'previous' => 'Previous',
     'next' => 'Next',
+    'suspended' => 'Suspended',
+    'banned' => 'Banned',
 ];

@@ -7,7 +7,6 @@ use App\Models\Payment;
 use App\Models\SubscriptionPlan;
 use App\Models\Workspace;
 use App\Services\Payments\GatewayManager;
-use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\DB;
 
 class SubscriptionPaymentService
@@ -55,10 +54,10 @@ class SubscriptionPaymentService
                     'workspace_id' => $workspace->id,
                     'success_url' => $successUrl,
                     'failure_url' => $failureUrl,
-                    'webhook_url' => route('payment.webhook.' . $paymentMethod),
+                    'webhook_url' => route('payment.webhook.'.$paymentMethod),
                 ]);
 
-                if (!$result->success) {
+                if (! $result->success) {
                     throw new \RuntimeException($result->message);
                 }
 
@@ -78,11 +77,11 @@ class SubscriptionPaymentService
     {
         $planId = $payment->user?->pending_plan_id;
 
-        if (!$planId) {
+        if (! $planId) {
             $planId = $payment->workspace?->owner()?->first()?->activeSubscription()?->subscription_plan_id;
         }
 
-        if (!$planId) {
+        if (! $planId) {
             return;
         }
 

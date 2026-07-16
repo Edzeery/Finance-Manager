@@ -2,11 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Role;
-use App\Models\User;
-use App\Models\Workspace;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class MigrateWorkspaceRoles extends Command
 {

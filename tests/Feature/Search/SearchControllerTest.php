@@ -2,13 +2,12 @@
 
 namespace Tests\Feature\Search;
 
-use App\Models\Income;
 use App\Models\Expense;
+use App\Models\ExpenseCategory;
+use App\Models\Income;
+use App\Models\IncomeCategory;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Models\IncomeCategory;
-use App\Models\ExpenseCategory;
-use Database\Seeders\EnterpriseRolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\WithWorkspacePermission;
@@ -19,7 +18,9 @@ class SearchControllerTest extends TestCase
     use WithWorkspacePermission;
 
     private User $user;
+
     private IncomeCategory $incomeCategory;
+
     private ExpenseCategory $expenseCategory;
 
     protected function setUp(): void

@@ -284,4 +284,6 @@ return [
     'show_less' => 'عرض أقل',
     'previous' => 'السابق',
     'next' => 'التالي',
+    'suspended' => 'موقوف',
+    'banned' => 'محظور',
 ];

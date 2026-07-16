@@ -12,7 +12,7 @@ class ActivityLogServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new ActivityLogService();
+        $this->service = new ActivityLogService;
     }
 
     public function test_filter_sensitive_data_removes_account_number(): void

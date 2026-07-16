@@ -4,7 +4,6 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
-use App\Services\Payments\ValidationResult;
 
 class RedotPayGateway implements PaymentGateway
 {
@@ -17,9 +16,10 @@ class RedotPayGateway implements PaymentGateway
 
     public function validate(array $data): ValidationResult
     {
-        if (!$this->gatewaySetting('account_id', config('payment.gateways.redotpay.wallet_address'))) {
+        if (! $this->gatewaySetting('account_id', config('payment.gateways.redotpay.wallet_address'))) {
             return ValidationResult::invalid('RedotPay is not configured. Please contact support.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -32,7 +32,7 @@ class RedotPayGateway implements PaymentGateway
     {
         $accountId = $this->gatewaySetting('account_id', config('payment.gateways.redotpay.wallet_address'));
 
-        if (!$accountId) {
+        if (! $accountId) {
             return PaymentResult::failed('RedotPay is not configured. Please contact support.');
         }
 
@@ -58,7 +58,18 @@ class RedotPayGateway implements PaymentGateway
         return PaymentResult::failed('RedotPay verification is done manually.');
     }
 
-    public function isOnline(): bool { return false; }
-    public function isOffline(): bool { return true; }
-    public function supportedCurrencies(): array { return ['USDT', 'BTC', 'ETH', 'USD']; }
+    public function isOnline(): bool
+    {
+        return false;
+    }
+
+    public function isOffline(): bool
+    {
+        return true;
+    }
+
+    public function supportedCurrencies(): array
+    {
+        return ['USDT', 'BTC', 'ETH', 'USD'];
+    }
 }

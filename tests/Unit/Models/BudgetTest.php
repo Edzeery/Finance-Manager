@@ -4,7 +4,6 @@ namespace Tests\Unit\Models;
 
 use App\Models\Budget;
 use App\Models\BudgetCategory;
-use App\Models\ExpenseCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

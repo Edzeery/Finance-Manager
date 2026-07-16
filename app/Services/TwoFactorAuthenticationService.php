@@ -3,21 +3,21 @@
 namespace App\Services;
 
 use App\Contracts\Services\ActivityLogServiceInterface;
-use PragmaRX\Google2FALaravel\Google2FA;
-use App\Models\User;
 use App\Mail\TwoFactorCodeMail;
+use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use PragmaRX\Google2FALaravel\Google2FA;
 
 class TwoFactorAuthenticationService
 {
     public const METHOD_APP = 'app';
+
     public const METHOD_EMAIL = 'email';
 
     public function __construct(
         private readonly Google2FA $google2fa,
         private readonly ActivityLogServiceInterface $activityLog,
-    ) {
-    }
+    ) {}
 
     public function generateSecretKey(): string
     {
@@ -32,8 +32,8 @@ class TwoFactorAuthenticationService
             $secret
         );
 
-        if (!str_starts_with($qrCode, 'data:')) {
-            $qrCode = 'data:image/svg+xml;base64,' . base64_encode($qrCode);
+        if (! str_starts_with($qrCode, 'data:')) {
+            $qrCode = 'data:image/svg+xml;base64,'.base64_encode($qrCode);
         }
 
         return $qrCode;
@@ -65,7 +65,7 @@ class TwoFactorAuthenticationService
 
     public function verifyEmailCode(User $user, string $code): bool
     {
-        if (!$user->two_factor_email_code || !$user->two_factor_email_code_at) {
+        if (! $user->two_factor_email_code || ! $user->two_factor_email_code_at) {
             return false;
         }
 
@@ -73,7 +73,7 @@ class TwoFactorAuthenticationService
             return false;
         }
 
-        if (!hash_equals($user->two_factor_email_code, $code)) {
+        if (! hash_equals($user->two_factor_email_code, $code)) {
             return false;
         }
 
@@ -90,7 +90,7 @@ class TwoFactorAuthenticationService
         $methods = $user->two_factor_methods ?? [];
         $method = $method ?? self::METHOD_APP;
 
-        if (!in_array($method, $methods)) {
+        if (! in_array($method, $methods)) {
             $methods[] = $method;
         }
 
@@ -110,7 +110,7 @@ class TwoFactorAuthenticationService
     public function disable(User $user, ?string $method = null): void
     {
         if ($method) {
-            $methods = array_filter($user->two_factor_methods ?? [], fn($m) => $m !== $method);
+            $methods = array_filter($user->two_factor_methods ?? [], fn ($m) => $m !== $method);
             $user->forceFill(['two_factor_methods' => array_values($methods)])->save();
 
             if ($method === self::METHOD_EMAIL) {
@@ -136,6 +136,7 @@ class TwoFactorAuthenticationService
                 $user,
                 __('auth.2fa_disabled_log'),
             );
+
             return;
         }
 
@@ -165,6 +166,7 @@ class TwoFactorAuthenticationService
                 substr(bin2hex(random_bytes(3)), 0, 6),
             ]));
         }
+
         return $codes;
     }
 

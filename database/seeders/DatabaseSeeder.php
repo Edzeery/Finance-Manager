@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Role;
+use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -32,7 +34,6 @@ class DatabaseSeeder extends Seeder
             'theme' => 'light',
             'currency' => 'DZD',
             'timezone' => 'Africa/Algiers',
-            'is_active' => true,
         ]);
 
         $admin->roles()->attach(
@@ -42,9 +43,9 @@ class DatabaseSeeder extends Seeder
         $this->call(MigrateToWorkspacesSeeder::class);
 
         // Upgrade super admin to professional plan for testing
-        $professionalPlan = \App\Models\SubscriptionPlan::where('slug', 'professional')->first();
+        $professionalPlan = SubscriptionPlan::where('slug', 'professional')->first();
         if ($professionalPlan) {
-            $adminSub = \App\Models\Subscription::withoutWorkspace()
+            $adminSub = Subscription::withoutWorkspace()
                 ->where('user_id', $admin->id)
                 ->latest()
                 ->first();

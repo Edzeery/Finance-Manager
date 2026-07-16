@@ -76,4 +76,9 @@ return [
 
     'subscription_downgraded_subject' => 'Abonnement rétrogradé — :app',
     'subscription_downgraded_line' => 'Votre abonnement sera rétrogradé de :old_plan à :new_plan à la fin de votre période de facturation.',
+
+    'status_changed_subject' => 'Statut du compte mis à jour — :app',
+    'status_changed_line' => 'Le statut de votre compte a été modifié en : :status.',
+    'status_reason' => 'Raison : :reason',
+    'status_changed_footer' => 'Si vous avez des questions, veuillez contacter le support.',
 ];

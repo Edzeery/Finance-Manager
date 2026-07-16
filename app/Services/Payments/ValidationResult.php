@@ -21,7 +21,7 @@ class ValidationResult
 
     public function fails(): bool
     {
-        return !$this->passes;
+        return ! $this->passes;
     }
 
     public function message(): string

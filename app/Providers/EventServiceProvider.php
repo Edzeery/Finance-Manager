@@ -1,22 +1,23 @@
 <?php
 
 namespace App\Providers;
-use Illuminate\Support\Facades\Event;
+
 use App\Events\PaymentCompleted;
 use App\Events\SubscriptionActivated;
-
 use App\Listeners\ActivateWorkspace;
 use App\Listeners\CompleteOnboarding;
 use App\Listeners\CreateAdminNotification;
+use App\Listeners\LogAuthEvent;
 use App\Listeners\SendPaymentReceipt;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends \Illuminate\Foundation\Support\Providers\EventServiceProvider
 {
-     public  function boot(): void
+    public function boot(): void
     {
 
-        Event::subscribe(\App\Listeners\LogAuthEvent::class);
+        Event::subscribe(LogAuthEvent::class);
 
         Event::listen(
             PaymentCompleted::class,

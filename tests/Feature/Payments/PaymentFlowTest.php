@@ -3,15 +3,18 @@
 namespace Tests\Feature\Payments;
 
 use App\Enums\PaymentStatus;
+use App\Enums\SubscriptionStatus;
+use App\Exceptions\PaymentException;
 use App\Models\PlanFeature;
 use App\Models\PlanPrice;
 use App\Models\Role;
+use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\OnboardingService;
-use App\Services\PaymentService;
 use App\Services\Payments\Chargily\ChargilyClient;
+use App\Services\PaymentService;
 use App\Services\SubscriptionService;
 use App\Services\WorkspaceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,6 +26,7 @@ class PaymentFlowTest extends TestCase
     use RefreshDatabase;
 
     private SubscriptionPlan $paidPlan;
+
     private SubscriptionPlan $freePlan;
 
     protected function tearDown(): void
@@ -78,7 +82,7 @@ class PaymentFlowTest extends TestCase
         $service = app(PaymentService::class);
         $user = User::factory()->create();
 
-        $this->expectException(\App\Exceptions\PaymentException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('Workspace is required to process payment.');
 
         $service->chargeForPlan(
@@ -95,9 +99,9 @@ class PaymentFlowTest extends TestCase
     {
         $service = app(PaymentService::class);
         $user = User::factory()->create();
-        $workspace = new Workspace();
+        $workspace = new Workspace;
 
-        $this->expectException(\App\Exceptions\PaymentException::class);
+        $this->expectException(PaymentException::class);
         $this->expectExceptionMessage('Workspace is required to process payment.');
 
         $service->chargeForPlan(
@@ -148,11 +152,11 @@ class PaymentFlowTest extends TestCase
         $this->assertTrue($user->hasConfirmedPlan());
 
         // Fetch latest subscription directly by ID ordering
-        $latestSub = \App\Models\Subscription::where('workspace_id', $user->currentWorkspace->id)
+        $latestSub = Subscription::where('workspace_id', $user->currentWorkspace->id)
             ->orderBy('id', 'desc')
             ->first();
         $this->assertNotNull($latestSub);
-        $this->assertEquals(\App\Enums\SubscriptionStatus::Active, $latestSub->status);
+        $this->assertEquals(SubscriptionStatus::Active, $latestSub->status);
         $this->assertEquals('free', $latestSub->payment_method);
     }
 
@@ -173,11 +177,11 @@ class PaymentFlowTest extends TestCase
         $this->assertEquals($workspace->id, $user->currentWorkspace->id);
 
         // Should still have an active subscription (order by id desc to get newest)
-        $latestSub = \App\Models\Subscription::where('workspace_id', $workspace->id)
+        $latestSub = Subscription::where('workspace_id', $workspace->id)
             ->orderBy('id', 'desc')
             ->first();
         $this->assertNotNull($latestSub);
-        $this->assertEquals(\App\Enums\SubscriptionStatus::Active, $latestSub->status);
+        $this->assertEquals(SubscriptionStatus::Active, $latestSub->status);
     }
 
     public function test_can_create_workspace_allows_first_workspace_for_new_user(): void
@@ -241,11 +245,11 @@ class PaymentFlowTest extends TestCase
         $user->refresh();
 
         // Query directly by ID desc to avoid created_at collision with latest()
-        $subscription = \App\Models\Subscription::where('workspace_id', $user->currentWorkspace->id)
+        $subscription = Subscription::where('workspace_id', $user->currentWorkspace->id)
             ->orderBy('id', 'desc')
             ->first();
         $this->assertNotNull($subscription);
-        $this->assertEquals(\App\Enums\SubscriptionStatus::Active, $subscription->status);
+        $this->assertEquals(SubscriptionStatus::Active, $subscription->status);
         $this->assertEquals('free', $subscription->payment_method);
         $this->assertTrue($user->hasConfirmedPlan());
     }

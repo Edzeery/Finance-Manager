@@ -76,4 +76,9 @@ return [
 
     'subscription_downgraded_subject' => 'تم تخفيض الاشتراك — :app',
     'subscription_downgraded_line' => 'سيتم تخفيض اشتراكك من :old_plan إلى :new_plan في نهاية فترة الفوترة.',
+
+    'status_changed_subject' => 'تم تحديث حالة الحساب — :app',
+    'status_changed_line' => 'تم تغيير حالة حسابك إلى: :status.',
+    'status_reason' => 'السبب: :reason',
+    'status_changed_footer' => 'إذا كان لديك أي استفسار، يرجى التواصل مع الدعم الفني.',
 ];

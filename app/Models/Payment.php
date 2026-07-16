@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Payment extends Model
 {
@@ -57,8 +58,8 @@ class Payment extends Model
         static::addGlobalScope(new WorkspaceScope);
 
         static::creating(function (Payment $payment) {
-            if (!$payment->uuid) {
-                $payment->uuid = 'pay-' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(12));
+            if (! $payment->uuid) {
+                $payment->uuid = 'pay-'.Str::lower(Str::random(12));
             }
         });
 
@@ -120,9 +121,10 @@ class Payment extends Model
         $checkoutId = $this->transaction_id ?? $this->chargily_checkout_id ?? null;
 
         if ($this->method === 'chargily' && $checkoutId) {
-            $method = \App\Models\PaymentMethod::where('key', 'chargily')->first();
+            $method = PaymentMethod::where('key', 'chargily')->first();
             $mode = $method?->credential('mode', 'test') ?? 'test';
             $prefix = $mode === 'live' ? '' : 'test/';
+
             return "https://pay.chargily.dz/{$prefix}checkouts/{$checkoutId}/pay";
         }
 
@@ -146,9 +148,9 @@ class Payment extends Model
 
     public function scopeTerminal($query)
     {
-        return $query->whereIn('status', array_map(fn(PaymentStatus $s) => $s->value, array_filter(
+        return $query->whereIn('status', array_map(fn (PaymentStatus $s) => $s->value, array_filter(
             PaymentStatus::cases(),
-            fn(PaymentStatus $s) => $s->isTerminal()
+            fn (PaymentStatus $s) => $s->isTerminal()
         )));
     }
 
@@ -164,7 +166,7 @@ class Payment extends Model
 
     public function isRefundable(): bool
     {
-        return $this->isPaid() && !$this->isRefunded();
+        return $this->isPaid() && ! $this->isRefunded();
     }
 
     public function scopeRefunded($query)

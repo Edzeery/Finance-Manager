@@ -13,6 +13,7 @@ class SubscriptionPlanFactory extends Factory
     public function definition(): array
     {
         $name = fake()->word();
+
         return [
             'name_en' => $name,
             'name_ar' => $name,
@@ -39,7 +40,7 @@ class SubscriptionPlanFactory extends Factory
                     'transactions_per_month' => '1000',
                     default => '1',
                 };
-                if (!$plan->planFeatures()->where('plan_feature_id', $feature->id)->exists()) {
+                if (! $plan->planFeatures()->where('plan_feature_id', $feature->id)->exists()) {
                     $plan->planFeatures()->attach($feature->id, ['value' => $value, 'sort_order' => 0]);
                 }
             }
@@ -48,7 +49,7 @@ class SubscriptionPlanFactory extends Factory
 
     public function free(): static
     {
-        return $this->state(fn(array $attrs) => [
+        return $this->state(fn (array $attrs) => [
             'is_free' => true,
             'yearly_discount_percent' => null,
         ]);
@@ -56,14 +57,14 @@ class SubscriptionPlanFactory extends Factory
 
     public function paid(): static
     {
-        return $this->state(fn(array $attrs) => [
+        return $this->state(fn (array $attrs) => [
             'is_free' => false,
         ]);
     }
 
     public function enterprise(): static
     {
-        return $this->state(fn(array $attrs) => [
+        return $this->state(fn (array $attrs) => [
             'name_en' => 'Enterprise',
             'name_ar' => 'مؤسسات',
             'name_fr' => 'Enterprise',

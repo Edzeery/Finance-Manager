@@ -3,23 +3,36 @@
     <x-slot:page-title>{{ __('super-admin.workspaces') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.workspaces_desc') }}</x-slot>
 
+    @php $showTypeSubTabs = request('status') !== 'trashed'; @endphp
+
+    <x-filter-tabs :tabs="[
+        'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-grid-3x3-gap'],
+        'active' => ['label' => __('general.active'), 'count' => $countActive, 'icon' => 'bi-check-circle'],
+        'inactive' => ['label' => __('general.inactive'), 'count' => $countInactive, 'icon' => 'bi-x-circle'],
+        'trashed' => ['label' => __('general.trash'), 'count' => $countTrashed, 'icon' => 'bi-trash'],
+    ]" current="{{ request('status', 'all') }}" keyParam="status" defaultKey="all"
+        :preserve="['search', 'per_page']"
+        subParam="{{ $showTypeSubTabs ? 'type' : '' }}"
+        subCurrent="{{ $showTypeSubTabs ? request('type', '') : '' }}"
+        :subTabs="$showTypeSubTabs ? $typeSubTabs : []" />
+
     <div class="data-grid">
         <div class="data-grid-toolbar">
             <div class="data-grid-toolbar-left">
                 <form method="GET" action="{{ route('super.admin.workspaces.index') }}" class="d-flex flex-wrap align-items-center gap-2">
                     <x-search-filter name="search" placeholder="{{ __('general.search') }}..." value="{{ request('search') }}" min-width="200px" />
-                    @php $typeOptions = collect($types)->mapWithKeys(fn($t) => [$t => ucfirst($t)])->toArray(); @endphp
-                    <x-select-filter name="type" :options="$typeOptions" placeholder="{{ __('general.all_types') }}" min-width="120px" />
-                    <x-select-filter name="status" :options="[
-                        'active' => __('general.active'),
-                        'inactive' => __('general.inactive'),
-                    ]" placeholder="{{ __('general.all_status') }}" min-width="110px" />
+                    @if (request('status') && request('status') !== 'all')
+                        <input type="hidden" name="status" value="{{ request('status') }}">
+                    @endif
+                    @if ($showTypeSubTabs && request('type'))
+                        <input type="hidden" name="type" value="{{ request('type') }}">
+                    @endif
                     <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
-                    <x-clear-filters :filters="['search','type','status']" :route="route('super.admin.workspaces.index')" />
+                    <x-clear-filters :filters="['search','status','type']" :route="route('super.admin.workspaces.index')" />
                 </form>
             </div>
             <div class="data-grid-toolbar-right">
-                <x-per-page :current="(int) request('per_page', 15)" :route="route('super.admin.workspaces.index')" :preserve="['search','type','status']" :options="[10, 15, 25, 50]" />
+                <x-per-page :current="(int) request('per_page', 15)" :route="route('super.admin.workspaces.index')" :preserve="['search','status','type']" :options="[10, 15, 25, 50]" />
             </div>
         </div>
 
@@ -33,7 +46,10 @@
                             <th>{{ __('super-admin.owner') }}</th>
                             <th>{{ __('super-admin.users_count') }}</th>
                             <th>{{ __('general.status') }}</th>
-                            <th>{{ __('general.created') }}</th>
+                            <th>{{ request('status') === 'trashed' ? __('general.deleted') : __('general.created') }}</th>
+                            @if (request('status') === 'trashed')
+                                <th class="col-actions"></th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -61,13 +77,37 @@
                                 </td>
                                 <td><span class="badge" style="font-size:11px;background:var(--bg-subtle);color:var(--text);padding:2px 10px;border-radius:6px">{{ $ws->users->count() }}</span></td>
                                 <td>
-                                    @if($ws->is_active)
-                                        <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.active') }}</span>
+                                    @if (request('status') === 'trashed')
+                                        <x-status-badge domain="general" status="archived" set="bi" />
                                     @else
-                                        <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.inactive') }}</span>
+                                        <x-status-badge domain="general" :status="$ws->is_active ? 'active' : 'inactive'" set="bi" />
                                     @endif
                                 </td>
-                                <td class="cell-muted">{{ $ws->created_at->format('Y/m/d') }}</td>
+                                <td class="cell-muted">
+                                    {{ request('status') === 'trashed' ? $ws->deleted_at->format('Y/m/d') : $ws->created_at->format('Y/m/d') }}
+                                </td>
+                                @if (request('status') === 'trashed')
+                                    <td class="col-actions">
+                                        <div class="cell-actions">
+                                            <button type="button" class="btn btn-icon"
+                                                title="{{ __('general.restore') }}"
+                                                onclick="confirmRestoreWorkspace({{ $ws->id }})">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-icon btn-icon-danger"
+                                                title="{{ __('general.force_delete') }}"
+                                                onclick="confirmForceDeleteWorkspace({{ $ws->id }})">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            <form id="restore-ws-{{ $ws->id }}"
+                                                action="{{ route('super.admin.workspaces.restore', $ws->id) }}"
+                                                method="POST" class="d-none">@csrf</form>
+                                            <form id="force-delete-ws-{{ $ws->id }}"
+                                                action="{{ route('super.admin.workspaces.force-delete', $ws->id) }}"
+                                                method="POST" class="d-none">@csrf @method('DELETE')</form>
+                                        </div>
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>
@@ -78,7 +118,7 @@
                         <i class="bi bi-building"></i>
                     </div>
                     <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('messages.no_results') }}</p>
+                    <p>{{ request('status') === 'trashed' ? __('messages.no_trashed') : __('messages.no_results') }}</p>
                 </div>
             @endif
         </div>
@@ -90,4 +130,34 @@
             </div>
         @endif
     </div>
+
+    @push('scripts')
+        <script>
+            function confirmRestoreWorkspace(id) {
+                const form = document.getElementById('restore-ws-' + id);
+                if (!form) return;
+                showConfirmModal(
+                    '{{ __('general.confirm') }}',
+                    '{{ __('messages.confirm_restore_workspace') }}',
+                    (confirmed) => {
+                        if (confirmed) form.submit();
+                    },
+                    '{{ __('general.restore') }}', 'btn-success'
+                );
+            }
+
+            function confirmForceDeleteWorkspace(id) {
+                const form = document.getElementById('force-delete-ws-' + id);
+                if (!form) return;
+                showConfirmModal(
+                    '{{ __('general.confirm') }}',
+                    '{{ __('messages.confirm_force_delete_workspace') }}',
+                    (confirmed) => {
+                        if (confirmed) form.submit();
+                    },
+                    '{{ __('general.force_delete') }}', 'btn-danger'
+                );
+            }
+        </script>
+    @endpush
 </x-super-admin-layout>

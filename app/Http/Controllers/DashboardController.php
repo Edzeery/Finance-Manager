@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\ChartDataServiceInterface;
 use App\Contracts\Services\DashboardServiceInterface;
+use App\Http\Controllers\Concerns\HasBreadcrumbs;
 use App\Models\Budget;
 use App\Models\Debt;
 use App\Models\Expense;
 use App\Models\FinancialGoal;
 use App\Models\Income;
 use App\Services\DateFilterService;
-use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use Illuminate\Support\Collection;
 
 class DashboardController extends Controller
 {
@@ -65,7 +66,7 @@ class DashboardController extends Controller
             ->current()
             ->with('categories')
             ->get()
-            ->filter(fn($b) => $b->is_exceeded)
+            ->filter(fn ($b) => $b->is_exceeded)
             ->take(4);
 
         $debtReminders = Debt::active()
@@ -86,7 +87,7 @@ class DashboardController extends Controller
             ->header('Cache-Control', 'no-store, must-revalidate');
     }
 
-    private function getRecentTransactions($start, $end): \Illuminate\Support\Collection
+    private function getRecentTransactions($start, $end): Collection
     {
         $locale = app()->getLocale();
 
@@ -102,10 +103,10 @@ class DashboardController extends Controller
             ->latest('date')
             ->take(5)
             ->get()
-            ->map(fn($i) => [
+            ->map(fn ($i) => [
                 'date' => $i->date,
                 'description' => $i->description,
-                'category' => $i->category?->{'name_' . $locale} ?? '—',
+                'category' => $i->category?->{'name_'.$locale} ?? '—',
                 'amount' => $i->amount,
                 'type' => 'income',
             ]);
@@ -114,10 +115,10 @@ class DashboardController extends Controller
             ->latest('date')
             ->take(5)
             ->get()
-            ->map(fn($e) => [
+            ->map(fn ($e) => [
                 'date' => $e->date,
                 'description' => $e->description,
-                'category' => $e->category?->{'name_' . $locale} ?? '—',
+                'category' => $e->category?->{'name_'.$locale} ?? '—',
                 'amount' => $e->amount,
                 'type' => 'expense',
             ]);

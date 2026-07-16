@@ -53,7 +53,7 @@ class NotificationService
         $threshold = $spentPercent >= 100 ? 100 : (int) (floor($spentPercent / 10) * 10);
         $level = $spentPercent >= 100 ? 'exceeded' : "{$threshold}%";
 
-        return $this->create($userId, "budget_nearing_limit", [
+        return $this->create($userId, 'budget_nearing_limit', [
             'ar' => "الميزانية تقترب من الحد: $level",
             'fr' => "Budget proche de la limite : $level",
             'en' => "Budget nearing limit: $level",
@@ -106,7 +106,7 @@ class NotificationService
     public function goalDeadlineApproaching(int $userId, string $goalName, int $daysLeft): Notification
     {
         return $this->create($userId, 'goal_deadline', [
-            'ar' => "اقتراب موعد الهدف",
+            'ar' => 'اقتراب موعد الهدف',
             'fr' => "Échéance d'objectif proche",
             'en' => 'Goal deadline approaching',
         ], [

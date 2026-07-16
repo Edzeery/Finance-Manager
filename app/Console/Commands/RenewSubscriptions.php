@@ -7,8 +7,8 @@ use App\Enums\SubscriptionStatus;
 use App\Models\Payment;
 use App\Models\Subscription;
 use App\Services\OnboardingService;
-use App\Services\PaymentService;
 use App\Services\Payments\GatewayManager;
+use App\Services\PaymentService;
 use App\Services\SubscriptionActivationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -58,7 +58,7 @@ class RenewSubscriptions extends Command
         SubscriptionActivationService $activationService,
     ): string {
         $paymentMethod = $subscription->payment_method;
-        if (!$paymentMethod || OnboardingService::isManual($paymentMethod)) {
+        if (! $paymentMethod || OnboardingService::isManual($paymentMethod)) {
             return 'skipped';
         }
 
@@ -72,12 +72,12 @@ class RenewSubscriptions extends Command
         }
 
         $plan = $subscription->plan;
-        if (!$plan || $plan->is_free) {
+        if (! $plan || $plan->is_free) {
             return 'skipped';
         }
 
         $workspace = $subscription->workspace;
-        if (!$workspace) {
+        if (! $workspace) {
             return 'skipped';
         }
 
@@ -99,6 +99,7 @@ class RenewSubscriptions extends Command
                 if ($payment->amount <= 0) {
                     $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
                     $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService);
+
                     return 'renewed';
                 }
 
@@ -115,10 +116,12 @@ class RenewSubscriptions extends Command
                     if ($result->success && $payment->transaction_id) {
                         $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
                         $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService);
+
                         return 'renewed';
                     }
 
                     $payment->update(['status' => PaymentStatus::CheckoutFailed, 'failed_at' => now()]);
+
                     return 'failed';
                 }
 
@@ -143,10 +146,12 @@ class RenewSubscriptions extends Command
                     }
 
                     $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService);
+
                     return 'renewed';
                 }
 
                 $payment->update(['status' => PaymentStatus::CheckoutFailed, 'failed_at' => now()]);
+
                 return 'failed';
             });
         } catch (\Throwable $e) {
@@ -154,6 +159,7 @@ class RenewSubscriptions extends Command
                 'subscription_id' => $subscription->id,
                 'error' => $e->getMessage(),
             ]);
+
             return 'failed';
         }
     }

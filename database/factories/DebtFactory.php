@@ -14,6 +14,7 @@ class DebtFactory extends Factory
     public function definition(): array
     {
         $total = fake()->randomFloat(2, 1000, 500000);
+
         return [
             'user_id' => User::factory(),
             'workspace_id' => Workspace::factory(),
@@ -29,17 +30,17 @@ class DebtFactory extends Factory
 
     public function owed(): static
     {
-        return $this->state(fn(array $attrs) => ['type' => 'owed']);
+        return $this->state(fn (array $attrs) => ['type' => 'owed']);
     }
 
     public function owing(): static
     {
-        return $this->state(fn(array $attrs) => ['type' => 'owing']);
+        return $this->state(fn (array $attrs) => ['type' => 'owing']);
     }
 
     public function overdue(): static
     {
-        return $this->state(fn(array $attrs) => [
+        return $this->state(fn (array $attrs) => [
             'status' => 'overdue',
             'due_date' => now()->subDays(fake()->numberBetween(1, 90)),
         ]);

@@ -18,7 +18,7 @@ return new class extends Migration
         $used = [];
         DB::table('payments')->orderBy('id')->each(function ($payment) use (&$used) {
             do {
-                $uuid = 'pay-' . Str::lower(Str::random(12));
+                $uuid = 'pay-'.Str::lower(Str::random(12));
             } while (isset($used[$uuid]));
             $used[$uuid] = true;
             DB::table('payments')->where('id', $payment->id)->update(['uuid' => $uuid]);

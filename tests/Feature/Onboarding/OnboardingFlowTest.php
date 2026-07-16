@@ -5,13 +5,12 @@ namespace Tests\Feature\Onboarding;
 use App\Models\Permission;
 use App\Models\PlanPrice;
 use App\Models\Role;
+use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\OnboardingService;
 use App\Services\WorkspaceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
-use Livewire\Volt\Volt;
 use Tests\TestCase;
 
 class OnboardingFlowTest extends TestCase
@@ -73,7 +72,7 @@ class OnboardingFlowTest extends TestCase
         $workspace = app(WorkspaceService::class)->createForUser($user);
         $plan = SubscriptionPlan::first();
         if ($plan) {
-            \App\Models\Subscription::withoutWorkspace()->create([
+            Subscription::withoutWorkspace()->create([
                 'workspace_id' => $workspace->id,
                 'user_id' => $user->id,
                 'subscription_plan_id' => $plan->id,
@@ -138,7 +137,7 @@ class OnboardingFlowTest extends TestCase
         $workspace = app(WorkspaceService::class)->createForUser($user);
         $plan = SubscriptionPlan::where('is_free', true)->first();
         if ($plan) {
-            \App\Models\Subscription::withoutWorkspace()->create([
+            Subscription::withoutWorkspace()->create([
                 'workspace_id' => $workspace->id,
                 'user_id' => $user->id,
                 'subscription_plan_id' => $plan->id,
@@ -148,7 +147,7 @@ class OnboardingFlowTest extends TestCase
                 'billing_period' => 'monthly',
             ]);
         }
-        \App\Models\User::withoutTimestamps(function () use ($user) {
+        User::withoutTimestamps(function () use ($user) {
             $user->update(['onboarding_completed_at' => now()]);
         });
         $this->actingAs($user);
@@ -162,7 +161,7 @@ class OnboardingFlowTest extends TestCase
         $workspace = app(WorkspaceService::class)->createForUser($user);
         $plan = SubscriptionPlan::first();
         if ($plan) {
-            \App\Models\Subscription::withoutWorkspace()->create([
+            Subscription::withoutWorkspace()->create([
                 'workspace_id' => $workspace->id,
                 'user_id' => $user->id,
                 'subscription_plan_id' => $plan->id,

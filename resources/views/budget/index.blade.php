@@ -13,7 +13,7 @@
     <x-slot:title>{{ __('budget.title') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('budget.title') }}</x-slot>
 
-    <x-filter-tabs :tabs="$tabs" current="{{ $tab }}" />
+    <x-filter-tabs :tabs="$tabs" current="{{ $tab }}" defaultKey="all" :preserve="['search','per_page']" />
 
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <form method="GET" action="{{ route('budget.index') }}" class="d-flex flex-wrap align-items-center gap-2">
@@ -96,9 +96,7 @@
                                     </span>
                                 </div>
                                 @if(!$budget->is_active)
-                                    <span class="badge-custom badge-status" style="background:rgba(100,116,139,0.1); color:var(--text-muted); border:1px solid rgba(100,116,139,0.3)">
-                                        {{ __('general.inactive') }}
-                                    </span>
+                                    <x-status-badge domain="general" status="inactive" set="bi" />
                                 @endif
                             </div>
 

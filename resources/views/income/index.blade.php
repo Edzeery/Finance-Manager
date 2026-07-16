@@ -15,20 +15,30 @@
     <x-slot:page-title>{{ __('income.title') }}</x-slot>
     <x-slot:page-description>{{ __('income.total_income') }}: <strong>{{ number_format($totalIncome, 2) }} {{ config('finance.currency_symbol') }}</strong></x-slot>
 
-    <x-filter-tabs :tabs="$tabs" current="{{ $tab }}" />
+    @php $showSubTabs = $tab !== 'trashed'; @endphp
+
+    <x-filter-tabs :tabs="$tabs" current="{{ $tab }}" defaultKey="all"
+        subParam="category"
+        subCurrent="{{ request('category', '') }}"
+        :subTabs="$showSubTabs ? $catSubTabs : []"
+        :preserve="['type','date_from','date_to','search','per_page']" />
 
     @php
-        $catOptions = $categories->mapWithKeys(fn($cat) => [$cat->id => locale_name($cat)])->toArray();
+        $typeTabs = [
+            '' => ['label' => __('general.all')],
+            'fixed' => ['label' => __('income.fixed')],
+            'variable' => ['label' => __('income.variable')],
+            'recurring' => ['label' => __('income.recurring')],
+        ];
     @endphp
+    <x-filter-tabs :tabs="$typeTabs" current="{{ request('type', '') }}" keyParam="type" defaultKey="" :preserve="['category','date_from','date_to','search','per_page','tab']" />
+
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <form method="GET" action="{{ route('income.index') }}" class="d-flex flex-wrap align-items-center gap-2">
             <x-search-filter name="search" :value="request('search')" size="sm" />
-            <x-select-filter name="category" :options="$catOptions" placeholder="{{ __('general.all') }} {{ __('income.categories') }}" min-width="140px" onchange="this.form.submit()" class="form-custom" style="padding:6px 12px" />
-            <x-select-filter name="type" :options="[
-                'fixed' => __('income.fixed'),
-                'variable' => __('income.variable'),
-                'recurring' => __('income.recurring'),
-            ]" placeholder="{{ __('general.all') }}" min-width="100px" onchange="this.form.submit()" class="form-custom" style="padding:6px 12px" />
+            @if (request('category'))
+                <input type="hidden" name="category" value="{{ request('category') }}">
+            @endif
 
             <input type="date" name="date_from" class="form-custom" style="width:auto;padding:6px 12px;font-size:13px" value="{{ request('date_from') }}" onchange="this.form.submit()">
             <input type="date" name="date_to" class="form-custom" style="width:auto;padding:6px 12px;font-size:13px" value="{{ request('date_to') }}" onchange="this.form.submit()">
@@ -127,7 +137,7 @@
                                     @endphp
                                     <span class="badge badge-custom badge-income">{{ $typeLabels[$type] ?? $type }}</span>
                                 </td>
-                                <td class="text-end fw-bold" style="color:var(--success)">+{{ number_format($income->amount, 2) }}</td>
+                                <td text-start fw-bold style="color:var(--success)">+{{ number_format($income->amount, 2) }}</td>
                                 @if($hasActions)
                                 <td class="text-center">
                                     @if($tab === 'trashed')

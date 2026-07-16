@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FinancialGoal extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory, SoftDeletes;
 
     protected static function booted(): void
     {
@@ -42,20 +42,29 @@ class FinancialGoal extends Model
 
     public function getProgressAttribute(): float
     {
-        if ($this->target_amount <= 0) return 0;
+        if ($this->target_amount <= 0) {
+            return 0;
+        }
+
         return min(100, round(($this->current_amount / $this->target_amount) * 100, 2));
     }
 
     public function getDaysRemainingAttribute(): ?int
     {
-        if (!$this->target_date) return null;
+        if (! $this->target_date) {
+            return null;
+        }
+
         return max(0, now()->startOfDay()->diffInDays($this->target_date, false));
     }
 
     public function getMonthlyTargetAttribute(): float
     {
-        if (!$this->target_date || $this->daysRemaining <= 0) return $this->target_amount;
+        if (! $this->target_date || $this->daysRemaining <= 0) {
+            return $this->target_amount;
+        }
         $months = max(1, ceil($this->daysRemaining / 30));
+
         return round(($this->target_amount - $this->current_amount) / $months, 2);
     }
 

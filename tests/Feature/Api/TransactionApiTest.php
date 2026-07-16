@@ -8,7 +8,6 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class TransactionApiTest extends TestCase
@@ -16,7 +15,9 @@ class TransactionApiTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Workspace $workspace;
+
     private string $token;
 
     protected function setUp(): void

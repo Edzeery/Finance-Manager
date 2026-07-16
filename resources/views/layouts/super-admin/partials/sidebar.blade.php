@@ -202,7 +202,7 @@
             <i class="bi bi-chevron-up profile-chevron" :class="open && !sidebarCollapsed ? 'rotate-180' : ''" x-show="!sidebarCollapsed" x-cloak></i>
         </button>
 
-        @include('layouts.partials._profile-dropdown-menu')
+        @include('layouts.partials._profile-dropdown-menu-admin')
     </div>
 </aside>
 

@@ -3,13 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Enums\RecurringFrequency;
-use App\Models\Income;
 use App\Models\Expense;
+use App\Models\Income;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class ProcessRecurringTransactions extends Command
 {
     protected $signature = 'finance:process-recurring';
+
     protected $description = 'Process recurring transactions for the current period';
 
     public function handle(): int
@@ -20,7 +22,7 @@ class ProcessRecurringTransactions extends Command
         Income::where('is_recurring', true)
             ->where(function ($q) use ($today) {
                 $q->whereNull('recurring_end_date')
-                  ->orWhere('recurring_end_date', '>=', $today);
+                    ->orWhere('recurring_end_date', '>=', $today);
             })
             ->chunk(100, function ($incomes) use ($today, &$processed) {
                 foreach ($incomes as $income) {
@@ -28,7 +30,7 @@ class ProcessRecurringTransactions extends Command
                         $lastDate = $income->date;
                         $nextDate = $this->getNextRecurringDate($lastDate, $income->recurring_frequency);
 
-                        if ($nextDate && $nextDate <= $today && (!$income->recurring_end_date || $nextDate <= $income->recurring_end_date)) {
+                        if ($nextDate && $nextDate <= $today && (! $income->recurring_end_date || $nextDate <= $income->recurring_end_date)) {
                             $new = $income->replicate(['is_archived']);
                             $new->date = $nextDate;
                             $new->is_archived = false;
@@ -48,7 +50,7 @@ class ProcessRecurringTransactions extends Command
         Expense::where('is_recurring', true)
             ->where(function ($q) use ($today) {
                 $q->whereNull('recurring_end_date')
-                  ->orWhere('recurring_end_date', '>=', $today);
+                    ->orWhere('recurring_end_date', '>=', $today);
             })
             ->chunk(100, function ($expenses) use ($today, &$processed) {
                 foreach ($expenses as $expense) {
@@ -56,7 +58,7 @@ class ProcessRecurringTransactions extends Command
                         $lastDate = $expense->date;
                         $nextDate = $this->getNextRecurringDate($lastDate, $expense->recurring_frequency);
 
-                        if ($nextDate && $nextDate <= $today && (!$expense->recurring_end_date || $nextDate <= $expense->recurring_end_date)) {
+                        if ($nextDate && $nextDate <= $today && (! $expense->recurring_end_date || $nextDate <= $expense->recurring_end_date)) {
                             $new = $expense->replicate(['is_archived']);
                             $new->date = $nextDate;
                             $new->is_archived = false;
@@ -75,10 +77,11 @@ class ProcessRecurringTransactions extends Command
 
         $total = $processed['income'] + $processed['expense'];
         $this->info("Processed {$total} recurring transaction(s) (Income: {$processed['income']}, Expense: {$processed['expense']}).");
+
         return Command::SUCCESS;
     }
 
-    private function getNextRecurringDate(\Carbon\Carbon $lastDate, string $frequency): ?\Carbon\Carbon
+    private function getNextRecurringDate(Carbon $lastDate, string $frequency): ?Carbon
     {
         return match ($frequency) {
             RecurringFrequency::Daily->value => $lastDate->copy()->addDay(),

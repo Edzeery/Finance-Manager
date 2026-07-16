@@ -15,7 +15,7 @@ class ActivityLogController extends Controller
     {
         $isSuperAdmin = $request->route()->named('super.admin.activity-log');
 
-        if (!$isSuperAdmin) {
+        if (! $isSuperAdmin) {
             $this->resetBreadcrumbs()->resourceBreadcrumbs('settings.activity_log', 'activity.logs', 'bi-clock-history');
         }
 
@@ -25,26 +25,27 @@ class ActivityLogController extends Controller
             $query->withoutGlobalScope(WorkspaceScope::class);
         }
 
-        if (!$isSuperAdmin && !auth()->user()->hasPermission('activity-log.view')) {
+        if (! $isSuperAdmin && ! auth()->user()->hasPermission('activity-log.view')) {
             $query->where('user_id', auth()->id());
         }
 
         $query->latest();
 
-        if ($request->filled('action')) {
-            $query->where('action', $request->action);
+        $action = $request->input('action', 'all');
+        if ($action !== 'all') {
+            $query->where('action', $action);
         }
 
         if ($request->filled('subject')) {
-            $query->where('subject_type', 'like', '%' . $request->subject . '%');
+            $query->where('subject_type', 'like', '%'.$request->subject.'%');
         }
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('description', 'like', "%{$search}%")
-                  ->orWhere('subject_type', 'like', "%{$search}%")
-                  ->orWhere('action', 'like', "%{$search}%");
+                    ->orWhere('subject_type', 'like', "%{$search}%")
+                    ->orWhere('action', 'like', "%{$search}%");
             });
         }
 
@@ -60,15 +61,31 @@ class ActivityLogController extends Controller
         $logs = $query->paginate($perPage);
 
         if ($isSuperAdmin) {
-            return view('super-admin.activity-logs', compact('logs'));
+            $countAll = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->count();
+            $countCreated = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->where('action', 'created')->count();
+            $countUpdated = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->where('action', 'updated')->count();
+            $countDeleted = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->where('action', 'deleted')->count();
+            $countRestored = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->where('action', 'restored')->count();
+
+            return view('super-admin.activity-logs', compact('logs', 'countAll', 'countCreated', 'countUpdated', 'countDeleted', 'countRestored'));
         }
 
-        return view('activity_logs.index', $this->withBreadcrumbs(compact('logs')));
+        $countBase = ActivityLog::with('user', 'workspace');
+        if (! auth()->user()->hasPermission('activity-log.view')) {
+            $countBase->where('user_id', auth()->id());
+        }
+        $countAll = (clone $countBase)->count();
+        $countCreated = (clone $countBase)->where('action', 'created')->count();
+        $countUpdated = (clone $countBase)->where('action', 'updated')->count();
+        $countDeleted = (clone $countBase)->where('action', 'deleted')->count();
+        $countRestored = (clone $countBase)->where('action', 'restored')->count();
+
+        return view('activity_logs.index', $this->withBreadcrumbs(compact('logs', 'countAll', 'countCreated', 'countUpdated', 'countDeleted', 'countRestored')));
     }
 
     public function show(ActivityLog $log)
     {
-        if ($log->user_id !== auth()->id() && !auth()->user()->hasPermission('activity-log.view')) {
+        if ($log->user_id !== auth()->id() && ! auth()->user()->hasPermission('activity-log.view')) {
             abort(403);
         }
 
@@ -87,7 +104,7 @@ class ActivityLogController extends Controller
                 'user_agent' => $log->user_agent,
                 'created_at' => $log->created_at->format('Y/m/d H:i:s'),
                 'changes' => $log->changes_summary,
-            ]
+            ],
         ]);
     }
 }

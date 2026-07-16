@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\PlanPrice;
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
@@ -17,6 +17,7 @@ class PlanPriceController extends Controller
         if ($request->query('_tab') === 'prices') {
             return redirect()->route('super.admin.plans.edit', [$plan, 'tab' => 'prices']);
         }
+
         return redirect()->route($defaultRoute ?? 'super.admin.plans.prices.index', array_merge([$plan], $params));
     }
 

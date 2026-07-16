@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\ExpenseCategory;
 use App\Models\User;
-use App\Models\Workspace;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ExpenseCategoryFactory extends Factory
@@ -28,16 +27,16 @@ class ExpenseCategoryFactory extends Factory
 
     public function global(): static
     {
-        return $this->state(fn(array $attrs) => ['user_id' => null, 'workspace_id' => null]);
+        return $this->state(fn (array $attrs) => ['user_id' => null, 'workspace_id' => null]);
     }
 
     public function forWorkspace(mixed $workspaceId): static
     {
-        return $this->state(fn(array $attrs) => ['workspace_id' => $workspaceId]);
+        return $this->state(fn (array $attrs) => ['workspace_id' => $workspaceId]);
     }
 
     public function inactive(): static
     {
-        return $this->state(fn(array $attrs) => ['is_active' => false]);
+        return $this->state(fn (array $attrs) => ['is_active' => false]);
     }
 }

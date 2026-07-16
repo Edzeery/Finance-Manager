@@ -164,7 +164,7 @@
                         @foreach ($report['activeDebts'] as $debt)
                             <tr>
                                 <td>{{ $debt->counterparty_name }}</td>
-                                <td><span class="badge bg-{{ $debt->type === \App\Enums\DebtType::Owed ? 'warning' : 'info' }}">{{ __("debt.{$debt->type->value}") }}</span></td>
+                                <td><x-status-badge domain="debt_type" :status="$debt->type->value" set="bi" /></td>
                                 <td class="text-end">{{ Number::currency($debt->total_amount, config('finance.currency_symbol')) }}</td>
                                 <td class="text-end">{{ Number::currency($debt->remaining_amount, config('finance.currency_symbol')) }}</td>
                             </tr>

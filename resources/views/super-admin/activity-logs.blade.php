@@ -28,19 +28,25 @@
         ];
     @endphp
 
+    <x-filter-tabs :tabs="[
+        'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-clock-history'],
+        'created' => ['label' => __('general.activity_created'), 'count' => $countCreated, 'icon' => 'bi-plus-circle'],
+        'updated' => ['label' => __('general.activity_updated'), 'count' => $countUpdated, 'icon' => 'bi-pencil'],
+        'deleted' => ['label' => __('general.activity_deleted'), 'count' => $countDeleted, 'icon' => 'bi-trash'],
+        'restored' => ['label' => __('general.activity_restored'), 'count' => $countRestored, 'icon' => 'bi-arrow-counterclockwise'],
+    ]" current="{{ request('action', 'all') }}" keyParam="action" defaultKey="all"
+        :preserve="['search', 'per_page', 'date_from', 'date_to']" />
+
     <div class="data-grid" x-data>
         <div class="data-grid-toolbar">
             <div class="data-grid-toolbar-left">
                 <form method="GET" action="{{ route('super.admin.activity-log') }}" class="d-flex flex-wrap align-items-center gap-2">
                     <x-search-filter name="search" placeholder="{{ __('super-admin.search_activity') }}..." value="{{ request('search') }}" />
-                    <x-select-filter name="action" :options="[
-                        'created' => __('general.activity_created'),
-                        'updated' => __('general.activity_updated'),
-                        'deleted' => __('general.activity_deleted'),
-                        'restored' => __('general.activity_restored'),
-                    ]" placeholder="{{ __('general.all_actions') }}" min-width="130px" />
                     <input type="date" name="date_from" class="form-control grid-filter-sm" style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)" value="{{ request('date_from') }}">
                     <input type="date" name="date_to" class="form-control grid-filter-sm" style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)" value="{{ request('date_to') }}">
+                    @if (request('action') && request('action') !== 'all')
+                        <input type="hidden" name="action" value="{{ request('action') }}">
+                    @endif
                     <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
                     <x-clear-filters :filters="['search','action','date_from','date_to']" :route="route('super.admin.activity-log')" />
                 </form>

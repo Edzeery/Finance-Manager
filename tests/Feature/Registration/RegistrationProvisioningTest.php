@@ -4,11 +4,11 @@ namespace Tests\Feature\Registration;
 
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\WorkspaceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Livewire\Volt\Volt;
 use Tests\TestCase;
 
@@ -77,7 +77,7 @@ class RegistrationProvisioningTest extends TestCase
         $workspace = app(WorkspaceService::class)->createForUser($user);
         $plan = SubscriptionPlan::first();
         if ($plan) {
-            \App\Models\Subscription::withoutWorkspace()->create([
+            Subscription::withoutWorkspace()->create([
                 'workspace_id' => $workspace->id,
                 'user_id' => $user->id,
                 'subscription_plan_id' => $plan->id,
@@ -93,12 +93,11 @@ class RegistrationProvisioningTest extends TestCase
         $this->get(route('dashboard'))->assertStatus(200);
     }
 
-
     public function test_workspace_admin_role_has_dashboard_view_permission(): void
     {
         $workspaceAdmin = Role::where('slug', 'workspace_admin')->first();
 
-        $perm = \App\Models\Permission::updateOrCreate(
+        $perm = Permission::updateOrCreate(
             ['slug' => 'dashboard.view'],
             ['name_en' => 'View Dashboard', 'module' => 'dashboard']
         );

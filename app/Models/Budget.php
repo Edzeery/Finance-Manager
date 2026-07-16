@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Budget extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory, SoftDeletes;
 
     protected static function booted(): void
     {
@@ -60,7 +60,10 @@ class Budget extends Model
 
     public function getAdherenceRateAttribute(): float
     {
-        if ($this->total_amount <= 0) return 0;
+        if ($this->total_amount <= 0) {
+            return 0;
+        }
+
         return round(($this->totalSpent / $this->total_amount) * 100, 2);
     }
 

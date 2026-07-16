@@ -24,18 +24,20 @@ class ActivateSubscription implements ShouldQueue
     {
         $payment = Payment::withoutWorkspace()->find($this->paymentId);
 
-        if (!$payment) {
+        if (! $payment) {
             logger()->channel('queue')->error('ActivateSubscription: payment not found', [
                 'payment_id' => $this->paymentId,
             ]);
+
             return;
         }
 
-        if (!$payment->isCompleted()) {
+        if (! $payment->isCompleted()) {
             logger()->channel('queue')->warning('ActivateSubscription: payment not completed', [
                 'payment_id' => $this->paymentId,
                 'status' => $payment->status,
             ]);
+
             return;
         }
 
@@ -47,17 +49,19 @@ class ActivateSubscription implements ShouldQueue
                     'subscription_id' => $payment->subscription_id,
                     'status' => $existingSub->status,
                 ]);
+
                 return;
             }
         }
 
         $plan = SubscriptionPlan::find($this->planId);
 
-        if (!$plan) {
+        if (! $plan) {
             logger()->channel('queue')->error('ActivateSubscription: plan not found', [
                 'payment_id' => $this->paymentId,
                 'plan_id' => $this->planId,
             ]);
+
             return;
         }
 

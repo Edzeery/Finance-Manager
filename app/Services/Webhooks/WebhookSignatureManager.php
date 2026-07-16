@@ -20,8 +20,9 @@ class WebhookSignatureManager
     {
         $validator = $this->validators[$provider] ?? null;
 
-        if (!$validator) {
+        if (! $validator) {
             Log::warning("Webhook: no signature validator registered for provider '{$provider}'");
+
             return $this->fallbackTokenCheck($request);
         }
 
@@ -31,14 +32,16 @@ class WebhookSignatureManager
     private function fallbackTokenCheck(Request $request): bool
     {
         $secret = config('payment.webhook_secret');
-        if (!$secret) {
+        if (! $secret) {
             Log::warning('Webhook: shared webhook_secret not configured');
+
             return false;
         }
 
         $token = $request->header('X-Webhook-Token');
-        if (!$token) {
+        if (! $token) {
             Log::warning('Webhook: missing X-Webhook-Token in fallback check');
+
             return false;
         }
 

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -11,7 +12,7 @@ class SettingsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         try {
-            if (!Schema::hasTable('settings')) {
+            if (! Schema::hasTable('settings')) {
                 return;
             }
 
@@ -30,6 +31,11 @@ class SettingsServiceProvider extends ServiceProvider
                 config()->set('app.registration_enabled', $registrationEnabled === '1' || $registrationEnabled === 'true');
             }
 
+            $baseCurrency = Setting::get('base_currency');
+            if ($baseCurrency) {
+                config()->set('finance.base_currency', strtoupper($baseCurrency));
+            }
+
             // Load rate limits from database into config
             $rateLimitKeys = array_keys(config('finance.rate_limits', []));
             foreach ($rateLimitKeys as $key) {
@@ -39,7 +45,7 @@ class SettingsServiceProvider extends ServiceProvider
                 }
             }
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('SettingsServiceProvider: failed to load dynamic settings', [
+            Log::warning('SettingsServiceProvider: failed to load dynamic settings', [
                 'error' => $e->getMessage(),
             ]);
         }

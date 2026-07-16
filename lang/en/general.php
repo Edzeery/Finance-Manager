@@ -284,4 +284,12 @@ return [
     'remove' => 'Remove',
     'previous' => 'Previous',
     'next' => 'Next',
+    'reason' => 'Reason',
+    'optional' => 'Optional',
+    'online' => 'Online',
+    'offline' => 'Offline',
+    'device' => 'Device',
+    'os' => 'OS',
+    'failed' => 'Failed',
+    'suspicious' => 'Suspicious',
 ];

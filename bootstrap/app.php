@@ -1,11 +1,34 @@
 <?php
+
 // bootstrap\app.php
-use Illuminate\Foundation\Application;
+use App\Http\Middleware\ApiWorkspace;
+use App\Http\Middleware\CheckActiveSubscription;
+use App\Http\Middleware\CheckApiAbility;
+use App\Http\Middleware\CheckUserStatus;
+use App\Http\Middleware\CheckApiQuota;
+use App\Http\Middleware\CheckApiSubscription;
+use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\CheckPlanFeature;
+use App\Http\Middleware\CheckSubscriptionStatus;
+use App\Http\Middleware\EnsureOnboardingCompleted;
+use App\Http\Middleware\ForceTwoFactor;
+use App\Http\Middleware\HasPlatformPermission;
+use App\Http\Middleware\HasPlatformRole;
+use App\Http\Middleware\HasWorkspacePermission;
+use App\Http\Middleware\HasWorkspaceRole;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\SetTheme;
+use App\Http\Middleware\SetWorkspace;
+use App\Http\Middleware\SuperAdmin;
+use App\Http\Middleware\TrackLastLogin;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -22,38 +45,42 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'workspace' => \App\Http\Middleware\ApiWorkspace::class,
-            'workspace.set' => \App\Http\Middleware\SetWorkspace::class,
-            'workspace.role' => \App\Http\Middleware\HasWorkspaceRole::class,
-            'workspace.permission' => \App\Http\Middleware\HasWorkspacePermission::class,
-            'platform.role' => \App\Http\Middleware\HasPlatformRole::class,
-            'platform.permission' => \App\Http\Middleware\HasPlatformPermission::class,
-            'super.admin' => \App\Http\Middleware\SuperAdmin::class,
-            'permission' => \App\Http\Middleware\CheckPermission::class,
-            'ability' => \App\Http\Middleware\CheckApiAbility::class,
-            'onboarding' => \App\Http\Middleware\EnsureOnboardingCompleted::class,
-            'two-factor' => \App\Http\Middleware\ForceTwoFactor::class,
-            'locale' => \App\Http\Middleware\SetLocale::class,
-            'theme' => \App\Http\Middleware\SetTheme::class,
-            'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
-            'subscription' => \App\Http\Middleware\CheckActiveSubscription::class,
-            'subscription.status' => \App\Http\Middleware\CheckSubscriptionStatus::class,
-            'subscription.api' => \App\Http\Middleware\CheckApiSubscription::class,
-            'plan.feature' => \App\Http\Middleware\CheckPlanFeature::class,
-            'quota' => \App\Http\Middleware\CheckApiQuota::class,
+            'workspace' => ApiWorkspace::class,
+            'workspace.set' => SetWorkspace::class,
+            'workspace.role' => HasWorkspaceRole::class,
+            'workspace.permission' => HasWorkspacePermission::class,
+            'platform.role' => HasPlatformRole::class,
+            'platform.permission' => HasPlatformPermission::class,
+            'super.admin' => SuperAdmin::class,
+            'permission' => CheckPermission::class,
+            'ability' => CheckApiAbility::class,
+            'onboarding' => EnsureOnboardingCompleted::class,
+            'two-factor' => ForceTwoFactor::class,
+            'locale' => SetLocale::class,
+            'theme' => SetTheme::class,
+            'security.headers' => SecurityHeaders::class,
+            'subscription' => CheckActiveSubscription::class,
+            'subscription.status' => CheckSubscriptionStatus::class,
+            'subscription.api' => CheckApiSubscription::class,
+            'plan.feature' => CheckPlanFeature::class,
+            'quota' => CheckApiQuota::class,
+            'user.status' => CheckUserStatus::class,
+            'track.login' => TrackLastLogin::class,
         ]);
 
         $middleware->web(append: [
-            \App\Http\Middleware\SetLocale::class,
-            \App\Http\Middleware\SetTheme::class,
-            \App\Http\Middleware\SetWorkspace::class,
-            \App\Http\Middleware\EnsureOnboardingCompleted::class,
-            \App\Http\Middleware\SecurityHeaders::class,
+            SetLocale::class,
+            SetTheme::class,
+            SetWorkspace::class,
+            CheckUserStatus::class,
+            TrackLastLogin::class,
+            EnsureOnboardingCompleted::class,
+            SecurityHeaders::class,
             'throttle:web',
         ]);
 
         $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            EnsureFrontendRequestsAreStateful::class,
         ]);
 
         $middleware->api(append: [
@@ -66,7 +93,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'message' => __('auth.invalid_token'),
-                    'status'  => 401,
+                    'status' => 401,
                 ], 401);
             }
         });
@@ -75,7 +102,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'message' => $e->getMessage() ?: __('auth.forbidden'),
-                    'status'  => 403,
+                    'status' => 403,
                 ], 403);
             }
         });
@@ -84,7 +111,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'message' => $e->getMessage() ?: __('messages.not_found'),
-                    'status'  => $e->getStatusCode(),
+                    'status' => $e->getStatusCode(),
                 ], $e->getStatusCode());
             }
         });

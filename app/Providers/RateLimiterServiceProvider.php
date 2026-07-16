@@ -30,7 +30,7 @@ class RateLimiterServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('api-workspace', function (HttpRequest $request) {
-            return Limit::perMinute($this->limit('api-workspace'))->by($request->user()?->id . ':' . ($request->user()?->current_workspace_id ?: '*'));
+            return Limit::perMinute($this->limit('api-workspace'))->by($request->user()?->id.':'.($request->user()?->current_workspace_id ?: '*'));
         });
 
         RateLimiter::for('api-sensitive', function (HttpRequest $request) {

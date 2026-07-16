@@ -4,11 +4,12 @@ namespace App\Repositories;
 
 use App\Contracts\Repositories\AssetRepositoryInterface;
 use App\Models\Asset;
+use App\Repositories\Concerns\FiltersByOwnership;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class AssetRepository extends BaseRepository implements AssetRepositoryInterface
 {
-    use \App\Repositories\Concerns\FiltersByOwnership;
+    use FiltersByOwnership;
 
     public function __construct()
     {
@@ -23,25 +24,26 @@ class AssetRepository extends BaseRepository implements AssetRepositoryInterface
         $trashed = $filters['trashed'] ?? false;
         if ($trashed) {
             $query->onlyTrashed();
-        } elseif (!empty($filters['liquid'])) {
+        } elseif (! empty($filters['liquid'])) {
             $query->liquid();
-        } elseif (!empty($filters['zakatable'])) {
+        } elseif (! empty($filters['zakatable'])) {
             $query->zakatable();
         }
 
-        if (!empty($filters['type'])) {
+        if (! empty($filters['type'])) {
             $query->byType($filters['type']);
         }
 
-        if (!empty($filters['search'])) {
-            $term = '%' . $filters['search'] . '%';
+        if (! empty($filters['search'])) {
+            $term = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($term) {
                 $q->where('name', 'like', $term)
-                  ->orWhere('notes', 'like', $term);
+                    ->orWhere('notes', 'like', $term);
             });
         }
 
         $perPage = min((int) ($filters['per_page'] ?? 15), config('finance.per_page_max', 100));
+
         return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
 

@@ -91,8 +91,7 @@
                                 </div>
                                 <div class="text-end flex-shrink-0">
 
-                                    <x-status-badge domain="subscription" status="{{$subscription->status}}" set="bi" />
-                                    <x-status-badge domain="subscription" status="{{$subscription->status}}" set="bi" />
+                                    <x-status-badge domain="subscription" status="{{$subscription->status}}" set="bi" /> 
                                 </div>
                             </div>
                         </div>
@@ -252,7 +251,7 @@
                                 </td>
                                 <td style="font-size:13px">{{ $getMethodLabel($payment->method) }}</td>
                                 <td>
-                                    {{ $payment->status->label() }}
+                                    <x-status-badge domain="payment" :status="$payment->status->value" set="bi" />
                                 </td>
                                 <td>
                                     @if($continueUrl)
@@ -311,11 +310,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @php
-                                                $hColors = ['active' => 'success', 'trialing' => 'info', 'past_due' => 'warning', 'canceled' => 'secondary', 'expired' => 'danger'];
-                                                $hBadge = $hColors[$sub->status->value] ?? 'secondary';
-                                            @endphp
-                                            <span class="badge bg-{{ $hBadge }}">{{ $sub->status->label() }}</span>
+                                            <x-status-badge domain="subscription" :status="$sub->status->value" set="bi" />
                                         </td>
                                         <td style="font-size:13px">{{ $sub->billing_period === 'yearly' ? __('general.yearly') : __('general.monthly') }}</td>
                                         <td style="font-size:13px;color:var(--text-muted)">{{ $sub->starts_at?->format('Y/m/d') ?? '—' }}</td>
@@ -420,15 +415,21 @@
 
                                         @if(!$plan->is_free)
                                             <div class="mb-2">
-                                                <select name="billing" class="form-custom billing-select" style="font-size:12px;padding:5px 8px;width:100%">
-                                                    <option value="monthly">{{ $displayPrice($plan->monthly_price) }}/{{ __('general.month') }}</option>
+                                                <label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">
+                                                    <i class="bi bi-calendar-check me-1"></i>{{ __('settings.billing_period') }}
+                                                </label>
+                                                <select name="billing" class="form-select billing-select" style="font-size:12px;padding:5px 8px;width:100%">
+                                                    <option value="monthly">{{ $displayPrice($plan->monthly_price) }} / {{ __('general.month') }}</option>
                                                     @if($plan->yearly_price > 0)
-                                                        <option value="yearly">{{ $displayPrice($plan->yearly_price) }}/{{ __('general.year') }}</option>
+                                                        <option value="yearly">{{ $displayPrice($plan->yearly_price) }} / {{ __('general.year') }}</option>
                                                     @endif
                                                 </select>
                                             </div>
                                             <div class="mb-2">
-                                                <select name="payment_method" class="form-custom" required style="font-size:12px;padding:5px 8px;width:100%">
+                                                <label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">
+                                                    <i class="bi bi-credit-card me-1"></i>{{ __('settings.payment_method') }}
+                                                </label>
+                                                <select name="payment_method" class="form-select" required style="font-size:12px;padding:5px 8px;width:100%">
                                                     <option value="">{{ __('payment.select_method') }}</option>
                                                     @foreach($paymentMethods as $pm)
                                                         <option value="{{ $pm['id'] }}">{{ $pm['name'] }}</option>

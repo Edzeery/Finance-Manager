@@ -4,7 +4,6 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
-use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\Http;
 
 class PayoneerGateway implements PaymentGateway
@@ -29,6 +28,7 @@ class PayoneerGateway implements PaymentGateway
     private function baseUrl(): string
     {
         $isSandbox = $this->gatewaySetting('sandbox', config('payment.gateways.payoneer.sandbox', true));
+
         return $isSandbox === true || $isSandbox === '1' || $isSandbox === 'true'
             ? 'https://api.sandbox.payoneer.com/v2'
             : 'https://api.payoneer.com/v2';
@@ -39,7 +39,7 @@ class PayoneerGateway implements PaymentGateway
         $clientId = $this->clientId();
         $secret = $this->clientSecret();
 
-        if (!$clientId || !$secret) {
+        if (! $clientId || ! $secret) {
             return null;
         }
 
@@ -50,7 +50,7 @@ class PayoneerGateway implements PaymentGateway
                 'client_secret' => $secret,
             ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 
@@ -59,9 +59,10 @@ class PayoneerGateway implements PaymentGateway
 
     public function validate(array $data): ValidationResult
     {
-        if (!$this->clientId() || !$this->clientSecret()) {
+        if (! $this->clientId() || ! $this->clientSecret()) {
             return ValidationResult::invalid('Payoneer gateway not configured.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -73,12 +74,12 @@ class PayoneerGateway implements PaymentGateway
     public function charge(array $data): PaymentResult
     {
         $token = $this->getAccessToken();
-        if (!$token) {
+        if (! $token) {
             return PaymentResult::failed('Payoneer gateway not configured.');
         }
 
         $response = Http::withToken($token)
-            ->post("{$this->baseUrl()}/programs/" . $this->gatewaySetting('program_id', config('payment.gateways.payoneer.program_id')) . "/payouts", [
+            ->post("{$this->baseUrl()}/programs/".$this->gatewaySetting('program_id', config('payment.gateways.payoneer.program_id')).'/payouts', [
                 'client_reference' => $data['reference'] ?? uniqid('pay_', true),
                 'amount' => [
                     'value' => (string) $data['amount'],
@@ -91,8 +92,8 @@ class PayoneerGateway implements PaymentGateway
                 'description' => $data['description'] ?? 'Finance Manager Subscription',
             ]);
 
-        if (!$response->successful()) {
-            return PaymentResult::failed('Payoneer payout failed: ' . $response->body());
+        if (! $response->successful()) {
+            return PaymentResult::failed('Payoneer payout failed: '.$response->body());
         }
 
         $body = $response->json();
@@ -112,14 +113,14 @@ class PayoneerGateway implements PaymentGateway
     public function verify(Payment $payment): PaymentResult
     {
         $token = $this->getAccessToken();
-        if (!$token) {
+        if (! $token) {
             return PaymentResult::failed('Payoneer gateway not configured.');
         }
 
         $response = Http::withToken($token)
-            ->get("{$this->baseUrl()}/programs/" . $this->gatewaySetting('program_id', config('payment.gateways.payoneer.program_id')) . "/payouts/{$payment->transaction_id}");
+            ->get("{$this->baseUrl()}/programs/".$this->gatewaySetting('program_id', config('payment.gateways.payoneer.program_id'))."/payouts/{$payment->transaction_id}");
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return PaymentResult::failed('Unable to verify payment with Payoneer.');
         }
 

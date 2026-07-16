@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\SubscriptionPlan;
-use App\Enums\SubscriptionStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 

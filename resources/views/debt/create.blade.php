@@ -13,10 +13,13 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">{{ __('debt.type') }} <span class="text-danger">*</span></label>
-                                <select name="type" class="form-custom @error('type') is-invalid @enderror" required>
-                            <option value="{{ \App\Enums\DebtType::Owed->value }}" {{ old('type') === \App\Enums\DebtType::Owed->value ? 'selected' : '' }}>{{ __('debt.owed') }}</option>
-                            <option value="{{ \App\Enums\DebtType::Owing->value }}" {{ old('type') === \App\Enums\DebtType::Owing->value ? 'selected' : '' }}>{{ __('debt.owing') }}</option>
-                                </select>
+                                <x-status-select
+                                    domain="debt_type"
+                                    name="type"
+                                    :selected="old('type', 'owed')"
+                                    size="md"
+                                    set="bi"
+                                />
                                 @error('type') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
                             </div>
 

@@ -13,6 +13,7 @@ class UserControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $member;
 
     protected function setUp(): void

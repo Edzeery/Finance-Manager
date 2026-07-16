@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Testing\TestResponse;
 use Livewire\Component;
 use Livewire\Mechanisms\ComponentRegistry;
+use PHPUnit\Framework\Assert;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -31,7 +32,7 @@ abstract class TestCase extends BaseTestCase
             }
             $escapedComponentName = trim(htmlspecialchars(json_encode(['name' => $component])), '{}');
 
-            \PHPUnit\Framework\Assert::assertStringContainsString(
+            Assert::assertStringContainsString(
                 $escapedComponentName,
                 $this->getContent(),
                 'Cannot find Livewire component ['.$component.'] rendered on page.'
@@ -46,7 +47,7 @@ abstract class TestCase extends BaseTestCase
             }
             $escapedComponentName = trim(htmlspecialchars(json_encode(['name' => $component])), '{}');
 
-            \PHPUnit\Framework\Assert::assertStringNotContainsString(
+            Assert::assertStringNotContainsString(
                 $escapedComponentName,
                 $this->getContent(),
                 'Found Livewire component ['.$component.'] rendered on page.'

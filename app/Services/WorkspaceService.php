@@ -6,7 +6,6 @@ use App\Contracts\Services\ActivityLogServiceInterface;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Services\SubscriptionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -14,19 +13,21 @@ class WorkspaceService
 {
     private function resolveRoleSlug(string $role): string
     {
-        if (str_starts_with($role, 'workspace_')) return $role;
+        if (str_starts_with($role, 'workspace_')) {
+            return $role;
+        }
 
         return match ($role) {
-            'admin'            => 'workspace_admin',
-            'deputy_admin'     => 'workspace_deputy_admin',
-            'manager'          => 'workspace_finance_manager',
-            'finance_manager'  => 'workspace_finance_manager',
-            'assistant'        => 'workspace_accountant',
-            'accountant'       => 'workspace_accountant',
-            'editor'           => 'workspace_editor',
-            'member'           => 'workspace_viewer',
-            'viewer'           => 'workspace_viewer',
-            default            => $role,
+            'admin' => 'workspace_admin',
+            'deputy_admin' => 'workspace_deputy_admin',
+            'manager' => 'workspace_finance_manager',
+            'finance_manager' => 'workspace_finance_manager',
+            'assistant' => 'workspace_accountant',
+            'accountant' => 'workspace_accountant',
+            'editor' => 'workspace_editor',
+            'member' => 'workspace_viewer',
+            'viewer' => 'workspace_viewer',
+            default => $role,
         };
     }
 
@@ -34,7 +35,9 @@ class WorkspaceService
     {
         $slug = $this->resolveRoleSlug($role);
         $roleModel = Role::where('slug', $slug)->first();
-        if (!$roleModel) return;
+        if (! $roleModel) {
+            return;
+        }
 
         $user->workspaceRoleUsers()
             ->wherePivot('workspace_id', $workspace->id)
@@ -52,14 +55,14 @@ class WorkspaceService
 
     public function createForUser(User $user, array $data = []): Workspace
     {
-        if (!app(SubscriptionService::class)->canCreateWorkspace($user)) {
+        if (! app(SubscriptionService::class)->canCreateWorkspace($user)) {
             throw new \RuntimeException(__('workspace.limit_reached'));
         }
 
         return DB::transaction(function () use ($user, $data) {
             $workspace = Workspace::create([
-                'name' => $data['name'] ?? $user->name . "'s Workspace",
-                'slug' => Str::slug($data['name'] ?? $user->name) . '-' . Str::random(6),
+                'name' => $data['name'] ?? $user->name."'s Workspace",
+                'slug' => Str::slug($data['name'] ?? $user->name).'-'.Str::random(6),
                 'type' => $data['type'] ?? 'personal',
                 'currency' => $data['currency'] ?? $user->currency ?? 'DZD',
                 'timezone' => $data['timezone'] ?? $user->timezone ?? 'Africa/Algiers',
@@ -68,7 +71,7 @@ class WorkspaceService
             $workspace->users()->attach($user->id, []);
             $this->syncWorkspaceRoleUser($workspace, $user, 'workspace_admin');
 
-            if (!$user->current_workspace_id) {
+            if (! $user->current_workspace_id) {
                 $user->update(['current_workspace_id' => $workspace->id]);
             }
 
@@ -80,12 +83,14 @@ class WorkspaceService
 
     public function inviteUser(Workspace $workspace, string $email, string $role = 'member'): ?User
     {
-        if (!$workspace->canAddUser()) {
+        if (! $workspace->canAddUser()) {
             return null;
         }
 
         $user = User::where('email', $email)->first();
-        if (!$user) return null;
+        if (! $user) {
+            return null;
+        }
 
         if ($workspace->users()->where('user_id', $user->id)->exists()) {
             return null;
@@ -108,6 +113,7 @@ class WorkspaceService
             ->wherePivot('workspace_id', $workspace->id)
             ->detach();
         $user->flushPermissionCache();
+
         return true;
     }
 
@@ -144,7 +150,9 @@ class WorkspaceService
     public function transferOwnership(Workspace $workspace, User $newOwner): bool
     {
         $currentOwner = $workspace->owner()->first();
-        if (!$currentOwner || $currentOwner->id === $newOwner->id) return false;
+        if (! $currentOwner || $currentOwner->id === $newOwner->id) {
+            return false;
+        }
 
         DB::transaction(function () use ($workspace, $currentOwner, $newOwner) {
             $this->syncWorkspaceRoleUser($workspace, $currentOwner, 'workspace_deputy_admin');

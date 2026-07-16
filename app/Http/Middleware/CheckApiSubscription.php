@@ -11,7 +11,7 @@ class CheckApiSubscription
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return $next($request);
         }
 
@@ -33,7 +33,7 @@ class CheckApiSubscription
             ?? $user->activeSubscription()
             ?? Subscription::withoutWorkspace()->where('user_id', $user->id)->latest()->first();
 
-        if (!$subscription) {
+        if (! $subscription) {
             return $next($request);
         }
 

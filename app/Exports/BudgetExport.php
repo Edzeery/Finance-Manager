@@ -4,10 +4,10 @@ namespace App\Exports;
 
 use App\Models\Budget;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class BudgetExport implements FromCollection, WithHeadings, ShouldAutoSize
+class BudgetExport implements FromCollection, ShouldAutoSize, WithHeadings
 {
     public function __construct(private array $filters = []) {}
 
@@ -15,26 +15,26 @@ class BudgetExport implements FromCollection, WithHeadings, ShouldAutoSize
     {
         return Budget::with('categories.category')
             ->active()
-            ->when(!empty($this->filters['search']), function ($q) {
-                $term = '%' . $this->filters['search'] . '%';
+            ->when(! empty($this->filters['search']), function ($q) {
+                $term = '%'.$this->filters['search'].'%';
                 $q->where(function ($q) use ($term) {
                     $q->where('name_ar', 'like', $term)
-                      ->orWhere('name_fr', 'like', $term)
-                      ->orWhere('name_en', 'like', $term)
-                      ->orWhere('notes', 'like', $term);
+                        ->orWhere('name_fr', 'like', $term)
+                        ->orWhere('name_en', 'like', $term)
+                        ->orWhere('notes', 'like', $term);
                 });
             })
             ->latest()
             ->get()
-            ->map(fn($budget) => [
-                __('budget.name')         => $budget->name_en,
-                __('budget.type')         => __("budget.{$budget->type}"),
-                __('budget.total')        => $budget->total_amount,
-                __('budget.total_spent')  => $budget->total_spent,
-                __('budget.adherence')    => number_format($budget->adherence_rate, 1) . '%',
-                __('budget.start_date')   => $budget->start_date->format('Y-m-d'),
-                __('budget.end_date')     => $budget->end_date->format('Y-m-d'),
-                __('general.notes')       => $budget->notes,
+            ->map(fn ($budget) => [
+                __('budget.name') => $budget->name_en,
+                __('budget.type') => __("budget.{$budget->type}"),
+                __('budget.total') => $budget->total_amount,
+                __('budget.total_spent') => $budget->total_spent,
+                __('budget.adherence') => number_format($budget->adherence_rate, 1).'%',
+                __('budget.start_date') => $budget->start_date->format('Y-m-d'),
+                __('budget.end_date') => $budget->end_date->format('Y-m-d'),
+                __('general.notes') => $budget->notes,
             ]);
     }
 

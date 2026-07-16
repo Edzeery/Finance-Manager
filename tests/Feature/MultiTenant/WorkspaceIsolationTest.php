@@ -11,8 +11,8 @@ use App\Models\FinancialGoal;
 use App\Models\Income;
 use App\Models\IncomeCategory;
 use App\Models\Notification;
+use App\Models\Role;
 use App\Models\User;
-use App\Models\UserSetting;
 use App\Models\Workspace;
 use App\Models\ZakatRecord;
 use Database\Seeders\EnterpriseRolePermissionSeeder;
@@ -24,8 +24,11 @@ class WorkspaceIsolationTest extends TestCase
     use RefreshDatabase;
 
     private Workspace $workspaceA;
+
     private Workspace $workspaceB;
+
     private User $userA;
+
     private User $userB;
 
     protected function setUp(): void
@@ -43,7 +46,7 @@ class WorkspaceIsolationTest extends TestCase
         $this->userA->workspaces()->attach($this->workspaceA->id, []);
         $this->userB->workspaces()->attach($this->workspaceB->id, []);
 
-        $adminRole = \App\Models\Role::where('slug', 'workspace_admin')->first();
+        $adminRole = Role::where('slug', 'workspace_admin')->first();
         if ($adminRole) {
             $this->userA->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $this->workspaceA->id]);
             $this->userB->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $this->workspaceB->id]);

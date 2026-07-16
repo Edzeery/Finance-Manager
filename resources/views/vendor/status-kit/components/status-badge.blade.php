@@ -2,6 +2,7 @@
     'domain',
     'status',
     'set'   => null,
+    'icon'  => true,
     'class' => '',
 ])
 
@@ -10,6 +11,8 @@
 @endphp
 
 <span {{ $attributes->merge(['class' => $result->badgeClasses($class)]) }}>
-    {!! $result->icon($set) !!}
+    @if($icon)
+        {!! $result->icon($set) !!}
+    @endif
     <span>{{ $result->label() }}</span>
 </span>

@@ -2,15 +2,14 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\ExpenseCategory;
+use App\Models\IncomeCategory;
+use App\Models\PlanFeature;
+use App\Models\Role;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Models\Role;
-use App\Models\Income;
-use App\Models\IncomeCategory;
-use App\Models\Expense;
-use App\Models\ExpenseCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,6 +18,7 @@ class WorkspaceApiTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private string $token;
 
     protected function setUp(): void
@@ -37,7 +37,7 @@ class WorkspaceApiTest extends TestCase
         $plan = SubscriptionPlan::create([
             'slug' => 'personal', 'name_en' => 'Personal', 'is_free' => true,
         ]);
-        $feature = \App\Models\PlanFeature::firstOrCreate(
+        $feature = PlanFeature::firstOrCreate(
             ['slug' => 'transactions_per_month'],
             ['name_en' => 'Transactions Per Month', 'name_ar' => 'Transactions Per Month', 'name_fr' => 'Transactions Per Month', 'type' => 'value']
         );

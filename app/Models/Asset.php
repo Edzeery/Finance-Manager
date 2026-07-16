@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Asset extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory, SoftDeletes;
 
     protected static function booted(): void
     {

@@ -10,7 +10,7 @@
 
             <div class="section-card">
                 <div class="section-card-header">
-                    <h5><i class="bi bi-person-gear"></i>{{ __('admin.user_details') }}</h5>
+                    <h5><i class="bi bi-person-gear"></i> {{ __('admin.user_details') }}</h5>
                 </div>
                 <div class="section-card-body">
                     <div class="row g-3">
@@ -57,14 +57,51 @@
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label-custom mb-1">{{ __('general.status') }}</label>
+                            <x-status-select domain="user" name="status" :selected="old('status', $user->status)"
+                                set="bi" size="lg" />
+                            @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-12">
                             <div class="form-floating-group">
-                                <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
-                                    <option value="1" {{ old('is_active', $user->is_active) ? 'selected' : '' }}>{{ __('general.active') }}</option>
-                                    <option value="0" {{ old('is_active', !$user->is_active) ? 'selected' : '' }}>{{ __('general.inactive') }}</option>
-                                </select>
-                                <label>{{ __('general.status') }}</label>
-                                @error('is_active') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <textarea name="status_reason" class="form-control @error('status_reason') is-invalid @enderror" placeholder="{{ __('account.reason') }}" rows="2" style="min-height:60px">{{ old('status_reason', $user->statusRecord?->status_reason) }}</textarea>
+                                <label>{{ __('account.reason') }} <span style="color:var(--text-muted);font-weight:400">({{ __('general.optional') }})</span></label>
+                                @error('status_reason') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-group">
+                                <select name="theme" class="form-control @error('theme') is-invalid @enderror">
+                                    <option value="light" {{ old('theme', $user->theme) === 'light' ? 'selected' : '' }}>Light</option>
+                                    <option value="dark" {{ old('theme', $user->theme) === 'dark' ? 'selected' : '' }}>Dark</option>
+                                </select>
+                                <label>{{ __('settings.theme') }}</label>
+                                @error('theme') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating-group">
+                                <select name="timezone" class="form-control @error('timezone') is-invalid @enderror">
+                                    @php $selectedTz = old('timezone', $user->timezone); @endphp
+                                    @foreach (timezone_identifiers_list() as $tz)
+                                        <option value="{{ $tz }}" {{ $selectedTz === $tz ? 'selected' : '' }}>{{ $tz }}</option>
+                                    @endforeach
+                                </select>
+                                <label>{{ __('super-admin.timezone') }}</label>
+                                @error('timezone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex align-items-center gap-3">
+                            <span style="font-size:13px;font-weight:500;color:var(--text-muted)">{{ __('general.email_verification') }}:</span>
+                            @if ($user->email_verified_at)
+                                <x-status-badge domain="general" status="yes" set="bi" />
+                                <span style="font-size:12px;color:var(--text-muted)">{{ $user->email_verified_at->format('Y/m/d H:i') }}</span>
+                            @else
+                                <x-status-badge domain="general" status="no" set="bi" />
+                            @endif
                         </div>
                     </div>
 

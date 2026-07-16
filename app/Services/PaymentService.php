@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
 use App\Events\SubscriptionActivated;
+use App\Exceptions\PaymentException;
+use App\Mail\PaymentFailed;
 use App\Models\Coupon;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
@@ -16,7 +18,6 @@ use App\Services\Payments\GatewayManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use App\Services\SubscriptionActivationService;
 
 class PaymentService
 {
@@ -37,8 +38,8 @@ class PaymentService
         float $prorationRemainingValue = 0,
         ?float $overrideDiscountUsd = null,
     ): Payment {
-        if (!$workspace || !$workspace->id) {
-            throw new \App\Exceptions\PaymentException('Workspace is required to process payment.');
+        if (! $workspace || ! $workspace->id) {
+            throw new PaymentException('Workspace is required to process payment.');
         }
         $priceUsd = $billingPeriod === 'yearly' ? $plan->yearly_price : $plan->monthly_price;
 
@@ -138,18 +139,28 @@ class PaymentService
 
     private function resolveCoupon(?string $code, ?float $amount = null, ?string $paymentMethod = null): ?Coupon
     {
-        if (!$code) return null;
+        if (! $code) {
+            return null;
+        }
 
         $coupon = Coupon::where('code', $code)->first();
-        if (!$coupon || !$coupon->isValid()) return null;
-        if ($amount && $coupon->min_amount && $amount < $coupon->min_amount) return null;
+        if (! $coupon || ! $coupon->isValid()) {
+            return null;
+        }
+        if ($amount && $coupon->min_amount && $amount < $coupon->min_amount) {
+            return null;
+        }
 
         if ($paymentMethod) {
             $pm = PaymentMethod::where('key', $paymentMethod)->first();
-            if (!$pm || !$pm->is_active) return null;
+            if (! $pm || ! $pm->is_active) {
+                return null;
+            }
             if ($coupon->paymentMethods()->exists()) {
                 $allowed = $coupon->paymentMethods()->where('payment_method_id', $pm->id)->exists();
-                if (!$allowed) return null;
+                if (! $allowed) {
+                    return null;
+                }
             }
         }
 
@@ -171,7 +182,7 @@ class PaymentService
             default => 'PAY',
         };
 
-        return $prefix . '-' . strtoupper(Str::random(10));
+        return $prefix.'-'.strtoupper(Str::random(10));
     }
 
     public function verifyPayment(Payment $payment, string $status, ?int $adminId, ?string $notes = null, ?string $transactionReference = null): ?PaymentVerification
@@ -188,8 +199,8 @@ class PaymentService
 
             if ($transactionReference) {
                 $data['transaction_reference'] = $transactionReference;
-            } elseif ($status === 'approved' && !$existing?->transaction_reference) {
-                $data['transaction_reference'] = 'ADMIN-' . strtoupper(Str::random(10));
+            } elseif ($status === 'approved' && ! $existing?->transaction_reference) {
+                $data['transaction_reference'] = 'ADMIN-'.strtoupper(Str::random(10));
             }
 
             if ($existing) {
@@ -199,6 +210,7 @@ class PaymentService
 
                 $existing->update($data);
                 $this->applyPaymentSideEffects($payment, $status);
+
                 return $existing;
             }
 
@@ -214,7 +226,9 @@ class PaymentService
     {
         DB::transaction(function () use ($payment, $status) {
             $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
-            if (!$payment) return;
+            if (! $payment) {
+                return;
+            }
 
             if ($status === 'approved') {
                 if ($payment->isCompleted()) {
@@ -271,7 +285,7 @@ class PaymentService
 
                 if ($payment->user && $payment->user->email) {
                     Mail::to($payment->user->email)
-                        ->queue(new \App\Mail\PaymentFailed($payment));
+                        ->queue(new PaymentFailed($payment));
                 }
             }
         });
@@ -285,8 +299,8 @@ class PaymentService
     public function getRevenueByPeriod(?string $start = null, ?string $end = null): float
     {
         return Payment::byStatus(PaymentStatus::CheckoutPaid)
-            ->when($start, fn($q) => $q->whereDate('created_at', '>=', $start))
-            ->when($end, fn($q) => $q->whereDate('created_at', '<=', $end))
+            ->when($start, fn ($q) => $q->whereDate('created_at', '>=', $start))
+            ->when($end, fn ($q) => $q->whereDate('created_at', '<=', $end))
             ->sum('amount');
     }
 }

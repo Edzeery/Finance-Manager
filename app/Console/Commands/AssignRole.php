@@ -21,6 +21,7 @@ class AssignRole extends Command
 
         if (! $user) {
             $this->error("User not found: {$userInput}");
+
             return Command::FAILURE;
         }
 
@@ -28,11 +29,13 @@ class AssignRole extends Command
 
         if (! $role) {
             $this->error("Role not found: {$roleSlug}");
+
             return Command::FAILURE;
         }
 
         if ($user->hasRole($roleSlug)) {
             $this->warn("User '{$user->email}' already has the '{$roleSlug}' role.");
+
             return Command::SUCCESS;
         }
 

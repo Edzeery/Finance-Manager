@@ -58,14 +58,14 @@ class SubscriptionCancellationService
             ->latest()
             ->first();
 
-        if (!$completedPayment || !$completedPayment->method) {
+        if (! $completedPayment || ! $completedPayment->method) {
             return;
         }
 
         try {
             $gateway = $this->gatewayManager->driver($completedPayment->method);
 
-            if (!$gateway->isOnline()) {
+            if (! $gateway->isOnline()) {
                 return;
             }
 

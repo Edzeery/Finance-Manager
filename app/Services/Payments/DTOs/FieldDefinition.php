@@ -1,5 +1,7 @@
 <?php
-// app\Services\Payments\DTOs\FieldDefinition.php 
+
+// app\Services\Payments\DTOs\FieldDefinition.php
+
 namespace App\Services\Payments\DTOs;
 
 class FieldDefinition
@@ -66,8 +68,8 @@ class FieldDefinition
             $rules[] = "min:{$this->minLength}";
         }
 
-        if ($this->type === 'select' && !empty($this->options)) {
-            $rules[] = 'in:' . implode(',', array_column($this->options, 'value'));
+        if ($this->type === 'select' && ! empty($this->options)) {
+            $rules[] = 'in:'.implode(',', array_column($this->options, 'value'));
         }
 
         return $rules;

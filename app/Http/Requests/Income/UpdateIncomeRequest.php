@@ -54,6 +54,7 @@ class UpdateIncomeRequest extends FormRequest
                 'notes' => 'Notes',
             ];
         }
+
         return [];
     }
 }

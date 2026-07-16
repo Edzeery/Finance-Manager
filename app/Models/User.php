@@ -2,37 +2,40 @@
 
 namespace App\Models;
 
+use App\Enums\OnlineStatus;
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentVerificationStatus;
+use App\Enums\SubscriptionStatus;
+use App\Enums\UserStatus as UserStatusEnum;
+use App\Models\UserStatus as UserStatusModel;
+use App\Notifications\VerifyEmail as CustomVerifyEmail;
+use App\Services\OnboardingService;
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Enums\PaymentStatus;
-use App\Enums\SubscriptionStatus;
-use App\Models\Payment;
-use App\Models\Subscription;
-use App\Notifications\VerifyEmail as CustomVerifyEmail;
-use App\Services\OnboardingService;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'locale', 'theme', 'currency', 'timezone', 'is_active', 'current_workspace_id', 'onboarding_completed_at', 'plan_confirmed_at', 'pending_plan_id'])]
+#[Fillable(['name', 'email', 'password', 'locale', 'theme', 'currency', 'timezone', 'current_workspace_id', 'onboarding_completed_at', 'plan_confirmed_at', 'pending_plan_id'])]
 #[Hidden(['password', 'remember_token', 'google2fa_secret', 'two_factor_recovery_codes', 'two_factor_email_code'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected function casts(): array
     {
-        return [
-            'email_verified_at' => 'datetime',
+        return [ 
+            'deleted_at' => 'datetime',
             'password' => 'hashed',
-            'is_active' => 'boolean',
             'onboarding_completed_at' => 'datetime',
             'plan_confirmed_at' => 'datetime',
             'google2fa_secret' => 'encrypted',
@@ -63,6 +66,58 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
+    // ---- User Status ----
+
+    public function statusRecord(): HasOne
+    {
+        return $this->hasOne(UserStatusModel::class);
+    }
+
+    public function getStatusAttribute(): UserStatusEnum
+    {
+        return $this->statusRecord?->status ?? UserStatusEnum::Active;
+    }
+
+    public function getOnlineStatusAttribute(): OnlineStatus
+    {
+        return $this->statusRecord?->online_status ?? OnlineStatus::Offline;
+    }
+
+    public function isAccessible(): bool
+    {
+        return $this->status->isAccessible();
+    }
+
+    public function isStatusBlocked(): bool
+    {
+        return $this->status->isBlocked();
+    }
+
+    public function isStatusExpired(): bool
+    {
+        return $this->statusRecord && $this->statusRecord->isExpired();
+    }
+
+    public function getStatusReasonAttribute(): ?string
+    {
+        return $this->statusRecord?->status_reason;
+    }
+
+    public function getStatusChangedAtAttribute(): ?\Illuminate\Support\Carbon
+    {
+        return $this->statusRecord?->status_changed_at;
+    }
+
+    public function getLastLoginAtAttribute(): ?\Illuminate\Support\Carbon
+    {
+        return $this->statusRecord?->last_login_at;
+    }
+
+    public function getLastLoginIpAttribute(): ?string
+    {
+        return $this->statusRecord?->last_login_ip;
+    }
+
     // ---- Onboarding ----
 
     public function pendingPlan(): BelongsTo
@@ -72,12 +127,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function hasCompletedOnboarding(): bool
     {
-        return !is_null($this->onboarding_completed_at);
+        return ! is_null($this->onboarding_completed_at);
     }
 
     public function hasConfirmedPlan(): bool
     {
-        return !is_null($this->plan_confirmed_at);
+        return ! is_null($this->plan_confirmed_at);
     }
 
     public function markOnboardingComplete(): void
@@ -96,7 +151,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasActivePaidAccess(): bool
     {
         $subscription = $this->activeSubscription();
-        return $subscription && $subscription->isActive() && $subscription->plan && !$subscription->plan->is_free;
+
+        return $subscription && $subscription->isActive() && $subscription->plan && ! $subscription->plan->is_free;
     }
 
     /**
@@ -146,7 +202,7 @@ class User extends Authenticatable implements MustVerifyEmail
             })
             ->exists();
 
-        if (!$hasExpiredOrCanceled) {
+        if (! $hasExpiredOrCanceled) {
             return Subscription::withoutWorkspace()
                 ->where('user_id', $this->id)
                 ->where('status', SubscriptionStatus::Active->value)
@@ -191,7 +247,7 @@ class User extends Authenticatable implements MustVerifyEmail
             })
             ->exists();
 
-        if (!$hasExpiredOrCanceled) {
+        if (! $hasExpiredOrCanceled) {
             return Subscription::withoutWorkspace()
                 ->where('user_id', $this->id)
                 ->where('status', SubscriptionStatus::Active->value)
@@ -208,7 +264,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return Payment::where('user_id', $this->id)
             ->where('status', PaymentStatus::CheckoutPending->value)
             ->whereIn('method', OnboardingService::manualMethods())
-            ->whereHas('verification', fn($q) => $q->where('status', \App\Enums\PaymentVerificationStatus::Pending->value))
+            ->whereHas('verification', fn ($q) => $q->where('status', PaymentVerificationStatus::Pending->value))
             ->exists();
     }
 
@@ -232,6 +288,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 return true;
             }
         }
+
         return false;
     }
 
@@ -257,7 +314,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return $this->platformRoles()
                 ->with('permissions')
                 ->get()
-                ->flatMap(fn($role) => $role->permissions->pluck('slug'))
+                ->flatMap(fn ($role) => $role->permissions->pluck('slug'))
                 ->unique()
                 ->values()
                 ->toArray();
@@ -277,16 +334,25 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public static function permissionCacheVersion(): int
     {
-        return cache()->rememberForever('user_permissions_version', fn() => 1);
+        return cache()->rememberForever('user_permissions_version', fn () => 1);
     }
 
-    protected static function booted(): void {}
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            $user->statusRecord()->create([
+                'status' => UserStatusEnum::Active,
+                'online_status' => OnlineStatus::Offline,
+                'status_changed_at' => now(),
+            ]);
+        });
+    }
 
     public function workspaceHasPermission(string $slug): bool
     {
         $role = $this->currentWorkspaceRole();
 
-        if (!$role) {
+        if (! $role) {
             return false;
         }
 
@@ -297,7 +363,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $currentWs = $this->currentWorkspace;
 
-        if (!$currentWs) {
+        if (! $currentWs) {
             return null;
         }
 
@@ -354,7 +420,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $ws = $workspace ?? $this->currentWorkspace;
 
-        if (!$ws) {
+        if (! $ws) {
             return null;
         }
 
@@ -368,7 +434,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasWorkspaceRole(string|array $roles, ?Workspace $workspace = null): bool
     {
         $role = $this->workspaceRole($workspace);
-        if (!$role) return false;
+        if (! $role) {
+            return false;
+        }
+
         return in_array($role, (array) $roles);
     }
 
@@ -393,38 +462,47 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Income::class);
     }
+
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
     }
+
     public function debts(): HasMany
     {
         return $this->hasMany(Debt::class);
     }
+
     public function assets(): HasMany
     {
         return $this->hasMany(Asset::class);
     }
+
     public function budgets(): HasMany
     {
         return $this->hasMany(Budget::class);
     }
+
     public function financialGoals(): HasMany
     {
         return $this->hasMany(FinancialGoal::class);
     }
+
     public function zakatRecords(): HasMany
     {
         return $this->hasMany(ZakatRecord::class);
     }
+
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
     }
+
     public function settings(): HasMany
     {
         return $this->hasMany(UserSetting::class);
     }
+
     public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
@@ -433,16 +511,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function totalIncome($start = null, $end = null): float
     {
         return (float) $this->incomes()
-            ->when($start, fn($q) => $q->whereDate('date', '>=', $start))
-            ->when($end, fn($q) => $q->whereDate('date', '<=', $end))
+            ->when($start, fn ($q) => $q->whereDate('date', '>=', $start))
+            ->when($end, fn ($q) => $q->whereDate('date', '<=', $end))
             ->sum('amount');
     }
 
     public function totalExpense($start = null, $end = null): float
     {
         return (float) $this->expenses()
-            ->when($start, fn($q) => $q->whereDate('date', '>=', $start))
-            ->when($end, fn($q) => $q->whereDate('date', '<=', $end))
+            ->when($start, fn ($q) => $q->whereDate('date', '>=', $start))
+            ->when($end, fn ($q) => $q->whereDate('date', '<=', $end))
             ->sum('amount');
     }
 

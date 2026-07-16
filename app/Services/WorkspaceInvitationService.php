@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\ActivityLogServiceInterface;
 use App\Enums\InvitationStatus;
 use App\Events\InvitationAccepted;
 use App\Events\InvitationCreated;
@@ -11,7 +12,6 @@ use App\Models\Invitation;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Notifications\WorkspaceInvitation as WorkspaceInvitationNotification;
-use App\Contracts\Services\ActivityLogServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -25,7 +25,7 @@ class WorkspaceInvitationService
 
     public function invite(Workspace $workspace, User $inviter, string $email, string $role): Invitation
     {
-        if (!$workspace->canAddUser()) {
+        if (! $workspace->canAddUser()) {
             throw new \RuntimeException(__('workspace.user_limit_reached'));
         }
 
@@ -76,7 +76,7 @@ class WorkspaceInvitationService
 
     public function accept(Invitation $invitation, User $user): void
     {
-        if (!$invitation->isAcceptable()) {
+        if (! $invitation->isAcceptable()) {
             throw new \RuntimeException(__('workspace.invitation_invalid_or_expired'));
         }
 
@@ -86,14 +86,14 @@ class WorkspaceInvitationService
 
         $workspace = $invitation->workspace;
 
-        if (!$workspace->canAddUser()) {
+        if (! $workspace->canAddUser()) {
             throw new \RuntimeException(__('workspace.user_limit_reached'));
         }
 
         DB::transaction(function () use ($invitation, $user, $workspace) {
             $invitation->markAsAccepted();
 
-            if (!$workspace->users()->where('user_id', $user->id)->exists()) {
+            if (! $workspace->users()->where('user_id', $user->id)->exists()) {
                 $workspace->users()->attach($user->id, []);
             }
 
@@ -115,7 +115,7 @@ class WorkspaceInvitationService
 
     public function decline(Invitation $invitation): void
     {
-        if (!$invitation->isPending()) {
+        if (! $invitation->isPending()) {
             throw new \RuntimeException(__('workspace.invitation_invalid_or_expired'));
         }
 
@@ -140,7 +140,7 @@ class WorkspaceInvitationService
             throw new \RuntimeException(__('messages.unauthorized'));
         }
 
-        if (!$invitation->isPending()) {
+        if (! $invitation->isPending()) {
             throw new \RuntimeException(__('workspace.invitation_not_pending'));
         }
 
@@ -159,7 +159,7 @@ class WorkspaceInvitationService
 
     public function resend(Invitation $invitation): void
     {
-        if (!$invitation->isPending()) {
+        if (! $invitation->isPending()) {
             throw new \RuntimeException(__('workspace.invitation_not_pending'));
         }
 
@@ -183,17 +183,18 @@ class WorkspaceInvitationService
     {
         $invitation = Invitation::where('token', $token)->first();
 
-        if (!$invitation) {
+        if (! $invitation) {
             return null;
         }
 
         if ($invitation->isExpired() && $invitation->isPending()) {
             $invitation->markAsExpired();
             InvitationExpired::dispatch($invitation);
+
             return null;
         }
 
-        if (!$invitation->isAcceptable()) {
+        if (! $invitation->isAcceptable()) {
             return null;
         }
 
@@ -222,6 +223,7 @@ class WorkspaceInvitationService
                     $count++;
                 }
             });
+
         return $count;
     }
 

@@ -15,6 +15,7 @@ class UserSetting extends Model
     {
         static::addGlobalScope(new WorkspaceScope);
     }
+
     protected $fillable = ['user_id', 'workspace_id', 'key', 'value'];
 
     public function user(): BelongsTo

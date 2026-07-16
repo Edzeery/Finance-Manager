@@ -28,6 +28,10 @@ class EnsureOnboardingCompleted
         'theme.switch',
         'currency.switch',
         'logout',
+        'mystatuskit',
+        'invitations.accept',
+        'invitations.decline',
+
     ];
 
     /**
@@ -40,7 +44,7 @@ class EnsureOnboardingCompleted
 
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return $next($request);
         }
 
@@ -62,8 +66,10 @@ class EnsureOnboardingCompleted
                 if ($routeName && $this->inPostOnboardingAllowed($routeName)) {
                     return $next($request);
                 }
+
                 return redirect()->route('dashboard');
             }
+
             return $next($request);
         }
 
@@ -74,7 +80,7 @@ class EnsureOnboardingCompleted
 
         $user = auth()->user();
 
-        if (!$user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             return redirect()->route('verification.notice');
         }
 
@@ -127,37 +133,42 @@ class EnsureOnboardingCompleted
             || $currentRouteName === 'livewire.update'
             || $currentRouteName === 'livewire.upload-file';
 
-        if (!$isLivewireRequest) {
+        if (! $isLivewireRequest) {
             return $currentRouteName;
         }
 
         $referer = $request->headers->get('referer');
-        if (!$referer) {
+        if (! $referer) {
             return $currentRouteName;
         }
 
         try {
-            $refererRequest = \Illuminate\Http\Request::create($referer);
+            $refererRequest = Request::create($referer);
             $route = app('router')->getRoutes()->match($refererRequest);
 
             return $route->getName() ?? $currentRouteName;
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('EnsureOnboardingCompleted: failed to match referer route', [
+            Log::warning('EnsureOnboardingCompleted: failed to match referer route', [
                 'referer' => $referer,
                 'error' => $e->getMessage(),
             ]);
+
             return $currentRouteName;
         }
     }
 
     protected function inExceptArray(?string $routeName): bool
     {
-        if (!$routeName) return false;
+        if (! $routeName) {
+            return false;
+        }
 
         foreach ($this->except as $pattern) {
             if (str_ends_with($pattern, '.*')) {
                 $prefix = substr($pattern, 0, -2);
-                if (str_starts_with($routeName, $prefix)) return true;
+                if (str_starts_with($routeName, $prefix)) {
+                    return true;
+                }
             } elseif ($routeName === $pattern) {
                 return true;
             }
@@ -168,10 +179,14 @@ class EnsureOnboardingCompleted
 
     protected function inPostOnboardingAllowed(?string $routeName): bool
     {
-        if (!$routeName) return false;
+        if (! $routeName) {
+            return false;
+        }
 
         foreach ($this->postOnboardingAllowed as $pattern) {
-            if ($routeName === $pattern) return true;
+            if ($routeName === $pattern) {
+                return true;
+            }
         }
 
         return false;

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\PlanFeature;
 use Illuminate\Http\Request;
 
@@ -17,20 +17,21 @@ class PlanFeatureController extends Controller
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded')
             ->addBreadcrumb(__('super-admin.features'));
 
+        $type = $request->input('type', 'all');
         $query = PlanFeature::orderBy('sort_order');
+
+        if ($type !== 'all') {
+            $query->where('type', $type);
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name_en', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%")
-                  ->orWhere('name_ar', 'like', "%{$search}%")
-                  ->orWhere('name_fr', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->orWhere('name_ar', 'like', "%{$search}%")
+                    ->orWhere('name_fr', 'like', "%{$search}%");
             });
-        }
-
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
         }
 
         if ($request->filled('is_core')) {
@@ -40,7 +41,14 @@ class PlanFeatureController extends Controller
         $perPage = min((int) $request->input('per_page', 20), config('finance.per_page_max', 100));
         $features = $query->paginate($perPage);
 
-        return view('super-admin.features', $this->withBreadcrumbs(compact('features')));
+        $countAll = PlanFeature::count();
+        $countBoolean = PlanFeature::where('type', 'boolean')->count();
+        $countValue = PlanFeature::where('type', 'value')->count();
+        $countText = PlanFeature::where('type', 'text')->count();
+
+        return view('super-admin.features', $this->withBreadcrumbs(compact(
+            'features', 'countAll', 'countBoolean', 'countValue', 'countText'
+        )));
     }
 
     public function create()
@@ -85,7 +93,7 @@ class PlanFeatureController extends Controller
     public function update(Request $request, PlanFeature $feature)
     {
         $validated = $request->validate([
-            'slug' => ['required', 'string', 'max:100', 'unique:plan_features,slug,' . $feature->id],
+            'slug' => ['required', 'string', 'max:100', 'unique:plan_features,slug,'.$feature->id],
             'name_en' => ['required', 'string', 'max:255'],
             'name_ar' => ['nullable', 'string', 'max:255'],
             'name_fr' => ['nullable', 'string', 'max:255'],

@@ -2,9 +2,7 @@
     <x-slot:title>{{ $debt->counterparty_name }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ $debt->counterparty_name }}</x-slot>
     <x-slot:page-description>
-        <span class="badge badge-custom {{ $debt->type === \App\Enums\DebtType::Owed ? 'badge-expense' : 'badge-income' }}">
-            {{ $debt->type === \App\Enums\DebtType::Owed ? __('debt.owed') : __('debt.owing') }}
-        </span>
+        <x-status-badge domain="debt_type" :status="$debt->type->value" set="bi" />
         &nbsp;| {{ __('debt.remaining_amount') }}: <strong>{{ number_format($debt->remaining_amount, 2) }} {{ config('finance.currency_symbol') }}</strong>
     </x-slot>
 
@@ -61,7 +59,7 @@
                                 @foreach($debt->payments as $payment)
                                     <tr>
                                         <td>{{ $payment->payment_date->format('Y/m/d') }}</td>
-                                        <td class="text-end fw-bold" style="color:var(--success)">-{{ number_format($payment->amount, 2) }}</td>
+                                        <td text-start fw-bold style="color:var(--success)">-{{ number_format($payment->amount, 2) }}</td>
                                         <td>{{ $payment->notes ?: 'â€”' }}</td>
                                     </tr>
                                 @endforeach

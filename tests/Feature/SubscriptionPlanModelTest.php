@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Expense;
+use App\Models\Income;
 use App\Models\PlanFeature;
+use App\Models\Role;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
@@ -18,6 +21,7 @@ class SubscriptionPlanModelTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Workspace $workspace;
 
     protected function setUp(): void
@@ -28,7 +32,7 @@ class SubscriptionPlanModelTest extends TestCase
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->create();
         $this->workspace->users()->attach($this->user->id, []);
-        $adminRole = \App\Models\Role::where('slug', 'workspace_admin')->first();
+        $adminRole = Role::where('slug', 'workspace_admin')->first();
         if ($adminRole) {
             $this->user->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $this->workspace->id]);
         }
@@ -124,14 +128,14 @@ class SubscriptionPlanModelTest extends TestCase
 
         $this->assertEquals(5, $service->maxTransactionsPerMonth($this->workspace));
 
-        \App\Models\Income::withoutWorkspace()->getQuery()->delete();
-        \App\Models\Expense::withoutWorkspace()->getQuery()->delete();
+        Income::withoutWorkspace()->getQuery()->delete();
+        Expense::withoutWorkspace()->getQuery()->delete();
 
-        \App\Models\Income::factory()->count(3)->create([
+        Income::factory()->count(3)->create([
             'workspace_id' => $this->workspace->id,
             'user_id' => $this->user->id,
         ]);
-        \App\Models\Expense::factory()->count(3)->create([
+        Expense::factory()->count(3)->create([
             'workspace_id' => $this->workspace->id,
             'user_id' => $this->user->id,
         ]);

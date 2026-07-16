@@ -59,6 +59,17 @@
                                             </select>
                                             <label for="default_locale">{{ __('general.language') }}</label>
                                         </div>
+                                        <div class="form-floating-group">
+                                            <select name="base_currency" id="base_currency" class="form-control">
+                                                @php $baseCurrencySetting = $settings['base_currency'] ?? config('finance.base_currency', 'USD'); @endphp
+                                                @foreach (\App\Helpers\CurrencyHelper::availableCurrencies() ?: [['code' => 'USD', 'name' => 'US Dollar'], ['code' => 'DZD', 'name' => 'Algerian Dinar'], ['code' => 'EUR', 'name' => 'Euro']] as $cur)
+                                                    <option value="{{ $cur['code'] }}" {{ $baseCurrencySetting === $cur['code'] ? 'selected' : '' }}>
+                                                        {{ $cur['code'] }} - {{ $cur['name'] }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <label for="base_currency">{{ __('super-admin.base_currency') }}</label>
+                                        </div>
                                         <x-toggle-switch
                                             class="mb-3"
                                             name="registration_enabled"

@@ -17,8 +17,11 @@ class BudgetExpenseIntegrationTest extends TestCase
     use WithWorkspacePermission;
 
     private User $user;
+
     private ExpenseCategory $category;
+
     private Budget $budget;
+
     private BudgetCategory $budgetCategory;
 
     protected function setUp(): void

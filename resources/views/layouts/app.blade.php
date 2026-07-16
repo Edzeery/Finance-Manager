@@ -165,6 +165,35 @@
     <x-confirm-modal />
 
     @livewireScripts
+    <script>
+        (function() {
+            const PING_URL = '{{ route("ping") }}';
+            const PING_INTERVAL = 2 * 60 * 1000; // 2 minutes
+
+            setInterval(function() {
+                fetch(PING_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                }).catch(function() {});
+            }, PING_INTERVAL);
+
+            // Also ping on page show (tab switch back / minimize restore)
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    fetch(PING_URL, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        },
+                    }).catch(function() {});
+                }
+            });
+        })();
+    </script>
     @stack('scripts')
     <script type="module" src="https://esm.sh/ionicons@latest/loader"></script>
     <script nomodule src="https://esm.sh/ionicons@latest/loader"></script>

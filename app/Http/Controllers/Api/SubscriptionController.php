@@ -27,13 +27,13 @@ class SubscriptionController extends Controller
     {
         $workspace = $request->user()->currentWorkspace;
 
-        if (!$workspace) {
+        if (! $workspace) {
             return response()->json(['message' => __('messages.no_workspace_selected')], 400);
         }
 
         $subscription = $workspace->owner()?->first()?->activeSubscription()?->loadMissing('plan');
 
-        if (!$subscription) {
+        if (! $subscription) {
             return response()->json(['message' => __('messages.no_active_subscription')], 404);
         }
 
@@ -44,20 +44,20 @@ class SubscriptionController extends Controller
     {
         $workspace = $request->user()->currentWorkspace;
 
-        if (!$workspace) {
+        if (! $workspace) {
             return response()->json(['message' => __('messages.no_workspace_selected')], 400);
         }
 
         $currentPlan = $workspace->activePlan();
         $targetPlan = $this->subscriptionService->getPlan($request->plan_slug);
 
-        if (!$targetPlan) {
+        if (! $targetPlan) {
             return response()->json(['message' => __('messages.plan_not_found')], 404);
         }
 
         if ($currentPlan && $targetPlan->sort_order < $currentPlan->sort_order) {
             $check = $this->subscriptionService->canDowngrade($workspace, $targetPlan);
-            if (!$check['can_downgrade']) {
+            if (! $check['can_downgrade']) {
                 return response()->json(['message' => implode(' ', $check['errors'])], 422);
             }
         }
@@ -70,7 +70,7 @@ class SubscriptionController extends Controller
             $request->payment_method,
         );
 
-        if (!$result['subscription']) {
+        if (! $result['subscription']) {
             return response()->json(['message' => $result['message']], 422);
         }
 
@@ -84,13 +84,13 @@ class SubscriptionController extends Controller
     {
         $workspace = $request->user()->currentWorkspace;
 
-        if (!$workspace) {
+        if (! $workspace) {
             return response()->json(['message' => __('messages.no_workspace_selected')], 400);
         }
 
         $subscription = $workspace->owner()?->first()?->activeSubscription();
 
-        if (!$subscription || $subscription->isExpired()) {
+        if (! $subscription || $subscription->isExpired()) {
             return response()->json(['message' => __('messages.no_active_subscription')], 404);
         }
 
@@ -103,7 +103,7 @@ class SubscriptionController extends Controller
     {
         $coupon = $this->subscriptionService->validateCoupon($request->code, $request->amount);
 
-        if (!$coupon) {
+        if (! $coupon) {
             return response()->json(['valid' => false, 'message' => __('messages.coupon_invalid')], 404);
         }
 

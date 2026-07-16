@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Income extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory, SoftDeletes;
 
     protected static function booted(): void
     {
@@ -72,6 +72,7 @@ class Income extends Model
         if ($type === 'recurring') {
             return $query->where('is_recurring', true);
         }
-        return $query->whereHas('category', fn($q) => $q->where('type', $type));
+
+        return $query->whereHas('category', fn ($q) => $q->where('type', $type));
     }
 }

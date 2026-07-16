@@ -167,6 +167,7 @@
                 },
 
                 fetchNotifications() {
+                    const locale = document.documentElement.lang.substring(0, 2) || 'en';
                     fetch('{{ route('super.admin.notifications.index') }}', {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest',
@@ -175,7 +176,11 @@
                         })
                         .then(r => r.json())
                         .then(data => {
-                            this.notifications = data.notifications || [];
+                            this.notifications = (data.notifications || []).map(n => ({
+                                ...n,
+                                _title: n['title_' + locale] || n.title_en || n.title_ar || n.title_fr || '',
+                                _message: n['message_' + locale] || n.message_en || n.message_ar || n.message_fr || '',
+                            }));
                             this.unreadCount = data.unread_count || 0;
                         })
                         .catch(() => {});

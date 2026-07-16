@@ -89,6 +89,6 @@ enum AssetType: string
 
     public static function zakatableValues(): array
     {
-        return array_map(fn($case) => $case->value, self::zakatable());
+        return array_map(fn ($case) => $case->value, self::zakatable());
     }
 }

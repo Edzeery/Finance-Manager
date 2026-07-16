@@ -5,7 +5,6 @@ namespace Tests\Feature\Income;
 use App\Models\Income;
 use App\Models\IncomeCategory;
 use App\Models\User;
-use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\WithWorkspacePermission;
@@ -16,6 +15,7 @@ class IncomeControllerTest extends TestCase
     use WithWorkspacePermission;
 
     private User $user;
+
     private IncomeCategory $category;
 
     protected function setUp(): void

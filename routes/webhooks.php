@@ -11,4 +11,3 @@ Route::prefix('payment/webhook')->name('payment.webhook.')->middleware('throttle
     Route::post('/payoneer', [PaymentWebhookController::class, 'payoneer'])->name('payoneer');
     Route::post('/noest', [PaymentWebhookController::class, 'noest'])->name('noest');
 });
-

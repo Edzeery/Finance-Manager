@@ -24,7 +24,7 @@ class WorkspaceController extends Controller
             $workspaces = $request->user()->workspaces()->get();
         }
 
-        return response()->json($workspaces->map(fn($ws) => [
+        return response()->json($workspaces->map(fn ($ws) => [
             'id' => $ws->id,
             'name' => $ws->name,
             'slug' => $ws->slug,
@@ -40,6 +40,7 @@ class WorkspaceController extends Controller
     {
         try {
             $workspace = $this->workspaceService->createForUser($request->user(), $request->validated());
+
             return response()->json($workspace, 201);
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 403);
@@ -48,7 +49,7 @@ class WorkspaceController extends Controller
 
     public function show(Request $request, Workspace $workspace): JsonResponse
     {
-        if (!$request->user()->hasRole('super_admin') && !$workspace->users()->where('user_id', $request->user()->id)->exists()) {
+        if (! $request->user()->hasRole('super_admin') && ! $workspace->users()->where('user_id', $request->user()->id)->exists()) {
             return response()->json(['message' => __('messages.unauthorized')], 403);
         }
 
@@ -66,7 +67,7 @@ class WorkspaceController extends Controller
 
     public function update(UpdateWorkspaceRequest $request, Workspace $workspace): JsonResponse
     {
-        if (!$request->user()->hasRole('super_admin') && !$workspace->users()->where('user_id', $request->user()->id)->exists()) {
+        if (! $request->user()->hasRole('super_admin') && ! $workspace->users()->where('user_id', $request->user()->id)->exists()) {
             return response()->json(['message' => __('messages.unauthorized')], 403);
         }
 
@@ -77,7 +78,7 @@ class WorkspaceController extends Controller
 
     public function destroy(Request $request, Workspace $workspace): JsonResponse
     {
-        if (!$request->user()->hasRole('super_admin') && !$workspace->isOwner($request->user())) {
+        if (! $request->user()->hasRole('super_admin') && ! $workspace->isOwner($request->user())) {
             return response()->json(['message' => __('messages.unauthorized')], 403);
         }
 
@@ -88,7 +89,7 @@ class WorkspaceController extends Controller
 
     public function switch(Request $request, Workspace $workspace): JsonResponse
     {
-        if (!$request->user()->hasRole('super_admin') && !$workspace->users()->where('user_id', $request->user()->id)->exists()) {
+        if (! $request->user()->hasRole('super_admin') && ! $workspace->users()->where('user_id', $request->user()->id)->exists()) {
             return response()->json(['message' => __('messages.unauthorized')], 403);
         }
 

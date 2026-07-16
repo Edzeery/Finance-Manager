@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Goal;
 
+use App\Contracts\Repositories\GoalRepositoryInterface;
 use App\Enums\GoalStatus;
 use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\Goal\StoreGoalRequest;
 use App\Http\Requests\Goal\UpdateGoalRequest;
 use App\Models\FinancialGoal;
-use App\Contracts\Repositories\GoalRepositoryInterface;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class FinancialGoalController extends BaseCrudController
 {
-    protected string $model = \App\Models\FinancialGoal::class;
+    protected string $model = FinancialGoal::class;
 
     public function __construct(
         private GoalRepositoryInterface $goalRepo,
@@ -74,9 +74,9 @@ class FinancialGoalController extends BaseCrudController
 
         $tabs = $this->buildTabs([
             'all' => ['label' => __('general.all'), 'scope' => null],
-            'in_progress' => ['label' => __('goal.in_progress'), 'scope' => fn($q) => $q->where('status', GoalStatus::InProgress->value)],
-            'completed' => ['label' => __('goal.completed'), 'scope' => fn($q) => $q->where('status', GoalStatus::Completed->value)],
-            'trashed' => ['label' => __('general.trash'), 'scope' => fn($q) => $q->onlyTrashed()],
+            'in_progress' => ['label' => __('goal.in_progress'), 'scope' => fn ($q) => $q->where('status', GoalStatus::InProgress->value)],
+            'completed' => ['label' => __('goal.completed'), 'scope' => fn ($q) => $q->where('status', GoalStatus::Completed->value)],
+            'trashed' => ['label' => __('general.trash'), 'scope' => fn ($q) => $q->onlyTrashed()],
         ]);
 
         return view('goal.index', $this->withBreadcrumbs(compact('goals', 'tab', 'tabs')));
@@ -103,7 +103,7 @@ class FinancialGoalController extends BaseCrudController
         if ($goal->status === GoalStatus::Completed) {
             $this->notificationService->goalAchieved(
                 auth()->id(),
-                $goal->{'name_' . app()->getLocale()}
+                $goal->{'name_'.app()->getLocale()}
             );
         }
 
@@ -114,6 +114,7 @@ class FinancialGoalController extends BaseCrudController
     public function edit(FinancialGoal $goal)
     {
         $this->authorize('update', $goal);
+
         return view('goal.edit', compact('goal'));
     }
 
@@ -133,10 +134,10 @@ class FinancialGoalController extends BaseCrudController
 
         $this->goalRepo->update($goal, $data);
 
-        if ($data['status'] === GoalStatus::Completed->value && !$wasCompleted) {
+        if ($data['status'] === GoalStatus::Completed->value && ! $wasCompleted) {
             $this->notificationService->goalAchieved(
                 auth()->id(),
-                $goal->{'name_' . app()->getLocale()}
+                $goal->{'name_'.app()->getLocale()}
             );
         }
 

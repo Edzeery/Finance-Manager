@@ -222,6 +222,60 @@
   color: #fff;
 }
 
+/* ── Sub-tabs ── */
+.filter-subtabs {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.filter-subtabs-inner {
+  display: inline-flex;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.filter-subtab {
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-xs);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.filter-subtab:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+  text-decoration: none;
+}
+
+.filter-subtab.active {
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+}
+
+.filter-subtab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.filter-subtab .filter-tab-count {
+  font-size: 10px;
+  padding: 1px 6px;
+}
+
 /* ── Filter form control widths ── */
 .filter-fw-wide {
   min-width: clamp(120px, 30vw, 200px) !important;

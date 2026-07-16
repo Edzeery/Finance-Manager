@@ -17,14 +17,14 @@ class SubscriptionPlanResource extends JsonResource
             'is_free' => $this->is_free,
             'monthly_price' => (float) $this->monthly_price,
             'yearly_price' => (float) $this->yearly_price,
-            'prices' => $this->activePrices->map(fn($p) => [
+            'prices' => $this->activePrices->map(fn ($p) => [
                 'billing_period' => $p->billing_period,
                 'currency' => $p->currency,
                 'price' => (float) $p->price,
             ]),
-            'features' => $this->planFeatures->map(fn($f) => [
+            'features' => $this->planFeatures->map(fn ($f) => [
                 'slug' => $f->slug,
-                'name' => $f->{'name_' . app()->getLocale()} ?? $f->name_en,
+                'name' => $f->{'name_'.app()->getLocale()} ?? $f->name_en,
                 'value' => $f->pivot->value,
                 'icon' => $f->icon,
                 'type' => $f->type,

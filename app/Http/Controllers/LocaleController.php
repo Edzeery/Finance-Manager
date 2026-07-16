@@ -15,6 +15,7 @@ class LocaleController extends Controller
                 auth()->user()->update(['locale' => $locale]);
             }
         }
+
         return redirect()->back();
     }
 }

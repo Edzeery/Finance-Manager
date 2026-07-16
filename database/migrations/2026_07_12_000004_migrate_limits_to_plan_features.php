@@ -25,23 +25,31 @@ return new class extends Migration
             ->orderBy('id')
             ->chunkById(100, function ($plans) use ($features) {
                 foreach ($plans as $plan) {
-                    if (!$plan->limits) continue;
+                    if (! $plan->limits) {
+                        continue;
+                    }
 
                     $limits = json_decode($plan->limits, true);
-                    if (!$limits || !is_array($limits)) continue;
+                    if (! $limits || ! is_array($limits)) {
+                        continue;
+                    }
 
                     foreach ($this->limitKeys as $key) {
-                        if (!isset($limits[$key])) continue;
+                        if (! isset($limits[$key])) {
+                            continue;
+                        }
 
                         $featureId = $features[$key] ?? null;
-                        if (!$featureId) continue;
+                        if (! $featureId) {
+                            continue;
+                        }
 
                         $exists = DB::table('plan_plan_feature')
                             ->where('plan_id', $plan->id)
                             ->where('plan_feature_id', $featureId)
                             ->exists();
 
-                        if (!$exists) {
+                        if (! $exists) {
                             DB::table('plan_plan_feature')->insert([
                                 'plan_id' => $plan->id,
                                 'plan_feature_id' => $featureId,

@@ -7,7 +7,11 @@
     'preserve' => [],
 ])
 
-@php $baseUrl = $route ?? request()->url(); @endphp
+@php
+    $baseUrl = $route ?? request()->url();
+    $preserved = collect(request()->except(['period', 'start_date', 'end_date']))->filter(fn($v) => $v !== '' && $v !== null);
+    $preservedStr = $preserved->isNotEmpty() ? '&' . $preserved->map(fn($v, $k) => "$k=$v")->implode('&') : '';
+@endphp
 
 <div class="date-filter-bar" x-data="dateFilterBar(@js($currentPeriod), @js($startDate), @js($endDate))">
     <div class="d-flex flex-wrap align-items-center gap-2">
@@ -22,7 +26,7 @@
                         {{ __("filters.{$key}") }}
                     </button>
                 @else
-                    <a href="{{ $baseUrl }}?period={{ $key }}"
+                    <a href="{{ $baseUrl }}?period={{ $key }}{{ $preservedStr }}"
                         class="filter-period-btn {{ $currentPeriod === $key ? 'active' : '' }}"
                         role="tab"
                         aria-selected="{{ $currentPeriod === $key ? 'true' : 'false' }}"
@@ -55,7 +59,7 @@
                 <input type="date" x-model="endDate" class="form-custom">
             </div>
             <template x-if="startDate && endDate">
-                <a x-bind:href="'{{ $baseUrl }}?period=custom&start_date=' + startDate + '&end_date=' + endDate"
+                <a x-bind:href="'{{ $baseUrl }}?period=custom&start_date=' + startDate + '&end_date=' + endDate + '{{ $preservedStr }}'"
                     class="btn btn-accent btn-sm px-3">
                     <i class="bi bi-check-lg"></i>
                     <span>{{ __('filters.apply') }}</span>

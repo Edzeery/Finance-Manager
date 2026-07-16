@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Payments;
 
-use App\Services\Payments\DTOs\GatewayDefinition;
 use App\Services\Payments\DTOs\FieldDefinition;
+use App\Services\Payments\DTOs\GatewayDefinition;
 use App\Services\Payments\PaymentGatewayRegistry;
 use Database\Seeders\PaymentGatewaySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;

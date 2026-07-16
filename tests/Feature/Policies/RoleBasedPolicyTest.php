@@ -17,7 +17,9 @@ class RoleBasedPolicyTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $otherUser;
+
     private Workspace $workspace;
 
     protected function setUp(): void

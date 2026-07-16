@@ -12,8 +12,8 @@ class WorkspaceFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->company() . "'s Workspace",
-            'slug' => fake()->unique()->slug() . '-' . fake()->randomNumber(6),
+            'name' => fake()->company()."'s Workspace",
+            'slug' => fake()->unique()->slug().'-'.fake()->randomNumber(6),
             'type' => 'personal',
             'currency' => 'DZD',
             'timezone' => 'Africa/Algiers',
@@ -23,6 +23,6 @@ class WorkspaceFactory extends Factory
 
     public function inactive(): static
     {
-        return $this->state(fn(array $attrs) => ['is_active' => false]);
+        return $this->state(fn (array $attrs) => ['is_active' => false]);
     }
 }

@@ -17,7 +17,7 @@ class GatewayManager
     {
         $name ??= config('payment.default', 'cash');
 
-        if (!isset($this->gateways[$name])) {
+        if (! isset($this->gateways[$name])) {
             throw new InvalidArgumentException("Payment gateway '{$name}' is not registered.");
         }
 
@@ -31,11 +31,11 @@ class GatewayManager
 
     public function online(): array
     {
-        return array_filter($this->gateways, fn(PaymentGateway $g) => $g->isOnline());
+        return array_filter($this->gateways, fn (PaymentGateway $g) => $g->isOnline());
     }
 
     public function offline(): array
     {
-        return array_filter($this->gateways, fn(PaymentGateway $g) => $g->isOffline());
+        return array_filter($this->gateways, fn (PaymentGateway $g) => $g->isOffline());
     }
 }

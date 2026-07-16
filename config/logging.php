@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -136,7 +137,7 @@ return [
             'handler_with' => [
                 'stream' => storage_path('logs/structured.json'),
             ],
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
@@ -147,7 +148,7 @@ return [
             'handler_with' => [
                 'stream' => storage_path('logs/payments.json'),
             ],
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
@@ -158,7 +159,7 @@ return [
             'handler_with' => [
                 'stream' => storage_path('logs/subscriptions.json'),
             ],
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
@@ -169,7 +170,7 @@ return [
             'handler_with' => [
                 'stream' => storage_path('logs/auth.json'),
             ],
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
@@ -180,7 +181,7 @@ return [
             'handler_with' => [
                 'stream' => storage_path('logs/queue.json'),
             ],
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
@@ -191,7 +192,7 @@ return [
             'handler_with' => [
                 'stream' => storage_path('logs/sentry.json'),
             ],
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
         ],
 
     ],

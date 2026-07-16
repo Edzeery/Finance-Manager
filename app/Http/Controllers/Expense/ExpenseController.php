@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Expense;
 
+use App\Contracts\Repositories\ExpenseRepositoryInterface;
 use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\Expense\StoreExpenseRequest;
 use App\Http\Requests\Expense\UpdateExpenseRequest;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
-use App\Contracts\Repositories\ExpenseRepositoryInterface;
 use Illuminate\Http\Request;
 
 class ExpenseController extends BaseCrudController
 {
-    protected string $model = \App\Models\Expense::class;
+    protected string $model = Expense::class;
 
     public function __construct(
         private ExpenseRepositoryInterface $expenseRepo,
@@ -77,13 +77,17 @@ class ExpenseController extends BaseCrudController
 
         $tabs = $this->buildTabs([
             'all' => ['label' => __('general.all'), 'scope' => 'active'],
-            'active' => ['label' => __('general.active'), 'scope' => fn($q) => $q->active()->where('is_archived', false)],
+            'active' => ['label' => __('general.active'), 'scope' => fn ($q) => $q->active()->where('is_archived', false)],
             'archived' => ['label' => __('general.archived'), 'scope' => 'archived'],
-            'trashed' => ['label' => __('general.trash'), 'scope' => fn($q) => $q->onlyTrashed()],
+            'trashed' => ['label' => __('general.trash'), 'scope' => fn ($q) => $q->onlyTrashed()],
         ]);
 
+        $catSubTabs = collect(['' => ['label' => __('general.all')]])
+            ->union($categories->mapWithKeys(fn ($cat) => [$cat->id => ['label' => locale_name($cat)]]))
+            ->toArray();
+
         return view('expense.index', $this->withBreadcrumbs(compact(
-            'expenses', 'categories', 'totalExpense', 'tab', 'tabs'
+            'expenses', 'categories', 'totalExpense', 'tab', 'tabs', 'catSubTabs'
         )));
     }
 
@@ -124,7 +128,7 @@ class ExpenseController extends BaseCrudController
     public function archive(Expense $expense)
     {
         $this->authorize('archive', $expense);
-        $expense->update(['is_archived' => !$expense->is_archived]);
+        $expense->update(['is_archived' => ! $expense->is_archived]);
 
         return redirect()->back()->with('success', __('messages.expense_archived'));
     }

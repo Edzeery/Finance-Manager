@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Workspace;
+use App\Models\Role;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
+use App\Models\Workspace;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -16,8 +18,8 @@ class MigrateToWorkspacesSeeder extends Seeder
         foreach ($users as $user) {
             DB::transaction(function () use ($user) {
                 $workspace = Workspace::create([
-                    'name' => $user->name . "'s Workspace",
-                    'slug' => 'personal-' . $user->id . '-' . now()->timestamp,
+                    'name' => $user->name."'s Workspace",
+                    'slug' => 'personal-'.$user->id.'-'.now()->timestamp,
                     'type' => 'personal',
                     'currency' => $user->currency ?? 'DZD',
                     'timezone' => $user->timezone ?? 'Africa/Algiers',
@@ -25,12 +27,12 @@ class MigrateToWorkspacesSeeder extends Seeder
 
                 $workspace->users()->attach($user->id, []);
 
-                $adminRole = \App\Models\Role::where('slug', 'workspace_admin')->first();
+                $adminRole = Role::where('slug', 'workspace_admin')->first();
                 if ($adminRole) {
                     $user->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $workspace->id]);
                 }
 
-                $plan = \App\Models\SubscriptionPlan::where('slug', 'personal')->first();
+                $plan = SubscriptionPlan::where('slug', 'personal')->first();
                 if ($plan) {
                     $workspace->allSubscriptions()->create([
                         'subscription_plan_id' => $plan->id,
@@ -45,6 +47,6 @@ class MigrateToWorkspacesSeeder extends Seeder
             });
         }
 
-        $this->command?->info('Migrated ' . $users->count() . ' users to workspaces.');
+        $this->command?->info('Migrated '.$users->count().' users to workspaces.');
     }
 }

@@ -100,9 +100,10 @@ class NoestServiceTest extends TestCase
         Http::assertSent(function ($request) {
             $uri = $request->toPsrRequest()->getUri();
             parse_str($uri->getQuery(), $query);
+
             return $request->method() === 'POST'
                 && ($query['user_guid'] ?? null) === 'test_guid'
-                && !isset($request->data()['user_guid']);
+                && ! isset($request->data()['user_guid']);
         });
     }
 }

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\PlanFeature;
-use App\Models\PlanPrice;
 use App\Models\SubscriptionPlan;
 use Illuminate\Database\Seeder;
 
@@ -478,7 +477,7 @@ class SubscriptionPlanSeeder extends Seeder
 
         foreach ($slugs as $slug) {
             $feature = collect($allFeatures)->firstWhere('slug', $slug);
-            if (!$feature) {
+            if (! $feature) {
                 continue;
             }
 

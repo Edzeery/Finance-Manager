@@ -14,8 +14,11 @@ class ExpenseCategoryPolicyTest extends TestCase
     use RefreshDatabase;
 
     private ExpenseCategoryPolicy $policy;
+
     private Workspace $workspace;
+
     private User $user;
+
     private User $otherUser;
 
     protected function setUp(): void

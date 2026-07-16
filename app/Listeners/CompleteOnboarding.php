@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\PaymentCompleted;
-use App\Models\User;
 
 class CompleteOnboarding
 {
@@ -13,7 +12,7 @@ class CompleteOnboarding
 
         $user = $payment->user;
 
-        if (!$user || !$user->pending_plan_id) {
+        if (! $user || ! $user->pending_plan_id) {
             return;
         }
 

@@ -4,7 +4,6 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
-use App\Services\Payments\ValidationResult;
 
 class BaridiMobGateway implements PaymentGateway
 {
@@ -17,9 +16,10 @@ class BaridiMobGateway implements PaymentGateway
 
     public function validate(array $data): ValidationResult
     {
-        if (!$this->gatewaySetting('rip_number')) {
+        if (! $this->gatewaySetting('rip_number')) {
             return ValidationResult::invalid('BaridiMob is not configured. Please contact support.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -33,7 +33,7 @@ class BaridiMobGateway implements PaymentGateway
         $ripNumber = $this->gatewaySetting('rip_number');
         $accountHolder = $this->gatewaySetting('account_holder_name');
 
-        if (!$ripNumber) {
+        if (! $ripNumber) {
             return PaymentResult::failed('BaridiMob is not configured. Please contact support.');
         }
 
@@ -60,7 +60,18 @@ class BaridiMobGateway implements PaymentGateway
         return PaymentResult::failed('BaridiMob verification is done manually via bank statement.');
     }
 
-    public function isOnline(): bool { return false; }
-    public function isOffline(): bool { return true; }
-    public function supportedCurrencies(): array { return ['DZD']; }
+    public function isOnline(): bool
+    {
+        return false;
+    }
+
+    public function isOffline(): bool
+    {
+        return true;
+    }
+
+    public function supportedCurrencies(): array
+    {
+        return ['DZD'];
+    }
 }

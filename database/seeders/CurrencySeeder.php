@@ -19,16 +19,16 @@ class CurrencySeeder extends Seeder
             ['code' => 'ETH', 'name' => 'Ethereum', 'symbol' => 'Ξ'],
         ]));
 
-        if (!Setting::where('key', 'default_locale')->exists()) {
+        if (! Setting::where('key', 'default_locale')->exists()) {
             Setting::set('default_locale', config('app.locale', 'ar'));
         }
-        if (!Setting::where('key', 'app_name')->exists()) {
+        if (! Setting::where('key', 'app_name')->exists()) {
             Setting::set('app_name', config('app.name', 'Finance Manager'));
         }
-        if (!Setting::where('key', 'registration_enabled')->exists()) {
+        if (! Setting::where('key', 'registration_enabled')->exists()) {
             Setting::set('registration_enabled', '1');
         }
-        if (!Setting::where('key', 'exchange_rates')->exists()) {
+        if (! Setting::where('key', 'exchange_rates')->exists()) {
             Setting::set('exchange_rates', json_encode(['DZD' => 250, 'EUR' => 0.877, 'GBP' => 0.75, 'USDT' => 1]));
         }
     }

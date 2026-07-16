@@ -34,22 +34,31 @@ class Coupon extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
-            ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
-            ->where(fn($q) => $q->whereNull('starts_at')->orWhere('starts_at', '<=', now()));
+            ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+            ->where(fn ($q) => $q->whereNull('starts_at')->orWhere('starts_at', '<=', now()));
     }
 
     public function scopeValid($query)
     {
         return $query->active()
-            ->where(fn($q) => $q->whereNull('max_uses')->orWhereColumn('used_count', '<', 'max_uses'));
+            ->where(fn ($q) => $q->whereNull('max_uses')->orWhereColumn('used_count', '<', 'max_uses'));
     }
 
     public function isValid(): bool
     {
-        if (!$this->is_active) return false;
-        if ($this->expires_at && $this->expires_at->isPast()) return false;
-        if ($this->starts_at && $this->starts_at->isFuture()) return false;
-        if ($this->max_uses && $this->used_count >= $this->max_uses) return false;
+        if (! $this->is_active) {
+            return false;
+        }
+        if ($this->expires_at && $this->expires_at->isPast()) {
+            return false;
+        }
+        if ($this->starts_at && $this->starts_at->isFuture()) {
+            return false;
+        }
+        if ($this->max_uses && $this->used_count >= $this->max_uses) {
+            return false;
+        }
+
         return true;
     }
 
@@ -67,7 +76,7 @@ class Coupon extends Model
         Coupon::where('id', $this->id)
             ->where(function ($q) {
                 $q->whereNull('max_uses')
-                  ->orWhereColumn('used_count', '<', 'max_uses');
+                    ->orWhereColumn('used_count', '<', 'max_uses');
             })
             ->increment('used_count');
     }

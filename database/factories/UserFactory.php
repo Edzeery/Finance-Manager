@@ -36,7 +36,6 @@ class UserFactory extends Factory
             'theme' => 'light',
             'currency' => 'DZD',
             'timezone' => 'Africa/Algiers',
-            'is_active' => true,
         ];
     }
 

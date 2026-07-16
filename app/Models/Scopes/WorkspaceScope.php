@@ -21,14 +21,14 @@ class WorkspaceScope implements Scope
 
         $workspaceId = $workspace instanceof Model ? $workspace->id : $workspace;
 
-        if (!is_int($workspaceId) && !is_string($workspaceId)) {
+        if (! is_int($workspaceId) && ! is_string($workspaceId)) {
             return;
         }
 
         if ($model instanceof IncomeCategory || $model instanceof ExpenseCategory || $model instanceof Notification) {
             $builder->where(function (Builder $query) use ($workspaceId) {
                 $query->where('workspace_id', $workspaceId)
-                      ->orWhereNull('workspace_id');
+                    ->orWhereNull('workspace_id');
             });
         } else {
             $builder->where('workspace_id', $workspaceId);

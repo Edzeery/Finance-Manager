@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 class LogActivity
@@ -23,7 +24,7 @@ class LogActivity
     public function handle(): void
     {
         $workspaceId = config('app.current_workspace')?->id
-            ?? ($this->userId ? \App\Models\User::find($this->userId)?->current_workspace_id : null);
+            ?? ($this->userId ? User::find($this->userId)?->current_workspace_id : null);
 
         ActivityLog::create([
             'user_id' => $this->userId,

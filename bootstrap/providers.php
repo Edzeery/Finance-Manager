@@ -1,14 +1,24 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\BindingServiceProvider;
+use App\Providers\GatewayServiceProvider;
+use App\Providers\ModelEventServiceProvider;
+use App\Providers\PolicyServiceProvider;
+use App\Providers\RateLimiterServiceProvider;
+use App\Providers\SettingsServiceProvider;
+use App\Providers\VoltServiceProvider;
+use Livewire\LivewireServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\VoltServiceProvider::class,
-    App\Providers\SettingsServiceProvider::class,
-    App\Providers\BindingServiceProvider::class,
-    App\Providers\GatewayServiceProvider::class,
-    App\Providers\RateLimiterServiceProvider::class,
-    App\Providers\ModelEventServiceProvider::class,
-    App\Providers\PolicyServiceProvider::class,
-    Livewire\LivewireServiceProvider::class,
+    AppServiceProvider::class,
+    VoltServiceProvider::class,
+    SettingsServiceProvider::class,
+    BindingServiceProvider::class,
+    GatewayServiceProvider::class,
+    RateLimiterServiceProvider::class,
+    ModelEventServiceProvider::class,
+    PolicyServiceProvider::class,
+    LivewireServiceProvider::class,
     Livewire\Volt\VoltServiceProvider::class,
 ];

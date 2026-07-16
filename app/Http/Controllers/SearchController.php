@@ -19,7 +19,7 @@ class SearchController extends Controller
         $this->resetBreadcrumbs()->addBreadcrumb(__('general.search_results'));
 
         $q = $request->input('q');
-        if (!$q || strlen($q) < 2) {
+        if (! $q || strlen($q) < 2) {
             return redirect()->back()->withErrors(['q' => __('messages.search_min_length')]);
         }
 

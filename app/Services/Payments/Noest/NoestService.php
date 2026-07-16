@@ -3,6 +3,8 @@
 namespace App\Services\Payments\Noest;
 
 use App\Services\Payments\Concerns\HasGatewaySettings;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class NoestService
@@ -56,6 +58,7 @@ class NoestService
     public function getDesks(): array
     {
         $result = $this->get('/desks');
+
         return $result;
     }
 
@@ -106,7 +109,7 @@ class NoestService
 
     public function getOrderLabel(string $tracking): string
     {
-        $url = rtrim($this->baseUrl(), '/') . '/get/order/label?tracking=' . urlencode($tracking);
+        $url = rtrim($this->baseUrl(), '/').'/get/order/label?tracking='.urlencode($tracking);
 
         $response = Http::withToken($this->token())
             ->withHeaders(['Accept' => 'application/json'])
@@ -121,7 +124,7 @@ class NoestService
 
     public function getCommunes(string $wilayaId): array
     {
-        return $this->get('/get/communes/' . $wilayaId);
+        return $this->get('/get/communes/'.$wilayaId);
     }
 
     public function testConnection(): array
@@ -133,7 +136,7 @@ class NoestService
         $attempts[] = $this->tryGetWithoutToken($endpoint);
 
         // إذا فشل، جرب مع token
-        if (!($attempts[0]['successful'] ?? false)) {
+        if (! ($attempts[0]['successful'] ?? false)) {
             $attempts[] = $this->tryGetWithToken($endpoint);
         }
 
@@ -141,17 +144,17 @@ class NoestService
         $body = $last['body'] ?? [];
 
         return [
-            'attempts'       => $attempts,
-            'status'         => $last['status'] ?? 0,
-            'successful'     => $last['successful'] ?? false,
-            'url'            => $last['url'] ?? '',
-            'has_token'      => !empty($this->token()),
-            'token_prefix'   => substr($this->token(), 0, 10) . '...',
-            'response_keys'  => array_keys($body),
-            'has_data_key'   => isset($body['data']),
-            'is_array'       => is_array($body),
-            'count'          => is_array($body['data'] ?? null) ? count($body['data']) : (is_array($body) ? count($body) : 0),
-            'sample'         => json_encode(
+            'attempts' => $attempts,
+            'status' => $last['status'] ?? 0,
+            'successful' => $last['successful'] ?? false,
+            'url' => $last['url'] ?? '',
+            'has_token' => ! empty($this->token()),
+            'token_prefix' => substr($this->token(), 0, 10).'...',
+            'response_keys' => array_keys($body),
+            'has_data_key' => isset($body['data']),
+            'is_array' => is_array($body),
+            'count' => is_array($body['data'] ?? null) ? count($body['data']) : (is_array($body) ? count($body) : 0),
+            'sample' => json_encode(
                 is_array($body['data'][0] ?? null) ? $body['data'][0] : ($body[0] ?? null),
                 JSON_UNESCAPED_UNICODE,
             ),
@@ -162,23 +165,23 @@ class NoestService
     {
         try {
             $response = Http::withHeaders(['Accept' => 'application/json'])
-                ->get(rtrim($this->baseUrl(), '/') . $endpoint);
+                ->get(rtrim($this->baseUrl(), '/').$endpoint);
 
             return [
-                'status'     => $response->status(),
+                'status' => $response->status(),
                 'successful' => $response->successful(),
-                'url'        => rtrim($this->baseUrl(), '/') . $endpoint,
-                'auth'       => 'none',
-                'body'       => $response->json() ?? [],
+                'url' => rtrim($this->baseUrl(), '/').$endpoint,
+                'auth' => 'none',
+                'body' => $response->json() ?? [],
             ];
         } catch (\Exception $e) {
             return [
-                'status'     => 0,
+                'status' => 0,
                 'successful' => false,
-                'url'        => rtrim($this->baseUrl(), '/') . $endpoint,
-                'auth'       => 'none',
-                'error'      => $e->getMessage(),
-                'body'       => [],
+                'url' => rtrim($this->baseUrl(), '/').$endpoint,
+                'auth' => 'none',
+                'error' => $e->getMessage(),
+                'body' => [],
             ];
         }
     }
@@ -188,28 +191,28 @@ class NoestService
         try {
             $response = Http::withToken($this->token())
                 ->withHeaders(['Accept' => 'application/json'])
-                ->get(rtrim($this->baseUrl(), '/') . $endpoint);
+                ->get(rtrim($this->baseUrl(), '/').$endpoint);
 
             return [
-                'status'     => $response->status(),
+                'status' => $response->status(),
                 'successful' => $response->successful(),
-                'url'        => rtrim($this->baseUrl(), '/') . $endpoint,
-                'auth'       => 'token',
-                'body'       => $response->json() ?? [],
+                'url' => rtrim($this->baseUrl(), '/').$endpoint,
+                'auth' => 'token',
+                'body' => $response->json() ?? [],
             ];
         } catch (\Exception $e) {
             return [
-                'status'     => 0,
+                'status' => 0,
                 'successful' => false,
-                'url'        => rtrim($this->baseUrl(), '/') . $endpoint,
-                'auth'       => 'token',
-                'error'      => $e->getMessage(),
-                'body'       => [],
+                'url' => rtrim($this->baseUrl(), '/').$endpoint,
+                'auth' => 'token',
+                'error' => $e->getMessage(),
+                'body' => [],
             ];
         }
     }
 
-    private function extractErrorMessage(\Illuminate\Http\Client\Response $response): string
+    private function extractErrorMessage(Response $response): string
     {
         $body = $response->json();
 
@@ -222,10 +225,10 @@ class NoestService
 
     private function post(string $endpoint, array $data, array $query = []): array
     {
-        $url = rtrim($this->baseUrl(), '/') . $endpoint;
+        $url = rtrim($this->baseUrl(), '/').$endpoint;
 
         if ($query) {
-            $url .= '?' . http_build_query($query);
+            $url .= '?'.http_build_query($query);
         }
 
         $response = Http::withToken($this->token())
@@ -233,7 +236,7 @@ class NoestService
             ->post($url, $data);
 
         if ($response->failed()) {
-            throw new \Illuminate\Http\Client\RequestException($response);
+            throw new RequestException($response);
         }
 
         return $response->json() ?? [];
@@ -241,10 +244,10 @@ class NoestService
 
     private function get(string $endpoint, array $query = []): array
     {
-        $url = rtrim($this->baseUrl(), '/') . $endpoint;
+        $url = rtrim($this->baseUrl(), '/').$endpoint;
 
         if ($query) {
-            $url .= '?' . http_build_query($query);
+            $url .= '?'.http_build_query($query);
         }
 
         $response = Http::withToken($this->token())
@@ -252,7 +255,7 @@ class NoestService
             ->get($url);
 
         if ($response->failed()) {
-            throw new \Illuminate\Http\Client\RequestException($response);
+            throw new RequestException($response);
         }
 
         return $response->json() ?? [];

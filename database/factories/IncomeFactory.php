@@ -28,7 +28,7 @@ class IncomeFactory extends Factory
 
     public function recurring(): static
     {
-        return $this->state(fn(array $attrs) => [
+        return $this->state(fn (array $attrs) => [
             'is_recurring' => true,
             'recurring_frequency' => fake()->randomElement(['monthly', 'yearly']),
         ]);
@@ -36,6 +36,6 @@ class IncomeFactory extends Factory
 
     public function archived(): static
     {
-        return $this->state(fn(array $attrs) => ['is_archived' => true]);
+        return $this->state(fn (array $attrs) => ['is_archived' => true]);
     }
 }

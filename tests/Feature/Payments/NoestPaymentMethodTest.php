@@ -4,6 +4,7 @@ namespace Tests\Feature\Payments;
 
 use App\Enums\PaymentStatus;
 use App\Models\Payment;
+use App\Models\PlanPrice;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\Workspace;
@@ -18,7 +19,9 @@ class NoestPaymentMethodTest extends TestCase
     use RefreshDatabase;
 
     private Workspace $workspace;
+
     private User $user;
+
     private SubscriptionPlan $paidPlan;
 
     protected function setUp(): void
@@ -35,7 +38,7 @@ class NoestPaymentMethodTest extends TestCase
             'is_free' => false,
         ]);
 
-        \App\Models\PlanPrice::create([
+        PlanPrice::create([
             'plan_id' => $this->paidPlan->id,
             'billing_period' => 'monthly',
             'currency' => 'USD',

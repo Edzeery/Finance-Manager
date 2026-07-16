@@ -8,10 +8,7 @@
             <div class="section-card">
                 <div class="section-card-header">
                     <h5><i class="bi bi-file-text"></i>{{ __('super-admin.invoice_details') }}</h5>
-                    @php $bc = ['paid' => ['bg' => 'var(--success-light)', 'c' => 'var(--success)'], 'draft' => ['bg' => 'var(--warning-light)', 'c' => 'var(--warning)'], 'overdue' => ['bg' => 'var(--danger-light)', 'c' => 'var(--danger)'], 'cancelled' => ['bg' => 'var(--border)', 'c' => 'var(--text-muted)']]; @endphp
-                    <span class="badge" style="font-size:10px;background:{{ $bc[$invoice->status->value]['bg'] ?? 'var(--border)' }};color:{{ $bc[$invoice->status->value]['c'] ?? 'var(--text-muted)' }};padding:3px 12px;border-radius:6px;font-weight:600">
-                        {{ $invoice->status->label() }}
-                    </span>
+                    <x-status-badge domain="invoice" :status="$invoice->status->value" set="bi" />
                 </div>
                 <div class="section-card-body">
                     <table class="info-table">

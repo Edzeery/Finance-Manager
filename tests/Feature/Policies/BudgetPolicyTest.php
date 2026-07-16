@@ -14,9 +14,13 @@ class BudgetPolicyTest extends TestCase
     use RefreshDatabase;
 
     private BudgetPolicy $policy;
+
     private Workspace $workspace;
+
     private User $user;
+
     private User $otherUser;
+
     private Budget $budget;
 
     protected function setUp(): void

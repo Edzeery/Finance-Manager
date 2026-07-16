@@ -17,12 +17,10 @@ use App\Services\Payments\PaymentGateway;
 use App\Services\Payments\PaymentResult;
 use App\Services\Payments\PayoneerGateway;
 use App\Services\Payments\PayPalGateway;
-
 use App\Services\Payments\RedotPayGateway;
 use App\Services\Payments\StripeGateway;
 use App\Services\Payments\WiseGateway;
 use App\Services\Payments\WiseManualGateway;
-use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;

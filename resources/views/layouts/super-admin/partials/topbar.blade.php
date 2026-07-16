@@ -95,14 +95,14 @@
                         <div class="user-email">{{ auth()->user()->email }}</div>
                     </div>
                 </div>
-                <a class="dropdown-item" href="{{ route('dashboard') }}" wire:navigate>
-                    <i class="bi bi-grid-1x2-fill"></i>{{ __('general.dashboard') }}
+                <a class="dropdown-item" href="{{ route('super.admin.dashboard') }}" wire:navigate>
+                    <i class="bi bi-shield-shaded"></i>{{ __('super-admin.dashboard') }}
                 </a>
-                <a class="dropdown-item" href="{{ route('account.profile') }}" wire:navigate>
+                <a class="dropdown-item" href="{{ route('super.admin.account.profile') }}" wire:navigate>
                     <i class="bi bi-person"></i>{{ __('general.profile') }}
                 </a>
-                <a class="dropdown-item" href="{{ route('settings.index') }}" wire:navigate>
-                    <i class="bi bi-gear"></i>{{ __('general.settings') }}
+                <a class="dropdown-item" href="{{ route('super.admin.settings.index') }}" wire:navigate>
+                    <i class="bi bi-gear"></i>{{ __('super-admin.settings') }}
                 </a>
                 <div class="dropdown-divider"></div>
                 <li class="user-menu-item-danger">

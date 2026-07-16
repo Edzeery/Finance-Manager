@@ -56,13 +56,16 @@
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label-custom mb-1">{{ __('general.status') }}</label>
+                            <x-status-select domain="user" name="status" :selected="old('status', 'active')"
+                                set="bi" size="lg" />
+                            @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-12">
                             <div class="form-floating-group">
-                                <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
-                                    <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>{{ __('general.active') }}</option>
-                                    <option value="0" {{ old('is_active') === '0' ? 'selected' : '' }}>{{ __('general.inactive') }}</option>
-                                </select>
-                                <label>{{ __('general.status') }}</label>
-                                @error('is_active') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <textarea name="status_reason" class="form-control @error('status_reason') is-invalid @enderror" placeholder="{{ __('account.reason') }}" rows="2" style="min-height:60px">{{ old('status_reason') }}</textarea>
+                                <label>{{ __('account.reason') }} <span style="color:var(--text-muted);font-weight:400">({{ __('general.optional') }})</span></label>
+                                @error('status_reason') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
                     </div>

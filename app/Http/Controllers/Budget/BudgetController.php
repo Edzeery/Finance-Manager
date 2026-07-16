@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Budget;
 
+use App\Contracts\Repositories\BudgetRepositoryInterface;
 use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\Budget\StoreBudgetRequest;
 use App\Http\Requests\Budget\UpdateBudgetRequest;
 use App\Models\Budget;
 use App\Models\ExpenseCategory;
-use App\Contracts\Repositories\BudgetRepositoryInterface;
 use Illuminate\Http\Request;
 
 class BudgetController extends BaseCrudController
 {
-    protected string $model = \App\Models\Budget::class;
+    protected string $model = Budget::class;
 
     public function __construct(
         private BudgetRepositoryInterface $budgetRepo,
@@ -78,9 +78,9 @@ class BudgetController extends BaseCrudController
 
         $tabs = $this->buildTabs([
             'all' => ['label' => __('general.all'), 'scope' => 'active'],
-            'active' => ['label' => __('general.active'), 'scope' => fn($q) => $q->where('is_active', true)],
-            'inactive' => ['label' => __('general.inactive'), 'scope' => fn($q) => $q->where('is_active', false)],
-            'trashed' => ['label' => __('general.trash'), 'scope' => fn($q) => $q->onlyTrashed()],
+            'active' => ['label' => __('general.active'), 'scope' => fn ($q) => $q->where('is_active', true)],
+            'inactive' => ['label' => __('general.inactive'), 'scope' => fn ($q) => $q->where('is_active', false)],
+            'trashed' => ['label' => __('general.trash'), 'scope' => fn ($q) => $q->onlyTrashed()],
         ]);
 
         return view('budget.index', $this->withBreadcrumbs(compact('budgets', 'tab', 'tabs')));

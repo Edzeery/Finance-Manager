@@ -93,6 +93,9 @@
         <p>
             <x-status-badge domain="user" status="banned" set="bi" class="text-lg " />
         </p>
+        <p>
+            <x-status-badge domain="general" status="featured" set="fa" />
+        </p>
     </div>
     {{-- Footer --}}
     <footer class="landing-footer">

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Services\ReportService;
 use Illuminate\Http\Request;
 

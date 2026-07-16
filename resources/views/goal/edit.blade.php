@@ -47,11 +47,15 @@
 
                             <div class="col-md-6">
                                 <label class="form-label-custom">{{ __('goal.status') }} <span class="text-danger">*</span></label>
-                                <select name="status" class="form-custom @error('status') is-invalid @enderror" required>
-                            <option value="{{ \App\Enums\GoalStatus::InProgress->value }}" {{ (old('status') ?? $goal->status->value) === \App\Enums\GoalStatus::InProgress->value ? 'selected' : '' }}>{{ __('goal.in_progress') }}</option>
-                            <option value="{{ \App\Enums\GoalStatus::Completed->value }}" {{ (old('status') ?? $goal->status->value) === \App\Enums\GoalStatus::Completed->value ? 'selected' : '' }}>{{ __('goal.completed') }}</option>
-                            <option value="{{ \App\Enums\GoalStatus::Cancelled->value }}" {{ (old('status') ?? $goal->status->value) === \App\Enums\GoalStatus::Cancelled->value ? 'selected' : '' }}>{{ __('goal.cancelled') }}</option>
-                                </select>
+                                <x-status-select
+                                    domain="goal"
+                                    name="status"
+                                    :selected="old('status', $goal->status->value)"
+                                    size="md"
+                                    set="bi"
+                                    placeholder="{{ __('goal.in_progress') }}"
+                                />
+                                @error('status') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">

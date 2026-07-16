@@ -17,6 +17,7 @@ use App\Models\Income;
 use App\Models\IncomeCategory;
 use App\Models\Invoice;
 use App\Models\Role;
+use App\Models\SubscriptionPlan;
 use App\Models\TaxRate;
 use App\Models\User;
 use App\Models\Workspace;
@@ -48,12 +49,11 @@ class DemoDataSeeder extends Seeder
                 'theme' => 'light',
                 'currency' => 'DZD',
                 'timezone' => 'Africa/Algiers',
-                'is_active' => true,
             ]);
 
             $workspace = Workspace::create([
                 'name' => "Demo User's Workspace",
-                'slug' => 'demo-workspace-' . now()->timestamp,
+                'slug' => 'demo-workspace-'.now()->timestamp,
                 'type' => 'personal',
                 'currency' => 'DZD',
                 'timezone' => 'Africa/Algiers',
@@ -70,8 +70,8 @@ class DemoDataSeeder extends Seeder
             $user->update(['current_workspace_id' => $workspace->id]);
             config(['app.current_workspace' => $workspace->id]);
 
-            $personalPlan = \App\Models\SubscriptionPlan::where('slug', 'personal')->first();
-            $businessPlan = \App\Models\SubscriptionPlan::where('slug', 'business')->first();
+            $personalPlan = SubscriptionPlan::where('slug', 'personal')->first();
+            $businessPlan = SubscriptionPlan::where('slug', 'business')->first();
             $demoPlan = $businessPlan ?? $personalPlan;
             $subscription = null;
             if ($demoPlan) {

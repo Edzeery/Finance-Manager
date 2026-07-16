@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\Concerns\HasBreadcrumbs;
 use App\Helpers\CurrencyHelper;
+use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\PaymentGateway;
 use App\Models\PaymentMethod;
 use App\Services\Payments\PaymentGatewayRegistry;
@@ -83,7 +83,7 @@ class PaymentGatewayController extends Controller
         $validCodes = CurrencyHelper::availableCurrencyCodes() ?: ['DZD', 'USD', 'EUR'];
 
         $validated = $request->validate([
-            'key' => ['required', 'string', 'max:50', 'regex:/^[a-z_]+$/', 'unique:payment_gateways,key,' . $gateway->id],
+            'key' => ['required', 'string', 'max:50', 'regex:/^[a-z_]+$/', 'unique:payment_gateways,key,'.$gateway->id],
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', 'max:50'],
             'icon' => ['nullable', 'string', 'max:100'],
@@ -121,9 +121,11 @@ class PaymentGatewayController extends Controller
     {
         $fields = [];
         foreach ($submitted as $i => $f) {
-            if (empty($f['key'])) continue;
+            if (empty($f['key'])) {
+                continue;
+            }
             $f['key'] = is_string($f['key']) ? $f['key'] : '';
-            $f['type'] = in_array($f['type'] ?? 'text', ['text','password','textarea','email','url','number','select','boolean']) ? ($f['type'] ?? 'text') : 'text';
+            $f['type'] = in_array($f['type'] ?? 'text', ['text', 'password', 'textarea', 'email', 'url', 'number', 'select', 'boolean']) ? ($f['type'] ?? 'text') : 'text';
             $f['label'] = is_string($f['label'] ?? '') ? ($f['label'] ?? $f['key']) : $f['key'];
             $fields[] = [
                 'key' => $f['key'],
@@ -140,6 +142,7 @@ class PaymentGatewayController extends Controller
                 'sensitive' => array_key_exists('sensitive', $f) ? filter_var($f['sensitive'], FILTER_VALIDATE_BOOLEAN) : ($existing[$i]['sensitive'] ?? false),
             ];
         }
+
         return $fields;
     }
 
@@ -154,7 +157,9 @@ class PaymentGatewayController extends Controller
             $result = [];
             foreach (explode("\n", $options) as $line) {
                 $line = trim($line);
-                if ($line === '') continue;
+                if ($line === '') {
+                    continue;
+                }
                 $parts = explode('|', $line, 2);
                 $value = trim($parts[0]);
                 $label = isset($parts[1]) ? trim($parts[1]) : $value;
@@ -162,8 +167,10 @@ class PaymentGatewayController extends Controller
                     $result[] = ['value' => $value, 'label' => $label];
                 }
             }
+
             return $result;
         }
+
         return [];
     }
 

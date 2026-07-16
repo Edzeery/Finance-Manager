@@ -15,9 +15,13 @@ class ExpensePolicyTest extends TestCase
     use RefreshDatabase;
 
     private ExpensePolicy $policy;
+
     private Workspace $workspace;
+
     private User $user;
+
     private User $otherUser;
+
     private Expense $expense;
 
     protected function setUp(): void

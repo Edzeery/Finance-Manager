@@ -4,8 +4,8 @@ namespace Tests\Feature\Payments;
 
 use App\Enums\PaymentStatus;
 use App\Models\Payment;
-use App\Models\Workspace;
 use App\Models\User;
+use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\Helpers\ChargilyWebhookPayload;
@@ -13,12 +13,13 @@ use Tests\TestCase;
 
 class ChargilyPaymentMethodTest extends TestCase
 {
-    use RefreshDatabase;
     use ChargilyWebhookPayload;
+    use RefreshDatabase;
 
     private const CHARGILY_SECRET = 'test_chargily_secret_key';
 
     private Workspace $workspace;
+
     private User $user;
 
     protected function setUp(): void

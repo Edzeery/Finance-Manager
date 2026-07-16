@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Notification;
 use App\Models\User;
-use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\WithWorkspacePermission;

@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Enums\PaymentStatus;
 use App\Models\Payment;
 use App\Services\OnboardingService;
-use App\Services\PaymentService;
 use App\Services\Payments\GatewayManager;
-use Illuminate\Http\Request;
+use App\Services\PaymentService;
 
 class PaymentReturnController extends Controller
 {

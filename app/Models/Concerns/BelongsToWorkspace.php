@@ -29,7 +29,7 @@ trait BelongsToWorkspace
 
                 $workspace = config('app.current_workspace');
 
-                if (!$workspace && auth()->check()) {
+                if (! $workspace && auth()->check()) {
                     $workspace = auth()->user()->currentWorkspace;
                 }
 

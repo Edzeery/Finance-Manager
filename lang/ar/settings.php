@@ -113,4 +113,23 @@ return [
     'preferences_redirect' => 'التفضيلات الشخصية تُدار الآن من إعدادات الحساب.',
     'tab_preferences' => 'التفضيلات',
     'tab_security' => 'الأمان',
+
+    // Session Management
+    'active_sessions' => 'الجلسات النشطة',
+    'active_sessions_help' => 'إدارة جلسات تسجيل الدخول النشطة عبر الأجهزة.',
+    'current_session' => 'الحالية',
+    'revoke_session' => 'إلغاء الجلسة',
+    'revoke_all_others' => 'إلغاء جميع الجلسات الأخرى',
+    'confirm_revoke_all' => 'هل أنت متأكد من إلغاء جميع الجلسات الأخرى؟ سيتم تسجيل خروجك من جميع الأجهزة الأخرى.',
+    'session_revoked' => 'تم إلغاء الجلسة بنجاح.',
+    'all_sessions_revoked' => 'تم إلغاء جميع الجلسات الأخرى.',
+    'session_not_found' => 'الجلسة غير موجودة.',
+    'cannot_revoke_current' => 'لا يمكنك إلغاء جلستك الحالية.',
+    'no_sessions' => 'لا توجد جلسات نشطة.',
+
+    // Login History
+    'login_history' => 'سجل تسجيل الدخول',
+    'login_history_help' => 'محاولات تسجيل الدخول الأخيرة على حسابك.',
+    'no_login_history' => 'لا يوجد سجل تسجيل دخول.',
+    'suspicious_activity' => 'نشاط مشبوه',
 ];

@@ -337,8 +337,6 @@ class EnterpriseRolePermissionSeeder extends Seeder
         $apiIds = Permission::whereIn('module', ['api'])->pluck('id');
         $systemIds = Permission::whereIn('module', ['system'])->pluck('id');
 
-
-
         // Super Admin — ALL platform permissions
         $superAdmin = Role::updateOrCreate(
             ['slug' => 'super_admin'],

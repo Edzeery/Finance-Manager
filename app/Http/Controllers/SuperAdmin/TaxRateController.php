@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\PaymentMethod;
 use App\Models\TaxRate;
 use Illuminate\Http\Request;
@@ -69,7 +69,7 @@ class TaxRateController extends Controller
             ->select('payment_method_id', 'charge_type')
             ->get()
             ->groupBy('payment_method_id')
-            ->map(fn($items) => $items->pluck('charge_type')->values());
+            ->map(fn ($items) => $items->pluck('charge_type')->values());
 
         return view('super-admin.tax-rates-form', $this->withBreadcrumbs(compact('taxRate', 'paymentMethods', 'linkedPaymentMethods')));
     }
@@ -78,7 +78,7 @@ class TaxRateController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:100', 'unique:tax_rates,slug,' . $taxRate->id],
+            'slug' => ['nullable', 'string', 'max:100', 'unique:tax_rates,slug,'.$taxRate->id],
             'rate' => ['required', 'numeric', 'min:0', 'max:100'],
             'type' => ['required', 'in:percentage,fixed'],
             'country' => ['nullable', 'string', 'max:2'],
@@ -113,7 +113,7 @@ class TaxRateController extends Controller
 
         foreach ($links as $pmId => $chargeTypes) {
             $pmId = (int) $pmId;
-            if (!PaymentMethod::where('id', $pmId)->exists()) {
+            if (! PaymentMethod::where('id', $pmId)->exists()) {
                 continue;
             }
             foreach ($chargeTypes as $chargeType) {

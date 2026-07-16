@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 class CheckBudgetAlerts extends Command
 {
     protected $signature = 'finance:check-budget-alerts';
+
     protected $description = 'Check budgets for exceeded or nearing limits and send notifications';
 
     public function handle(NotificationService $notifier): int
@@ -22,6 +23,7 @@ class CheckBudgetAlerts extends Command
 
         if ($budgets->isEmpty()) {
             $this->info('No active budgets to check.');
+
             return Command::SUCCESS;
         }
 
@@ -44,6 +46,7 @@ class CheckBudgetAlerts extends Command
         }
 
         $this->info("Checked {$budgets->count()} budget(s), sent {$count} alert(s).");
+
         return Command::SUCCESS;
     }
 }

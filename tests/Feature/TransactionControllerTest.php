@@ -17,7 +17,9 @@ class TransactionControllerTest extends TestCase
     use WithWorkspacePermission;
 
     private User $user;
+
     private IncomeCategory $incomeCategory;
+
     private ExpenseCategory $expenseCategory;
 
     protected function setUp(): void

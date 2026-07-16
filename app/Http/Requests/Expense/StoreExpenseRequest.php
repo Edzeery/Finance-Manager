@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Expense;
 
+use App\Enums\RecurringFrequency;
 use App\Models\BudgetCategory;
 use App\Models\Expense;
-use App\Enums\RecurringFrequency;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -43,18 +44,17 @@ class StoreExpenseRequest extends FormRequest
         $amount = (float) ($this->input('amount') ?? 0);
         $date = $this->input('date');
 
-        if (!$categoryId || !$date || $amount <= 0) {
+        if (! $categoryId || ! $date || $amount <= 0) {
             return;
         }
 
-        $expenseDate = \Carbon\Carbon::parse($date);
-        $budgetCategories = BudgetCategory::whereHas('budget', fn($q) =>
-            $q->active()
-              ->where('start_date', '<=', $expenseDate)
-              ->where(fn($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', $expenseDate))
+        $expenseDate = Carbon::parse($date);
+        $budgetCategories = BudgetCategory::whereHas('budget', fn ($q) => $q->active()
+            ->where('start_date', '<=', $expenseDate)
+            ->where(fn ($q) => $q->whereNull('end_date')->orWhere('end_date', '>=', $expenseDate))
         )->where('expense_category_id', $categoryId)
-         ->where('allocated_amount', '>', 0)
-         ->get();
+            ->where('allocated_amount', '>', 0)
+            ->get();
 
         foreach ($budgetCategories as $bc) {
             $start = $bc->budget->start_date;
@@ -73,6 +73,7 @@ class StoreExpenseRequest extends FormRequest
                     'remaining' => number_format($remaining, 2),
                 ]);
                 $validator->errors()->add('amount', is_string($msg) ? $msg : 'Budget exceeded');
+
                 return;
             }
         }

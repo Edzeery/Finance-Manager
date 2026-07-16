@@ -9,13 +9,13 @@ class ReceiptController extends Controller
 {
     public function show(PaymentVerification $paymentVerification)
     {
-        if (!$paymentVerification->receipt_path || !Storage::disk('local')->exists($paymentVerification->receipt_path)) {
+        if (! $paymentVerification->receipt_path || ! Storage::disk('local')->exists($paymentVerification->receipt_path)) {
             abort(404);
         }
 
         $user = auth()->user();
 
-        if (!$user->hasPermission('payment.verify')) {
+        if (! $user->hasPermission('payment.verify')) {
             abort(403);
         }
 

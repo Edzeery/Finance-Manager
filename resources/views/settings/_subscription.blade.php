@@ -2,9 +2,7 @@
     <div class="d-flex align-items-center justify-content-between gap-2" style="margin-bottom:16px">
         <h5 class="section-title mb-0"><i class="bi bi-credit-card text-accent"></i>{{ __('settings.subscription') }}</h5>
         @if($subscription)
-            <span class="badge badge-status {{ $subscription->isActive() ? 'badge-configured' : 'badge-not-configured' }}">
-                {{ $subscription->status->label() }}
-            </span>
+            <x-status-badge domain="subscription" :status="$subscription->status->value" set="bi" />
         @endif
     </div>
 
@@ -24,17 +22,7 @@
                 </p>
             </div>
             <div class="text-end">
-                <div style="font-weight:600;font-size:14px">
-                    @if($subscription->isActive())
-                        <span style="color:var(--success)">&#9679;</span> {{ __('settings.active_plan') }}
-                    @elseif($subscription->status === \App\Enums\SubscriptionStatus::Canceled)
-                        <span style="color:var(--danger)">&#9679;</span> {{ __('settings.canceled_plan') }}
-                    @elseif($subscription->isExpired())
-                        <span style="color:var(--danger)">&#9679;</span> {{ __('settings.expired_plan') }}
-                    @else
-                        &#9679; {{ $subscription->status->label() }}
-                    @endif
-                </div>
+                <x-status-badge domain="subscription" :status="$subscription->status->value" set="bi" />
             </div>
         </div>
 

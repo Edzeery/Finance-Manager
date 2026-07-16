@@ -1,7 +1,10 @@
 <?php
+
 // app/Services/SubscriptionActivationService.php
+
 namespace App\Services;
 
+use App\Enums\InvoiceStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
 use App\Events\SubscriptionActivated;
@@ -10,7 +13,6 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
-use App\Models\TaxRate;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\DB;
 
@@ -26,7 +28,7 @@ class SubscriptionActivationService
             $payment = $payment->fresh();
             $plan = $plan->fresh();
 
-            if (!$payment || !$plan) {
+            if (! $payment || ! $plan) {
                 throw new SubscriptionException('Payment or plan not found for activation');
             }
 
@@ -35,11 +37,11 @@ class SubscriptionActivationService
             $planCurrency = $planPrice?->currency;
             $expectedPrice = (float) ($planPrice?->price ?? 0);
 
-            if (!$payment->isCompleted()) {
+            if (! $payment->isCompleted()) {
                 throw new SubscriptionException('Cannot activate: payment is not completed');
             }
 
-            if (!$payment->coupon_id) {
+            if (! $payment->coupon_id) {
                 $compareAmount = $payment->currency !== $planCurrency
                     ? CurrencyHelper::convert($payment->amount, $payment->currency, $planCurrency)
                     : $payment->amount;
@@ -79,7 +81,7 @@ class SubscriptionActivationService
                         'ends_at' => $oldEndsAt ?: $endsAt,
                         'payment_method' => $payment->method,
                         'payment_reference' => $payment->reference,
-                        'auto_renew' => !OnboardingService::isManual($payment->method),
+                        'auto_renew' => ! OnboardingService::isManual($payment->method),
                         'plan_price_amount' => $period === 'yearly' ? $plan->yearly_price : $plan->monthly_price,
                     ]);
                     $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
@@ -95,6 +97,7 @@ class SubscriptionActivationService
                         'payment_id' => $payment->id,
                         'amount' => $payment->amount,
                     ]);
+
                     return $existingSub;
                 }
                 if ($existingSub && $existingSub->isActive()) {
@@ -118,7 +121,7 @@ class SubscriptionActivationService
                 'ends_at' => $endsAt,
                 'payment_method' => $payment->method,
                 'payment_reference' => $payment->reference,
-                'auto_renew' => !OnboardingService::isManual($payment->method),
+                'auto_renew' => ! OnboardingService::isManual($payment->method),
                 'billing_period' => $period,
                 'plan_price_amount' => $period === 'yearly' ? $plan->yearly_price : $plan->monthly_price,
             ]);
@@ -196,7 +199,7 @@ class SubscriptionActivationService
             'coupon_id' => $payment?->coupon_id,
             'payment_id' => $payment?->id,
             'number' => $this->invoiceNumberGenerator->generate(),
-            'status' => $payment && $payment->isCompleted() ? \App\Enums\InvoiceStatus::Paid->value : \App\Enums\InvoiceStatus::Draft->value,
+            'status' => $payment && $payment->isCompleted() ? InvoiceStatus::Paid->value : InvoiceStatus::Draft->value,
             'subtotal' => $subtotal,
             'discount' => $discount,
             'gateway_fee' => $gatewayFee,

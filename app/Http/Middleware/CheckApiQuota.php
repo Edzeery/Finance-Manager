@@ -17,7 +17,7 @@ class CheckApiQuota
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return $next($request);
         }
 
@@ -27,14 +27,15 @@ class CheckApiQuota
 
         if (array_sum($limits) === 0) {
             $this->logRequest($request, $user);
+
             return $next($request);
         }
 
         $usage = $this->quotaService->getUsage($user->id);
         $remaining = [
             'minute' => max(0, $limits['minute'] - $usage['minute']),
-            'hour'   => max(0, $limits['hour'] - $usage['hour']),
-            'day'    => max(0, $limits['day'] - $usage['day']),
+            'hour' => max(0, $limits['hour'] - $usage['hour']),
+            'day' => max(0, $limits['day'] - $usage['day']),
         ];
 
         $exceeded = [];
@@ -48,29 +49,29 @@ class CheckApiQuota
             $exceeded[] = 'day';
         }
 
-        if (!empty($exceeded)) {
+        if (! empty($exceeded)) {
             $retryAfter = $this->retryAfter($exceeded);
             $resetTimes = $this->quotaService->getResetTimes();
 
             return response()->json([
                 'message' => 'API rate limit exceeded.',
                 'errors' => [
-                    'quota' => 'You have exceeded your API request quota for the ' . $exceeded[0] . ' window. Please wait for the quota to reset or upgrade your plan.',
+                    'quota' => 'You have exceeded your API request quota for the '.$exceeded[0].' window. Please wait for the quota to reset or upgrade your plan.',
                 ],
                 'quota' => [
-                    'limit'     => $limits,
-                    'used'      => $usage,
+                    'limit' => $limits,
+                    'used' => $usage,
                     'remaining' => $remaining,
-                    'reset'     => $resetTimes,
+                    'reset' => $resetTimes,
                 ],
             ], 429)->withHeaders([
-                'Retry-After'               => $retryAfter,
-                'X-RateLimit-Limit-Minute'   => $limits['minute'],
+                'Retry-After' => $retryAfter,
+                'X-RateLimit-Limit-Minute' => $limits['minute'],
                 'X-RateLimit-Remaining-Minute' => 0,
-                'X-RateLimit-Limit-Hour'     => $limits['hour'],
-                'X-RateLimit-Remaining-Hour'  => $remaining['hour'],
-                'X-RateLimit-Limit-Day'      => $limits['day'],
-                'X-RateLimit-Remaining-Day'   => $remaining['day'],
+                'X-RateLimit-Limit-Hour' => $limits['hour'],
+                'X-RateLimit-Remaining-Hour' => $remaining['hour'],
+                'X-RateLimit-Limit-Day' => $limits['day'],
+                'X-RateLimit-Remaining-Day' => $remaining['day'],
             ]);
         }
 
@@ -80,8 +81,8 @@ class CheckApiQuota
         $usage = $this->quotaService->getUsage($user->id);
         $remaining = [
             'minute' => max(0, $limits['minute'] - $usage['minute']),
-            'hour'   => max(0, $limits['hour'] - $usage['hour']),
-            'day'    => max(0, $limits['day'] - $usage['day']),
+            'hour' => max(0, $limits['hour'] - $usage['hour']),
+            'day' => max(0, $limits['day'] - $usage['day']),
         ];
 
         $response = $next($request);
@@ -101,13 +102,13 @@ class CheckApiQuota
         }
 
         ApiUsageLog::create([
-            'user_id'      => $user->id,
-            'token_id'     => $tokenId,
+            'user_id' => $user->id,
+            'token_id' => $tokenId,
             'workspace_id' => $user->current_workspace_id,
-            'method'       => $request->method(),
-            'route'        => $request->path(),
-            'ip_address'   => $request->ip(),
-            'created_at'   => now(),
+            'method' => $request->method(),
+            'route' => $request->path(),
+            'ip_address' => $request->ip(),
+            'created_at' => now(),
         ]);
     }
 
@@ -139,6 +140,7 @@ class CheckApiQuota
         if (in_array('hour', $exceeded)) {
             return $now->copy()->endOfHour()->diffInSeconds($now) + 1;
         }
+
         return $now->copy()->endOfDay()->diffInSeconds($now) + 1;
     }
 }

@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Debt extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory, SoftDeletes;
 
     protected static function booted(): void
     {
@@ -55,7 +55,10 @@ class Debt extends Model
 
     public function getProgressAttribute(): float
     {
-        if ($this->total_amount <= 0) return 0;
+        if ($this->total_amount <= 0) {
+            return 0;
+        }
+
         return round(($this->paid_amount / $this->total_amount) * 100, 2);
     }
 

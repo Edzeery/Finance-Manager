@@ -4,7 +4,6 @@ namespace Tests\Feature\Asset;
 
 use App\Models\Asset;
 use App\Models\User;
-use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\WithWorkspacePermission;

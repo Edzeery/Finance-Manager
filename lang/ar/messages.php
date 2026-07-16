@@ -124,4 +124,6 @@ return [
     'auth.logout' => 'قام المستخدم بتسجيل الخروج',
     'auth.registered' => 'تم تسجيل المستخدم',
     'auth.password_reset' => 'تم إعادة تعيين كلمة المرور',
+    'confirm_restore_workspace' => 'هل أنت متأكد من استعادة مساحة العمل هذه؟',
+    'confirm_force_delete_workspace' => 'هل أنت متأكد من الحذف النهائي لمساحة العمل هذه؟ لا يمكن التراجع عن هذا الإجراء.',
 ];

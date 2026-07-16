@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ExpenseCategory extends Model
 {
-    use HasFactory, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory;
 
     protected bool $allowsNullWorkspace = true;
 
@@ -19,6 +19,7 @@ class ExpenseCategory extends Model
     {
         static::addGlobalScope(new WorkspaceScope);
     }
+
     protected $fillable = ['user_id', 'workspace_id', 'name_ar', 'name_fr', 'name_en', 'icon', 'color', 'type', 'is_active', 'sort_order'];
 
     protected function casts(): array

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
+use App\Enums\InvoiceStatus;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 
@@ -17,9 +18,17 @@ class InvoiceController extends Controller
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded')
             ->addBreadcrumb(__('super-admin.invoices'));
 
+        $base = Invoice::withoutWorkspace();
+
+        $countAll = (clone $base)->count();
+        $countPaid = (clone $base)->where('status', InvoiceStatus::Paid)->count();
+        $countOverdue = (clone $base)->where('status', InvoiceStatus::Overdue)->count();
+        $countDraft = (clone $base)->where('status', InvoiceStatus::Draft)->count();
+        $countCancelled = (clone $base)->where('status', InvoiceStatus::Cancelled)->count();
+
         $query = Invoice::withoutWorkspace()->with('workspace', 'subscription.plan');
 
-        if ($request->filled('status')) {
+        if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
@@ -38,7 +47,9 @@ class InvoiceController extends Controller
         $perPage = min((int) $request->input('per_page', 15), config('finance.per_page_max', 100));
         $invoices = $query->latest()->paginate($perPage);
 
-        return view('super-admin.invoices', $this->withBreadcrumbs(compact('invoices')));
+        return view('super-admin.invoices', $this->withBreadcrumbs(compact(
+            'invoices', 'countAll', 'countPaid', 'countOverdue', 'countDraft', 'countCancelled'
+        )));
     }
 
     public function show(int $id)

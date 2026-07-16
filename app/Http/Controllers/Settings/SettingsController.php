@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Services\WorkspaceInvitationService;
 
@@ -24,7 +24,7 @@ class SettingsController extends Controller
         $subscription = $workspace?->owner()?->first()?->activeSubscription();
         $members = $workspace?->users()->get() ?? collect();
         $isOwner = $workspace && $user->isWorkspaceOwner($workspace);
-        $nonAdminMembers = $isOwner ? $members->reject(fn($m) => $m->workspaceRole($workspace) === 'workspace_admin') : collect();
+        $nonAdminMembers = $isOwner ? $members->reject(fn ($m) => $m->workspaceRole($workspace) === 'workspace_admin') : collect();
         $roles = $workspace ? Role::where('level', 'workspace')->pluck('name', 'slug')->toArray() : [];
         $workspaceOwner = $workspace?->owner()->first();
         $userLimit = $workspace?->userLimit();

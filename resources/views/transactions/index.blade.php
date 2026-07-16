@@ -86,10 +86,10 @@
                                 <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">
                                     {{ $txn['description'] ?: '—' }}
                                 </td>
-                                <td class="text-end fw-bold" style="color:{{ $txn['type'] === 'income' ? 'var(--success)' : 'var(--danger)' }}">
+                                <td text-start fw-bold style="color:{{ $txn['type'] === 'income' ? 'var(--success)' : 'var(--danger)' }}">
                                     {{ $txn['type'] === 'income' ? '+' : '-' }}{{ number_format($txn['amount'], 2) }}
                                 </td>
-                                <td class="text-center">
+                                <td class="text-start">
                                     @if ($txn['is_archived'])
                                         <span class="badge" style="background:rgba(148,163,184,0.12); color:var(--text-muted); padding:4px 8px; border-radius:6px; font-size:11px">{{ __('transactions.archived') }}</span>
                                     @else

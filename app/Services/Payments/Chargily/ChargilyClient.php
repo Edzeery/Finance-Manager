@@ -9,6 +9,7 @@ use Chargily\ChargilyPay\ChargilyPay;
 class ChargilyClient
 {
     private static ?ChargilyPay $instance = null;
+
     private static ?PaymentMethod $_cachedMethod = null;
 
     public static function make(?PaymentMethod $method = null): ChargilyPay
@@ -21,7 +22,7 @@ class ChargilyClient
         $publicKey = self::setting('public_key', null, $method);
         $secretKey = self::setting('secret_key', null, $method);
 
-        if (!$publicKey || !$secretKey) {
+        if (! $publicKey || ! $secretKey) {
             throw new \RuntimeException('Chargily gateway is not configured.');
         }
 

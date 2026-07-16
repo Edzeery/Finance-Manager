@@ -12,6 +12,7 @@ class NotificationServiceTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private NotificationService $service;
 
     protected function setUp(): void

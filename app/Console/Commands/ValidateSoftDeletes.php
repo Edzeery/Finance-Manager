@@ -11,6 +11,7 @@ use ReflectionClass;
 class ValidateSoftDeletes extends Command
 {
     protected $signature = 'finance:validate-soft-deletes';
+
     protected $description = 'Assert every model using SoftDeletes has a deleted_at column on its table';
 
     public function handle(): int
@@ -21,14 +22,14 @@ class ValidateSoftDeletes extends Command
         $failures = [];
 
         foreach ($files as $file) {
-            $className = 'App\\Models\\' . pathinfo($file, PATHINFO_FILENAME);
+            $className = 'App\\Models\\'.pathinfo($file, PATHINFO_FILENAME);
 
-            if (!class_exists($className)) {
+            if (! class_exists($className)) {
                 continue;
             }
 
             $reflection = new ReflectionClass($className);
-            if (!$reflection->isSubclassOf(Model::class)) {
+            if (! $reflection->isSubclassOf(Model::class)) {
                 continue;
             }
 
@@ -42,7 +43,7 @@ class ValidateSoftDeletes extends Command
                 }
             }
 
-            if (!$hasSoftDeletes) {
+            if (! $hasSoftDeletes) {
                 continue;
             }
 
@@ -52,7 +53,7 @@ class ValidateSoftDeletes extends Command
 
             try {
                 $columns = DB::getSchemaBuilder()->getColumnListing($table);
-                if (!in_array('deleted_at', $columns, true)) {
+                if (! in_array('deleted_at', $columns, true)) {
                     $failures[] = "{$className} (table: {$table})";
                 }
             } catch (\Exception $e) {
@@ -62,6 +63,7 @@ class ValidateSoftDeletes extends Command
 
         if (empty($failures)) {
             $this->info('All SoftDeletes models have deleted_at columns.');
+
             return Command::SUCCESS;
         }
 

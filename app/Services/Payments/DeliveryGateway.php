@@ -3,7 +3,6 @@
 namespace App\Services\Payments;
 
 use App\Models\Payment;
-use App\Services\Payments\ValidationResult;
 
 class DeliveryGateway implements PaymentGateway
 {
@@ -17,6 +16,7 @@ class DeliveryGateway implements PaymentGateway
         if (empty($data['address'])) {
             return ValidationResult::invalid('Delivery address is required.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -29,7 +29,7 @@ class DeliveryGateway implements PaymentGateway
     {
         $address = $data['address'] ?? null;
 
-        if (!$address) {
+        if (! $address) {
             return PaymentResult::failed('Delivery address is required.');
         }
 

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
 use App\Rules\PasswordRule;
@@ -24,16 +25,16 @@ class UserController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
         if ($request->filled('role')) {
-            $query->whereHas('roles', fn($q) => $q->where('slug', $request->role));
+            $query->whereHas('roles', fn ($q) => $q->where('slug', $request->role));
         }
 
         if ($request->filled('status')) {
-            $query->where('is_active', $request->status === 'active');
+            $query->whereHas('statusRecord', fn ($q) => $q->where('status', $request->status));
         }
 
         $perPage = min((int) $request->input('per_page', 15), config('finance.per_page_max', 100));
@@ -65,7 +66,7 @@ class UserController extends Controller
             'theme' => ['nullable', Rule::in(['light', 'dark'])],
             'currency' => ['nullable', 'string', 'max:10'],
             'timezone' => ['nullable', 'string', 'max:50'],
-            'is_active' => ['boolean'],
+            'status' => ['nullable', 'string', Rule::in(['active', 'inactive', 'pending', 'suspended', 'banned'])],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['exists:roles,id'],
         ]);
@@ -78,10 +79,15 @@ class UserController extends Controller
             'theme' => $validated['theme'] ?? 'light',
             'currency' => $validated['currency'] ?? 'DZD',
             'timezone' => $validated['timezone'] ?? 'Africa/Algiers',
-            'is_active' => $validated['is_active'] ?? true,
         ]);
 
-        if (!empty($validated['roles'])) {
+        $targetStatus = $validated['status'] ?? 'active';
+
+        if ($targetStatus !== 'active') {
+            $user->statusRecord->changeStatus(UserStatus::from($targetStatus));
+        }
+
+        if (! empty($validated['roles'])) {
             $user->roles()->sync($validated['roles']);
         }
 
@@ -105,13 +111,13 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'email' => ['required', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'password' => ['nullable', 'string', new PasswordRule],
             'locale' => ['nullable', Rule::in(['ar', 'fr', 'en'])],
             'theme' => ['nullable', Rule::in(['light', 'dark'])],
             'currency' => ['nullable', 'string', 'max:10'],
             'timezone' => ['nullable', 'string', 'max:50'],
-            'is_active' => ['boolean'],
+            'status' => ['nullable', 'string', Rule::in(['active', 'inactive', 'pending', 'suspended', 'banned'])],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['exists:roles,id'],
         ]);
@@ -123,14 +129,22 @@ class UserController extends Controller
             'theme' => $validated['theme'] ?? $user->theme,
             'currency' => $validated['currency'] ?? $user->currency,
             'timezone' => $validated['timezone'] ?? $user->timezone,
-            'is_active' => $validated['is_active'] ?? $user->is_active,
         ];
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $data['password'] = bcrypt($validated['password']);
         }
 
         $user->update($data);
+
+        if (isset($validated['status'])) {
+            $oldStatus = $user->status;
+            $newStatus = UserStatus::from($validated['status']);
+
+            if ($oldStatus !== $newStatus) {
+                $user->statusRecord->changeStatus($newStatus);
+            }
+        }
 
         if (isset($validated['roles'])) {
             $user->roles()->sync($validated['roles']);
@@ -150,7 +164,10 @@ class UserController extends Controller
 
     public function toggleStatus(User $user)
     {
-        $user->update(['is_active' => !$user->is_active]);
+        $oldStatus = $user->status;
+        $newStatus = $oldStatus === UserStatus::Active ? UserStatus::Inactive : UserStatus::Active;
+
+        $user->statusRecord->changeStatus($newStatus);
 
         return redirect()->route('admin.users.index')
             ->with('success', __('messages.user_status_updated'));

@@ -48,7 +48,7 @@ class PolicyServiceProvider extends ServiceProvider
         Gate::policy(Workspace::class, WorkspacePolicy::class);
 
         foreach (['report.view', 'report.export', 'workspace-setting.view', 'activity-log.view'] as $perm) {
-            Gate::define($perm, fn($user) => $user->hasPermission($perm));
+            Gate::define($perm, fn ($user) => $user->hasPermission($perm));
         }
     }
 }

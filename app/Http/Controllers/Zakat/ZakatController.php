@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Zakat;
 
-use App\Http\Controllers\Controller;
+use App\Contracts\Repositories\ZakatRepositoryInterface;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Zakat\StoreZakatRequest;
 use App\Models\ZakatRecord;
-use App\Contracts\Repositories\ZakatRepositoryInterface;
 use App\Services\ZakatCalculationService;
+use Illuminate\Http\Request;
 
 class ZakatController extends Controller
 {
@@ -32,7 +33,7 @@ class ZakatController extends Controller
 
         $result = $service->calculate($data);
 
-        if (!empty($data['save'])) {
+        if (! empty($data['save'])) {
             $record = $this->zakatRepo->create(array_merge($result, [
                 'user_id' => auth()->id(),
                 'calculation_date' => now(),
@@ -51,11 +52,21 @@ class ZakatController extends Controller
         ]);
     }
 
-    public function history()
+    public function history(Request $request)
     {
-        $records = $this->zakatRepo->history();
+        $filters = $request->only(['search', 'date_from', 'date_to', 'exceeds_nisab', 'per_page']);
 
-        return view('zakat.history', compact('records'));
+        $records = $this->zakatRepo->history(filters: $filters);
+
+        $tabs = [
+            'all' => ['label' => __('general.all')],
+            'yes' => ['label' => __('general.yes')],
+            'no' => ['label' => __('general.no')],
+        ];
+
+        $exceedsNisab = $request->input('exceeds_nisab', 'all');
+
+        return view('zakat.history', compact('records', 'tabs', 'exceedsNisab'));
     }
 
     public function report(ZakatRecord $zakatRecord)

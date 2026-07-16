@@ -10,7 +10,7 @@ class HasWorkspacePermission
 {
     public function handle(Request $request, Closure $next, string $permission): Response
     {
-        if (!$request->user() || !$request->user()->workspaceHasPermission($permission)) {
+        if (! $request->user() || ! $request->user()->workspaceHasPermission($permission)) {
             abort(403, __('messages.unauthorized'));
         }
 

@@ -282,4 +282,12 @@ return [
     'remove' => 'إزالة',
     'previous' => 'السابق',
     'next' => 'التالي',
+    'reason' => 'السبب',
+    'optional' => 'اختياري',
+    'online' => 'متصل',
+    'offline' => 'غير متصل',
+    'device' => 'الجهاز',
+    'os' => 'نظام التشغيل',
+    'failed' => 'فشل',
+    'suspicious' => 'مشبوه',
 ];

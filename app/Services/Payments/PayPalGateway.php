@@ -4,7 +4,6 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
-use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\Http;
 
 class PayPalGateway implements PaymentGateway
@@ -27,7 +26,7 @@ class PayPalGateway implements PaymentGateway
         $clientId = $this->gatewaySetting('client_id', config('payment.gateways.paypal.client_id'));
         $secret = $this->gatewaySetting('secret', config('payment.gateways.paypal.secret'));
 
-        if (!$clientId || !$secret) {
+        if (! $clientId || ! $secret) {
             return null;
         }
 
@@ -42,7 +41,7 @@ class PayPalGateway implements PaymentGateway
                 'grant_type' => 'client_credentials',
             ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 
@@ -54,6 +53,7 @@ class PayPalGateway implements PaymentGateway
     private function baseUrl(): string
     {
         $isSandbox = $this->gatewaySetting('sandbox', config('payment.gateways.paypal.sandbox', true));
+
         return $isSandbox === true || $isSandbox === '1' || $isSandbox === 'true'
             ? 'https://api-m.sandbox.paypal.com'
             : 'https://api-m.paypal.com';
@@ -61,12 +61,13 @@ class PayPalGateway implements PaymentGateway
 
     public function validate(array $data): ValidationResult
     {
-        if (!$this->gatewaySetting('client_id', config('payment.gateways.paypal.client_id'))) {
+        if (! $this->gatewaySetting('client_id', config('payment.gateways.paypal.client_id'))) {
             return ValidationResult::invalid('PayPal gateway not configured.');
         }
-        if (!$this->gatewaySetting('secret', config('payment.gateways.paypal.secret'))) {
+        if (! $this->gatewaySetting('secret', config('payment.gateways.paypal.secret'))) {
             return ValidationResult::invalid('PayPal gateway not configured.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -79,7 +80,7 @@ class PayPalGateway implements PaymentGateway
     {
         $token = $this->getAccessToken();
 
-        if (!$token) {
+        if (! $token) {
             return PaymentResult::failed('PayPal gateway not configured.');
         }
 
@@ -101,8 +102,8 @@ class PayPalGateway implements PaymentGateway
                 ],
             ]);
 
-        if (!$response->successful()) {
-            return PaymentResult::failed('PayPal charge failed: ' . $response->body());
+        if (! $response->successful()) {
+            return PaymentResult::failed('PayPal charge failed: '.$response->body());
         }
 
         $body = $response->json();
@@ -121,7 +122,7 @@ class PayPalGateway implements PaymentGateway
     {
         $token = $this->getAccessToken();
 
-        if (!$token) {
+        if (! $token) {
             return PaymentResult::failed('PayPal gateway not configured.');
         }
 
@@ -133,8 +134,8 @@ class PayPalGateway implements PaymentGateway
                 ],
             ]);
 
-        if (!$response->successful()) {
-            return PaymentResult::failed('PayPal refund failed: ' . $response->body());
+        if (! $response->successful()) {
+            return PaymentResult::failed('PayPal refund failed: '.$response->body());
         }
 
         return PaymentResult::success(
@@ -148,14 +149,14 @@ class PayPalGateway implements PaymentGateway
     {
         $token = $this->getAccessToken();
 
-        if (!$token) {
+        if (! $token) {
             return PaymentResult::failed('PayPal gateway not configured.');
         }
 
         $response = Http::withToken($token)
             ->get("{$this->baseUrl()}/v1/payments/payment/{$payment->transaction_id}");
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return PaymentResult::failed('Unable to verify payment with PayPal.');
         }
 

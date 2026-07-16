@@ -83,11 +83,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if($plan->is_active)
-                                        <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.active') }}</span>
-                                    @else
-                                        <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.inactive') }}</span>
-                                    @endif
+                                    <x-status-badge domain="general" :status="$plan->is_active ? 'active' : 'inactive'" set="bi" />
                                 </td>
                                 <td style="font-size:13px;color:var(--text-muted)">{{ $plan->sort_order }}</td>
                                 <td class="col-actions">
@@ -183,11 +179,7 @@
                                 <td><code style="font-size:12px;background:var(--bg-subtle);padding:2px 8px;border-radius:4px">{{ $feature->slug }}</code></td>
                                 <td><span style="font-size:12px;color:var(--text-secondary)">{{ $feature->type }}</span></td>
                                 <td>
-                                    @if($feature->is_core)
-                                        <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('super-admin.core') }}</span>
-                                    @else
-                                        <span class="badge" style="font-size:10px;background:var(--bg-subtle);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('super-admin.addon') }}</span>
-                                    @endif
+                                    <x-status-badge domain="general" :status="$feature->is_core ? 'yes' : 'no'" set="bi" />
                                 </td>
                                 <td class="col-actions">
                                     <div class="cell-actions">
@@ -269,11 +261,7 @@
                                 <td><strong>{{ $price->currency }}</strong></td>
                                 <td><strong>{{ number_format($price->price, 2) }}</strong></td>
                                 <td>
-                                    @if($price->is_active)
-                                        <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.active') }}</span>
-                                    @else
-                                        <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.inactive') }}</span>
-                                    @endif
+                                    <x-status-badge domain="general" :status="$price->is_active ? 'active' : 'inactive'" set="bi" />
                                 </td>
                                 <td class="cell-muted">{{ $price->created_at->format('Y/m/d') }}</td>
                                 <td class="col-actions">

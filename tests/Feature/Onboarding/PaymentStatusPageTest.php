@@ -3,13 +3,14 @@
 namespace Tests\Feature\Onboarding;
 
 use App\Enums\PaymentStatus;
-use App\Models\Payment;
-use App\Models\Role;
-use App\Models\SubscriptionPlan;
-use App\Models\Workspace;
-use App\Models\User;
-use App\Models\Subscription;
 use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\PlanPrice;
+use App\Models\Role;
+use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
+use App\Models\User;
+use App\Models\Workspace;
 use Database\Seeders\PaymentGatewaySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt;
@@ -20,7 +21,9 @@ class PaymentStatusPageTest extends TestCase
     use RefreshDatabase;
 
     private Workspace $workspace;
+
     private User $user;
+
     private Payment $payment;
 
     protected function setUp(): void
@@ -37,7 +40,7 @@ class PaymentStatusPageTest extends TestCase
             'is_active' => true, 'is_public' => true, 'sort_order' => 1,
         ]);
 
-        \App\Models\PlanPrice::create([
+        PlanPrice::create([
             'plan_id' => $plan->id,
             'billing_period' => 'monthly',
             'currency' => 'USD',

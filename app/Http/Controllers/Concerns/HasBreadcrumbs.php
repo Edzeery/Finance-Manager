@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Concerns;
 
-use Illuminate\Support\Str;
-
 trait HasBreadcrumbs
 {
     protected array $breadcrumbs = [];
@@ -15,6 +13,7 @@ trait HasBreadcrumbs
             'url' => $url,
             'icon' => $icon,
         ];
+
         return $this;
     }
 
@@ -26,6 +25,7 @@ trait HasBreadcrumbs
     protected function resourceBreadcrumbs(string $resourceName, string $resourceRoute, ?string $icon = null): self
     {
         $this->homeBreadcrumb();
+
         return $this->addBreadcrumb(__($resourceName), route($resourceRoute), $icon);
     }
 
@@ -42,6 +42,7 @@ trait HasBreadcrumbs
     protected function resetBreadcrumbs(): self
     {
         $this->breadcrumbs = [];
+
         return $this;
     }
 }

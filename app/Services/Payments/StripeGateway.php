@@ -4,7 +4,6 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
-use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\Http;
 
 class StripeGateway implements PaymentGateway
@@ -28,9 +27,10 @@ class StripeGateway implements PaymentGateway
 
     public function validate(array $data): ValidationResult
     {
-        if (!$this->secretKey()) {
+        if (! $this->secretKey()) {
             return ValidationResult::invalid('Stripe gateway not configured.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -42,7 +42,7 @@ class StripeGateway implements PaymentGateway
     public function charge(array $data): PaymentResult
     {
         $secret = $this->secretKey();
-        if (!$secret) {
+        if (! $secret) {
             return PaymentResult::failed('Stripe gateway not configured.');
         }
 
@@ -59,8 +59,8 @@ class StripeGateway implements PaymentGateway
                 'confirm' => false,
             ]);
 
-        if (!$response->successful()) {
-            return PaymentResult::failed('Stripe charge failed: ' . $response->body());
+        if (! $response->successful()) {
+            return PaymentResult::failed('Stripe charge failed: '.$response->body());
         }
 
         $body = $response->json();
@@ -76,7 +76,7 @@ class StripeGateway implements PaymentGateway
     public function refund(Payment $payment, ?float $amount = null): PaymentResult
     {
         $secret = $this->secretKey();
-        if (!$secret) {
+        if (! $secret) {
             return PaymentResult::failed('Stripe gateway not configured.');
         }
 
@@ -87,8 +87,8 @@ class StripeGateway implements PaymentGateway
                 'amount' => $amount ? (int) round($amount * 100) : null,
             ]);
 
-        if (!$response->successful()) {
-            return PaymentResult::failed('Stripe refund failed: ' . $response->body());
+        if (! $response->successful()) {
+            return PaymentResult::failed('Stripe refund failed: '.$response->body());
         }
 
         return PaymentResult::success(
@@ -101,14 +101,14 @@ class StripeGateway implements PaymentGateway
     public function verify(Payment $payment): PaymentResult
     {
         $secret = $this->secretKey();
-        if (!$secret) {
+        if (! $secret) {
             return PaymentResult::failed('Stripe gateway not configured.');
         }
 
         $response = Http::withToken($secret)
             ->get("{$this->baseUrl()}/payment_intents/{$payment->transaction_id}");
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return PaymentResult::failed('Unable to verify payment with Stripe.');
         }
 

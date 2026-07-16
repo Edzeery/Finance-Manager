@@ -15,14 +15,14 @@ class DataController extends Controller
         abort_unless(in_array($entity, $allowed), 404);
         abort_unless(in_array($format, $allowedFormats), 404);
 
-        $exportPerm = $entity === 'transactions' ? 'transaction.export' : $entity . '.export';
+        $exportPerm = $entity === 'transactions' ? 'transaction.export' : $entity.'.export';
         abort_unless(auth()->user()->hasPermission($exportPerm, 'workspace'), 403);
 
         $filters = $request->only(['category', 'type', 'date_from', 'date_to', 'search', 'status']);
-        $exportClass = 'App\\Exports\\' . ucfirst($entity) . 'Export';
+        $exportClass = 'App\\Exports\\'.ucfirst($entity).'Export';
         $export = new $exportClass($filters);
 
-        $filename = $entity . '_' . now()->format('Y-m-d_Hi') . '.' . $format;
+        $filename = $entity.'_'.now()->format('Y-m-d_Hi').'.'.$format;
 
         return Excel::download($export, $filename);
     }
@@ -32,26 +32,26 @@ class DataController extends Controller
         $allowed = ['income', 'expense'];
         abort_unless(in_array($entity, $allowed), 404);
 
-        abort_unless(auth()->user()->hasPermission($entity . '.import', 'workspace'), 403);
+        abort_unless(auth()->user()->hasPermission($entity.'.import', 'workspace'), 403);
 
         $request->validate([
             'file' => 'required|file|mimes:xlsx,csv,txt|max:5120',
         ]);
 
-        $importClass = 'App\\Imports\\' . ucfirst($entity) . 'Import';
+        $importClass = 'App\\Imports\\'.ucfirst($entity).'Import';
         $import = new $importClass(auth()->id(), auth()->user()->currentWorkspace->id);
 
         Excel::import($import, $request->file('file'));
 
-
         $failures = $import->getFailures();
         $count = $import->getImportedCount();
 
-        if (!empty($failures)) {
+        if (! empty($failures)) {
             $msg = __('messages.import_partial', ['count' => $count]);
             foreach ($failures as $failure) {
-                $msg .= ' ' . __('messages.import_row_error', ['row' => $failure->row(), 'error' => implode(', ', $failure->errors())]);
+                $msg .= ' '.__('messages.import_row_error', ['row' => $failure->row(), 'error' => implode(', ', $failure->errors())]);
             }
+
             return redirect()->back()->with('warning', $msg);
         }
 
@@ -77,7 +77,7 @@ class DataController extends Controller
 
         return response()->stream($callback, 200, [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $entity . '_template.csv"',
+            'Content-Disposition' => 'attachment; filename="'.$entity.'_template.csv"',
         ]);
     }
 }

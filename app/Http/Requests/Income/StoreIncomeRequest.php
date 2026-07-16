@@ -54,6 +54,7 @@ class StoreIncomeRequest extends FormRequest
                 'notes' => 'Notes',
             ];
         }
+
         return [];
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\PaymentGateway;
 use App\Models\PaymentMethod;
 use App\Models\TaxRate;
@@ -26,7 +26,7 @@ class PaymentMethodController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('key', 'like', "%{$request->search}%");
+                    ->orWhere('key', 'like', "%{$request->search}%");
             });
         }
 
@@ -80,10 +80,10 @@ class PaymentMethodController extends Controller
 
         $definition = $registry->find($validated['key']);
 
-        if (!empty($request->input('credentials'))) {
+        if (! empty($request->input('credentials'))) {
             $credRules = ['credentials' => ['nullable', 'array']];
             foreach ($definition?->fields ?? [] as $field) {
-                $credRules['credentials.' . $field->key] = $field->validationRules();
+                $credRules['credentials.'.$field->key] = $field->validationRules();
             }
             $request->validate($credRules);
         }
@@ -98,7 +98,7 @@ class PaymentMethodController extends Controller
             $data['credentials'] = [];
         }
 
-        $data['credentials'] = array_filter($data['credentials'] ?? [], fn($v) => $v !== null && $v !== '');
+        $data['credentials'] = array_filter($data['credentials'] ?? [], fn ($v) => $v !== null && $v !== '');
 
         $pm = PaymentMethod::create($data);
 
@@ -106,7 +106,7 @@ class PaymentMethodController extends Controller
         if ($request->has('tax_rate_links')) {
             $syncData = [];
             foreach ($request->input('tax_rate_links', []) as $taxRateId => $linkData) {
-                if (!empty($linkData['charge_type'])) {
+                if (! empty($linkData['charge_type'])) {
                     $syncData[(int) $taxRateId] = ['charge_type' => $linkData['charge_type']];
                 }
             }
@@ -139,7 +139,7 @@ class PaymentMethodController extends Controller
     public function update(Request $request, PaymentMethod $paymentMethod, PaymentGatewayRegistry $registry)
     {
         $validated = $request->validate([
-            'key' => ['required', 'string', 'max:50', Rule::exists('payment_gateways', 'key'), 'unique:payment_methods,key,' . $paymentMethod->id],
+            'key' => ['required', 'string', 'max:50', Rule::exists('payment_gateways', 'key'), 'unique:payment_methods,key,'.$paymentMethod->id],
             'name' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:500'],
             'icon' => ['nullable', 'string', 'max:100'],
@@ -151,10 +151,10 @@ class PaymentMethodController extends Controller
 
         $definition = $registry->find($validated['key']);
 
-        if (!empty($request->input('credentials'))) {
+        if (! empty($request->input('credentials'))) {
             $credRules = ['credentials' => ['nullable', 'array']];
             foreach ($definition?->fields ?? [] as $field) {
-                $credRules['credentials.' . $field->key] = ['nullable'];
+                $credRules['credentials.'.$field->key] = ['nullable'];
             }
             $request->validate($credRules);
         }
@@ -186,7 +186,7 @@ class PaymentMethodController extends Controller
         if ($request->has('tax_rate_links')) {
             $syncData = [];
             foreach ($request->input('tax_rate_links', []) as $taxRateId => $linkData) {
-                if (!empty($linkData['charge_type'])) {
+                if (! empty($linkData['charge_type'])) {
                     $syncData[(int) $taxRateId] = ['charge_type' => $linkData['charge_type']];
                 }
             }
@@ -209,7 +209,7 @@ class PaymentMethodController extends Controller
 
     public function toggleStatus(PaymentMethod $paymentMethod)
     {
-        $paymentMethod->update(['is_active' => !$paymentMethod->is_active]);
+        $paymentMethod->update(['is_active' => ! $paymentMethod->is_active]);
 
         return redirect()->back()->with('success', $paymentMethod->is_active
             ? __('super-admin.payment_method_updated')
@@ -218,7 +218,7 @@ class PaymentMethodController extends Controller
 
     public function togglePublic(PaymentMethod $paymentMethod)
     {
-        $paymentMethod->update(['is_public' => !$paymentMethod->is_public]);
+        $paymentMethod->update(['is_public' => ! $paymentMethod->is_public]);
 
         return redirect()->back()->with('success', $paymentMethod->is_public
             ? __('super-admin.payment_method_updated')

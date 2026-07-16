@@ -76,4 +76,9 @@ return [
 
     'subscription_downgraded_subject' => 'Subscription Downgraded — :app',
     'subscription_downgraded_line' => 'Your subscription will be downgraded from :old_plan to :new_plan at the end of your billing period.',
+
+    'status_changed_subject' => 'Account Status Updated — :app',
+    'status_changed_line' => 'Your account status has been changed to: :status.',
+    'status_reason' => 'Reason: :reason',
+    'status_changed_footer' => 'If you have questions, please contact support.',
 ];

@@ -1,9 +1,11 @@
 import './bootstrap';
 import * as bootstrap from 'bootstrap';
 import Chart from 'chart.js/auto';
+import ApexCharts from 'apexcharts';
 
 window.bootstrap = bootstrap;
 window.Chart = Chart;
+window.ApexCharts = ApexCharts;
 
 // ===== Alpine Components & Stores =====
 document.addEventListener('alpine:init', () => {
@@ -43,6 +45,32 @@ document.addEventListener('alpine:init', () => {
                     this.endDate = end.toISOString().split('T')[0];
                 }
             }
+        }
+    });
+
+    Alpine.data('superAdminChart', function (chartId, chartType, options) {
+        return {
+            chart: null,
+            init() {
+                var opts = Object.assign({
+                    chart: { id: chartId, type: chartType, toolbar: { show: false }, fontFamily: 'inherit' },
+                    dataLabels: { enabled: false },
+                    stroke: { curve: 'smooth', width: 2 },
+                    grid: { borderColor: 'var(--border)', strokeDashArray: 4 },
+                    tooltip: { theme: 'dark' },
+                    xaxis: { labels: { style: { colors: 'var(--text-muted)', fontSize: '11px' } } },
+                    yaxis: { labels: { style: { colors: 'var(--text-muted)', fontSize: '11px' } } },
+                    legend: { position: 'top', labels: { colors: 'var(--text-muted)' } },
+                }, options);
+                var el = this.$el;
+                this.$nextTick(function () {
+                    this.chart = new ApexCharts(el, opts);
+                    this.chart.render();
+                });
+            },
+            destroy() {
+                if (this.chart) this.chart.destroy();
+            },
         }
     });
 

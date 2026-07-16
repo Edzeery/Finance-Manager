@@ -37,7 +37,7 @@
                                 <td>{{ $r->description ?: '—' }}</td>
                                 <td>{{ $r->category }}</td>
                                 <td style="white-space:nowrap">{{ $r->date?->format('Y/m/d') ?: '—' }}</td>
-                                <td class="text-end fw-bold">{{ number_format($r->amount, 2) }} {{ config('finance.currency_symbol') }}</td>
+                                <td text-start fw-bold>{{ number_format($r->amount, 2) }} {{ config('finance.currency_symbol') }}</td>
                                 <td class="text-center">
                                     <a href="{{ $r->url }}" class="action-btn">
                                         <i class="bi bi-eye"></i>

@@ -13,6 +13,7 @@ use Database\Seeders\SubscriptionPlanSeeder;
 trait WithWorkspacePermission
 {
     protected User $workspaceUser;
+
     protected Workspace $workspace;
 
     protected function setUpWorkspacePermission(): void

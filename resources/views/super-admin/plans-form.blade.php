@@ -405,11 +405,7 @@
                                                 <td><strong>{{ $price->currency }}</strong></td>
                                                 <td><strong>{{ number_format($price->price, 2) }}</strong></td>
                                                 <td>
-                                                    @if ($price->is_active)
-                                                        <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.active') }}</span>
-                                                    @else
-                                                        <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.inactive') }}</span>
-                                                    @endif
+                                                    <x-status-badge domain="general" :status="$price->is_active ? 'active' : 'inactive'" set="bi" />
                                                 </td>
                                                 <td class="col-actions">
                                                     <div class="cell-actions">

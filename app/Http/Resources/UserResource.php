@@ -15,7 +15,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'locale' => $this->locale,
             'current_workspace_id' => $this->current_workspace_id,
-            'is_active' => $this->is_active,
+            'status' => $this->status,
             'email_verified_at' => $this->email_verified_at?->toISOString(),
             'workspaces' => WorkspaceResource::collection($this->whenLoaded('workspaces')),
             'created_at' => $this->created_at->toISOString(),

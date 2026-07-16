@@ -28,7 +28,7 @@ class SubscriptionProrationService
     {
         $subscription = $workspace->owner()?->first()?->activeSubscription();
 
-        if (!$subscription || !$subscription->isActive() || !$subscription->ends_at || $subscription->plan->isFree()) {
+        if (! $subscription || ! $subscription->isActive() || ! $subscription->ends_at || $subscription->plan->isFree()) {
             return [
                 'amount_due' => 0,
                 'remaining_value' => 0,

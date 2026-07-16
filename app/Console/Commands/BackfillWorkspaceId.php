@@ -12,9 +12,9 @@ class BackfillWorkspaceId extends Command
     protected $description = 'Backfill NULL workspace_id on child tables where possible';
 
     private array $tables = [
-        'debt_payments'       => ['parent_table' => 'debts', 'parent_fk' => 'debt_id'],
-        'budget_categories'   => ['parent_table' => 'budgets', 'parent_fk' => 'budget_id'],
-        'zakat_assets'        => ['parent_table' => 'zakat_records', 'parent_fk' => 'zakat_record_id'],
+        'debt_payments' => ['parent_table' => 'debts', 'parent_fk' => 'debt_id'],
+        'budget_categories' => ['parent_table' => 'budgets', 'parent_fk' => 'budget_id'],
+        'zakat_assets' => ['parent_table' => 'zakat_records', 'parent_fk' => 'zakat_record_id'],
         'payment_verifications' => ['parent_table' => 'payments', 'parent_fk' => 'payment_id'],
     ];
 
@@ -25,8 +25,9 @@ class BackfillWorkspaceId extends Command
         $totalSkipped = 0;
 
         foreach ($this->tables as $childTable => $config) {
-            if (!DB::getSchemaBuilder()->hasColumn($childTable, 'workspace_id')) {
+            if (! DB::getSchemaBuilder()->hasColumn($childTable, 'workspace_id')) {
                 $this->warn("Table '{$childTable}' has no workspace_id column — skipping.");
+
                 continue;
             }
 
@@ -39,6 +40,7 @@ class BackfillWorkspaceId extends Command
 
             if ($nullRows->isEmpty()) {
                 $this->info("{$childTable}: No NULL workspace_id rows found.");
+
                 continue;
             }
 
@@ -48,12 +50,13 @@ class BackfillWorkspaceId extends Command
             foreach ($nullRows as $row) {
                 $parentRow = DB::table($parentTable)->find($row->{$parentFk});
 
-                if (!$parentRow || !isset($parentRow->workspace_id) || !$parentRow->workspace_id) {
+                if (! $parentRow || ! isset($parentRow->workspace_id) || ! $parentRow->workspace_id) {
                     $skipped++;
+
                     continue;
                 }
 
-                if (!$dryRun) {
+                if (! $dryRun) {
                     DB::table($childTable)
                         ->where('id', $row->id)
                         ->update(['workspace_id' => $parentRow->workspace_id]);

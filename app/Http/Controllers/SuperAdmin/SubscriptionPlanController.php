@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\PlanFeature;
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ class SubscriptionPlanController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name_en', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
@@ -42,9 +42,9 @@ class SubscriptionPlanController extends Controller
             $fs = $request->features_search;
             $featuresQuery->where(function ($q) use ($fs) {
                 $q->where('name_en', 'like', "%{$fs}%")
-                  ->orWhere('slug', 'like', "%{$fs}%")
-                  ->orWhere('name_ar', 'like', "%{$fs}%")
-                  ->orWhere('name_fr', 'like', "%{$fs}%");
+                    ->orWhere('slug', 'like', "%{$fs}%")
+                    ->orWhere('name_ar', 'like', "%{$fs}%")
+                    ->orWhere('name_fr', 'like', "%{$fs}%");
             });
         }
         if ($request->filled('features_type')) {
@@ -128,7 +128,7 @@ class SubscriptionPlanController extends Controller
         $validated['yearly_discount_percent'] ??= null;
 
         $planFeatures = collect($validated['plan_features'] ?? [])
-            ->filter(fn($item) => isset($item['feature_id']))
+            ->filter(fn ($item) => isset($item['feature_id']))
             ->toArray();
         unset($validated['plan_features']);
 
@@ -155,7 +155,7 @@ class SubscriptionPlanController extends Controller
         $assignedFeatures = $plan->planFeatures()
             ->get()
             ->keyBy('id')
-            ->map(fn($f) => [
+            ->map(fn ($f) => [
                 'feature_id' => $f->id,
                 'value' => $f->pivot->value,
                 'sort_order' => $f->pivot->sort_order,
@@ -174,7 +174,7 @@ class SubscriptionPlanController extends Controller
             'name_en' => ['required', 'string', 'max:255'],
             'name_ar' => ['nullable', 'string', 'max:255'],
             'name_fr' => ['nullable', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:100', 'unique:subscription_plans,slug,' . $plan->id],
+            'slug' => ['required', 'string', 'max:100', 'unique:subscription_plans,slug,'.$plan->id],
             'description_en' => ['nullable', 'string', 'max:1000'],
             'description_ar' => ['nullable', 'string', 'max:1000'],
             'description_fr' => ['nullable', 'string', 'max:1000'],
@@ -197,7 +197,7 @@ class SubscriptionPlanController extends Controller
         $validated['yearly_discount_percent'] ??= null;
 
         $planFeatures = collect($validated['plan_features'] ?? [])
-            ->filter(fn($item) => isset($item['feature_id']))
+            ->filter(fn ($item) => isset($item['feature_id']))
             ->toArray();
         unset($validated['plan_features']);
 
@@ -237,7 +237,7 @@ class SubscriptionPlanController extends Controller
         $coreFeatureIds = PlanFeature::where('is_core', true)->pluck('id');
         $existingPivot = $plan->planFeatures()->whereIn('plan_features.id', $coreFeatureIds)->get()->keyBy('id');
         foreach ($coreFeatureIds as $coreId) {
-            if (!isset($syncData[$coreId])) {
+            if (! isset($syncData[$coreId])) {
                 $existing = $existingPivot->get($coreId);
                 $syncData[$coreId] = [
                     'value' => $existing?->pivot->value ?? null,

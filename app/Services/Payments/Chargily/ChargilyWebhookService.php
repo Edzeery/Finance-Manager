@@ -5,6 +5,8 @@ namespace App\Services\Payments\Chargily;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentWebhookLogStatus;
 use App\Enums\SubscriptionStatus;
+use App\Events\PaymentCompleted;
+use App\Events\PaymentFailed;
 use App\Models\Payment;
 use App\Models\PaymentWebhookLog;
 use App\Models\Subscription;
@@ -31,14 +33,14 @@ class ChargilyWebhookService
 
         $checkoutElement = $webhookElement->getData();
 
-        if (!$checkoutElement) {
+        if (! $checkoutElement) {
             throw ChargilyException::unhandledEvent('No checkout data');
         }
 
         $metadata = $checkoutElement->getMetadata();
         $paymentId = $metadata['payment_id'] ?? null;
 
-        if (!$paymentId) {
+        if (! $paymentId) {
             throw ChargilyException::unhandledEvent('Missing payment_id in metadata');
         }
 
@@ -51,7 +53,7 @@ class ChargilyWebhookService
 
         $payment = Payment::withoutWorkspace()->find($paymentId);
 
-        if (!$payment) {
+        if (! $payment) {
             throw ChargilyException::unhandledEvent("Payment not found: {$paymentId}");
         }
 
@@ -95,7 +97,7 @@ class ChargilyWebhookService
 
         DB::transaction(function () use ($payment, $checkoutElement, $payload) {
             $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
-            if (!$payment || $payment->isCompleted()) {
+            if (! $payment || $payment->isCompleted()) {
                 return;
             }
 
@@ -130,7 +132,7 @@ class ChargilyWebhookService
 
             $this->updateWebhookLogStatus($payment, 'checkout.paid');
 
-            Event::dispatch(new \App\Events\PaymentCompleted($payment, $payload));
+            Event::dispatch(new PaymentCompleted($payment, $payload));
         });
     }
 
@@ -139,7 +141,7 @@ class ChargilyWebhookService
         DB::transaction(function () use ($payment, $payload) {
             $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
 
-            if (!$payment || $payment->isCompleted()) {
+            if (! $payment || $payment->isCompleted()) {
                 return;
             }
 
@@ -154,7 +156,7 @@ class ChargilyWebhookService
 
             $this->updateWebhookLogStatus($payment, 'checkout.failed');
 
-            Event::dispatch(new \App\Events\PaymentFailed($payment, $payload));
+            Event::dispatch(new PaymentFailed($payment, $payload));
         });
     }
 
@@ -163,7 +165,7 @@ class ChargilyWebhookService
         DB::transaction(function () use ($payment, $payload) {
             $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
 
-            if (!$payment || $payment->isCompleted()) {
+            if (! $payment || $payment->isCompleted()) {
                 return;
             }
 
@@ -178,7 +180,7 @@ class ChargilyWebhookService
 
             $this->updateWebhookLogStatus($payment, 'checkout.canceled');
 
-            Event::dispatch(new \App\Events\PaymentFailed($payment, $payload));
+            Event::dispatch(new PaymentFailed($payment, $payload));
         });
     }
 
@@ -187,7 +189,7 @@ class ChargilyWebhookService
         DB::transaction(function () use ($payment, $payload) {
             $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
 
-            if (!$payment || $payment->isCompleted()) {
+            if (! $payment || $payment->isCompleted()) {
                 return;
             }
 
@@ -202,7 +204,7 @@ class ChargilyWebhookService
 
             $this->updateWebhookLogStatus($payment, 'checkout.expired');
 
-            Event::dispatch(new \App\Events\PaymentFailed($payment, $payload));
+            Event::dispatch(new PaymentFailed($payment, $payload));
         });
     }
 

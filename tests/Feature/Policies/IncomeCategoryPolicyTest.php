@@ -14,8 +14,11 @@ class IncomeCategoryPolicyTest extends TestCase
     use RefreshDatabase;
 
     private IncomeCategoryPolicy $policy;
+
     private Workspace $workspace;
+
     private User $user;
+
     private User $otherUser;
 
     protected function setUp(): void

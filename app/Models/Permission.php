@@ -11,8 +11,8 @@ class Permission extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn() => User::flushAllPermissionCaches());
-        static::deleted(fn() => User::flushAllPermissionCaches());
+        static::saved(fn () => User::flushAllPermissionCaches());
+        static::deleted(fn () => User::flushAllPermissionCaches());
     }
 
     public function roles(): BelongsToMany

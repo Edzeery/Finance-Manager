@@ -43,6 +43,7 @@ class ActivityLogService implements ActivityLogServiceInterface
         if (isset($data['new']) && is_array($data['new'])) {
             $data['new'] = $this->removeSensitiveKeys($data['new']);
         }
+
         return $this->removeSensitiveKeys($data);
     }
 

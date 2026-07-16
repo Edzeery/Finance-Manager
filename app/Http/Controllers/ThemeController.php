@@ -15,6 +15,7 @@ class ThemeController extends Controller
                 auth()->user()->update(['theme' => $theme]);
             }
         }
+
         return response()->json(['success' => true]);
     }
 }

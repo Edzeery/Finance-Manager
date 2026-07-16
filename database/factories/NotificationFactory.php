@@ -29,7 +29,7 @@ class NotificationFactory extends Factory
 
     public function read(): static
     {
-        return $this->state(fn(array $attrs) => [
+        return $this->state(fn (array $attrs) => [
             'is_read' => true,
             'read_at' => now(),
         ]);

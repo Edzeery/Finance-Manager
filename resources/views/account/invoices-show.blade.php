@@ -15,16 +15,7 @@
                 <h4 class="mb-1" style="font-weight:700">{{ $invoice->number }}</h4>
                 <p class="text-muted mb-0">{{ $invoice->created_at->format('F d, Y') }}</p>
             </div>
-            @php
-                $badge = match($invoice->status->value) {
-                    'paid' => 'success',
-                    'draft' => 'warning',
-                    'overdue' => 'danger',
-                    'cancelled' => 'secondary',
-                    default => 'primary',
-                };
-            @endphp
-            <span class="badge bg-{{ $badge }}" style="font-size:13px;padding:6px 16px">{{ $invoice->status->label() }}</span>
+            <x-status-badge domain="invoice" :status="$invoice->status->value" set="bi" />
         </div>
 
         <div class="row g-4 mb-4">

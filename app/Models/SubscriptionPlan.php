@@ -33,7 +33,8 @@ class SubscriptionPlan extends Model
     {
         $locale = app()->getLocale();
         $column = "name_{$locale}";
-        return $this->attributes[$column] ?? $this->name_en;
+
+        return $this->attributes[$column] ?? $this->name_en ?? $this->attributes['name'] ?? 'Plan';
     }
 
     public function setNameAttribute(string $value): void
@@ -52,6 +53,7 @@ class SubscriptionPlan extends Model
     {
         $locale = app()->getLocale();
         $column = "description_{$locale}";
+
         return $this->attributes[$column] ?? $this->description_en;
     }
 
@@ -71,6 +73,7 @@ class SubscriptionPlan extends Model
     {
         $locale = app()->getLocale();
         $column = "button_text_{$locale}";
+
         return $this->attributes[$column] ?? $this->button_text_en;
     }
 
@@ -99,13 +102,17 @@ class SubscriptionPlan extends Model
     public function hasTrial(): bool
     {
         $days = $this->attributes['trial_days'] ?? null;
+
         return $days !== null && (int) $days > 0;
     }
 
     public function getTrialDaysAttribute(): ?int
     {
         $days = $this->attributes['trial_days'] ?? null;
-        if ($days === null) return null;
+        if ($days === null) {
+            return null;
+        }
+
         return (int) $days > 0 ? (int) $days : null;
     }
 
@@ -115,6 +122,7 @@ class SubscriptionPlan extends Model
         if ($price !== null) {
             return (float) $price;
         }
+
         return (float) ($this->attributes['monthly_price'] ?? 0);
     }
 
@@ -129,6 +137,7 @@ class SubscriptionPlan extends Model
         if ($discount > 0 && $monthly > 0) {
             return round($monthly * 12 * (1 - $discount / 100), 2);
         }
+
         return round($monthly * 12, 2);
     }
 
@@ -144,20 +153,27 @@ class SubscriptionPlan extends Model
         if ($billingPeriod === 'monthly') {
             return $this->monthly_price ?: null;
         }
+
         return $this->yearly_price ?: null;
     }
 
     public function getMaxUsersAttribute(): ?int
     {
         $val = $this->getFeatureValue('users');
-        if ($val === null || $val === 'custom' || $val === 'unlimited') return null;
+        if ($val === null || $val === 'custom' || $val === 'unlimited') {
+            return null;
+        }
+
         return (int) $val;
     }
 
     public function getMaxWorkspacesAttribute(): ?int
     {
         $val = $this->getFeatureValue('workspaces');
-        if ($val === null || $val === 'custom' || $val === 'unlimited') return null;
+        if ($val === null || $val === 'custom' || $val === 'unlimited') {
+            return null;
+        }
+
         return (int) $val;
     }
 
@@ -201,31 +217,32 @@ class SubscriptionPlan extends Model
 
     public function isPaid(): bool
     {
-        return !$this->isFree();
+        return ! $this->isFree();
     }
 
     public function getFeatureValue(string $slug): ?string
     {
-        if (!$this->relationLoaded('planFeatures')) {
+        if (! $this->relationLoaded('planFeatures')) {
             return $this->planFeatures()->where('slug', $slug)->value('plan_plan_feature.value');
         }
 
         $feature = $this->planFeatures->firstWhere('slug', $slug);
+
         return $feature?->pivot->value;
     }
 
     public function hasFeature(string $slug): bool
     {
-        if (!$this->relationLoaded('planFeatures')) {
+        if (! $this->relationLoaded('planFeatures')) {
             return $this->planFeatures()->where('slug', $slug)->exists();
         }
 
-        return $this->planFeatures->contains(fn($f) => $f->slug === $slug);
+        return $this->planFeatures->contains(fn ($f) => $f->slug === $slug);
     }
 
     public function featureSlugs(): array
     {
-        if (!$this->relationLoaded('planFeatures')) {
+        if (! $this->relationLoaded('planFeatures')) {
             return $this->planFeatures()->pluck('slug')->toArray();
         }
 

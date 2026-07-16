@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new  #[Layout('layouts.guest')] class extends Component {
+new #[Layout('layouts.guest')] class extends Component {
     public LoginForm $form;
 
     public function login(): void
@@ -70,8 +70,7 @@ new  #[Layout('layouts.guest')] class extends Component {
             </div>
 
             <x-password-input wire:model="form.password" id="password" name="password" required
-                autocomplete="current-password"
-                error="form.password" />
+                autocomplete="current-password" error="form.password" />
             @error('form.password')
                 <div class="field-error">{{ $message }}</div>
             @enderror

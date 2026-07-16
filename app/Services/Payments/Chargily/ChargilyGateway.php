@@ -26,9 +26,10 @@ class ChargilyGateway implements PaymentGateway
         $this->checkoutService->setMethod($this->_cachedMethod ?? null);
         $publicKey = $this->gatewaySetting('public_key', config('payment.gateways.chargily.public_key'));
         $secretKey = $this->gatewaySetting('secret_key', config('payment.gateways.chargily.secret_key'));
-        if (!$publicKey || !$secretKey) {
+        if (! $publicKey || ! $secretKey) {
             return ValidationResult::invalid('Chargily gateway not configured.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -54,7 +55,7 @@ class ChargilyGateway implements PaymentGateway
                 'webhook_url' => $data['webhook_url'] ?? ($this->gatewaySetting('webhook_url') ?? route('payment.webhook.chargily')),
             ]);
         } catch (\Throwable $e) {
-            return PaymentResult::failed('Chargily charge failed: ' . $e->getMessage());
+            return PaymentResult::failed('Chargily charge failed: '.$e->getMessage());
         }
 
         return PaymentResult::success(
@@ -83,10 +84,10 @@ class ChargilyGateway implements PaymentGateway
         try {
             $checkout = $this->checkoutService->get($payment->transaction_id);
         } catch (\Throwable $e) {
-            return PaymentResult::failed('Unable to verify payment with Chargily: ' . $e->getMessage());
+            return PaymentResult::failed('Unable to verify payment with Chargily: '.$e->getMessage());
         }
 
-        if (!$checkout) {
+        if (! $checkout) {
             return PaymentResult::failed('Checkout not found on Chargily.');
         }
 
@@ -114,8 +115,18 @@ class ChargilyGateway implements PaymentGateway
         );
     }
 
-    public function isOnline(): bool { return true; }
-    public function isOffline(): bool { return false; }
+    public function isOnline(): bool
+    {
+        return true;
+    }
 
-    public function supportedCurrencies(): array { return ['DZD']; }
+    public function isOffline(): bool
+    {
+        return false;
+    }
+
+    public function supportedCurrencies(): array
+    {
+        return ['DZD'];
+    }
 }

@@ -15,6 +15,7 @@ class Setting extends Model
 
     public const ALLOWED_RUNTIME_KEYS = [
         'app_name',
+        'base_currency',
         'currencies',
         'default_locale',
         'exchange_rates',
@@ -33,6 +34,7 @@ class Setting extends Model
     public static function get(string $key, mixed $default = null): mixed
     {
         $setting = self::where('key', $key)->first();
+
         return $setting && $setting->value !== null && $setting->value !== ''
             ? $setting->value
             : $default;
@@ -54,7 +56,7 @@ class Setting extends Model
     {
         $setting = self::where('key', $key)->first();
 
-        if (!$setting || $setting->value === null || $setting->value === '') {
+        if (! $setting || $setting->value === null || $setting->value === '') {
             return $default;
         }
 

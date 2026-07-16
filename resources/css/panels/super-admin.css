@@ -117,9 +117,9 @@
   gap: 8px;
   flex-shrink: 0;
 }
-
 .data-grid-body {
-  overflow-x: auto;
+    overflow-x: auto;
+    height: 500px !important;
 }
 
 .data-grid-footer {
@@ -956,7 +956,9 @@
 .timeline-content-header .badge {
   font-size: 10px;
 }
-
+.badge {
+    padding-top: 0.45rem;
+}
 .timeline-content-text {
   font-size: 12px;
   color: var(--text-secondary);

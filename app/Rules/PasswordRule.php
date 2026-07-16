@@ -13,6 +13,7 @@ class PasswordRule implements ValidationRule
 
         if (strlen($password) < 8) {
             $fail(__('validation.password.min', ['attribute' => $attribute, 'min' => 8]));
+
             return;
         }
 

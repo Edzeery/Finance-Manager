@@ -6,7 +6,7 @@ class ChargilyException extends \RuntimeException
 {
     public static function configuration(?string $detail = null): self
     {
-        return new self('Chargily gateway is not configured.' . ($detail ? " {$detail}" : ''));
+        return new self('Chargily gateway is not configured.'.($detail ? " {$detail}" : ''));
     }
 
     public static function checkoutCreationFailed(string $reason): self

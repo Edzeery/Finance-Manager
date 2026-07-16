@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'super_dashboard' => 'Super Administrateur',
@@ -23,6 +23,9 @@ return [
     'subscriptions_by_plan' => 'Abonnements par formule',
     'recent_payments' => 'Paiements récents',
     'total_revenue' => 'Revenu total',
+    'net_revenue' => 'Revenu net',
+    'total_fees' => 'Frais totaux',
+    'refunded_amount' => 'Montant remboursé',
     'revenue' => 'Revenus',
     'pending_payments' => 'Paiements en attente',
     'payments_completed' => 'Terminés',
@@ -39,6 +42,7 @@ return [
     'past_due' => 'En retard',
     'canceled' => 'Annulé',
     'expired' => 'Expiré',
+    'suspended' => 'Suspendu',
     'draft' => 'Brouillon',
     'paid' => 'Payé',
     'overdue' => 'En retard',
@@ -171,6 +175,7 @@ return [
     'app_debug_readonly' => 'Le mode débogage est géré via le fichier d\'environnement (.env) et est en lecture seule ici.',
     'system_health' => 'Santé du système',
     'payment_gateways_desc' => 'Configurez les passerelles de paiement pour activer les options de paiement et assurer leur bon fonctionnement avec le système.',
+    'base_currency' => 'Devise de base',
 
     'invoices' => 'Factures',
     'invoice' => 'Facture',
@@ -239,7 +244,7 @@ return [
     'revenue_by_gateway' => 'Revenus par passerelle',
     'payment_method_restrictions' => 'Restrictions des méthodes de paiement',
     'payment_method_restrictions_hint' => 'Sélectionnez les méthodes de paiement avec lesquelles ce coupon fonctionne. Laissez vide pour fonctionner avec toutes les méthodes.',
-    "free" => "Gratuit",
+    'free' => 'Gratuit',
 
     'tax_rates' => 'Taux de taxe',
     'tax_rates_desc' => 'Gérer les taux de taxe sur la plateforme',
@@ -864,4 +869,21 @@ return [
     'perm_zakat_update' => 'Modifier une zakat',
     'perm_zakat_view' => 'Voir une zakat',
     'linked_gateways' => 'Passerelles liées',
+
+    'all_team' => 'Toute l\'équipe',
+    'avg_lifetime' => 'Durée moyenne',
+    'churn_rate' => 'Taux d\'attrition',
+    'last_active' => 'Dernière activité',
+    'member' => 'Membre',
+    'monthly_revenue' => 'Revenus mensuels',
+    'refund_rate' => 'Taux de remboursement',
+    'refunded_amount_short' => 'Remboursé',
+    'revenue_by_plan' => 'Revenus par forfait',
+    'subscription_status' => 'Statut des abonnements',
+    'team_comparison' => 'Comparaison de l\'équipe',
+    'team_members_performance' => 'Performance des membres',
+    'team_performance' => 'Performance de l\'équipe',
+    'team_roles' => 'Rôles de l\'équipe',
+    'verifications' => 'Vérifications',
+    'verified_amount' => 'Montant vérifié',
 ];

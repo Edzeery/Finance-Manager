@@ -15,7 +15,7 @@ class TransactionController extends Controller
         $perPage = $request->integer('per_page', 15);
 
         $incomes = Income::with('category')->get()
-            ->map(fn($i) => [
+            ->map(fn ($i) => [
                 'id' => $i->id,
                 'type' => 'income',
                 'amount' => $i->amount,
@@ -26,7 +26,7 @@ class TransactionController extends Controller
             ]);
 
         $expenses = Expense::with('category')->get()
-            ->map(fn($e) => [
+            ->map(fn ($e) => [
                 'id' => $e->id,
                 'type' => 'expense',
                 'amount' => $e->amount,

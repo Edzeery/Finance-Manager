@@ -169,9 +169,9 @@
                         <div class="d-flex align-items-center gap-2">
                             <span style="font-size:14px;font-weight:500;">{{ __('general.status') }}</span>
                             @if ($user->hasTwoFactorEnabled())
-                                <span class="badge-success">{{ __('general.enabled') }}</span>
+                                <x-status-badge domain="general" status="yes" set="bi" />
                             @else
-                                <span class="badge-muted">{{ __('general.disabled') }}</span>
+                                <x-status-badge domain="general" status="no" set="bi" />
                             @endif
                         </div>
                         <a href="{{ route('two-factor.setup') }}" class="btn btn-accent btn-sm">
@@ -179,6 +179,141 @@
                             <span>{{ __('general.manage') }}</span>
                         </a>
                     </div>
+                </div>
+
+                {{-- Active Sessions --}}
+                <div class="settings-card mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(59,130,246,0.1);flex-shrink:0;">
+                                <i class="bi bi-pc-display" style="color:#3b82f6;font-size:16px;"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('settings.active_sessions') }}</h5>
+                                <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('settings.active_sessions_help') }}</p>
+                            </div>
+                        </div>
+                        @if ($sessions->count() > 1)
+                            <form method="POST" action="{{ route('settings.settings.revoke-all') }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm"
+                                    style="background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);"
+                                    onclick="return confirm('{{ __('settings.confirm_revoke_all') }}')">
+                                    <i class="bi bi-box-arrow-right me-1"></i>{{ __('settings.revoke_all_others') }}
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+
+                    <div class="sessions-list">
+                        @forelse ($sessions as $session)
+                            <div class="session-item d-flex align-items-center justify-content-between py-3 {{ $loop->first ? '' : 'border-top' }}">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle"
+                                        style="width:40px;height:40px;background:{{ $session->is_current ? 'rgba(21,183,108,0.1)' : 'var(--bg-secondary)' }};flex-shrink:0;">
+                                        <i class="bi {{ $session->device === 'phone' ? 'bi-phone' : ($session->device === 'tablet' ? 'bi-tablet' : 'bi-pc-display') }}"
+                                            style="color:{{ $session->is_current ? 'var(--accent)' : 'var(--text-muted)' }};font-size:18px;"></i>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span style="font-weight:500;font-size:14px;">{{ $session->browser }} on {{ $session->os }}</span>
+                                            @if ($session->is_current)
+                                                <span style="font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(21,183,108,0.1);color:var(--accent);font-weight:600;">{{ __('settings.current_session') }}</span>
+                                            @endif
+                                        </div>
+                                        <div style="font-size:12px;color:var(--text-muted);">
+                                            <i class="bi bi-globe me-1"></i>{{ $session->ip_address }}
+                                            &middot;
+                                            <i class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() }}
+                                            @if ($session->login_at)
+                                                &middot;
+                                                <i class="bi bi-box-arrow-in-right me-1"></i>{{ $session->login_at->diffForHumans() }}
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (! $session->is_current)
+                                    <form method="POST" action="{{ route('settings.settings.revoke', $session->id) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm"
+                                            style="background:transparent;color:var(--text-muted);border:1px solid var(--border-color);"
+                                            title="{{ __('settings.revoke_session') }}">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="text-center py-3">
+                                <i class="bi bi-pc-display" style="font-size:2rem;color:var(--text-muted);"></i>
+                                <p class="text-muted mt-2 mb-0">{{ __('settings.no_sessions') }}</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                {{-- Login History --}}
+                <div class="settings-card mb-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(168,85,247,0.1);flex-shrink:0;">
+                            <i class="bi bi-clock-history" style="color:#a855f7;font-size:16px;"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('settings.login_history') }}</h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('settings.login_history_help') }}</p>
+                        </div>
+                    </div>
+
+                    @if ($loginHistory->count())
+                        <div class="table-responsive">
+                            <table class="data-table" style="margin:0;">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('general.status') }}</th>
+                                        <th>{{ __('general.ip_address') }}</th>
+                                        <th>{{ __('general.device') }}</th>
+                                        <th>{{ __('general.browser') }}</th>
+                                        <th>{{ __('general.os') }}</th>
+                                        <th>{{ __('general.date') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($loginHistory as $attempt)
+                                        <tr>
+                                            <td>
+                                                @if ($attempt->status === 'success')
+                                                    <span style="color:var(--accent);font-weight:500;">
+                                                        <i class="bi bi-check-circle-fill me-1"></i>{{ __('general.success') }}
+                                                    </span>
+                                                @else
+                                                    <span style="color:var(--danger);font-weight:500;">
+                                                        <i class="bi bi-x-circle-fill me-1"></i>{{ __('general.failed') }}
+                                                    </span>
+                                                @endif
+                                                @if ($attempt->suspicious)
+                                                    <span style="font-size:11px;padding:2px 6px;border-radius:99px;background:rgba(239,68,68,0.1);color:var(--danger);font-weight:600;margin-left:4px;">
+                                                        <i class="bi bi-exclamation-triangle"></i> {{ __('general.suspicious') }}
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td style="font-family:monospace;font-size:13px;">{{ $attempt->ip_address }}</td>
+                                            <td><i class="bi bi-{{ $attempt->device === 'phone' ? 'phone' : ($attempt->device === 'tablet' ? 'tablet' : 'pc-display') }} me-1"></i>{{ ucfirst($attempt->device) }}</td>
+                                            <td>{{ $attempt->browser }}</td>
+                                            <td>{{ $attempt->os }}</td>
+                                            <td style="font-size:13px;color:var(--text-muted);">{{ $attempt->created_at->diffForHumans() }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-3">
+                            <i class="bi bi-clock-history" style="font-size:2rem;color:var(--text-muted);"></i>
+                            <p class="text-muted mt-2 mb-0">{{ __('settings.no_login_history') }}</p>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="settings-card" style="border-color:rgba(239,68,68,0.2);">

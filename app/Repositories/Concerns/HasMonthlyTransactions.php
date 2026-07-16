@@ -3,6 +3,7 @@
 namespace App\Repositories\Concerns;
 
 use App\Support\DatabaseHelper;
+use Illuminate\Database\Eloquent\Collection;
 
 trait HasMonthlyTransactions
 {
@@ -16,7 +17,7 @@ trait HasMonthlyTransactions
             ->sum('amount');
     }
 
-    public function monthlyTotals(string $start, string $end): \Illuminate\Database\Eloquent\Collection
+    public function monthlyTotals(string $start, string $end): Collection
     {
         $monthExpr = DatabaseHelper::monthExpression();
         $modelClass = $this->model::class;

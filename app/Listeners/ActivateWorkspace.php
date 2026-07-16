@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use App\Events\PaymentCompleted;
 use App\Models\SubscriptionPlan;
-use App\Models\User;
 use App\Services\SubscriptionService;
 
 class ActivateWorkspace
@@ -25,13 +24,13 @@ class ActivateWorkspace
         $planId = $payment->user?->activeSubscription()?->subscription_plan_id
             ?? $payment->user?->pending_plan_id;
 
-        if (!$planId) {
+        if (! $planId) {
             return;
         }
 
         $plan = SubscriptionPlan::find($planId);
 
-        if (!$plan) {
+        if (! $plan) {
             return;
         }
 

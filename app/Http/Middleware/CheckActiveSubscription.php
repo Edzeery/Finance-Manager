@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Subscription;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +37,7 @@ class CheckActiveSubscription
 
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return $next($request);
         }
 
@@ -60,7 +59,7 @@ class CheckActiveSubscription
 
         $subscription = $user->currentWorkspace?->owner()?->first()?->activeSubscription() ?? $user->activeSubscription();
 
-        if ($subscription && !$subscription->isExpired()) {
+        if ($subscription && ! $subscription->isExpired()) {
             return $next($request);
         }
 
@@ -77,16 +76,22 @@ class CheckActiveSubscription
 
     protected function inExceptArray(?string $routeName): bool
     {
-        if (!$routeName) return false;
+        if (! $routeName) {
+            return false;
+        }
 
         foreach ($this->except as $pattern) {
             if (str_ends_with($pattern, '.*')) {
                 $prefix = substr($pattern, 0, -2);
-                if (str_starts_with($routeName, $prefix)) return true;
+                if (str_starts_with($routeName, $prefix)) {
+                    return true;
+                }
             }
             if (str_ends_with($pattern, '*')) {
                 $prefix = substr($pattern, 0, -1);
-                if (str_starts_with($routeName, $prefix)) return true;
+                if (str_starts_with($routeName, $prefix)) {
+                    return true;
+                }
             } elseif ($routeName === $pattern) {
                 return true;
             }

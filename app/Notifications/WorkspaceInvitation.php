@@ -4,10 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Invitation;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class WorkspaceInvitation extends Notification
+class WorkspaceInvitation extends Notification implements HasLocalePreference
 {
     use Queueable;
 
@@ -28,7 +29,6 @@ class WorkspaceInvitation extends Notification
         $declineUrl = route('invitations.decline', $this->invitation->token);
 
         return (new MailMessage)
-            ->locale($notifiable->locale ?? config('app.fallback_locale'))
             ->subject(__('workspace.invitation_email_subject', ['workspace' => $workspace->name]))
             ->greeting(__('workspace.invitation_email_greeting', ['name' => $notifiable->name ?? $this->invitation->email]))
             ->line(__('workspace.invitation_email_intro', [
@@ -36,7 +36,7 @@ class WorkspaceInvitation extends Notification
                 'workspace' => $workspace->name,
             ]))
             ->line(__('workspace.invitation_email_role', [
-                'role' => __('workspace.role_' . $this->invitation->role),
+                'role' => __('workspace.role_'.$this->invitation->role),
             ]))
             ->action(__('workspace.invitation_email_accept'), $acceptUrl)
             ->line(__('workspace.invitation_email_expiry', [
@@ -44,6 +44,11 @@ class WorkspaceInvitation extends Notification
             ]))
             ->line(__('workspace.invitation_email_decline', ['url' => $declineUrl]))
             ->line(__('workspace.invitation_email_footer'));
+    }
+
+    public function preferredLocale(object $notifiable): string
+    {
+        return $notifiable->locale ?? config('app.fallback_locale', 'en');
     }
 
     public function toArray(object $notifiable): array

@@ -33,14 +33,16 @@ class NoestSignatureValidator implements WebhookSignatureValidator
     private function fallbackTokenCheck(Request $request): bool
     {
         $secret = config('payment.webhook_secret');
-        if (!$secret) {
+        if (! $secret) {
             Log::warning('Noest webhook: no webhook_secret configured');
+
             return false;
         }
 
         $token = $request->header('X-Webhook-Token');
-        if (!$token || !hash_equals($secret, $token)) {
+        if (! $token || ! hash_equals($secret, $token)) {
             Log::warning('Noest webhook: invalid shared token');
+
             return false;
         }
 

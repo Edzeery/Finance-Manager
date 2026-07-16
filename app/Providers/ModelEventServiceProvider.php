@@ -2,26 +2,19 @@
 
 namespace App\Providers;
 
+use App\Contracts\Services\ActivityLogServiceInterface;
 use App\Jobs\LogActivity;
-use App\Models\ActivityLog;
 use App\Models\Asset;
 use App\Models\Budget;
 use App\Models\Debt;
 use App\Models\Expense;
-use App\Models\FinancialGoal;
-use App\Observers\DashboardCacheObserver;
 use App\Models\ExpenseCategory;
+use App\Models\FinancialGoal;
 use App\Models\Income;
 use App\Models\IncomeCategory;
-use App\Models\Notification;
-use App\Models\Permission;
-use App\Models\Role;
-use App\Models\Subscription;
-use App\Models\User;
-use App\Models\UserSetting;
-use App\Models\Workspace;
 use App\Models\ZakatRecord;
-use App\Contracts\Services\ActivityLogServiceInterface;
+use App\Observers\DashboardCacheObserver;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\ServiceProvider;
 
@@ -101,7 +94,7 @@ class ModelEventServiceProvider extends ServiceProvider
                 );
             });
 
-            if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses($modelClass))) {
+            if (in_array(SoftDeletes::class, class_uses($modelClass))) {
                 $modelClass::restored(function ($subject) use ($label) {
                     $userId = $subject->user_id ?? auth()->id();
                     if ($userId === null) {

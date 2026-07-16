@@ -29,6 +29,6 @@ class BudgetFactory extends Factory
 
     public function inactive(): static
     {
-        return $this->state(fn(array $attrs) => ['is_active' => false]);
+        return $this->state(fn (array $attrs) => ['is_active' => false]);
     }
 }

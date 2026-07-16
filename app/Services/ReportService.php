@@ -3,12 +3,11 @@
 namespace App\Services;
 
 use App\Contracts\Services\ReportServiceInterface;
-use App\Models\Income;
-use App\Models\Expense;
 use App\Models\Debt;
-use App\Models\ZakatRecord;
-use App\Models\IncomeCategory;
+use App\Models\Expense;
 use App\Models\ExpenseCategory;
+use App\Models\Income;
+use App\Models\IncomeCategory;
 
 class ReportService implements ReportServiceInterface
 {
@@ -38,8 +37,8 @@ class ReportService implements ReportServiceInterface
             'totalIncome' => $income->sum('amount'),
             'totalExpense' => $expense->sum('amount'),
             'netSavings' => $income->sum('amount') - $expense->sum('amount'),
-            'incomeByCategory' => $incomeByCategory->map(fn($i) => $i->sum('amount')),
-            'expenseByCategory' => $expenseByCategory->map(fn($e) => $e->sum('amount')),
+            'incomeByCategory' => $incomeByCategory->map(fn ($i) => $i->sum('amount')),
+            'expenseByCategory' => $expenseByCategory->map(fn ($e) => $e->sum('amount')),
             'incomeCategories' => $incomeCategories,
             'expenseCategories' => $expenseCategories,
             'activeDebts' => $debts,
@@ -59,8 +58,8 @@ class ReportService implements ReportServiceInterface
         $expense = Expense::whereBetween('date', [$start, $end])
             ->get();
 
-        $monthlyIncome = $income->groupBy(fn($i) => $i->date->format('m'))->map(fn($group) => $group->sum('amount'));
-        $monthlyExpense = $expense->groupBy(fn($e) => $e->date->format('m'))->map(fn($group) => $group->sum('amount'));
+        $monthlyIncome = $income->groupBy(fn ($i) => $i->date->format('m'))->map(fn ($group) => $group->sum('amount'));
+        $monthlyExpense = $expense->groupBy(fn ($e) => $e->date->format('m'))->map(fn ($group) => $group->sum('amount'));
 
         $incomeByCategory = $income->groupBy('category_id');
         $incomeCatIds = $incomeByCategory->keys();
@@ -78,8 +77,8 @@ class ReportService implements ReportServiceInterface
             'netSavings' => $income->sum('amount') - $expense->sum('amount'),
             'monthlyIncome' => $monthlyIncome,
             'monthlyExpense' => $monthlyExpense,
-            'incomeByCategory' => $incomeByCategory->map(fn($i) => $i->sum('amount')),
-            'expenseByCategory' => $expenseByCategory->map(fn($e) => $e->sum('amount')),
+            'incomeByCategory' => $incomeByCategory->map(fn ($i) => $i->sum('amount')),
+            'expenseByCategory' => $expenseByCategory->map(fn ($e) => $e->sum('amount')),
             'incomeCategories' => $incomeCategories,
             'expenseCategories' => $expenseCategories,
             'incomeCount' => $income->count(),

@@ -14,9 +14,13 @@ class DebtPolicyTest extends TestCase
     use RefreshDatabase;
 
     private DebtPolicy $policy;
+
     private Workspace $workspace;
+
     private User $user;
+
     private User $otherUser;
+
     private Debt $debt;
 
     protected function setUp(): void

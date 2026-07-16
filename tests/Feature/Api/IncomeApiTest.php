@@ -15,7 +15,9 @@ class IncomeApiTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Workspace $workspace;
+
     private string $token;
 
     protected function setUp(): void

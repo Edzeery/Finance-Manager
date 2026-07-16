@@ -3,30 +3,39 @@
     <x-slot:page-title>{{ __('super-admin.invoices') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.invoices_desc') }}</x-slot>
 
+    <x-filter-tabs :tabs="[
+        'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-list-ul'],
+        'paid' => ['label' => __('general.paid'), 'count' => $countPaid, 'icon' => 'bi-check-circle'],
+        'overdue' => ['label' => __('general.overdue'), 'count' => $countOverdue, 'icon' => 'bi-exclamation-triangle'],
+        'draft' => ['label' => __('general.draft'), 'count' => $countDraft, 'icon' => 'bi-pencil'],
+        'cancelled' => ['label' => __('general.cancelled'), 'count' => $countCancelled, 'icon' => 'bi-x-circle'],
+    ]" current="{{ request('status', 'all') }}" keyParam="status" />
+
     <div class="data-grid">
         <div class="data-grid-toolbar">
             <div class="data-grid-toolbar-left">
-                <form method="GET" action="{{ route('super.admin.invoices.index') }}" class="d-flex flex-wrap align-items-center gap-2">
-                    <x-search-filter name="search" placeholder="{{ __('super-admin.search_invoice') }}..." value="{{ request('search') }}" />
-                    <x-select-filter name="status" :options="[
-                        'draft' => __('general.draft'),
-                        'paid' => __('general.paid'),
-                        'overdue' => __('general.overdue'),
-                        'cancelled' => __('general.cancelled'),
-                    ]" placeholder="{{ __('general.all_status') }}" min-width="120px" />
-                    <input type="date" name="date_from" class="form-control grid-filter-sm" style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)" value="{{ request('date_from') }}">
-                    <input type="date" name="date_to" class="form-control grid-filter-sm" style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)" value="{{ request('date_to') }}">
-                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
-                    <x-clear-filters :filters="['search','status','date_from','date_to']" :route="route('super.admin.invoices.index')" />
+                <form method="GET" action="{{ route('super.admin.invoices.index') }}"
+                    class="d-flex flex-wrap align-items-center gap-2">
+                    <x-search-filter name="search" placeholder="{{ __('super-admin.search_invoice') }}..."
+                        value="{{ request('search') }}" />
+                    <input type="date" name="date_from" class="form-control grid-filter-sm"
+                        style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)"
+                        value="{{ request('date_from') }}">
+                    <input type="date" name="date_to" class="form-control grid-filter-sm"
+                        style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)"
+                        value="{{ request('date_to') }}">
+                    <button type="submit" class="btn"
+                        style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <x-clear-filters :filters="['search', 'status', 'date_from', 'date_to']" :route="route('super.admin.invoices.index')" />
                 </form>
             </div>
             <div class="data-grid-toolbar-right">
-                <x-per-page :current="(int) request('per_page', 15)" :route="route('super.admin.invoices.index')" :preserve="['search','status','date_from','date_to']" :options="[10, 15, 25, 50]" />
+                <x-per-page :current="(int) request('per_page', 15)" :route="route('super.admin.invoices.index')" :preserve="['search', 'status', 'date_from', 'date_to']" :options="[10, 15, 25, 50]" />
             </div>
         </div>
 
         <div class="data-grid-body">
-            @if($invoices->count())
+            @if ($invoices->count())
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -40,27 +49,25 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($invoices as $invoice)
+                        @foreach ($invoices as $invoice)
                             <tr>
-                                <td><code style="font-size:12px;background:var(--bg-subtle);padding:2px 8px;border-radius:4px">{{ $invoice->number }}</code></td>
+                                <td><code
+                                        style="font-size:12px;background:var(--bg-subtle);padding:2px 8px;border-radius:4px">{{ $invoice->number }}</code>
+                                </td>
                                 <td>{{ $invoice->workspace?->name ?? '—' }}</td>
                                 <td>{{ $invoice->subscription?->plan?->name ?? '—' }}</td>
-                                <td><strong>{{ number_format($invoice->total, 2) }} {{ $invoice->currency ?? config('finance.currency_symbol') }}</strong></td>
+                                <td><strong>{{ number_format($invoice->total, 2) }}
+                                        {{ $invoice->currency ?? config('finance.currency_symbol') }}</strong></td>
                                 <td>
-                                    @php
-                                        $badge = match($invoice->status->value) {
-                                            'paid' => ['bg' => 'var(--success-light)', 'color' => 'var(--success)'],
-                                            'draft' => ['bg' => 'var(--warning-light)', 'color' => 'var(--warning)'],
-                                            'overdue' => ['bg' => 'var(--danger-light)', 'color' => 'var(--danger)'],
-                                            'cancelled' => ['bg' => 'var(--border)', 'color' => 'var(--text-muted)'],
-                                            default => ['bg' => 'var(--bg-subtle)', 'color' => 'var(--text)'],
-                                        };
-                                    @endphp
-                                    <span class="badge" style="font-size:10px;background:{{ $badge['bg'] }};color:{{ $badge['color'] }};padding:3px 10px;border-radius:6px;font-weight:600">{{ $invoice->status->label() }}</span>
+                                        <x-status-badge domain="invoice" :status="$invoice->status->value" set="bi"
+                                            class="text-lg " />
+
                                 </td>
                                 <td class="cell-muted">{{ $invoice->created_at->format('Y/m/d') }}</td>
                                 <td class="col-actions">
-                                    <a href="{{ route('super.admin.invoices.show', $invoice) }}" class="btn" style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" title="{{ __('general.view') }}">
+                                    <a href="{{ route('super.admin.invoices.show', $invoice) }}" class="btn"
+                                        style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s"
+                                        title="{{ __('general.view') }}">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 </td>
@@ -70,14 +77,15 @@
                 </table>
             @else
                 <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-receipt"></i></div>
+                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i
+                            class="bi bi-receipt"></i></div>
                     <h4>{{ __('general.no_data') }}</h4>
                     <p>{{ __('super-admin.no_invoices') }}</p>
                 </div>
             @endif
         </div>
 
-        @if($invoices->count())
+        @if ($invoices->count())
             <div class="data-grid-footer">
                 <x-pagination-info :items="$invoices" />
                 <div>{{ $invoices->appends(request()->except('page'))->links() }}</div>

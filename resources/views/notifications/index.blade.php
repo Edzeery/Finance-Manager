@@ -3,6 +3,13 @@
     <x-slot:page-title>{{ __('notifications.page_title') ?? __('general.notifications') }}</x-slot>
     <x-slot:page-description>{{ __('notifications.page_description') ?? '' }}</x-slot>
 
+    <x-filter-tabs :tabs="[
+        'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-bell'],
+        'unread' => ['label' => __('general.unread'), 'count' => $countUnread, 'icon' => 'bi-bell-fill'],
+        'read' => ['label' => __('general.read'), 'count' => $countRead, 'icon' => 'bi-check-circle'],
+    ]" current="{{ $status ?? 'all' }}" keyParam="status" defaultKey="all"
+        :preserve="['per_page']" />
+
     <div class="card-custom">
         <div class="card-body p-0">
             @php $locale = app()->getLocale(); @endphp
@@ -58,7 +65,7 @@
 
     @if ($notifications->hasPages())
         <div class="mt-3">
-            {{ $notifications->appends(request()->query())->links() }}
+            {{ $notifications->appends(request()->except('page'))->links() }}
         </div>
     @endif
 </x-app-layout>

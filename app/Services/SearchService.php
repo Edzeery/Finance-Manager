@@ -16,7 +16,6 @@ use Illuminate\Support\Collection;
 
 class SearchService implements SearchServiceInterface
 {
-
     public function search(string $query, ?int $workspaceId = null, ?int $userId = null): Collection
     {
         $limit = 5;
@@ -44,13 +43,16 @@ class SearchService implements SearchServiceInterface
     private function searchIncomes(string $query, int $limit, ?int $workspaceId = null): Collection
     {
         $base = Income::query();
-        if ($workspaceId) $base->where('workspace_id', $workspaceId);
+        if ($workspaceId) {
+            $base->where('workspace_id', $workspaceId);
+        }
         DatabaseHelper::applyFulltextToQuery($base, ['description', 'notes'], $query);
+
         return $base->with('category')
             ->latest('date')
             ->take($limit)
             ->get()
-            ->map(fn($i) => new SearchResult(
+            ->map(fn ($i) => new SearchResult(
                 id: $i->id,
                 type: 'income',
                 description: $i->description,
@@ -64,13 +66,16 @@ class SearchService implements SearchServiceInterface
     private function searchExpenses(string $query, int $limit, ?int $workspaceId = null): Collection
     {
         $base = Expense::query();
-        if ($workspaceId) $base->where('workspace_id', $workspaceId);
+        if ($workspaceId) {
+            $base->where('workspace_id', $workspaceId);
+        }
         DatabaseHelper::applyFulltextToQuery($base, ['description', 'notes'], $query);
+
         return $base->with('category')
             ->latest('date')
             ->take($limit)
             ->get()
-            ->map(fn($e) => new SearchResult(
+            ->map(fn ($e) => new SearchResult(
                 id: $e->id,
                 type: 'expense',
                 description: $e->description,
@@ -84,12 +89,15 @@ class SearchService implements SearchServiceInterface
     private function searchDebts(string $query, int $limit, ?int $workspaceId = null): Collection
     {
         $base = Debt::query();
-        if ($workspaceId) $base->where('workspace_id', $workspaceId);
+        if ($workspaceId) {
+            $base->where('workspace_id', $workspaceId);
+        }
         DatabaseHelper::applyFulltextToQuery($base, ['counterparty_name', 'notes'], $query);
+
         return $base->latest('due_date')
             ->take($limit)
             ->get()
-            ->map(fn($d) => new SearchResult(
+            ->map(fn ($d) => new SearchResult(
                 id: $d->id,
                 type: 'debt',
                 description: $d->counterparty_name,
@@ -103,12 +111,15 @@ class SearchService implements SearchServiceInterface
     private function searchAssets(string $query, int $limit, ?int $workspaceId = null): Collection
     {
         $base = Asset::query();
-        if ($workspaceId) $base->where('workspace_id', $workspaceId);
+        if ($workspaceId) {
+            $base->where('workspace_id', $workspaceId);
+        }
         DatabaseHelper::applyFulltextToQuery($base, ['name', 'description'], $query);
+
         return $base->latest()
             ->take($limit)
             ->get()
-            ->map(fn($a) => new SearchResult(
+            ->map(fn ($a) => new SearchResult(
                 id: $a->id,
                 type: 'asset',
                 description: $a->name,
@@ -122,12 +133,15 @@ class SearchService implements SearchServiceInterface
     private function searchBudgets(string $query, int $limit, ?int $workspaceId = null): Collection
     {
         $base = Budget::query();
-        if ($workspaceId) $base->where('workspace_id', $workspaceId);
+        if ($workspaceId) {
+            $base->where('workspace_id', $workspaceId);
+        }
         DatabaseHelper::applyFulltextToQuery($base, ['name_ar', 'name_fr', 'name_en'], $query);
+
         return $base->latest()
             ->take($limit)
             ->get()
-            ->map(fn($b) => new SearchResult(
+            ->map(fn ($b) => new SearchResult(
                 id: $b->id,
                 type: 'budget',
                 description: CurrencyFormatter::localeName($b),
@@ -141,12 +155,15 @@ class SearchService implements SearchServiceInterface
     private function searchGoals(string $query, int $limit, ?int $workspaceId = null): Collection
     {
         $base = FinancialGoal::query();
-        if ($workspaceId) $base->where('workspace_id', $workspaceId);
+        if ($workspaceId) {
+            $base->where('workspace_id', $workspaceId);
+        }
         DatabaseHelper::applyFulltextToQuery($base, ['name_ar', 'name_fr', 'name_en'], $query);
+
         return $base->latest()
             ->take($limit)
             ->get()
-            ->map(fn($g) => new SearchResult(
+            ->map(fn ($g) => new SearchResult(
                 id: $g->id,
                 type: 'goal',
                 description: CurrencyFormatter::localeName($g),

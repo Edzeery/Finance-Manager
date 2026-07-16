@@ -14,6 +14,7 @@ class BudgetCategoryFactory extends Factory
     public function definition(): array
     {
         $allocated = fake()->randomFloat(2, 1000, 100000);
+
         return [
             'budget_id' => Budget::factory(),
             'expense_category_id' => ExpenseCategory::factory(),

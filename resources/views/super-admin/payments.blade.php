@@ -5,32 +5,42 @@
     <x-slot:page-description>{{ __('super-admin.payments_desc') }}</x-slot>
 
     @php
-        $methodOptions = [];
-        foreach ($gatewayKeys as $m) {
-            $methodOptions[$m] = __("super-admin.{$m}");
-        }
-        $statusOptions = collect(\App\Enums\PaymentStatus::cases())
-            ->mapWithKeys(fn($case) => [$case->value => $case->label()])
-            ->toArray();
         $canVerify = auth()->user()->hasPermission('payment.verify');
         $canRefund = auth()->user()->hasPermission('payment.refund');
         $canViewRaw = auth()->user()->hasPermission('payment.view_raw');
     @endphp
+
+    <x-filter-tabs :tabs="[
+        'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-cash-coin'],
+        'checkout.pending' => ['label' => __('general.pending'), 'count' => $countPending, 'icon' => 'bi-clock'],
+        'checkout.paid' => ['label' => __('general.paid'), 'count' => $countPaid, 'icon' => 'bi-check-circle'],
+        'checkout.failed' => ['label' => __('general.failed'), 'count' => $countFailed, 'icon' => 'bi-x-circle'],
+        'checkout.canceled' => ['label' => __('general.canceled'), 'count' => $countCanceled, 'icon' => 'bi-slash-circle'],
+        'checkout.expired' => ['label' => __('super-admin.expired'), 'count' => $countExpired, 'icon' => 'bi-hourglass-split'],
+    ]" current="{{ request('status', 'all') }}" keyParam="status" defaultKey="all"
+        :preserve="['search', 'per_page', 'refunded', 'date_from', 'date_to']"
+        subParam="method"
+        subCurrent="{{ request('method', '') }}"
+        :subTabs="$methodSubTabs" />
 
     <div class="data-grid">
         <div class="data-grid-toolbar">
             <div class="data-grid-toolbar-left">
                 <form method="GET" action="{{ route('super.admin.payments.index') }}" class="d-flex flex-wrap align-items-center gap-2">
                     <x-search-filter name="search" placeholder="{{ __('general.search') }}..." value="{{ request('search') }}" />
-                    <x-select-filter name="status" :options="$statusOptions" placeholder="{{ __('general.all_status') }}" min-width="120px" />
                     <x-select-filter name="refunded" :options="['yes' => __('super-admin.refunded'), 'no' => __('general.not_refunded')]" placeholder="{{ __('general.all_refunded') }}" min-width="120px" />
-                    <x-select-filter name="method" :options="$methodOptions" placeholder="{{ __('general.all_methods') }}" min-width="120px" />
                     <input type="date" name="date_from" class="form-control grid-filter-sm"
                         style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)"
                         value="{{ request('date_from') }}">
                     <input type="date" name="date_to" class="form-control grid-filter-sm"
                         style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)"
                         value="{{ request('date_to') }}">
+                    @if (request('status') && request('status') !== 'all')
+                        <input type="hidden" name="status" value="{{ request('status') }}">
+                    @endif
+                    @if (request('method'))
+                        <input type="hidden" name="method" value="{{ request('method') }}">
+                    @endif
                     <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
                     <x-clear-filters :filters="['search','status','refunded','method','date_from','date_to']" :route="route('super.admin.payments.index')" />
                 </form>
@@ -130,11 +140,7 @@
                                                         style="width:28px;height:28px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
                                                 </a>
                                             @endif
-                                            @php
-                                                $vColors = ['pending' => ['bg' => 'var(--warning-light)', 'color' => 'var(--warning)'], 'approved' => ['bg' => 'var(--success-light)', 'color' => 'var(--success)'], 'rejected' => ['bg' => 'var(--danger-light)', 'color' => 'var(--danger)']];
-                                                $vc = $vColors[$v->status->value] ?? ['bg' => 'var(--border)', 'color' => 'var(--text-muted)'];
-                                            @endphp
-                                            <span class="badge" style="font-size:9px;background:{{ $vc['bg'] }};color:{{ $vc['color'] }};padding:2px 8px;border-radius:6px;font-weight:600">{{ $v->status->label() }}</span>
+                                            <x-status-badge domain="general" :status="$v->status->value" set="bi" />
                                         </div>
                                     @else
                                         <span class="cell-muted">—</span>
@@ -142,17 +148,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-1 flex-wrap">
-                                        @php
-                                            $colors = [
-                                                \App\Enums\PaymentStatus::CheckoutPaid->value => ['bg' => 'var(--success-light)', 'color' => 'var(--success)'],
-                                                \App\Enums\PaymentStatus::CheckoutPending->value => ['bg' => 'var(--warning-light)', 'color' => 'var(--warning)'],
-                                                \App\Enums\PaymentStatus::CheckoutFailed->value => ['bg' => 'var(--danger-light)', 'color' => 'var(--danger)'],
-                                                \App\Enums\PaymentStatus::CheckoutCanceled->value => ['bg' => 'var(--danger-light)', 'color' => 'var(--danger)'],
-                                                \App\Enums\PaymentStatus::CheckoutExpired->value => ['bg' => 'var(--info-light)', 'color' => 'var(--info)'],
-                                            ];
-                                            $c = $colors[$payment->status->value] ?? ['bg' => 'var(--border)', 'color' => 'var(--text-muted)'];
-                                        @endphp
-                                        <span class="badge" style="font-size:10px;background:{{ $c['bg'] }};color:{{ $c['color'] }};padding:3px 10px;border-radius:6px;font-weight:600">{{ $payment->status->label() }}</span>
+                                        <x-status-badge domain="payment" :status="$payment->status->value" set="bi" />
                                         @if ($payment->isRefunded())
                                             <span class="badge" style="font-size:9px;background:var(--info-light);color:var(--info);padding:2px 8px;border-radius:6px;font-weight:600">{{ __('super-admin.refunded') }}</span>
                                         @endif

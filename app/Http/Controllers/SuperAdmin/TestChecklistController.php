@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\TestChecklistItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -37,6 +37,7 @@ class TestChecklistController extends Controller
             $passed = $groupItems->where('status', 'passed')->count();
             $failed = $groupItems->where('status', 'failed')->count();
             $done = $passed + $failed;
+
             return [
                 'total' => $total,
                 'passed' => $passed,
@@ -218,7 +219,7 @@ class TestChecklistController extends Controller
     public function importMarkdown(): RedirectResponse
     {
         $path = base_path('docs/test_manual.md');
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             return redirect()->route('super.admin.test-checklist.index')
                 ->with('error', __('super-admin.test_checklist_import_not_found'));
         }
@@ -228,7 +229,7 @@ class TestChecklistController extends Controller
 
         $updated = 0;
         foreach ($lines as $line) {
-            if (!preg_match('/^- \[(x|~|-| )\] (.+)$/', $line, $matches)) {
+            if (! preg_match('/^- \[(x|~|-| )\] (.+)$/', $line, $matches)) {
                 continue;
             }
 
@@ -331,7 +332,7 @@ class TestChecklistController extends Controller
                 $grandTabPassed += $passed;
             }
 
-            $lines[] = '| **المجموع** | **' . $grandTabPassed . '/' . $grandTabTotal . '** |';
+            $lines[] = '| **المجموع** | **'.$grandTabPassed.'/'.$grandTabTotal.'** |';
             $lines[] = '';
         }
 
@@ -358,7 +359,7 @@ class TestChecklistController extends Controller
             $lines[] = "| {$tab['label']} | {$tabPassed}/{$tabTotal} |";
         }
 
-        $lines[] = '| **المجموع الكلي** | **' . $grandPassed . '/' . $grandTotal . '** |';
+        $lines[] = '| **المجموع الكلي** | **'.$grandPassed.'/'.$grandTotal.'** |';
         $lines[] = '';
         $lines[] = '**النتيجة النهائية:**';
 

@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
+use App\Enums\PaymentMethodType;
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentVerificationStatus;
+use App\Enums\SubscriptionStatus;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Enums\PaymentMethodType;
-use App\Enums\PaymentStatus;
-use App\Enums\SubscriptionStatus;
 use App\Services\Payments\GatewayManager;
-use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\DB;
 
 class OnboardingService
@@ -35,7 +35,9 @@ class OnboardingService
             ->where('is_active', true)
             ->where('is_public', true)
             ->first();
-        if (!$plan) return false;
+        if (! $plan) {
+            return false;
+        }
 
         $user->update(['pending_plan_id' => $plan->id]);
 
@@ -59,7 +61,9 @@ class OnboardingService
     public function processFreePlan(User $user): bool
     {
         $plan = SubscriptionPlan::find($user->pending_plan_id);
-        if (!$plan || !$plan->is_free) return false;
+        if (! $plan || ! $plan->is_free) {
+            return false;
+        }
 
         $workspace = $this->ensureWorkspace($user);
         if ($this->subscriptionService->hasPendingPayment($workspace)) {
@@ -96,7 +100,9 @@ class OnboardingService
     public function processTrialPlan(User $user): bool
     {
         $plan = SubscriptionPlan::find($user->pending_plan_id);
-        if (!$plan || $plan->is_free || !$plan->hasTrial()) return false;
+        if (! $plan || $plan->is_free || ! $plan->hasTrial()) {
+            return false;
+        }
 
         $workspace = $this->ensureWorkspace($user);
         if ($this->subscriptionService->hasPendingPayment($workspace)) {
@@ -136,7 +142,9 @@ class OnboardingService
     }
 
     private const FALLBACK_MANUAL = ['baridimob', 'redotpay', 'wise_manual', 'cash', 'delivery'];
+
     private const FALLBACK_ONLINE = ['chargily', 'paypal', 'stripe', 'wise', 'payoneer'];
+
     private const FALLBACK_AUTO_COMPLETE = ['noest'];
 
     public static function manualMethods(): array
@@ -171,8 +179,10 @@ class OnboardingService
 
     /** @deprecated Use manualMethods() instead */
     public const MANUAL_METHODS = ['baridimob', 'redotpay', 'wise_manual', 'cash', 'delivery'];
+
     /** @deprecated Use onlineMethods() instead */
     public const ONLINE_METHODS = ['chargily', 'paypal', 'stripe', 'wise', 'payoneer'];
+
     /** @deprecated Use autoCompleteMethods() instead */
     public const AUTO_COMPLETE_METHODS = ['noest'];
 
@@ -184,7 +194,9 @@ class OnboardingService
         array $gatewayData = [],
     ): ?Payment {
         $plan = SubscriptionPlan::find($user->pending_plan_id);
-        if (!$plan || $plan->is_free || $plan->hasTrial()) return null;
+        if (! $plan || $plan->is_free || $plan->hasTrial()) {
+            return null;
+        }
 
         $workspace = $this->ensureWorkspace($user);
 
@@ -232,6 +244,7 @@ class OnboardingService
                     $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
                     $user->markPlanConfirmed();
                     session()->put('pending_payment_id', $payment->id);
+
                     return $payment;
                 }
 
@@ -243,7 +256,7 @@ class OnboardingService
                     'workspace_id' => $workspace->id,
                 ], $gatewayData));
 
-                if (!$result->success && !$result->isPending()) {
+                if (! $result->success && ! $result->isPending()) {
                     throw new \RuntimeException($result->message);
                 }
 
@@ -286,33 +299,38 @@ class OnboardingService
             return;
         }
 
-        if (!$payment->isCompleted()) {
+        if (! $payment->isCompleted()) {
             logger()->channel('payments')->warning('handlePaymentSuccess called with non-completed payment', [
                 'payment_id' => $payment->id,
                 'status' => $payment->status,
                 'user_id' => $user->id,
             ]);
+
             return;
         }
 
         DB::transaction(function () use ($user, $payment) {
             $payment = Payment::lockForUpdate()->find($payment->id);
-            if (!$payment) return;
+            if (! $payment) {
+                return;
+            }
 
             if ($payment->subscription_id) {
                 $sub = Subscription::withoutWorkspace()->lockForUpdate()->find($payment->subscription_id);
                 if ($sub && $sub->isActive()) {
                     $user->markPlanConfirmed();
+
                     return;
                 }
             }
 
             $plan = SubscriptionPlan::find($user->pending_plan_id);
-            if (!$plan) {
+            if (! $plan) {
                 logger()->channel('payments')->error('handlePaymentSuccess: pending plan not found', [
                     'user_id' => $user->id,
                     'pending_plan_id' => $user->pending_plan_id,
                 ]);
+
                 return;
             }
 
@@ -340,7 +358,7 @@ class OnboardingService
             $path = $receiptFile->store("receipts/{$payment->workspace_id}", 'local');
 
             $payment->verification()->create([
-                'status' => \App\Enums\PaymentVerificationStatus::Pending->value,
+                'status' => PaymentVerificationStatus::Pending->value,
                 'receipt_path' => $path,
                 'transaction_reference' => $transactionReference,
             ]);
@@ -350,7 +368,7 @@ class OnboardingService
     public function completeOnboarding(User $user, array $workspaceData = []): void
     {
         $workspace = $this->ensureWorkspace($user);
-        if (!empty($workspaceData['name'])) {
+        if (! empty($workspaceData['name'])) {
             $workspace->update(['name' => $workspaceData['name']]);
         }
 

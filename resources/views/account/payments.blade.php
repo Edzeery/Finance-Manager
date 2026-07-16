@@ -54,7 +54,7 @@
                                 <td style="font-size:13px">{{ $getMethodLabel($payment->method) }}</td>
                                 <td><code style="font-size:11px;font-family:monospace">{{ $payment->uuid ?? '—' }}</code></td>
                                 <td>
-                                    {{ $payment->status->label() }}
+                                    <x-status-badge domain="payment" :status="$payment->status->value" set="bi" />
                                 </td>
                                 <td>
                                     @if($continueUrl)

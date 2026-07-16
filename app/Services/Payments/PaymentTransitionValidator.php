@@ -15,7 +15,7 @@ class PaymentTransitionValidator
 
     public function assert(Payment $payment, PaymentStatus $target): void
     {
-        if (!$this->validate($payment, $target)) {
+        if (! $this->validate($payment, $target)) {
             throw new \RuntimeException(sprintf(
                 'Illegal payment status transition: %s → %s',
                 $payment->status->value,
@@ -29,7 +29,7 @@ class PaymentTransitionValidator
         DB::transaction(function () use ($payment, $target, $extra) {
             $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
 
-            if (!$payment) {
+            if (! $payment) {
                 throw new \RuntimeException('Payment not found for transition');
             }
 
@@ -40,15 +40,15 @@ class PaymentTransitionValidator
                 'webhook_processed_at' => now(),
             ], $extra);
 
-            if ($target->isFailure() && !isset($extra['failed_at'])) {
+            if ($target->isFailure() && ! isset($extra['failed_at'])) {
                 $data['failed_at'] = now();
             }
 
-            if ($target === PaymentStatus::CheckoutPaid && !isset($extra['paid_at'])) {
+            if ($target === PaymentStatus::CheckoutPaid && ! isset($extra['paid_at'])) {
                 $data['paid_at'] = now();
             }
 
-            if ($target === PaymentStatus::CheckoutCanceled && !isset($extra['canceled_at'])) {
+            if ($target === PaymentStatus::CheckoutCanceled && ! isset($extra['canceled_at'])) {
                 $data['canceled_at'] = now();
             }
 

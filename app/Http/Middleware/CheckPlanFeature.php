@@ -33,7 +33,7 @@ class CheckPlanFeature
 
     public function handle(Request $request, Closure $next, string $feature): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return $next($request);
         }
 
@@ -52,7 +52,7 @@ class CheckPlanFeature
         $workspace = $user->currentWorkspace;
         $subscription = $workspace?->owner()?->first()?->activeSubscription() ?? $user->activeSubscription();
 
-        if (!$subscription || !$subscription->plan) {
+        if (! $subscription || ! $subscription->plan) {
             return $this->redirectToUpgrade($request);
         }
 
@@ -78,16 +78,22 @@ class CheckPlanFeature
 
     protected function inExceptArray(?string $routeName): bool
     {
-        if (!$routeName) return false;
+        if (! $routeName) {
+            return false;
+        }
 
         foreach ($this->except as $pattern) {
             if (str_ends_with($pattern, '.*')) {
                 $prefix = substr($pattern, 0, -2);
-                if (str_starts_with($routeName, $prefix)) return true;
+                if (str_starts_with($routeName, $prefix)) {
+                    return true;
+                }
             }
             if (str_ends_with($pattern, '*')) {
                 $prefix = substr($pattern, 0, -1);
-                if (str_starts_with($routeName, $prefix)) return true;
+                if (str_starts_with($routeName, $prefix)) {
+                    return true;
+                }
             } elseif ($routeName === $pattern) {
                 return true;
             }

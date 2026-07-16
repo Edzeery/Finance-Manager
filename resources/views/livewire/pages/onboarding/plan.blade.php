@@ -605,7 +605,7 @@ new #[Layout('layouts.guest')] class extends Component {
         <p class="onboarding-desc">{{ __('onboarding.plan_description') }}</p>
     </div>
 
-    @if ($pendingPayment && $pendingPlanInfo)
+    @if ( $pendingPayment  ?? null && $pendingPlanInfo)
         <div class="alert alert-warning d-flex align-items-start gap-3 mb-4 p-3 rounded-3 border-0 shadow-sm"
             style="background: #fff3cd; border: 1px solid #ffc107;">
             <div class="flex-shrink-0">
@@ -1068,6 +1068,6 @@ new #[Layout('layouts.guest')] class extends Component {
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
 
-        
+
     </div>
 </div>

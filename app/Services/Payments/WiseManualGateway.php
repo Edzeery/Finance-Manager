@@ -4,7 +4,6 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
-use App\Services\Payments\ValidationResult;
 
 class WiseManualGateway implements PaymentGateway
 {
@@ -17,9 +16,10 @@ class WiseManualGateway implements PaymentGateway
 
     public function validate(array $data): ValidationResult
     {
-        if (!$this->gatewaySetting('account_email')) {
+        if (! $this->gatewaySetting('account_email')) {
             return ValidationResult::invalid('Wise (manual transfer) is not configured. Please contact support.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -33,7 +33,7 @@ class WiseManualGateway implements PaymentGateway
         $accountEmail = $this->gatewaySetting('account_email');
         $accountHolder = $this->gatewaySetting('account_holder_name');
 
-        if (!$accountEmail) {
+        if (! $accountEmail) {
             return PaymentResult::failed('Wise (manual transfer) is not configured. Please contact support.');
         }
 
@@ -60,7 +60,18 @@ class WiseManualGateway implements PaymentGateway
         return PaymentResult::failed('Wise manual verification is done manually.');
     }
 
-    public function isOnline(): bool { return false; }
-    public function isOffline(): bool { return true; }
-    public function supportedCurrencies(): array { return ['USD', 'EUR', 'GBP', 'DZD']; }
+    public function isOnline(): bool
+    {
+        return false;
+    }
+
+    public function isOffline(): bool
+    {
+        return true;
+    }
+
+    public function supportedCurrencies(): array
+    {
+        return ['USD', 'EUR', 'GBP', 'DZD'];
+    }
 }

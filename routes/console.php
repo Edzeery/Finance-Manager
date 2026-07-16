@@ -1,5 +1,9 @@
 <?php
 
+use App\Enums\PaymentStatus;
+use App\Models\Payment;
+use App\Models\User;
+use App\Models\Workspace;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -16,15 +20,15 @@ Artisan::command('validate:soft-deletes', fn () => $this->call('finance:validate
 Artisan::command('onboarding:cleanup-abandoned', function () {
     $cutoff = now()->subHours(24);
 
-    $count = \App\Models\Payment::pending()
+    $count = Payment::pending()
         ->where('created_at', '<', $cutoff)
         ->whereNull('transaction_id')
-        ->update(['status' => \App\Enums\PaymentStatus::CheckoutFailed->value, 'notes' => 'Abandoned payment - no transaction within 24 hours']);
+        ->update(['status' => PaymentStatus::CheckoutFailed->value, 'notes' => 'Abandoned payment - no transaction within 24 hours']);
 
     $workspaceCount = 0;
-    \App\Models\Workspace::where('created_at', '<', $cutoff)
+    Workspace::where('created_at', '<', $cutoff)
         ->get()
-        ->filter(fn($ws) => !$ws->owner()?->first()?->subscriptions()->exists())
+        ->filter(fn ($ws) => ! $ws->owner()?->first()?->subscriptions()->exists())
         ->each(function ($workspace) use (&$workspaceCount) {
             $workspace->users()->detach();
             $workspace->delete();
@@ -36,9 +40,9 @@ Artisan::command('onboarding:cleanup-abandoned', function () {
 })->purpose('Mark abandoned payments as failed and remove orphaned workspaces after 24 hours');
 
 Artisan::command('onboarding:backfill-existing-users', function () {
-    $count = \App\Models\User::whereNull('onboarding_completed_at')->count();
+    $count = User::whereNull('onboarding_completed_at')->count();
 
-    \App\Models\User::whereNull('onboarding_completed_at')->update([
+    User::whereNull('onboarding_completed_at')->update([
         'onboarding_completed_at' => now(),
         'plan_confirmed_at' => now(),
     ]);

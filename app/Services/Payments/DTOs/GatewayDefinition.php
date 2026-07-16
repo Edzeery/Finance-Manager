@@ -1,5 +1,7 @@
 <?php
+
 // app\Services\Payments\DTOs\GatewayDefinition.php
+
 namespace App\Services\Payments\DTOs;
 
 class GatewayDefinition
@@ -19,17 +21,17 @@ class GatewayDefinition
 
     public function requiredFields(): array
     {
-        return array_filter($this->fields, fn(FieldDefinition $f) => $f->required);
+        return array_filter($this->fields, fn (FieldDefinition $f) => $f->required);
     }
 
     public function optionalFields(): array
     {
-        return array_filter($this->fields, fn(FieldDefinition $f) => !$f->required);
+        return array_filter($this->fields, fn (FieldDefinition $f) => ! $f->required);
     }
 
     public function encryptedFields(): array
     {
-        return array_filter($this->fields, fn(FieldDefinition $f) => $f->encrypted);
+        return array_filter($this->fields, fn (FieldDefinition $f) => $f->encrypted);
     }
 
     public function field(string $key): ?FieldDefinition
@@ -39,6 +41,7 @@ class GatewayDefinition
                 return $field;
             }
         }
+
         return null;
     }
 
@@ -54,7 +57,7 @@ class GatewayDefinition
             'sandbox' => $this->sandbox,
             'webhook' => $this->webhook,
             'enabled_by_default' => $this->enabledByDefault,
-            'fields' => array_map(fn(FieldDefinition $f) => [
+            'fields' => array_map(fn (FieldDefinition $f) => [
                 'key' => $f->key,
                 'type' => $f->type,
                 'label' => $f->label,

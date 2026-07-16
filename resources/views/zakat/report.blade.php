@@ -32,8 +32,8 @@
                             <tr><td>{{ __('zakat.expected_receivables') }}</td><td class="text-end">{{ number_format($r->expected_receivables, 2) }}</td></tr>
                          </tbody>
                          <tfoot>
-                             <tr><td class="fw-bold">{{ __('zakat.total_wealth') }}</td><td class="text-end fw-bold">{{ number_format($r->total_wealth, 2) }}</td></tr>
-                             <tr><td class="fw-bold">{{ __('zakat.total_zakatable') }}</td><td class="text-end fw-bold" style="color:{{ $r->exceeds_nisab ? 'var(--success)' : 'var(--warning)' }}">{{ number_format($r->total_zakatable, 2) }}</td></tr>
+                             <tr><td class="fw-bold">{{ __('zakat.total_wealth') }}</td><td text-start fw-bold>{{ number_format($r->total_wealth, 2) }}</td></tr>
+                             <tr><td class="fw-bold">{{ __('zakat.total_zakatable') }}</td><td text-start fw-bold style="color:{{ $r->exceeds_nisab ? 'var(--success)' : 'var(--warning)' }}">{{ number_format($r->total_zakatable, 2) }}</td></tr>
                          </tfoot>
                      </table>
                      </div>

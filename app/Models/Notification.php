@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
-    use HasFactory, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory;
 
     protected static function booted(): void
     {
         static::addGlobalScope(new WorkspaceScope);
     }
+
     protected $fillable = [
         'user_id', 'workspace_id', 'type', 'title_ar', 'title_fr', 'title_en',
         'message_ar', 'message_fr', 'message_en', 'data', 'is_read', 'read_at',

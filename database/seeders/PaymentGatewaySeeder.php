@@ -21,14 +21,14 @@ class PaymentGatewaySeeder extends Seeder
                 'supported_currencies' => ['DZD'],
                 'fields' => [
                     ['key' => 'mode', 'type' => 'select', 'label' => 'Mode', 'required' => true,
-                     'options' => [['label' => 'Test', 'value' => 'test'], ['label' => 'Live', 'value' => 'live']],
-                     'default' => 'test'],
+                        'options' => [['label' => 'Test', 'value' => 'test'], ['label' => 'Live', 'value' => 'live']],
+                        'default' => 'test'],
                     ['key' => 'public_key', 'type' => 'password', 'label' => 'Public Key', 'required' => true,
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                     ['key' => 'secret_key', 'type' => 'password', 'label' => 'Secret Key', 'required' => true,
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                     ['key' => 'webhook_url', 'type' => 'url', 'label' => 'Webhook URL',
-                     'placeholder' => 'https://example.com/payment/webhook/chargily', 'maxLength' => 255],
+                        'placeholder' => 'https://example.com/payment/webhook/chargily', 'maxLength' => 255],
                 ],
             ],
             'paypal' => [
@@ -43,10 +43,10 @@ class PaymentGatewaySeeder extends Seeder
                 'fields' => [
                     ['key' => 'client_id', 'type' => 'text', 'label' => 'Client ID', 'required' => true, 'maxLength' => 255],
                     ['key' => 'secret', 'type' => 'password', 'label' => 'Client Secret', 'required' => true,
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                     ['key' => 'sandbox', 'type' => 'boolean', 'label' => 'Sandbox Mode', 'default' => true],
                     ['key' => 'webhook_secret', 'type' => 'password', 'label' => 'Webhook Secret',
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                 ],
             ],
             'stripe' => [
@@ -60,10 +60,10 @@ class PaymentGatewaySeeder extends Seeder
                 'supported_currencies' => ['USD', 'EUR', 'GBP', 'AED', 'SAR'],
                 'fields' => [
                     ['key' => 'secret_key', 'type' => 'password', 'label' => 'Secret Key', 'required' => true,
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                     ['key' => 'sandbox', 'type' => 'boolean', 'label' => 'Sandbox Mode', 'default' => true],
                     ['key' => 'webhook_secret', 'type' => 'password', 'label' => 'Webhook Secret',
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                 ],
             ],
             'wise' => [
@@ -77,11 +77,11 @@ class PaymentGatewaySeeder extends Seeder
                 'supported_currencies' => ['USD', 'EUR', 'GBP'],
                 'fields' => [
                     ['key' => 'api_key', 'type' => 'password', 'label' => 'API Key', 'required' => true,
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                     ['key' => 'recipient_account_id', 'type' => 'text', 'label' => 'Recipient Account ID', 'maxLength' => 255],
                     ['key' => 'sandbox', 'type' => 'boolean', 'label' => 'Sandbox Mode', 'default' => true],
                     ['key' => 'webhook_secret', 'type' => 'password', 'label' => 'Webhook Secret',
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                 ],
             ],
             'payoneer' => [
@@ -96,11 +96,11 @@ class PaymentGatewaySeeder extends Seeder
                 'fields' => [
                     ['key' => 'client_id', 'type' => 'text', 'label' => 'Client ID', 'required' => true, 'maxLength' => 255],
                     ['key' => 'client_secret', 'type' => 'password', 'label' => 'Client Secret', 'required' => true,
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                     ['key' => 'program_id', 'type' => 'text', 'label' => 'Program ID', 'maxLength' => 255],
                     ['key' => 'sandbox', 'type' => 'boolean', 'label' => 'Sandbox Mode', 'default' => true],
                     ['key' => 'webhook_secret', 'type' => 'password', 'label' => 'Webhook Secret',
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                 ],
             ],
             'baridimob' => [
@@ -156,13 +156,13 @@ class PaymentGatewaySeeder extends Seeder
                 'supported_currencies' => ['DZD'],
                 'fields' => [
                     ['key' => 'base_url', 'type' => 'url', 'label' => 'Base URL', 'required' => true,
-                     'default' => 'https://app.noest-dz.com/api/public', 'maxLength' => 255],
+                        'default' => 'https://app.noest-dz.com/api/public', 'maxLength' => 255],
                     ['key' => 'api_token', 'type' => 'password', 'label' => 'API Token', 'required' => true,
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 500],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 500],
                     ['key' => 'user_guid', 'type' => 'password', 'label' => 'User GUID', 'required' => true,
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                     ['key' => 'webhook_secret', 'type' => 'password', 'label' => 'Webhook Secret',
-                     'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
+                        'encrypted' => true, 'sensitive' => true, 'maxLength' => 255],
                 ],
             ],
             'cash' => [

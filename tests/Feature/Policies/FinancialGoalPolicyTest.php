@@ -14,9 +14,13 @@ class FinancialGoalPolicyTest extends TestCase
     use RefreshDatabase;
 
     private FinancialGoalPolicy $policy;
+
     private Workspace $workspace;
+
     private User $user;
+
     private User $otherUser;
+
     private FinancialGoal $goal;
 
     protected function setUp(): void

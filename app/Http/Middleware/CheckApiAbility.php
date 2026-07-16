@@ -21,6 +21,7 @@ class CheckApiAbility
     ];
 
     protected static array $crudReadMethods = ['index', 'show'];
+
     protected static array $crudWriteMethods = ['store', 'update', 'destroy'];
 
     public function handle(Request $request, Closure $next): Response
@@ -50,7 +51,7 @@ class CheckApiAbility
             return $next($request);
         }
 
-        if (!$user->tokenCan($ability)) {
+        if (! $user->tokenCan($ability)) {
             return response()->json([
                 'message' => __('messages.unauthorized'),
                 'required_ability' => $ability,

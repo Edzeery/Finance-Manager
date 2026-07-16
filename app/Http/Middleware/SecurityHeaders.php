@@ -54,14 +54,15 @@ class SecurityHeaders
     private function resolveAppOrigin(): string
     {
         $appUrl = config('app.url');
-        if (!$appUrl) {
+        if (! $appUrl) {
             return '';
         }
         $host = parse_url($appUrl, PHP_URL_HOST);
-        if (!$host) {
+        if (! $host) {
             return '';
         }
         $scheme = parse_url($appUrl, PHP_URL_SCHEME) ?? 'https';
+
         return "$scheme://$host";
     }
 
@@ -87,6 +88,7 @@ class SecurityHeaders
     {
         try {
             $vite = app(Vite::class);
+
             return $vite->cspNonce();
         } catch (\Throwable) {
             return null;
@@ -98,10 +100,11 @@ class SecurityHeaders
         $parts = [];
         foreach (self::CSP_ORDER as $directive) {
             $sources = $directives[$directive] ?? [];
-            if (!empty($sources)) {
-                $parts[] = $directive . ' ' . implode(' ', $sources);
+            if (! empty($sources)) {
+                $parts[] = $directive.' '.implode(' ', $sources);
             }
         }
+
         return implode('; ', $parts);
     }
 }

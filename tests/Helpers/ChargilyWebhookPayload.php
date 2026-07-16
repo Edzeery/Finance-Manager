@@ -7,12 +7,12 @@ trait ChargilyWebhookPayload
     private function chargilyPayload(array $override = []): string
     {
         $defaults = [
-            'id' => 'evt_' . uniqid(),
+            'id' => 'evt_'.uniqid(),
             'type' => 'checkout.paid',
             'created_at' => now()->toISOString(),
             'updated_at' => now()->toISOString(),
             'data' => [
-                'id' => 'ch_' . uniqid(),
+                'id' => 'ch_'.uniqid(),
                 'payment_link_id' => null,
                 'customer_id' => null,
                 'invoice_id' => null,

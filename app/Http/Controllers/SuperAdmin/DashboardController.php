@@ -2,63 +2,69 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Enums\PaymentStatus;
-use App\Enums\SubscriptionStatus;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Payment;
-use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
-use App\Models\Workspace;
-use App\Models\Coupon;
+use App\Services\SuperAdminDashboardService;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     use HasBreadcrumbs;
 
-    public function index()
+    public function index(Request $request, SuperAdminDashboardService $dashboard)
     {
         $this->resetBreadcrumbs()
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded');
 
-        $kpis = [
-            'total_users' => User::count(),
-            'active_users' => User::where('is_active', true)->count(),
-            'super_admins' => User::whereHas('roles', fn($q) => $q->where('slug', 'super_admin'))->count(),
-            'total_workspaces' => Workspace::count(),
-            'active_workspaces' => Workspace::where('is_active', true)->count(),
-        ];
+        $tab = $request->input('tab', 'overview');
+        $period = $request->input('period', 'all_time');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        $subscriptionCounts = SubscriptionPlan::withCount('subscriptions')->get()->pluck('subscriptions_count', 'slug');
-        $kpis['subscriptions_by_plan'] = $subscriptionCounts;
+        $data = [];
 
-        $kpis['active_subscriptions'] = Subscription::whereIn('status', [SubscriptionStatus::Active->value, SubscriptionStatus::Trialing->value])->count();
-        $kpis['canceled_subscriptions'] = Subscription::where('status', SubscriptionStatus::Canceled->value)->count();
+        switch ($tab) {
+            case 'overview':
+                $data = $dashboard->getOverviewKpis($period, $startDate, $endDate);
+                $data['recent_payments'] = Payment::withoutWorkspace()
+                    ->where('status', 'checkout.paid')->whereNull('refunded_at')
+                    ->latest('paid_at')->take(5)->with('workspace', 'subscription.plan')->get();
+                break;
 
-        $kpis['total_revenue'] = Payment::where('status', PaymentStatus::CheckoutPaid->value)->sum('amount');
-        $kpis['pending_payments'] = Payment::where('status', PaymentStatus::CheckoutPending->value)->count();
-        $kpis['completed_payments'] = Payment::where('status', PaymentStatus::CheckoutPaid->value)->count();
-        $kpis['pending_amount'] = Payment::where('status', PaymentStatus::CheckoutPending->value)->sum('amount');
+            case 'revenue':
+                $gateway = $request->input('gateway');
+                $planId = $request->input('plan_id');
+                $data = $dashboard->getRevenueStats($period, $startDate, $endDate, $gateway, $planId);
+                $data['gateway_keys'] = Payment::withoutWorkspace()
+                    ->where('status', 'checkout.paid')->whereNotNull('method')
+                    ->distinct()->pluck('method')->toArray();
+                $data['plan_options'] = SubscriptionPlan::pluck('name', 'id')->toArray();
+                break;
 
-        $kpis['recent_payments'] = Payment::where('status', PaymentStatus::CheckoutPaid->value)
-            ->latest('paid_at')->take(5)->with('workspace', 'subscription.plan')->get();
+            case 'subscriptions':
+                $planId = $request->input('plan_id');
+                $data = $dashboard->getSubscriptionStats($period, $startDate, $endDate, $planId);
+                $data['plan_options'] = SubscriptionPlan::pluck('name', 'id')->toArray();
+                break;
 
-        $thisMonth = now()->startOfMonth();
-        $kpis['revenue_this_month'] = Payment::where('status', PaymentStatus::CheckoutPaid->value)
-            ->where('paid_at', '>=', $thisMonth)->sum('amount');
+            case 'team':
+                $memberId = $request->input('member_id');
+                $data = $dashboard->getTeamPerformance($period, $startDate, $endDate, $memberId);
+                $data['member_options'] = User::whereHas('roles', fn ($q) => $q->whereIn('slug', [
+                    'super_admin', 'deputy_super_admin', 'platform_manager', 'billing_manager',
+                    'support_team', 'technical_team', 'qa_team',
+                ]))->pluck('name', 'id')->toArray();
+                break;
+        }
 
-        $kpis['total_coupons'] = Coupon::count();
-        $kpis['active_coupons'] = Coupon::active()->count();
-        $kpis['expired_coupons'] = Coupon::where('is_active', true)
-            ->where('expires_at', '<', now())->count();
-        $kpis['total_coupon_uses'] = Coupon::sum('used_count');
+        $data['current_tab'] = $tab;
+        $data['period'] = $period;
+        $data['start_date'] = $startDate;
+        $data['end_date'] = $endDate;
 
-        $kpis['revenue_by_gateway'] = Payment::where('status', PaymentStatus::CheckoutPaid->value)
-            ->selectRaw('method, SUM(amount) as total')
-            ->groupBy('method')
-            ->pluck('total', 'method');
-
-        return view('super-admin.dashboard', $this->withBreadcrumbs(compact('kpis')));
+        return view('super-admin.dashboard', $this->withBreadcrumbs(['data' => $data]));
     }
 }

@@ -10,11 +10,11 @@ class SuperAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('super.admin.login');
         }
 
-        if (!auth()->user()->hasRole('super_admin')) {
+        if (! auth()->user()->hasRole('super_admin')) {
             abort(403, __('messages.unauthorized'));
         }
 

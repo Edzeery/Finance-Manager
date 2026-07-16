@@ -14,6 +14,7 @@ class FinancialGoalFactory extends Factory
     public function definition(): array
     {
         $target = fake()->randomFloat(2, 5000, 1000000);
+
         return [
             'user_id' => User::factory(),
             'workspace_id' => Workspace::factory(),
@@ -31,9 +32,9 @@ class FinancialGoalFactory extends Factory
 
     public function completed(): static
     {
-        return $this->state(fn(array $attrs) => [
+        return $this->state(fn (array $attrs) => [
             'status' => 'completed',
-            'current_amount' => fn(array $attrs) => $attrs['target_amount'] ?? 0,
+            'current_amount' => fn (array $attrs) => $attrs['target_amount'] ?? 0,
             'completed_at' => now(),
         ]);
     }

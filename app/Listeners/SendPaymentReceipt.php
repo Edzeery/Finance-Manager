@@ -3,7 +3,9 @@
 namespace App\Listeners;
 
 use App\Events\PaymentCompleted;
+use App\Mail\PaymentReceipt;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SendPaymentReceipt
 {
@@ -12,13 +14,13 @@ class SendPaymentReceipt
         $payment = $event->payment;
         $user = $payment->user;
 
-        if (!$user || !$user->email) {
+        if (! $user || ! $user->email) {
             return;
         }
 
         try {
-            \Illuminate\Support\Facades\Mail::to($user->email)
-                ->queue(new \App\Mail\PaymentReceipt($payment));
+            Mail::to($user->email)
+                ->queue(new PaymentReceipt($payment));
         } catch (\Throwable $e) {
             Log::warning('Failed to send payment receipt', [
                 'payment_id' => $payment->id,

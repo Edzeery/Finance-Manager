@@ -27,11 +27,11 @@ return new class extends Migration
             return;
         }
 
-        Schema::table('incomes', fn(Blueprint $t) => $t->dropIndex('incomes_description_notes_fulltext'));
-        Schema::table('expenses', fn(Blueprint $t) => $t->dropIndex('expenses_description_notes_fulltext'));
-        Schema::table('debts', fn(Blueprint $t) => $t->dropIndex('debts_counterparty_notes_fulltext'));
-        Schema::table('assets', fn(Blueprint $t) => $t->dropIndex('assets_name_description_fulltext'));
-        Schema::table('budgets', fn(Blueprint $t) => $t->dropIndex('budgets_name_fulltext'));
-        Schema::table('financial_goals', fn(Blueprint $t) => $t->dropIndex('financial_goals_name_fulltext'));
+        Schema::table('incomes', fn (Blueprint $t) => $t->dropIndex('incomes_description_notes_fulltext'));
+        Schema::table('expenses', fn (Blueprint $t) => $t->dropIndex('expenses_description_notes_fulltext'));
+        Schema::table('debts', fn (Blueprint $t) => $t->dropIndex('debts_counterparty_notes_fulltext'));
+        Schema::table('assets', fn (Blueprint $t) => $t->dropIndex('assets_name_description_fulltext'));
+        Schema::table('budgets', fn (Blueprint $t) => $t->dropIndex('budgets_name_fulltext'));
+        Schema::table('financial_goals', fn (Blueprint $t) => $t->dropIndex('financial_goals_name_fulltext'));
     }
 };

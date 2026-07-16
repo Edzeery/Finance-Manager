@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Workspace extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'name', 'slug', 'type', 'description', 'currency',
         'timezone', 'is_active', 'trial_ends_at',
@@ -30,7 +30,7 @@ class Workspace extends Model
     {
         static::creating(function (Workspace $workspace) {
             if (empty($workspace->slug)) {
-                $workspace->slug = Str::slug($workspace->name) . '-' . Str::random(6);
+                $workspace->slug = Str::slug($workspace->name).'-'.Str::random(6);
             }
         });
     }
@@ -45,6 +45,7 @@ class Workspace extends Model
     public function owner(): BelongsToMany
     {
         $adminRoleId = Role::where('slug', 'workspace_admin')->value('id');
+
         return $this->belongsToMany(User::class, 'workspace_role_user', 'workspace_id', 'user_id')
             ->wherePivot('role_id', $adminRoleId);
     }
@@ -62,7 +63,10 @@ class Workspace extends Model
     public function activePlan(): ?SubscriptionPlan
     {
         $sub = $this->owner()?->first()?->activeSubscription();
-        if (!$sub || !$sub->isActive()) return null;
+        if (! $sub || ! $sub->isActive()) {
+            return null;
+        }
+
         return $sub->plan;
     }
 
@@ -103,7 +107,7 @@ class Workspace extends Model
     public static function createForUser(User $user, array $data = []): self
     {
         $workspace = static::create(array_merge([
-            'name' => $data['name'] ?? $user->name . "'s Workspace",
+            'name' => $data['name'] ?? $user->name."'s Workspace",
             'type' => $data['type'] ?? 'personal',
             'currency' => $user->currency ?? 'DZD',
             'timezone' => $user->timezone ?? 'Africa/Algiers',

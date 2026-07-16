@@ -33,7 +33,7 @@ class IncomeCategoryController extends Controller
     {
         $category = IncomeCategory::find($id);
 
-        if (!$category) {
+        if (! $category) {
             return response()->json(['message' => __('messages.not_found')], 404);
         }
 
@@ -44,7 +44,7 @@ class IncomeCategoryController extends Controller
     {
         $category = IncomeCategory::find($id);
 
-        if (!$category) {
+        if (! $category) {
             return response()->json(['message' => __('messages.not_found')], 404);
         }
 
@@ -57,7 +57,7 @@ class IncomeCategoryController extends Controller
     {
         $category = IncomeCategory::find($id);
 
-        if (!$category) {
+        if (! $category) {
             return response()->json(['message' => __('messages.not_found')], 404);
         }
 

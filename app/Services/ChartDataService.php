@@ -4,10 +4,9 @@ namespace App\Services;
 
 use App\Contracts\Services\ChartDataServiceInterface;
 use App\DTOs\ChartData;
-use App\Models\Income;
 use App\Models\Expense;
+use App\Models\Income;
 use App\Support\DatabaseHelper;
-use App\Services\DateFilterService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -59,7 +58,7 @@ class ChartDataService implements ChartDataServiceInterface
                 ]];
             }
 
-            $labels = $allMonths->map(fn($ym) => Carbon::parse($ym . '-01')->format('M Y'))->toArray();
+            $labels = $allMonths->map(fn ($ym) => Carbon::parse($ym.'-01')->format('M Y'))->toArray();
             $incomeData = [];
             $expenseData = [];
 
@@ -93,7 +92,7 @@ class ChartDataService implements ChartDataServiceInterface
             $start = $range['start'];
             $end = $range['end'];
 
-            $nameField = 'name_' . app()->getLocale();
+            $nameField = 'name_'.app()->getLocale();
 
             $query = Expense::active()->with('category');
 
@@ -102,7 +101,7 @@ class ChartDataService implements ChartDataServiceInterface
             }
 
             $grouped = $query->get()
-                ->groupBy(fn($e) => $e->category?->{$nameField} ?? __('general.uncategorized'));
+                ->groupBy(fn ($e) => $e->category?->{$nameField} ?? __('general.uncategorized'));
 
             $labels = [];
             $data = [];
@@ -168,7 +167,7 @@ class ChartDataService implements ChartDataServiceInterface
                 ]];
             }
 
-            $labels = $allMonths->map(fn($ym) => Carbon::parse($ym . '-01')->format('M Y'))->toArray();
+            $labels = $allMonths->map(fn ($ym) => Carbon::parse($ym.'-01')->format('M Y'))->toArray();
             $data = [];
             $balance = 0;
 

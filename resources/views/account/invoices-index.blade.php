@@ -63,16 +63,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @php
-                                        $badge = match($invoice->status->value) {
-                                            'paid' => 'success',
-                                            'draft' => 'warning',
-                                            'overdue' => 'danger',
-                                            'cancelled' => 'secondary',
-                                            default => 'primary',
-                                        };
-                                    @endphp
-                                    <span class="badge bg-{{ $badge }}">{{ $invoice->status->label() }}</span>
+                                    <x-status-badge domain="invoice" :status="$invoice->status->value" set="bi" />
                                 </td>
                                 <td style="font-size:13px;color:var(--text-muted)">{{ $invoice->created_at->format('Y/m/d') }}</td>
                                 <td class="text-end">

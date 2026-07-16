@@ -4,12 +4,14 @@ namespace App\Repositories;
 
 use App\Contracts\Repositories\IncomeRepositoryInterface;
 use App\Models\Income;
+use App\Repositories\Concerns\FiltersByOwnership;
+use App\Repositories\Concerns\HasMonthlyTransactions;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class IncomeRepository extends BaseRepository implements IncomeRepositoryInterface
 {
-    use \App\Repositories\Concerns\FiltersByOwnership;
-    use \App\Repositories\Concerns\HasMonthlyTransactions;
+    use FiltersByOwnership;
+    use HasMonthlyTransactions;
 
     public function __construct()
     {
@@ -31,31 +33,32 @@ class IncomeRepository extends BaseRepository implements IncomeRepositoryInterfa
             $query->active();
         }
 
-        if (!empty($filters['category'])) {
+        if (! empty($filters['category'])) {
             $query->where('category_id', $filters['category']);
         }
 
-        if (!empty($filters['type'])) {
+        if (! empty($filters['type'])) {
             $query->byType($filters['type']);
         }
 
-        if (!empty($filters['date_from'])) {
+        if (! empty($filters['date_from'])) {
             $query->whereDate('date', '>=', $filters['date_from']);
         }
 
-        if (!empty($filters['date_to'])) {
+        if (! empty($filters['date_to'])) {
             $query->whereDate('date', '<=', $filters['date_to']);
         }
 
-        if (!empty($filters['search'])) {
-            $term = '%' . $filters['search'] . '%';
+        if (! empty($filters['search'])) {
+            $term = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($term) {
                 $q->where('description', 'like', $term)
-                  ->orWhere('notes', 'like', $term);
+                    ->orWhere('notes', 'like', $term);
             });
         }
 
         $perPage = min((int) ($filters['per_page'] ?? 15), config('finance.per_page_max', 100));
+
         return $query->orderBy('date', 'desc')->paginate($perPage);
     }
 

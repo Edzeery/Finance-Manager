@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Expense;
-use App\Models\Income;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Models\Expense;
+use App\Models\ExpenseCategory;
+use App\Models\Income;
+use App\Models\IncomeCategory;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 class TransactionController extends Controller
 {
@@ -38,11 +39,11 @@ class TransactionController extends Controller
         if ($search) {
             $incomesQuery->where(function ($q) use ($search) {
                 $q->where('description', 'like', "%{$search}%")
-                  ->orWhere('amount', 'like', "%{$search}%");
+                    ->orWhere('amount', 'like', "%{$search}%");
             });
             $expensesQuery->where(function ($q) use ($search) {
                 $q->where('description', 'like', "%{$search}%")
-                  ->orWhere('amount', 'like', "%{$search}%");
+                    ->orWhere('amount', 'like', "%{$search}%");
             });
         }
 
@@ -59,8 +60,8 @@ class TransactionController extends Controller
         $incomeCount = (clone $incomesQuery)->count();
         $expenseCount = (clone $expensesQuery)->count();
 
-        $incomes = $incomesQuery->get()->map(fn($i) => $this->mapTransaction($i, 'income', $locale));
-        $expenses = $expensesQuery->get()->map(fn($e) => $this->mapTransaction($e, 'expense', $locale));
+        $incomes = $incomesQuery->get()->map(fn ($i) => $this->mapTransaction($i, 'income', $locale));
+        $expenses = $expensesQuery->get()->map(fn ($e) => $this->mapTransaction($e, 'expense', $locale));
 
         $all = $incomes->concat($expenses);
 
@@ -116,7 +117,7 @@ class TransactionController extends Controller
             'amount' => (float) $model->amount,
             'date' => $model->date,
             'description' => $model->description ?? '',
-            'category_name' => $category?->{'name_' . $locale} ?? '—',
+            'category_name' => $category?->{'name_'.$locale} ?? '—',
             'category_color' => $category?->color ?? '#64748B',
             'category_id' => $category?->id,
             'is_archived' => (bool) $model->is_archived,
@@ -126,18 +127,18 @@ class TransactionController extends Controller
 
     private function getCategoryOptions(string $locale): array
     {
-        $incomeCats = \App\Models\IncomeCategory::orderBy('name_' . $locale)
+        $incomeCats = IncomeCategory::orderBy('name_'.$locale)
             ->get(['id', 'name_ar', 'name_fr', 'name_en'])
-            ->map(fn($c) => [
-                'id' => 'income_' . $c->id,
-                'name' => $c->{'name_' . $locale},
+            ->map(fn ($c) => [
+                'id' => 'income_'.$c->id,
+                'name' => $c->{'name_'.$locale},
             ]);
 
-        $expenseCats = \App\Models\ExpenseCategory::orderBy('name_' . $locale)
+        $expenseCats = ExpenseCategory::orderBy('name_'.$locale)
             ->get(['id', 'name_ar', 'name_fr', 'name_en'])
-            ->map(fn($c) => [
-                'id' => 'expense_' . $c->id,
-                'name' => $c->{'name_' . $locale},
+            ->map(fn ($c) => [
+                'id' => 'expense_'.$c->id,
+                'name' => $c->{'name_'.$locale},
             ]);
 
         return $incomeCats->concat($expenseCats)->sortBy('name')->values()->all();

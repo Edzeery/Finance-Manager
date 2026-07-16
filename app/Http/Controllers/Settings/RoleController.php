@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
-use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
@@ -37,7 +36,7 @@ class RoleController extends Controller
             'category', 'dashboard', 'report', 'transaction', 'export',
             'workspace-setting', 'workspace-user', 'workspace-role', 'billing',
             'activity-log', 'payment', 'invoice', 'notification',
-        ])->get()->groupBy(fn($perm) => explode('.', $perm->slug)[0] ?? $perm->slug);
+        ])->get()->groupBy(fn ($perm) => explode('.', $perm->slug)[0] ?? $perm->slug);
 
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 

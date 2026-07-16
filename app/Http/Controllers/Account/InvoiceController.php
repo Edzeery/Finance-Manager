@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Account;
 
-use App\Http\Controllers\Controller;
 use App\Enums\InvoiceStatus;
+use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Subscription;
+use App\Services\CurrencyHelper;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -29,7 +30,7 @@ class InvoiceController extends Controller
                 ->with('subscription.plan');
 
             $status = $request->input('status');
-            if ($status && in_array($status, array_map(fn($case) => $case->value, InvoiceStatus::cases()))) {
+            if ($status && in_array($status, array_map(fn ($case) => $case->value, InvoiceStatus::cases()))) {
                 $query->where('status', $status);
             }
 
@@ -60,7 +61,7 @@ class InvoiceController extends Controller
             ->where('user_id', $user->id)
             ->pluck('id');
 
-        abort_if($subscriptionIds->isEmpty() || !in_array($invoice->subscription_id, $subscriptionIds->toArray()), 403);
+        abort_if($subscriptionIds->isEmpty() || ! in_array($invoice->subscription_id, $subscriptionIds->toArray()), 403);
 
         $invoice->load('subscription.plan', 'user');
         $userCurrency = $user->currency ?? config('finance.currency', 'USD');
@@ -76,14 +77,15 @@ class InvoiceController extends Controller
             ->where('user_id', $user->id)
             ->pluck('id');
 
-        abort_if($subscriptionIds->isEmpty() || !in_array($invoice->subscription_id, $subscriptionIds->toArray()), 403);
+        abort_if($subscriptionIds->isEmpty() || ! in_array($invoice->subscription_id, $subscriptionIds->toArray()), 403);
 
         $invoice->load('subscription.plan', 'user');
         $userCurrency = $user->currency ?? config('finance.currency', 'USD');
 
         $displayPrice = function (float $amount, ?string $currency = null) use ($userCurrency) {
             $cur = $currency ?: $userCurrency;
-            return number_format($amount, 2) . ' ' . \App\Services\CurrencyHelper::symbol($cur);
+
+            return number_format($amount, 2).' '.CurrencyHelper::symbol($cur);
         };
 
         $pdf = Pdf::loadView('account.invoices-pdf', compact('invoice', 'userCurrency', 'displayPrice'));

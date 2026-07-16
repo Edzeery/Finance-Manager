@@ -22,9 +22,9 @@ return [
     'bootstrap_variants' => [
         'success' => 'text-bg-success',
         'warning' => 'text-bg-warning',
-        'danger'  => 'text-bg-danger',
-        'info'    => 'text-bg-info',
-        'gray'    => 'text-bg-secondary',
+        'danger' => 'text-bg-danger',
+        'info' => 'text-bg-info',
+        'gray' => 'text-bg-secondary',
     ],
 
     // ==========================================================
@@ -32,7 +32,7 @@ return [
     // ==========================================================
     'badge_base' => [
         'bootstrap' => 'badge d-inline-flex align-items-center gap-1',
-        'tailwind'  => 'status-badge inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium',
+        'tailwind' => 'status-badge inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium',
     ],
 
 ];

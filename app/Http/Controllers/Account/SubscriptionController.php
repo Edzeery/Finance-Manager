@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Account;
 
 use App\Enums\PaymentStatus;
+use App\Enums\SubscriptionStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
 use App\Models\PaymentMethod;
+use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Services\CurrencyHelper;
 use App\Services\SubscriptionService;
@@ -19,7 +22,7 @@ class SubscriptionController extends Controller
 
         $subscription = $user->activeSubscription() ?? $workspace?->owner()?->first()?->activeSubscription();
 
-        $allSubscriptions = \App\Models\Subscription::withoutWorkspace()
+        $allSubscriptions = Subscription::withoutWorkspace()
             ->where('user_id', $user->id)
             ->with('plan', 'workspace')
             ->latest('starts_at')
@@ -28,7 +31,7 @@ class SubscriptionController extends Controller
         $subscriptionIds = $allSubscriptions->pluck('id');
 
         $payments = $subscriptionIds->isNotEmpty()
-            ? \App\Models\Payment::withoutWorkspace()
+            ? Payment::withoutWorkspace()
                 ->whereIn('subscription_id', $subscriptionIds)
                 ->latest()
                 ->take(10)
@@ -36,18 +39,18 @@ class SubscriptionController extends Controller
             : collect();
 
         $hasSubscriptionHistory = $allSubscriptions->count() > 1
-            || ($allSubscriptions->isNotEmpty() && !in_array($allSubscriptions->first()->status, [\App\Enums\SubscriptionStatus::Active, \App\Enums\SubscriptionStatus::Trialing], true));
+            || ($allSubscriptions->isNotEmpty() && ! in_array($allSubscriptions->first()->status, [SubscriptionStatus::Active, SubscriptionStatus::Trialing], true));
 
         $plans = SubscriptionPlan::active()
             ->public()
             ->with('planFeatures')
-            ->when($hasSubscriptionHistory, fn($q) => $q->where('is_free', false))
+            ->when($hasSubscriptionHistory, fn ($q) => $q->where('is_free', false))
             ->orderBy('sort_order')
             ->get();
 
         $userCurrency = $user->currency ?? config('finance.currency', 'USD');
 
-        $paymentMethods = PaymentMethod::active()->public()->byCurrency($userCurrency)->ordered()->get()->map(fn($m) => [
+        $paymentMethods = PaymentMethod::active()->public()->byCurrency($userCurrency)->ordered()->get()->map(fn ($m) => [
             'id' => $m->key,
             'name' => __("onboarding.method_{$m->key}") !== "onboarding.method_{$m->key}"
                 ? __("onboarding.method_{$m->key}")
@@ -55,7 +58,7 @@ class SubscriptionController extends Controller
         ])->toArray();
 
         $pendingPayment = $subscriptionIds->isNotEmpty()
-            ? \App\Models\Payment::withoutWorkspace()
+            ? Payment::withoutWorkspace()
                 ->whereIn('subscription_id', $subscriptionIds)
                 ->where('status', PaymentStatus::CheckoutPending->value)
                 ->latest()
@@ -78,7 +81,7 @@ class SubscriptionController extends Controller
         ));
     }
 
-    public function cancelPayment(Request $request, \App\Models\Payment $payment)
+    public function cancelPayment(Request $request, Payment $payment)
     {
         $user = auth()->user();
 
@@ -87,7 +90,7 @@ class SubscriptionController extends Controller
                 ->with('error', __('messages.unauthorized'));
         }
 
-        if (!$payment->isPending()) {
+        if (! $payment->isPending()) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.payment_not_pending'));
         }
@@ -106,18 +109,18 @@ class SubscriptionController extends Controller
         $user = auth()->user();
         $workspace = $user->currentWorkspace;
 
-        if (!$workspace || !$user->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! $user->isWorkspaceOwner($workspace)) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.unauthorized'));
         }
 
         $subscription = $workspace->owner()?->first()?->activeSubscription();
-        if (!$subscription) {
+        if (! $subscription) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.no_subscription'));
         }
 
-        if (!$subscription->canceled_at || !$subscription->isOnGrace()) {
+        if (! $subscription->canceled_at || ! $subscription->isOnGrace()) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.subscription_not_cancelled'));
         }
@@ -135,7 +138,7 @@ class SubscriptionController extends Controller
         $user = auth()->user();
         $workspace = $user->currentWorkspace;
 
-        if (!$workspace || !$user->isWorkspaceOwner($workspace)) {
+        if (! $workspace || ! $user->isWorkspaceOwner($workspace)) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.unauthorized'));
         }
@@ -145,7 +148,7 @@ class SubscriptionController extends Controller
         ]);
 
         $subscription = $workspace->owner()?->first()?->activeSubscription();
-        if (!$subscription) {
+        if (! $subscription) {
             return redirect()->route('account.subscriptions')
                 ->with('error', __('messages.no_active_subscription'));
         }
@@ -172,7 +175,7 @@ class SubscriptionController extends Controller
             : (float) $plan->monthly_price;
 
         $discountUsd = 0;
-        if (!empty($data['coupon'])) {
+        if (! empty($data['coupon'])) {
             $coupon = $subscriptionService->validateCoupon($data['coupon'], $priceUsd);
             if ($coupon) {
                 $discountUsd = $coupon->applyDiscount($priceUsd);
@@ -191,8 +194,8 @@ class SubscriptionController extends Controller
             foreach ($links as $taxRate) {
                 $calculated = $taxRate->calculateForAmount($finalUsd);
                 match ($taxRate->pivot->charge_type) {
-                    'gateway_fee'   => $gatewayFeeUsd += $calculated,
-                    'tax_added'     => $taxAddedUsd += $calculated,
+                    'gateway_fee' => $gatewayFeeUsd += $calculated,
+                    'tax_added' => $taxAddedUsd += $calculated,
                     'tax_disclosed' => $taxDisclosedUsd += $calculated,
                 };
             }

@@ -5,6 +5,7 @@ namespace Tests\Feature\SuperAdmin;
 use App\Http\Controllers\SuperAdmin\SettingsController;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
@@ -30,7 +31,7 @@ class SettingsControllerTest extends TestCase
 
         $response = $controller->updateSystem($request);
 
-        $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $response);
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertTrue($response->getSession()->get('errors')->has('system'));
     }
 }

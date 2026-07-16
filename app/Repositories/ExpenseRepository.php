@@ -5,13 +5,15 @@ namespace App\Repositories;
 use App\Contracts\Repositories\ExpenseRepositoryInterface;
 use App\Models\BudgetCategory;
 use App\Models\Expense;
+use App\Repositories\Concerns\FiltersByOwnership;
+use App\Repositories\Concerns\HasMonthlyTransactions;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class ExpenseRepository extends BaseRepository implements ExpenseRepositoryInterface
 {
-    use \App\Repositories\Concerns\FiltersByOwnership;
-    use \App\Repositories\Concerns\HasMonthlyTransactions;
+    use FiltersByOwnership;
+    use HasMonthlyTransactions;
 
     public function __construct()
     {
@@ -26,37 +28,38 @@ class ExpenseRepository extends BaseRepository implements ExpenseRepositoryInter
         $trashed = $filters['trashed'] ?? false;
         if ($trashed) {
             $query->onlyTrashed();
-        } elseif (!empty($filters['archived'])) {
+        } elseif (! empty($filters['archived'])) {
             $query->archived();
-        } elseif (!empty($filters['active'])) {
+        } elseif (! empty($filters['active'])) {
             $query->active()->where('is_archived', false);
         }
 
-        if (!empty($filters['category'])) {
+        if (! empty($filters['category'])) {
             $query->where('category_id', $filters['category']);
         }
 
-        if (!empty($filters['type'])) {
+        if (! empty($filters['type'])) {
             $query->byType($filters['type']);
         }
 
-        if (!empty($filters['date_from'])) {
+        if (! empty($filters['date_from'])) {
             $query->whereDate('date', '>=', $filters['date_from']);
         }
 
-        if (!empty($filters['date_to'])) {
+        if (! empty($filters['date_to'])) {
             $query->whereDate('date', '<=', $filters['date_to']);
         }
 
-        if (!empty($filters['search'])) {
-            $term = '%' . $filters['search'] . '%';
+        if (! empty($filters['search'])) {
+            $term = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($term) {
                 $q->where('description', 'like', $term)
-                  ->orWhere('notes', 'like', $term);
+                    ->orWhere('notes', 'like', $term);
             });
         }
 
         $perPage = min((int) ($filters['per_page'] ?? 15), config('finance.per_page_max', 100));
+
         return $query->orderBy('date', 'desc')->paginate($perPage);
     }
 
@@ -88,13 +91,12 @@ class ExpenseRepository extends BaseRepository implements ExpenseRepositoryInter
     }
 
     /**
-     * @param Collection<int, Expense> $expenses
+     * @param  Collection<int, Expense>  $expenses
      */
     private function syncBudgetForExpenses(Collection $expenses): void
     {
         foreach ($expenses as $expense) {
-            $categories = BudgetCategory::whereHas('budget', fn($q) =>
-                $q->where('user_id', $expense->user_id)
+            $categories = BudgetCategory::whereHas('budget', fn ($q) => $q->where('user_id', $expense->user_id)
             )->where('expense_category_id', $expense->category_id)->get();
 
             foreach ($categories as $bc) {

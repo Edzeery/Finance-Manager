@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 class CheckHealth extends Command
 {
     protected $signature = 'finance:health-check';
+
     protected $description = 'Run system health checks';
 
     public function handle(): int
@@ -22,7 +23,7 @@ class CheckHealth extends Command
         foreach ($checks as $name => $result) {
             $status = $result['passed'] ? '<info>PASS</info>' : '<error>FAIL</error>';
             $this->line("{$name}: {$status}");
-            if (!$result['passed'] && isset($result['message'])) {
+            if (! $result['passed'] && isset($result['message'])) {
                 $this->warn("  └─ {$result['message']}");
                 $allPassed = false;
             }
@@ -35,6 +36,7 @@ class CheckHealth extends Command
     {
         try {
             DB::connection()->getPdo();
+
             return ['passed' => true];
         } catch (\Exception $e) {
             return ['passed' => false, 'message' => $e->getMessage()];
@@ -44,10 +46,11 @@ class CheckHealth extends Command
     private function checkStorage(): array
     {
         try {
-            $testFile = '.health-' . uniqid();
+            $testFile = '.health-'.uniqid();
             Storage::disk('local')->put($testFile, 'ok');
             $exists = Storage::disk('local')->exists($testFile);
             Storage::disk('local')->delete($testFile);
+
             return ['passed' => $exists];
         } catch (\Exception $e) {
             return ['passed' => false, 'message' => $e->getMessage()];

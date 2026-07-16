@@ -14,9 +14,13 @@ class AssetPolicyTest extends TestCase
     use RefreshDatabase;
 
     private AssetPolicy $policy;
+
     private Workspace $workspace;
+
     private User $user;
+
     private User $otherUser;
+
     private Asset $asset;
 
     protected function setUp(): void

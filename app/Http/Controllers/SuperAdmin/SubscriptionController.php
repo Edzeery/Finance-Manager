@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Services\SubscriptionService;
@@ -24,7 +24,12 @@ class SubscriptionController extends Controller
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded')
             ->addBreadcrumb(__('super-admin.subscriptions'));
 
+        $status = $request->input('status', 'all');
         $query = Subscription::withoutWorkspace()->with('workspace', 'plan');
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -33,13 +38,9 @@ class SubscriptionController extends Controller
                     $wq->where('name', 'like', "%{$search}%");
                 })->orWhereHas('workspace.users', function ($uq) use ($search) {
                     $uq->where('email', 'like', "%{$search}%")
-                       ->orWhere('name', 'like', "%{$search}%");
+                        ->orWhere('name', 'like', "%{$search}%");
                 });
             });
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
         }
 
         if ($request->filled('plan_id')) {
@@ -50,8 +51,21 @@ class SubscriptionController extends Controller
         $subscriptions = $query->latest('starts_at')->paginate($perPage);
 
         $plans = SubscriptionPlan::all();
+        $countAll = Subscription::withoutWorkspace()->count();
+        $countActive = Subscription::withoutWorkspace()->where('status', 'active')->count();
+        $countTrialing = Subscription::withoutWorkspace()->where('status', 'trialing')->count();
+        $countPastDue = Subscription::withoutWorkspace()->where('status', 'past_due')->count();
+        $countCanceled = Subscription::withoutWorkspace()->where('status', 'canceled')->count();
+        $countExpired = Subscription::withoutWorkspace()->where('status', 'expired')->count();
 
-        return view('super-admin.subscriptions', $this->withBreadcrumbs(compact('subscriptions', 'plans')));
+        $planSubTabs = collect(['' => ['label' => __('general.all')]])
+            ->union($plans->mapWithKeys(fn ($p) => [$p->id => ['label' => $p->name]]))
+            ->toArray();
+
+        return view('super-admin.subscriptions', $this->withBreadcrumbs(compact(
+            'subscriptions', 'plans', 'countAll', 'countActive', 'countTrialing',
+            'countPastDue', 'countCanceled', 'countExpired', 'planSubTabs'
+        )));
     }
 
     public function show(int $id)
@@ -61,7 +75,7 @@ class SubscriptionController extends Controller
         $this->resetBreadcrumbs()
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded')
             ->addBreadcrumb(__('super-admin.subscriptions'), route('super.admin.subscriptions.index'), 'bi-credit-card')
-            ->addBreadcrumb('#' . $subscription->id);
+            ->addBreadcrumb('#'.$subscription->id);
 
         $plans = SubscriptionPlan::all();
 
@@ -80,7 +94,7 @@ class SubscriptionController extends Controller
     public function toggleRenew(int $id): RedirectResponse
     {
         $subscription = Subscription::withoutWorkspace()->findOrFail($id);
-        $subscription->update(['auto_renew' => !$subscription->auto_renew]);
+        $subscription->update(['auto_renew' => ! $subscription->auto_renew]);
 
         return redirect()->route('super.admin.subscriptions.show', $subscription->id)
             ->with('success', __('messages.subscription_updated'));
@@ -99,7 +113,7 @@ class SubscriptionController extends Controller
 
         if ($targetPlan->sort_order < $subscription->plan->sort_order) {
             $check = $this->subscriptionService->canDowngrade($workspace, $targetPlan);
-            if (!$check['can_downgrade']) {
+            if (! $check['can_downgrade']) {
                 return back()->with('error', implode(' ', $check['errors']));
             }
         }
@@ -112,7 +126,7 @@ class SubscriptionController extends Controller
             $subscription->payment_method,
         );
 
-        if (!$result['subscription']) {
+        if (! $result['subscription']) {
             return back()->with('error', $result['message']);
         }
 

@@ -2,9 +2,8 @@
 
 namespace Tests\Feature\Zakat;
 
-use App\Models\User;
 use App\Models\Asset;
-use App\Models\Workspace;
+use App\Models\User;
 use App\Models\ZakatRecord;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

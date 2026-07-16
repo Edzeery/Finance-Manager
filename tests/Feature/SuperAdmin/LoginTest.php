@@ -15,6 +15,7 @@ class LoginTest extends TestCase
     use RefreshDatabase;
 
     private User $superAdmin;
+
     private string $genericError;
 
     protected function setUp(): void

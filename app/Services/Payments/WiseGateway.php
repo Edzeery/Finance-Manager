@@ -4,7 +4,6 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Services\Payments\Concerns\HasGatewaySettings;
-use App\Services\Payments\ValidationResult;
 use Illuminate\Support\Facades\Http;
 
 class WiseGateway implements PaymentGateway
@@ -24,6 +23,7 @@ class WiseGateway implements PaymentGateway
     private function baseUrl(): string
     {
         $isSandbox = $this->gatewaySetting('sandbox', config('payment.gateways.wise.sandbox', true));
+
         return $isSandbox === true || $isSandbox === '1' || $isSandbox === 'true'
             ? 'https://api.sandbox.transferwise.tech'
             : 'https://api.transferwise.com';
@@ -31,9 +31,10 @@ class WiseGateway implements PaymentGateway
 
     public function validate(array $data): ValidationResult
     {
-        if (!$this->apiKey()) {
+        if (! $this->apiKey()) {
             return ValidationResult::invalid('Wise gateway not configured.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -45,7 +46,7 @@ class WiseGateway implements PaymentGateway
     public function charge(array $data): PaymentResult
     {
         $key = $this->apiKey();
-        if (!$key) {
+        if (! $key) {
             return PaymentResult::failed('Wise gateway not configured.');
         }
 
@@ -63,8 +64,8 @@ class WiseGateway implements PaymentGateway
                 ],
             ]);
 
-        if (!$response->successful()) {
-            return PaymentResult::failed('Wise transfer failed: ' . $response->body());
+        if (! $response->successful()) {
+            return PaymentResult::failed('Wise transfer failed: '.$response->body());
         }
 
         $body = $response->json();
@@ -80,15 +81,15 @@ class WiseGateway implements PaymentGateway
     public function refund(Payment $payment, ?float $amount = null): PaymentResult
     {
         $key = $this->apiKey();
-        if (!$key) {
+        if (! $key) {
             return PaymentResult::failed('Wise gateway not configured.');
         }
 
         $response = Http::withToken($key)
             ->post("{$this->baseUrl()}/v1/transfers/{$payment->transaction_id}/cancel");
 
-        if (!$response->successful()) {
-            return PaymentResult::failed('Wise refund/cancel failed: ' . $response->body());
+        if (! $response->successful()) {
+            return PaymentResult::failed('Wise refund/cancel failed: '.$response->body());
         }
 
         return PaymentResult::success(
@@ -101,14 +102,14 @@ class WiseGateway implements PaymentGateway
     public function verify(Payment $payment): PaymentResult
     {
         $key = $this->apiKey();
-        if (!$key) {
+        if (! $key) {
             return PaymentResult::failed('Wise gateway not configured.');
         }
 
         $response = Http::withToken($key)
             ->get("{$this->baseUrl()}/v1/transfers/{$payment->transaction_id}");
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return PaymentResult::failed('Unable to verify payment with Wise.');
         }
 

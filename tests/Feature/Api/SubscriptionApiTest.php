@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Enums\SubscriptionStatus;
 use App\Models\Coupon;
 use App\Models\PlanPrice;
 use App\Models\Role;
@@ -17,7 +18,9 @@ class SubscriptionApiTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Workspace $workspace;
+
     private string $token;
 
     protected function setUp(): void
@@ -133,7 +136,7 @@ class SubscriptionApiTest extends TestCase
             ->postJson('/api/workspace/subscription/cancel');
 
         $response->assertOk();
-        $this->assertEquals(\App\Enums\SubscriptionStatus::Canceled, $this->workspace->owner()?->first()?->activeSubscription()->fresh()->status);
+        $this->assertEquals(SubscriptionStatus::Canceled, $this->workspace->owner()?->first()?->activeSubscription()->fresh()->status);
     }
 
     public function test_cancel_subscription_returns_404_when_none(): void

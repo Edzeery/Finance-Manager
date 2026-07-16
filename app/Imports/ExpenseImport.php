@@ -4,18 +4,19 @@ namespace App\Imports;
 
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
+use Maatwebsite\Excel\Concerns\Importable;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Validators\Failure;
 
-class ExpenseImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
+class ExpenseImport implements SkipsOnFailure, ToModel, WithHeadingRow, WithValidation
 {
     use Importable;
 
     private int $imported = 0;
+
     private array $failures = [];
 
     public function __construct(
@@ -26,25 +27,25 @@ class ExpenseImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     public function model(array $row): ?Expense
     {
         $category = null;
-        if (!empty($row['category'])) {
+        if (! empty($row['category'])) {
             $category = ExpenseCategory::where(function ($q) use ($row) {
                 $q->where('name_ar', $row['category'])
-                  ->orWhere('name_en', $row['category'])
-                  ->orWhere('name_fr', $row['category']);
+                    ->orWhere('name_en', $row['category'])
+                    ->orWhere('name_fr', $row['category']);
             })->first();
         }
 
         $this->imported++;
 
         return new Expense([
-            'user_id'       => $this->userId,
-            'workspace_id'  => $this->workspaceId,
-            'category_id'   => $category?->id,
-            'amount'        => static::normalizeAmount($row['amount']),
-            'description'   => $row['description'] ?? null,
-            'date'          => $row['date'] ?? now()->format('Y-m-d'),
-            'is_recurring'  => !empty($row['recurring']) && in_array(strtolower($row['recurring']), ['yes', '1', 'true', 'نعم']),
-            'notes'         => $row['notes'] ?? null,
+            'user_id' => $this->userId,
+            'workspace_id' => $this->workspaceId,
+            'category_id' => $category?->id,
+            'amount' => static::normalizeAmount($row['amount']),
+            'description' => $row['description'] ?? null,
+            'date' => $row['date'] ?? now()->format('Y-m-d'),
+            'is_recurring' => ! empty($row['recurring']) && in_array(strtolower($row['recurring']), ['yes', '1', 'true', 'نعم']),
+            'notes' => $row['notes'] ?? null,
         ]);
     }
 
@@ -57,6 +58,7 @@ class ExpenseImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         } else {
             $value = str_replace(',', '.', $value);
         }
+
         return (float) $value;
     }
 
@@ -64,7 +66,7 @@ class ExpenseImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     {
         return [
             'amount' => 'required',
-            'date'   => 'nullable|date',
+            'date' => 'nullable|date',
         ];
     }
 
@@ -73,6 +75,13 @@ class ExpenseImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $this->failures = array_merge($this->failures, $failures);
     }
 
-    public function getImportedCount(): int { return $this->imported; }
-    public function getFailures(): array { return $this->failures; }
+    public function getImportedCount(): int
+    {
+        return $this->imported;
+    }
+
+    public function getFailures(): array
+    {
+        return $this->failures;
+    }
 }

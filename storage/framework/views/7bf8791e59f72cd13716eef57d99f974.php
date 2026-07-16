@@ -42,9 +42,6 @@ unset($__defined_vars, $__key, $__value); ?>
     $result = \Edzeery\MyStatusKit\Facades\Status::for($domain, $status);
 ?>
 
-<span <?php echo e($attributes->merge(['class' => $result->badgeClasses($class)])); ?>>
-    <?php echo $result->icon($set); ?>
+<?php echo $result->icon($set, $class ? $class : null); ?>
 
-    <span><?php echo e($result->label()); ?></span>
-</span>
-<?php /**PATH C:\laragon\www\Finance-Manager\resources\views/vendor/status-kit/components/status-badge.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\Finance-Manager\resources\views/vendor/status-kit/components/status-icon.blade.php ENDPATH**/ ?>

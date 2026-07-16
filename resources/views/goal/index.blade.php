@@ -13,7 +13,7 @@
     <x-slot:title>{{ __('goal.title') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('goal.title') }}</x-slot>
 
-    <x-filter-tabs :tabs="$tabs" current="{{ $tab }}" />
+    <x-filter-tabs :tabs="$tabs" current="{{ $tab }}" defaultKey="all" :preserve="['search','per_page']" />
 
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <form method="GET" action="{{ route('goal.index') }}" class="d-flex flex-wrap align-items-center gap-2">
@@ -105,9 +105,9 @@
                                 </h5>
                                 <div style="font-size:13px; color:var(--text-muted)">
                                     @if($isCompleted)
-                                        <span style="color:var(--success)"><i class="bi bi-check-circle-fill me-1"></i>{{ __('goal.completed') }}</span>
+                                        <x-status-badge domain="goal" status="completed" set="bi" />
                                     @elseif($goal->status === \App\Enums\GoalStatus::Cancelled)
-                                        <span style="color:var(--text-muted)">{{ __('goal.cancelled') }}</span>
+                                        <x-status-badge domain="goal" status="cancelled" set="bi" />
                                     @else
                                         @if($remaining !== null)
                                             <span>{{ $remaining }} {{ __('goal.days_remaining') }}</span>

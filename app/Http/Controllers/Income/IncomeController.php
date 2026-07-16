@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Income;
 
+use App\Contracts\Repositories\IncomeRepositoryInterface;
 use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\Income\StoreIncomeRequest;
 use App\Http\Requests\Income\UpdateIncomeRequest;
 use App\Models\Income;
 use App\Models\IncomeCategory;
-use App\Contracts\Repositories\IncomeRepositoryInterface;
 use Illuminate\Http\Request;
 
 class IncomeController extends BaseCrudController
 {
-    protected string $model = \App\Models\Income::class;
+    protected string $model = Income::class;
 
     public function __construct(
         private IncomeRepositoryInterface $incomeRepo,
@@ -77,13 +77,17 @@ class IncomeController extends BaseCrudController
 
         $tabs = $this->buildTabs([
             'all' => ['label' => __('general.all'), 'scope' => 'active'],
-            'active' => ['label' => __('general.active'), 'scope' => fn($q) => $q->active()->where('is_archived', false)],
+            'active' => ['label' => __('general.active'), 'scope' => fn ($q) => $q->active()->where('is_archived', false)],
             'archived' => ['label' => __('general.archived'), 'scope' => 'archived'],
-            'trashed' => ['label' => __('general.trash'), 'scope' => fn($q) => $q->onlyTrashed()],
+            'trashed' => ['label' => __('general.trash'), 'scope' => fn ($q) => $q->onlyTrashed()],
         ]);
 
+        $catSubTabs = collect(['' => ['label' => __('general.all')]])
+            ->union($categories->mapWithKeys(fn ($cat) => [$cat->id => ['label' => locale_name($cat)]]))
+            ->toArray();
+
         return view('income.index', $this->withBreadcrumbs(compact(
-            'incomes', 'categories', 'totalIncome', 'tab', 'tabs'
+            'incomes', 'categories', 'totalIncome', 'tab', 'tabs', 'catSubTabs'
         )));
     }
 
@@ -130,7 +134,7 @@ class IncomeController extends BaseCrudController
     public function archive(Income $income)
     {
         $this->authorize('archive', $income);
-        $income->update(['is_archived' => !$income->is_archived]);
+        $income->update(['is_archived' => ! $income->is_archived]);
 
         return redirect()->back()->with('success', __('messages.income_archived'));
     }

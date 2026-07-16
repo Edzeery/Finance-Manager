@@ -61,7 +61,7 @@ class Invitation extends Model
 
     public function isAcceptable(): bool
     {
-        return $this->isPending() && !$this->isExpired();
+        return $this->isPending() && ! $this->isExpired();
     }
 
     public function markAsAccepted(): void

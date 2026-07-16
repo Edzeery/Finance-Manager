@@ -11,8 +11,8 @@ class ApiQuotaService
     {
         return [
             'minute' => (int) Cache::get($this->key($userId, 'm', now()->format('YmdHi')), 0),
-            'hour'   => (int) Cache::get($this->key($userId, 'h', now()->format('YmdH')), 0),
-            'day'    => (int) Cache::get($this->key($userId, 'd', now()->format('Ymd')), 0),
+            'hour' => (int) Cache::get($this->key($userId, 'h', now()->format('YmdH')), 0),
+            'day' => (int) Cache::get($this->key($userId, 'd', now()->format('Ymd')), 0),
         ];
     }
 
@@ -33,14 +33,14 @@ class ApiQuotaService
 
     public function getLimits(?SubscriptionPlan $plan): array
     {
-        if (!$plan) {
+        if (! $plan) {
             return ['minute' => 0, 'hour' => 0, 'day' => 0];
         }
 
         return [
             'minute' => (int) ($plan->getFeatureValue('api_requests_per_minute') ?? 0),
-            'hour'   => (int) ($plan->getFeatureValue('api_requests_per_hour') ?? 0),
-            'day'    => (int) ($plan->getFeatureValue('api_requests_per_day') ?? 0),
+            'hour' => (int) ($plan->getFeatureValue('api_requests_per_hour') ?? 0),
+            'day' => (int) ($plan->getFeatureValue('api_requests_per_day') ?? 0),
         ];
     }
 
@@ -48,8 +48,8 @@ class ApiQuotaService
     {
         return [
             'minute' => now()->addMinute()->startOfMinute()->timestamp,
-            'hour'   => now()->addHour()->startOfHour()->timestamp,
-            'day'    => now()->addDay()->startOfDay()->timestamp,
+            'hour' => now()->addHour()->startOfHour()->timestamp,
+            'day' => now()->addDay()->startOfDay()->timestamp,
         ];
     }
 

@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Debt;
 
+use App\Contracts\Repositories\DebtRepositoryInterface;
 use App\Enums\DebtStatus;
+use App\Enums\DebtType;
 use App\Http\Controllers\BaseCrudController;
+use App\Http\Requests\Debt\StoreDebtPaymentRequest;
 use App\Http\Requests\Debt\StoreDebtRequest;
 use App\Http\Requests\Debt\UpdateDebtRequest;
-use App\Http\Requests\Debt\StoreDebtPaymentRequest;
 use App\Models\Debt;
-use App\Contracts\Repositories\DebtRepositoryInterface;
 use Illuminate\Http\Request;
 
 class DebtController extends BaseCrudController
 {
-    protected string $model = \App\Models\Debt::class;
+    protected string $model = Debt::class;
 
     public function __construct(
         private DebtRepositoryInterface $debtRepo,
@@ -91,13 +92,19 @@ class DebtController extends BaseCrudController
 
         $tabs = $this->buildTabs([
             'all' => ['label' => __('general.all'), 'scope' => 'active'],
-            'active' => ['label' => __('debt.active'), 'scope' => fn($q) => $q->whereIn('status', ['active', 'partial'])],
-            'paid' => ['label' => __('debt.paid'), 'scope' => fn($q) => $q->where('status', 'paid')],
+            'active' => ['label' => __('debt.active'), 'scope' => fn ($q) => $q->whereIn('status', ['active', 'partial'])],
+            'paid' => ['label' => __('debt.paid'), 'scope' => fn ($q) => $q->where('status', 'paid')],
             'overdue' => ['label' => __('debt.overdue'), 'scope' => 'overdue'],
-            'trashed' => ['label' => __('general.trash'), 'scope' => fn($q) => $q->onlyTrashed()],
+            'trashed' => ['label' => __('general.trash'), 'scope' => fn ($q) => $q->onlyTrashed()],
         ]);
 
-        return view('debt.index', $this->withBreadcrumbs(compact('debts', 'totalOwed', 'totalOwing', 'paidOwed', 'paidOwing', 'tab', 'tabs')));
+        $typeSubTabs = [
+            '' => ['label' => __('general.all')],
+            DebtType::Owed->value => ['label' => __('debt.owed')],
+            DebtType::Owing->value => ['label' => __('debt.owing')],
+        ];
+
+        return view('debt.index', $this->withBreadcrumbs(compact('debts', 'totalOwed', 'totalOwing', 'paidOwed', 'paidOwing', 'tab', 'tabs', 'typeSubTabs')));
     }
 
     public function create()
@@ -142,6 +149,7 @@ class DebtController extends BaseCrudController
     public function edit(Debt $debt)
     {
         $this->authorize('update', $debt);
+
         return view('debt.edit', compact('debt'));
     }
 

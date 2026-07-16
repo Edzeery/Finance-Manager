@@ -2,16 +2,19 @@
 
 namespace App\Services\Payments\Chargily;
 
+use App\Models\PaymentMethod;
 use App\Services\Payments\Chargily\DTOs\CheckoutData;
 use App\Services\Payments\Chargily\Exceptions\ChargilyException;
+use Chargily\ChargilyPay\ChargilyPay;
 
 class ChargilyCheckoutService
 {
-    private ?\App\Models\PaymentMethod $_method = null;
+    private ?PaymentMethod $_method = null;
 
-    public function setMethod(?\App\Models\PaymentMethod $method): static
+    public function setMethod(?PaymentMethod $method): static
     {
         $this->_method = $method;
+
         return $this;
     }
 
@@ -19,6 +22,7 @@ class ChargilyCheckoutService
     {
         return 'chargily';
     }
+
     public function create(array $data): CheckoutData
     {
         $client = $this->client();
@@ -42,7 +46,7 @@ class ChargilyCheckoutService
             throw ChargilyException::checkoutCreationFailed($e->getMessage());
         }
 
-        if (!$checkout || !$checkout->getUrl()) {
+        if (! $checkout || ! $checkout->getUrl()) {
             throw ChargilyException::checkoutCreationFailed('No checkout URL returned.');
         }
 
@@ -58,12 +62,12 @@ class ChargilyCheckoutService
         }
     }
 
-    public function getPaymentMethod(): ?\App\Models\PaymentMethod
+    public function getPaymentMethod(): ?PaymentMethod
     {
         return $this->_method;
     }
 
-    private function client(): \Chargily\ChargilyPay\ChargilyPay
+    private function client(): ChargilyPay
     {
         return ChargilyClient::make($this->_method);
     }

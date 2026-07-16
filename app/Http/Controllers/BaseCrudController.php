@@ -12,9 +12,13 @@ abstract class BaseCrudController extends Controller
     use Concerns\HasForceDelete;
 
     abstract protected function getModelClass(): string;
+
     abstract protected function getRoutePrefix(): string;
+
     abstract protected function getViewPrefix(): string;
+
     abstract protected function getLangPrefix(): string;
+
     abstract protected function getIcon(): string;
 
     protected function getRepository()
@@ -24,21 +28,13 @@ abstract class BaseCrudController extends Controller
 
     abstract protected function getRepositoryInterface(): string;
 
-    protected function beforeDestroy($model): void
-    {
-    }
+    protected function beforeDestroy($model): void {}
 
-    protected function afterDestroy($model): void
-    {
-    }
+    protected function afterDestroy($model): void {}
 
-    protected function beforeRestore($model): void
-    {
-    }
+    protected function beforeRestore($model): void {}
 
-    protected function afterRestore($model): void
-    {
-    }
+    protected function afterRestore($model): void {}
 
     protected function getBulkDeleteRedirect(): string
     {
@@ -55,7 +51,8 @@ abstract class BaseCrudController extends Controller
         if ($action === 'back') {
             return 'back';
         }
-        return route($this->getRoutePrefix() . '.' . $action, $params);
+
+        return route($this->getRoutePrefix().'.'.$action, $params);
     }
 
     protected function buildTabs(array $tabConfig): array
@@ -71,7 +68,7 @@ abstract class BaseCrudController extends Controller
 
             if ($scope) {
                 if (is_string($scope)) {
-                    $query = $query->$scope(...(array)$scopeParams);
+                    $query = $query->$scope(...(array) $scopeParams);
                 } elseif (is_callable($scope)) {
                     $query = $scope($query);
                 }
@@ -98,7 +95,7 @@ abstract class BaseCrudController extends Controller
 
         $this->afterDestroy($model);
 
-        return redirect()->route($this->getRoutePrefix() . '.index')
+        return redirect()->route($this->getRoutePrefix().'.index')
             ->with('success', __("messages.{$this->getLangPrefix()}_deleted"));
     }
 
@@ -112,7 +109,7 @@ abstract class BaseCrudController extends Controller
         $repo->restore($model);
         $this->afterRestore($model);
 
-        return redirect()->route($this->getRoutePrefix() . '.index', ['tab' => 'trashed'])
+        return redirect()->route($this->getRoutePrefix().'.index', ['tab' => 'trashed'])
             ->with('success', __("messages.{$this->getLangPrefix()}_restored"));
     }
 
@@ -121,7 +118,7 @@ abstract class BaseCrudController extends Controller
         $ids = $request->input('ids', []);
         $modelClass = $this->getModelClass();
         $modelClass::withTrashed()->whereIn('id', $ids)->get()->each(
-            fn($m) => $this->authorize('delete', $m)
+            fn ($m) => $this->authorize('delete', $m)
         );
         $this->getRepository()->bulkDelete($ids);
 
@@ -137,7 +134,7 @@ abstract class BaseCrudController extends Controller
         $ids = $request->input('ids', []);
         $modelClass = $this->getModelClass();
         $modelClass::withTrashed()->whereIn('id', $ids)->get()->each(
-            fn($m) => $this->authorize('restore', $m)
+            fn ($m) => $this->authorize('restore', $m)
         );
         $this->getRepository()->bulkRestore($ids);
 

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BudgetCategory extends Model
 {
-    use HasFactory, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory;
 
     protected static function booted(): void
     {

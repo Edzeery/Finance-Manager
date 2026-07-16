@@ -304,7 +304,7 @@
                                     <td style="white-space:nowrap">{{ $txn['date']->format('Y/m/d') }}</td>
                                     <td>{{ $txn['description'] ?: '—' }}</td>
                                     <td>{{ $txn['category'] }}</td>
-                                    <td class="text-end fw-bold" style="color:{{ $txn['type'] === 'income' ? 'var(--success)' : 'var(--danger)' }}">
+                                    <td text-start fw-bold style="color:{{ $txn['type'] === 'income' ? 'var(--success)' : 'var(--danger)' }}">
                                         {{ $txn['type'] === 'income' ? '+' : '-' }}{{ number_format($txn['amount'], 2) }}
                                     </td>
                                 </tr>

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 class SendDebtReminders extends Command
 {
     protected $signature = 'finance:send-debt-reminders';
+
     protected $description = 'Send notifications for overdue and due debts';
 
     public function handle(NotificationService $notifier): int
@@ -23,16 +24,17 @@ class SendDebtReminders extends Command
         $debts = Debt::whereIn('status', [DebtStatus::Active->value, DebtStatus::Partial->value, DebtStatus::Overdue->value])
             ->where(function ($q) use ($today, $reminderDate) {
                 $q->where('due_date', $today)
-                  ->orWhere('due_date', $reminderDate)
-                  ->orWhere(function ($sub) use ($today) {
-                      $sub->where('due_date', '<', $today)
-                           ->where('status', '!=', DebtStatus::Overdue->value);
-                   });
-               })
-               ->get();
+                    ->orWhere('due_date', $reminderDate)
+                    ->orWhere(function ($sub) use ($today) {
+                        $sub->where('due_date', '<', $today)
+                            ->where('status', '!=', DebtStatus::Overdue->value);
+                    });
+            })
+            ->get();
 
         if ($debts->isEmpty()) {
             $this->info('No debts due for reminder.');
+
             return Command::SUCCESS;
         }
 
@@ -62,6 +64,7 @@ class SendDebtReminders extends Command
         }
 
         $this->info("Sent {$count} debt reminder(s).");
+
         return Command::SUCCESS;
     }
 }

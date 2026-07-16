@@ -17,8 +17,8 @@ class ExpenseCategoryController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name_ar', 'like', "%{$search}%")
-                  ->orWhere('name_fr', 'like', "%{$search}%")
-                  ->orWhere('name_en', 'like', "%{$search}%");
+                    ->orWhere('name_fr', 'like', "%{$search}%")
+                    ->orWhere('name_en', 'like', "%{$search}%");
             });
         }
 

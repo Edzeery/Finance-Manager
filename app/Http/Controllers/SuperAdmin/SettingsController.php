@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
-use App\Helpers\CurrencyHelper;
+use App\Http\Controllers\Controller;
 use App\Models\PaymentGateway;
 use App\Models\PaymentMethod;
 use App\Models\Setting;
@@ -72,12 +71,13 @@ class SettingsController extends Controller
     {
         $validated = $request->validate([
             'app_name' => ['nullable', 'string', 'max:255'],
+            'base_currency' => ['nullable', 'string', 'size:3', 'alpha:ascii'],
             'registration_enabled' => ['nullable', 'boolean'],
             'default_locale' => ['nullable', 'in:en,ar,fr'],
         ]);
 
         foreach ($validated as $key => $value) {
-            if (!is_null($value)) {
+            if (! is_null($value)) {
                 try {
                     Setting::set($key, $value);
                 } catch (\RuntimeException $e) {
@@ -139,7 +139,9 @@ class SettingsController extends Controller
         $rules = [];
         foreach ($registry->all() as $key => $def) {
             foreach ($def->fields as $field) {
-                if ($field->key === 'enabled') continue;
+                if ($field->key === 'enabled') {
+                    continue;
+                }
                 $ruleKey = "gateways.{$key}.{$field->key}";
                 $rules[$ruleKey] = $field->validationRules();
             }
@@ -158,7 +160,7 @@ class SettingsController extends Controller
         $validated = $request->validate($rules);
 
         foreach ($validated['gateways'] ?? [] as $gateway => $fields) {
-            $incoming = array_filter($fields, fn($v) => $v !== null && $v !== '');
+            $incoming = array_filter($fields, fn ($v) => $v !== null && $v !== '');
 
             $definition = $registry->find($gateway);
 
@@ -194,7 +196,7 @@ class SettingsController extends Controller
             'rates.*' => ['nullable', 'numeric', 'min:0.001'],
         ]);
 
-        $rates = array_filter($validated['rates'], fn($v) => $v !== null && $v !== '');
+        $rates = array_filter($validated['rates'], fn ($v) => $v !== null && $v !== '');
 
         try {
             Setting::set('exchange_rates', json_encode($rates));
@@ -217,7 +219,7 @@ class SettingsController extends Controller
     public function disable2fa(TwoFactorAuthenticationService $twoFactor)
     {
         $user = request()->user();
-        if (!$user || !$user->two_factor_confirmed_at) {
+        if (! $user || ! $user->two_factor_confirmed_at) {
             return redirect()->route('super.admin.settings.index')
                 ->with('error', __('auth.2fa_not_enabled'));
         }
@@ -278,7 +280,7 @@ class SettingsController extends Controller
                 ->pluck('key')
                 ->toArray();
 
-            if (!empty($gateways)) {
+            if (! empty($gateways)) {
                 return redirect()->back()
                     ->withErrors(['currencies' => __('super-admin.currency_in_use_by_gateways', [
                         'currency' => $code,

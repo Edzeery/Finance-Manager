@@ -22,8 +22,7 @@
                         <tr>
                             <td class="info-label">{{ __('general.status') }}</td>
                             <td class="info-value">
-                                @php $sc = ['active' => ['bg' => 'var(--success-light)', 'c' => 'var(--success)'], 'trialing' => ['bg' => 'var(--info-light)', 'c' => 'var(--info)'], 'past_due' => ['bg' => 'var(--warning-light)', 'c' => 'var(--warning)'], 'canceled' => ['bg' => 'var(--border)', 'c' => 'var(--text-muted)'], 'expired' => ['bg' => 'var(--danger-light)', 'c' => 'var(--danger)']]; @endphp
-                                <span class="badge" style="font-size:10px;background:{{ $sc[$subscription->status->value]['bg'] ?? 'var(--border)' }};color:{{ $sc[$subscription->status->value]['c'] ?? 'var(--text-muted)' }};padding:3px 12px;border-radius:6px;font-weight:600">{{ $subscription->status->label() }}</span>
+                                <x-status-badge domain="subscription" :status="$subscription->status->value" set="bi" />
                             </td>
                         </tr>
                         <tr>
@@ -43,11 +42,7 @@
                         <tr>
                             <td class="info-label">{{ __('super-admin.auto_renew') }}</td>
                             <td class="info-value">
-                                @if($subscription->auto_renew)
-                                    <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.yes') }}</span>
-                                @else
-                                    <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.no') }}</span>
-                                @endif
+                                <x-status-badge domain="general" :status="$subscription->auto_renew ? 'yes' : 'no'" set="bi" />
                             </td>
                         </tr>
                         <tr>
@@ -80,8 +75,7 @@
                                         <td><code style="font-size:12px;background:var(--bg-subtle);padding:2px 8px;border-radius:4px">{{ $inv->number }}</code></td>
                                         <td><strong>{{ number_format($inv->total, 2) }} {{ $inv->currency ?? config('finance.currency_symbol') }}</strong></td>
                                         <td>
-                                            @php $bi = ['paid' => ['bg' => 'var(--success-light)', 'c' => 'var(--success)'], 'draft' => ['bg' => 'var(--warning-light)', 'c' => 'var(--warning)'], 'overdue' => ['bg' => 'var(--danger-light)', 'c' => 'var(--danger)']]; $b = $bi[$inv->status->value] ?? ['bg' => 'var(--border)', 'c' => 'var(--text-muted)']; @endphp
-                                            <span class="badge" style="font-size:10px;background:{{ $b['bg'] }};color:{{ $b['c'] }};padding:3px 10px;border-radius:6px;font-weight:600">{{ $inv->status->label() }}</span>
+                                            <x-status-badge domain="invoice" :status="$inv->status->value" set="bi" />
                                         </td>
                                         <td class="cell-muted">{{ $inv->created_at->format('Y/m/d') }}</td>
                                     </tr>
@@ -121,15 +115,20 @@
                     @if($subscription->isActive() && $plans->count() > 1)
                     <form method="POST" action="{{ route('super.admin.subscriptions.change-plan', $subscription) }}">
                         @csrf
-                        <div class="d-flex gap-2">
-                            <select name="subscription_plan_id" class="form-control" style="flex:1;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)">
-                                @foreach($plans as $plan)
-                                    <option value="{{ $plan->id }}" {{ $plan->id === $subscription->subscription_plan_id ? 'selected' : '' }}>{{ $plan->name }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">
-                                <i class="bi bi-arrow-right"></i>
-                            </button>
+                        <div class="d-flex flex-column gap-2">
+                            <label style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:4px">
+                                <i class="bi bi-arrow-repeat"></i>{{ __('settings.change_plan') }}
+                            </label>
+                            <div class="d-flex gap-2">
+                                <select name="subscription_plan_id" class="form-select grid-filter-sm" style="flex:1;font-size:13px">
+                                    @foreach($plans as $plan)
+                                        <option value="{{ $plan->id }}" {{ $plan->id === $subscription->subscription_plan_id ? 'selected' : '' }}>{{ $plan->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer;white-space:nowrap">
+                                    <i class="bi bi-check-lg me-1"></i>{{ __('general.save') }}
+                                </button>
+                            </div>
                         </div>
                     </form>
                     @endif
@@ -148,8 +147,7 @@
                                     <strong style="font-size:13px">{{ number_format($payment->amount, 2) }} {{ $payment->currency }}</strong>
                                     <div class="cell-muted" style="font-size:11px">{{ __("super-admin.{$payment->method}") }} &middot; {{ $payment->paid_at?->format('Y/m/d') ?? $payment->created_at->format('Y/m/d') }}</div>
                                 </div>
-                                @php $pc = ['completed' => 'var(--success)', 'pending' => 'var(--warning)', 'failed' => 'var(--danger)', 'refunded' => 'var(--info)']; @endphp
-                                <span class="badge" style="font-size:10px;background:var(--border);color:{{ $pc[$payment->status->value] ?? 'var(--text-muted)' }};padding:3px 10px;border-radius:6px;font-weight:600">{{ $payment->status->label() }}</span>
+                                <x-status-badge domain="payment" :status="$payment->status->value" set="bi" />
                             </div>
                         @endforeach
                     @else

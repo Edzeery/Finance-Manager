@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Enums\SubscriptionStatus;
+use App\Models\Role;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
@@ -16,7 +18,9 @@ class SubscriptionGracePeriodTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Workspace $workspace;
+
     private Subscription $subscription;
 
     protected function setUp(): void
@@ -28,7 +32,7 @@ class SubscriptionGracePeriodTest extends TestCase
         $this->user = User::factory()->create();
         $this->workspace = Workspace::factory()->create();
         $this->workspace->users()->attach($this->user->id, []);
-        $adminRole = \App\Models\Role::where('slug', 'workspace_admin')->first();
+        $adminRole = Role::where('slug', 'workspace_admin')->first();
         if ($adminRole) {
             $this->user->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $this->workspace->id]);
         }
@@ -53,7 +57,7 @@ class SubscriptionGracePeriodTest extends TestCase
 
         $this->subscription->refresh();
 
-        $this->assertEquals(\App\Enums\SubscriptionStatus::Canceled, $this->subscription->status);
+        $this->assertEquals(SubscriptionStatus::Canceled, $this->subscription->status);
         $this->assertNotNull($this->subscription->grace_ends_at);
         $this->assertTrue($this->subscription->grace_ends_at->isFuture());
         $this->assertTrue($this->subscription->isOnGrace());
@@ -127,7 +131,7 @@ class SubscriptionGracePeriodTest extends TestCase
         $this->artisan('subscriptions:expire')->assertSuccessful();
 
         $this->subscription->refresh();
-        $this->assertEquals(\App\Enums\SubscriptionStatus::Expired, $this->subscription->status);
+        $this->assertEquals(SubscriptionStatus::Expired, $this->subscription->status);
         $this->assertNotNull($this->subscription->grace_ends_at);
         $this->assertTrue($this->subscription->isOnGrace());
     }

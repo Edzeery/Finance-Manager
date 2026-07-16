@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'super_dashboard' => 'Super Admin',
@@ -23,6 +23,9 @@ return [
     'subscriptions_by_plan' => 'Subscriptions by Plan',
     'recent_payments' => 'Recent Payments',
     'total_revenue' => 'Total Revenue',
+    'net_revenue' => 'Net Revenue',
+    'total_fees' => 'Total Fees',
+    'refunded_amount' => 'Refunded Amount',
     'revenue' => 'Revenue',
     'pending_payments' => 'Pending Payments',
     'payments_completed' => 'Completed',
@@ -39,6 +42,7 @@ return [
     'past_due' => 'Past Due',
     'canceled' => 'Canceled',
     'expired' => 'Expired',
+    'suspended' => 'Suspended',
     'draft' => 'Draft',
     'paid' => 'Paid',
     'overdue' => 'Overdue',
@@ -170,6 +174,7 @@ return [
     'app_debug_readonly' => 'Debug mode is managed via the environment file (.env) and is read-only here.',
     'system_health' => 'System Health',
     'payment_gateways_desc' => 'Configure payment gateways to enable payment options and ensure they work correctly with the system.',
+    'base_currency' => 'Base Currency',
 
     'invoices' => 'Invoices',
     'invoice' => 'Invoice',
@@ -239,7 +244,7 @@ return [
     'revenue_by_gateway' => 'Revenue by Gateway',
     'payment_method_restrictions' => 'Payment Method Restrictions',
     'payment_method_restrictions_hint' => 'Select payment methods this coupon works with. Leave empty to work with all methods.',
-    "free" => "Free",
+    'free' => 'Free',
 
     'tax_rates' => 'Tax Rates',
     'tax_rates_desc' => 'Manage tax rates across the platform',
@@ -864,4 +869,21 @@ return [
     'perm_zakat_update' => 'Update Zakat',
     'perm_zakat_view' => 'View Zakat',
     'linked_gateways' => 'Linked Gateways',
+
+    'all_team' => 'All Team',
+    'avg_lifetime' => 'Avg Lifetime',
+    'churn_rate' => 'Churn Rate',
+    'last_active' => 'Last Active',
+    'member' => 'Member',
+    'monthly_revenue' => 'Monthly Revenue',
+    'refund_rate' => 'Refund Rate',
+    'refunded_amount_short' => 'Refunded',
+    'revenue_by_plan' => 'Revenue by Plan',
+    'subscription_status' => 'Subscription Status',
+    'team_comparison' => 'Team Comparison',
+    'team_members_performance' => 'Team Members Performance',
+    'team_performance' => 'Team Performance',
+    'team_roles' => 'Team Roles',
+    'verifications' => 'Verifications',
+    'verified_amount' => 'Verified Amount',
 ];

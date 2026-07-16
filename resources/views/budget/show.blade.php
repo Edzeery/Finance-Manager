@@ -36,8 +36,8 @@
                                             {{ locale_name($bc->category ?? new stdClass) }}
                                         </td>
                                         <td class="text-end">{{ number_format($bc->allocated_amount, 2) }}</td>
-                                        <td class="text-end fw-bold" style="color:var(--danger)">{{ number_format($bc->spent_amount, 2) }}</td>
-                                        <td class="text-end fw-bold" style="color:{{ $bc->spent_amount > $bc->allocated_amount ? 'var(--danger)' : 'var(--success)' }}">
+                                        <td text-start fw-bold style="color:var(--danger)">{{ number_format($bc->spent_amount, 2) }}</td>
+                                        <td text-start fw-bold style="color:{{ $bc->spent_amount > $bc->allocated_amount ? 'var(--danger)' : 'var(--success)' }}">
                                             {{ number_format(max(0, $bc->allocated_amount - $bc->spent_amount), 2) }}
                                         </td>
                                         <td>

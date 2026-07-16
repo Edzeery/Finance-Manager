@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -51,7 +51,7 @@ class RoleController extends Controller
 
         $permissions = Permission::whereIn('module', array_merge(self::PLATFORM_MODULES, self::SHARED_MODULES))
             ->get()
-            ->groupBy(fn($perm) => explode('.', $perm->slug)[0] ?? $perm->slug);
+            ->groupBy(fn ($perm) => explode('.', $perm->slug)[0] ?? $perm->slug);
 
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 
@@ -104,7 +104,7 @@ class RoleController extends Controller
 
         $permissions = Permission::whereIn('module', array_merge(self::WORKSPACE_MODULES, self::SHARED_MODULES, ['general']))
             ->get()
-            ->groupBy(fn($perm) => explode('.', $perm->slug)[0] ?? $perm->slug);
+            ->groupBy(fn ($perm) => explode('.', $perm->slug)[0] ?? $perm->slug);
 
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 

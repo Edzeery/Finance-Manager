@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Helpers;
 
-use Illuminate\Foundation\Testing\WithFaker;
 use PHPUnit\Framework\TestCase;
 
 class HelperFunctionsTest extends TestCase

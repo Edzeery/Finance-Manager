@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 class CheckGoalProgress extends Command
 {
     protected $signature = 'finance:check-goal-progress';
+
     protected $description = 'Check goals for completion, milestones, and approaching deadlines';
 
     public function handle(NotificationService $notifier): int
@@ -18,6 +19,7 @@ class CheckGoalProgress extends Command
 
         if ($goals->isEmpty()) {
             $this->info('No in-progress goals to check.');
+
             return Command::SUCCESS;
         }
 
@@ -49,6 +51,7 @@ class CheckGoalProgress extends Command
         }
 
         $this->info("Checked {$goals->count()} goal(s), sent {$count} notification(s).");
+
         return Command::SUCCESS;
     }
 }

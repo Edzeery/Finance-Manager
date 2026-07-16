@@ -83,15 +83,7 @@
                                             <span class="badge badge-custom badge-income">{{ __("income.{$cat->type}") }}</span>
                                         </td>
                                         <td>
-                                            @if($cat->is_active)
-                                                <span class="badge-custom badge-status" style="background:rgba(34,197,94,0.1); color:var(--success); border:1px solid rgba(34,197,94,0.3)">
-                                                    {{ __('general.active') }}
-                                                </span>
-                                            @else
-                                                <span class="badge-custom badge-status" style="background:rgba(100,116,139,0.1); color:var(--text-muted); border:1px solid rgba(100,116,139,0.3)">
-                                                    {{ __('general.inactive') }}
-                                                </span>
-                                            @endif
+                                            <x-status-badge domain="general" :status="$cat->is_active ? 'active' : 'inactive'" set="bi" />
                                         </td>
                                         <td class="text-center">
                                             <div class="action-group justify-content-center">

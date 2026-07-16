@@ -41,7 +41,7 @@ class CheckSubscriptionStatus
 
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return $next($request);
         }
 
@@ -59,7 +59,7 @@ class CheckSubscriptionStatus
 
         $subscription = $user->currentWorkspace?->owner()?->first()?->activeSubscription() ?? $user->activeSubscription();
 
-        if (!$subscription) {
+        if (! $subscription) {
             return $this->handleBlocked($request, $next, $routeName);
         }
 
@@ -82,6 +82,7 @@ class CheckSubscriptionStatus
             if ($subscription->isTrialExpired()) {
                 return 'blocked';
             }
+
             return 'active';
         }
 
@@ -101,7 +102,7 @@ class CheckSubscriptionStatus
     private function handleBlocked(Request $request, Closure $next, ?string $routeName): Response
     {
         if ($routeName && $this->matchesPattern($routeName, $this->alwaysAllowed)) {
-            if (!$request->session()->has('subscription_blocked')) {
+            if (! $request->session()->has('subscription_blocked')) {
                 $request->session()->flash('subscription_blocked', __('messages.subscription_expired'));
             }
 

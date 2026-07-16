@@ -172,7 +172,7 @@ return [
         /*
          * The directory where the temporary files will be stored.
          */
-        'temporary_directory' => storage_path('app' . DIRECTORY_SEPARATOR . 'backup-temp'),
+        'temporary_directory' => storage_path('app'.DIRECTORY_SEPARATOR.'backup-temp'),
 
         /*
          * The password to be used for archive encryption.

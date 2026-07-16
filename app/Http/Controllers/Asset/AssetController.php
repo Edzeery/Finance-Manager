@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Asset;
 
+use App\Contracts\Repositories\AssetRepositoryInterface;
+use App\Enums\AssetType;
 use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\Asset\StoreAssetRequest;
 use App\Http\Requests\Asset\UpdateAssetRequest;
 use App\Models\Asset;
-use App\Enums\AssetType;
-use App\Contracts\Repositories\AssetRepositoryInterface;
 use Illuminate\Http\Request;
 
 class AssetController extends BaseCrudController
 {
-    protected string $model = \App\Models\Asset::class;
+    protected string $model = Asset::class;
 
     public function __construct(
         private AssetRepositoryInterface $assetRepo,
@@ -88,15 +88,20 @@ class AssetController extends BaseCrudController
             'all' => ['label' => __('general.all'), 'scope' => null],
             'liquid' => ['label' => __('asset.liquid'), 'scope' => 'liquid'],
             'zakatable' => ['label' => __('asset.zakatable'), 'scope' => 'zakatable'],
-            'trashed' => ['label' => __('general.trash'), 'scope' => fn($q) => $q->onlyTrashed()],
+            'trashed' => ['label' => __('general.trash'), 'scope' => fn ($q) => $q->onlyTrashed()],
         ]);
 
-        return view('asset.index', $this->withBreadcrumbs(compact('assets', 'totalValue', 'liquidValue', 'zakatableValue', 'types', 'tab', 'tabs')));
+        $typeSubTabs = collect(['' => ['label' => __('general.all')]])
+            ->union(collect($types)->mapWithKeys(fn ($t) => [$t->value => ['label' => $t->label()]]))
+            ->toArray();
+
+        return view('asset.index', $this->withBreadcrumbs(compact('assets', 'totalValue', 'liquidValue', 'zakatableValue', 'types', 'tab', 'tabs', 'typeSubTabs')));
     }
 
     public function create()
     {
         $types = AssetType::cases();
+
         return view('asset.create', compact('types'));
     }
 
@@ -108,7 +113,7 @@ class AssetController extends BaseCrudController
         $data['is_zakatable'] = $request->boolean('is_zakatable');
 
         if (empty($data['total_value'])) {
-            $data['total_value'] = !empty($data['quantity']) && !empty($data['unit_price'])
+            $data['total_value'] = ! empty($data['quantity']) && ! empty($data['unit_price'])
                 ? $data['quantity'] * $data['unit_price']
                 : 0;
         }
@@ -123,6 +128,7 @@ class AssetController extends BaseCrudController
     {
         $this->authorize('update', $asset);
         $types = AssetType::cases();
+
         return view('asset.edit', compact('asset', 'types'));
     }
 
@@ -135,7 +141,7 @@ class AssetController extends BaseCrudController
         $data['is_zakatable'] = $request->boolean('is_zakatable');
 
         if (empty($data['total_value'])) {
-            $data['total_value'] = !empty($data['quantity']) && !empty($data['unit_price'])
+            $data['total_value'] = ! empty($data['quantity']) && ! empty($data['unit_price'])
                 ? $data['quantity'] * $data['unit_price']
                 : $asset->total_value;
         }

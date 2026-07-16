@@ -13,7 +13,7 @@ class ApiWorkspace
         $user = $request->user();
         $isSuperAdmin = $user->hasRole('super_admin');
 
-        if (!$isSuperAdmin && !$user->current_workspace_id) {
+        if (! $isSuperAdmin && ! $user->current_workspace_id) {
             $firstWorkspace = $user->workspaces()->first();
             if ($firstWorkspace) {
                 $user->update(['current_workspace_id' => $firstWorkspace->id]);
@@ -22,7 +22,7 @@ class ApiWorkspace
             }
         }
 
-        if (!$isSuperAdmin && !$user->workspaces()->where('id', $user->current_workspace_id)->exists()) {
+        if (! $isSuperAdmin && ! $user->workspaces()->where('id', $user->current_workspace_id)->exists()) {
             return response()->json(['message' => __('messages.invalid_workspace')], 403);
         }
 

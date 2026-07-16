@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\DateFilterException;
+use App\Models\Workspace;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -46,25 +48,24 @@ class DateFilterService
         $start = $startDate ? Carbon::parse($startDate)->startOfDay() : $end->copy()->subMonth();
 
         if ($start->gt($end)) {
-            throw new \App\Exceptions\DateFilterException(__('filters.start_after_end'));
+            throw new DateFilterException(__('filters.start_after_end'));
         }
 
         if ($start->diffInDays($end) > self::MAX_CUSTOM_DAYS) {
-            throw new \App\Exceptions\DateFilterException(__('filters.max_period_exceeded', ['days' => self::MAX_CUSTOM_DAYS]));
+            throw new DateFilterException(__('filters.max_period_exceeded', ['days' => self::MAX_CUSTOM_DAYS]));
         }
 
         return ['start' => $start, 'end' => $end];
     }
 
-    public function cacheKey(string $prefix, ?string $period, ?string $startDate = null, ?string $endDate = null): string
+    public function cacheKey(string $prefix, ?string $period, ?string $startDate = null, ?string $endDate = null, ?int $workspaceId = null): string
     {
         $period = $period ?? 'all_time';
-        $wid = config('app.current_workspace');
-        $wid = $wid instanceof \App\Models\Workspace ? $wid->id : $wid;
-        $v = $this->cacheVersion();
+        $wid = $workspaceId ?? $this->resolveWorkspaceId();
+        $v = $this->cacheVersion(null, $wid);
 
         if ($period === 'custom' && $startDate && $endDate) {
-            return "{$prefix}:{$v}:" . auth()->id() . ":{$wid}:{$startDate}:{$endDate}";
+            return "{$prefix}:{$v}:".auth()->id().":{$wid}:{$startDate}:{$endDate}";
         }
 
         $suffix = match ($period) {
@@ -76,30 +77,40 @@ class DateFilterService
             default => now()->format('Y-m-d'),
         };
 
-        return "{$prefix}:{$v}:" . auth()->id() . ":{$wid}:{$period}:{$suffix}";
+        return "{$prefix}:{$v}:".auth()->id().":{$wid}:{$period}:{$suffix}";
     }
 
     public function cacheVersion(?int $userId = null, ?int $workspaceId = null): int
     {
-        $wid = $workspaceId ?? (config('app.current_workspace') instanceof \App\Models\Workspace
-            ? config('app.current_workspace')->id
-            : config('app.current_workspace'));
+        $wid = $workspaceId ?? $this->resolveWorkspaceId();
         $uid = $userId ?? auth()->id();
-        return Cache::remember("dash:v:{$uid}:{$wid}", 86400 * 30, fn() => 1);
+
+        return Cache::remember("dash:v:{$uid}:{$wid}", 86400 * 30, fn () => 1);
     }
 
     public function bumpCacheVersion(?int $userId = null, ?int $workspaceId = null): void
     {
-        $wid = $workspaceId ?? (config('app.current_workspace') instanceof \App\Models\Workspace
-            ? config('app.current_workspace')->id
-            : config('app.current_workspace'));
+        $wid = $workspaceId ?? $this->resolveWorkspaceId();
         $uid = $userId ?? auth()->id();
         Cache::increment("dash:v:{$uid}:{$wid}");
     }
 
+    private function resolveWorkspaceId(): string
+    {
+        $wid = config('app.current_workspace');
+        if ($wid instanceof Workspace) {
+            return (string) $wid->id;
+        }
+
+        return $wid ? (string) $wid : '0';
+    }
+
     public function monthsInRange(?Carbon $start, ?Carbon $end): int
     {
-        if (!$start || !$end) return 12;
+        if (! $start || ! $end) {
+            return 12;
+        }
+
         return max(1, $start->diffInMonths($end) + 1);
     }
 
@@ -111,6 +122,7 @@ class DateFilterService
         for ($i = $months - 1; $i >= 0; $i--) {
             $labels[] = $endDate->copy()->subMonths($i)->format('M Y');
         }
+
         return $labels;
     }
 }

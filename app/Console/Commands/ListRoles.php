@@ -13,10 +13,11 @@ class ListRoles extends Command
 
     public function handle(): int
     {
-        $roles = Role::with('permissions')->when($this->option('users'), fn($q) => $q->with('users'))->get();
+        $roles = Role::with('permissions')->when($this->option('users'), fn ($q) => $q->with('users'))->get();
 
         if ($roles->isEmpty()) {
             $this->warn('No roles found.');
+
             return Command::SUCCESS;
         }
 
@@ -24,11 +25,11 @@ class ListRoles extends Command
             $this->info("Role: {$role->name} ({$role->slug})");
 
             $perms = $role->permissions->pluck('name')->implode(', ');
-            $this->line("  Permissions: " . ($perms ?: 'none'));
+            $this->line('  Permissions: '.($perms ?: 'none'));
 
             if ($this->option('users')) {
                 $users = $role->users->pluck('email')->implode(', ');
-                $this->line("  Users: " . ($users ?: 'none'));
+                $this->line('  Users: '.($users ?: 'none'));
             }
 
             $this->newLine();

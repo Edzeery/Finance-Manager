@@ -28,6 +28,6 @@ class AssetFactory extends Factory
 
     public function liquid(): static
     {
-        return $this->state(fn(array $attrs) => ['is_liquid' => true]);
+        return $this->state(fn (array $attrs) => ['is_liquid' => true]);
     }
 }

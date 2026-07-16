@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 class SendZakatReminders extends Command
 {
     protected $signature = 'finance:send-zakat-reminders';
+
     protected $description = 'Remind users about upcoming zakat calculations';
 
     public function handle(): int
@@ -21,6 +22,7 @@ class SendZakatReminders extends Command
 
         if ($users->isEmpty()) {
             $this->info('No users with zakatable assets found.');
+
             return Command::SUCCESS;
         }
 
@@ -46,6 +48,7 @@ class SendZakatReminders extends Command
         }
 
         $this->info("Sent {$count} zakat reminder(s).");
+
         return Command::SUCCESS;
     }
 }

@@ -13,22 +13,22 @@ class ChargilySignatureValidator
         $signature = Request::header('Signature');
         $secret = ChargilyClient::setting('secret_key');
 
-        if (!$signature) {
+        if (! $signature) {
             throw ChargilyException::missingSignature();
         }
 
-        if (!$secret) {
+        if (! $secret) {
             throw ChargilyException::configuration();
         }
 
         $computedSignature = hash_hmac('sha256', $rawBody, $secret);
 
-        if (!hash_equals($signature, $computedSignature)) {
+        if (! hash_equals($signature, $computedSignature)) {
             throw ChargilyException::invalidSignature();
         }
 
         $payload = json_decode($rawBody, true);
-        if (!$payload || !isset($payload['type'])) {
+        if (! $payload || ! isset($payload['type'])) {
             throw ChargilyException::unhandledEvent('Invalid payload');
         }
 

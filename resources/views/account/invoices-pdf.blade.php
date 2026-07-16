@@ -31,9 +31,7 @@
         <h2>{{ config('app.name') }}</h2>
         <p class="text-muted">{{ $invoice->number }}</p>
         <p class="text-muted">{{ $invoice->created_at->format('F d, Y') }}</p>
-        <span class="badge bg-{{ $invoice->status->value === 'paid' ? 'success' : ($invoice->status->value === 'draft' ? 'warning' : ($invoice->status->value === 'overdue' ? 'danger' : 'secondary')) }}">
-            {{ $invoice->status->label() }}
-        </span>
+        <x-status-badge domain="invoice" :status="$invoice->status->value" set="bi" />
     </div>
 
     <div style="margin-bottom:16px">

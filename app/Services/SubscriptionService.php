@@ -1,18 +1,23 @@
 <?php
+
 // app\Services\SubscriptionService.php
+
 namespace App\Services;
 
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
+use App\Mail\SubscriptionDowngraded;
+use App\Mail\SubscriptionUpgraded;
 use App\Models\Coupon;
+use App\Models\Expense;
+use App\Models\Income;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Services\OnboardingService;
 use App\Services\Payments\GatewayManager;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -29,17 +34,17 @@ class SubscriptionService
 
     public function validateCoupon(?string $code, ?float $amount = null, ?string $paymentMethod = null): ?Coupon
     {
-        if (!$code) {
+        if (! $code) {
             return null;
         }
 
         $coupon = Coupon::where('code', $code)->first();
 
-        if (!$coupon) {
+        if (! $coupon) {
             return null;
         }
 
-        if (!$coupon->isValid()) {
+        if (! $coupon->isValid()) {
             return null;
         }
 
@@ -48,10 +53,12 @@ class SubscriptionService
         }
 
         if ($paymentMethod) {
-            $pm = \App\Models\PaymentMethod::where('key', $paymentMethod)->first();
-            if (!$pm || !$pm->is_active) return null;
+            $pm = PaymentMethod::where('key', $paymentMethod)->first();
+            if (! $pm || ! $pm->is_active) {
+                return null;
+            }
             if ($coupon->paymentMethods()->exists()) {
-                if (!$coupon->paymentMethods()->where('payment_method_id', $pm->id)->exists()) {
+                if (! $coupon->paymentMethods()->where('payment_method_id', $pm->id)->exists()) {
                     return null;
                 }
             }
@@ -123,7 +130,7 @@ class SubscriptionService
 
         $subscription ??= $workspace->owner()?->first()?->activeSubscription();
 
-        if ($subscription && $subscription->plan && !$subscription->plan->is_free) {
+        if ($subscription && $subscription->plan && ! $subscription->plan->is_free) {
             $currentPrice = $subscription->billing_period === 'yearly'
                 ? $subscription->plan->yearly_price
                 : $subscription->plan->monthly_price;
@@ -156,7 +163,7 @@ class SubscriptionService
     public function changePlan(Workspace $workspace, string $planSlug, string $billingPeriod = 'monthly', ?string $couponCode = null, ?string $paymentMethod = null): array
     {
         $plan = $this->getPlan($planSlug);
-        if (!$plan) {
+        if (! $plan) {
             return [
                 'subscription' => null,
                 'payment' => null,
@@ -200,7 +207,7 @@ class SubscriptionService
             $proration = null;
             $price = $billingPeriod === 'yearly' ? $plan->yearly_price : $plan->monthly_price;
 
-            $isPlanChange = $currentSub && $currentSub->isActive() && !$currentSub->plan->isFree()
+            $isPlanChange = $currentSub && $currentSub->isActive() && ! $currentSub->plan->isFree()
                 && $plan->slug !== $currentSub->plan->slug;
 
             if ($isPlanChange) {
@@ -219,7 +226,7 @@ class SubscriptionService
                 'starts_at' => now(),
                 'ends_at' => null, // past_due: actual ends_at set after payment success
                 'payment_method' => $paymentMethod,
-                'auto_renew' => $price > 0 && !OnboardingService::isManual($paymentMethod),
+                'auto_renew' => $price > 0 && ! OnboardingService::isManual($paymentMethod),
                 'billing_period' => $billingPeriod,
                 'plan_price_amount' => $price,
             ]);
@@ -228,6 +235,7 @@ class SubscriptionService
             if ($plan->is_free) {
                 $this->cancellationService->cancelCurrentSubscription($currentSub, $subscription);
                 $this->sendPlanChangeEmail($subscription, $currentSub, $plan, $isPlanChange, $oldPlanName);
+
                 return [
                     'subscription' => $subscription,
                     'payment' => null,
@@ -250,6 +258,7 @@ class SubscriptionService
                     prorationCredit: $creditAmount
                 );
                 $this->sendPlanChangeEmail($subscription, $currentSub, $plan, $isPlanChange, $oldPlanName);
+
                 return [
                     'subscription' => $subscription,
                     'payment' => null,
@@ -277,11 +286,11 @@ class SubscriptionService
                 if ($payment->isCompleted()) {
                     $oldEndsAt = $currentSub?->ends_at;
                     $this->cancellationService->cancelCurrentSubscription($currentSub, $subscription);
-                $subscription->update([
-                    'status' => SubscriptionStatus::Active->value,
-                    'ends_at' => $isPlanChange && $oldEndsAt ? $oldEndsAt : $endsAt,
-                ]);
-                $this->activationService->generateInvoice(
+                    $subscription->update([
+                        'status' => SubscriptionStatus::Active->value,
+                        'ends_at' => $isPlanChange && $oldEndsAt ? $oldEndsAt : $endsAt,
+                    ]);
+                    $this->activationService->generateInvoice(
                         $subscription, $workspace, $plan, $payment, $billingPeriod,
                         prorationCredit: $isPlanChange ? max($proration['remaining_value'] ?? 0, 0) : 0
                     );
@@ -318,7 +327,7 @@ class SubscriptionService
                         $oldEndsAt = $currentSub?->ends_at;
                         $this->cancellationService->cancelCurrentSubscription($currentSub, $subscription);
                         $subscription->update([
-                    'status' => SubscriptionStatus::Active->value,
+                            'status' => SubscriptionStatus::Active->value,
                             'ends_at' => $isPlanChange && $oldEndsAt ? $oldEndsAt : $endsAt,
                         ]);
                         $this->activationService->generateInvoice(
@@ -347,8 +356,9 @@ class SubscriptionService
                 ];
             }
 
-            if ($price > 0 && !$paymentMethod) {
+            if ($price > 0 && ! $paymentMethod) {
                 $subscription->update(['status' => SubscriptionStatus::Canceled->value, 'canceled_at' => now()]);
+
                 return [
                     'subscription' => null,
                     'payment' => null,
@@ -374,9 +384,13 @@ class SubscriptionService
     public function isTrialExpired(Workspace $workspace): bool
     {
         $sub = $workspace->owner()?->first()?->activeSubscription();
-        if (!$sub) return true;
+        if (! $sub) {
+            return true;
+        }
 
-        if ($sub->plan->is_free) return false;
+        if ($sub->plan->is_free) {
+            return false;
+        }
 
         return $sub->trial_ends_at && $sub->trial_ends_at->isPast() && $sub->status === SubscriptionStatus::Trialing;
     }
@@ -386,12 +400,12 @@ class SubscriptionService
         $start = now()->startOfMonth();
         $end = now()->endOfMonth();
 
-        $incomes = \App\Models\Income::withoutWorkspace()
+        $incomes = Income::withoutWorkspace()
             ->where('workspace_id', $workspace->id)
             ->whereBetween('created_at', [$start, $end])
             ->count();
 
-        $expenses = \App\Models\Expense::withoutWorkspace()
+        $expenses = Expense::withoutWorkspace()
             ->where('workspace_id', $workspace->id)
             ->whereBetween('created_at', [$start, $end])
             ->count();
@@ -402,14 +416,18 @@ class SubscriptionService
     public function maxTransactionsPerMonth(Workspace $workspace): int
     {
         $sub = $workspace->owner()?->first()?->activeSubscription();
-        if (!$sub || !$sub->plan) return 0;
+        if (! $sub || ! $sub->plan) {
+            return 0;
+        }
 
         return (int) ($sub->plan->getFeatureValue('transactions_per_month') ?? 1000);
     }
 
     public function canCreateTransaction(Workspace $workspace): bool
     {
-        if ($this->isTrialExpired($workspace)) return false;
+        if ($this->isTrialExpired($workspace)) {
+            return false;
+        }
 
         $current = $this->transactionsThisMonth($workspace);
         $max = $this->maxTransactionsPerMonth($workspace);
@@ -421,7 +439,9 @@ class SubscriptionService
     {
         $count = $user->workspaces()->count();
 
-        if ($count === 0) return true;
+        if ($count === 0) {
+            return true;
+        }
 
         $sub = $user->subscriptions()
             ->withoutWorkspace()
@@ -429,7 +449,9 @@ class SubscriptionService
             ->latest()
             ->first();
 
-        if (!$sub || !$sub->plan) return false;
+        if (! $sub || ! $sub->plan) {
+            return false;
+        }
 
         $max = $sub->plan->max_workspaces;
 
@@ -448,12 +470,12 @@ class SubscriptionService
 
     private function sendPlanChangeEmail(Subscription $newSubscription, ?Subscription $oldSub, SubscriptionPlan $newPlan, bool $isPlanChange, ?string $oldPlanName): void
     {
-        if (!$isPlanChange || !$oldSub || !$oldPlanName) {
+        if (! $isPlanChange || ! $oldSub || ! $oldPlanName) {
             return;
         }
 
         $user = $newSubscription->user;
-        if (!$user || !$user->email) {
+        if (! $user || ! $user->email) {
             return;
         }
 
@@ -461,8 +483,8 @@ class SubscriptionService
         $newPrice = $newPlan->monthly_price;
 
         $mailable = $newPrice > $oldPrice
-            ? new \App\Mail\SubscriptionUpgraded($newSubscription, $oldPlanName)
-            : new \App\Mail\SubscriptionDowngraded($newSubscription, $oldPlanName);
+            ? new SubscriptionUpgraded($newSubscription, $oldPlanName)
+            : new SubscriptionDowngraded($newSubscription, $oldPlanName);
 
         Mail::to($user->email)->queue($mailable);
     }

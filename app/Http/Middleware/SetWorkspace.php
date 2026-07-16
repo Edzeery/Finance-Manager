@@ -15,7 +15,7 @@ class SetWorkspace
             $isSuperAdmin = $user->hasRole('super_admin');
 
             // Non-super-admin: auto-select first workspace if none selected
-            if (!$isSuperAdmin && !$user->current_workspace_id) {
+            if (! $isSuperAdmin && ! $user->current_workspace_id) {
                 $firstWorkspace = $user->workspaces()->first();
                 if ($firstWorkspace) {
                     $user->update(['current_workspace_id' => $firstWorkspace->id]);
@@ -28,7 +28,7 @@ class SetWorkspace
                 config(['app.current_workspace' => $workspace]);
                 config(['app.workspace_currency' => $workspace->currency]);
                 config(['app.workspace_timezone' => $workspace->timezone]);
-            } elseif ($user->current_workspace_id && !$isSuperAdmin) {
+            } elseif ($user->current_workspace_id && ! $isSuperAdmin) {
                 // Non-super-admin: broken relationship — reset to first available
                 $firstAvailable = $user->workspaces()->first();
                 if ($firstAvailable) {

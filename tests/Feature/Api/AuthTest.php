@@ -2,13 +2,10 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\IncomeCategory;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Models\Role;
-use App\Models\Income;
-use App\Models\IncomeCategory;
-use App\Models\Expense;
-use App\Models\ExpenseCategory;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\EnterpriseRolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;

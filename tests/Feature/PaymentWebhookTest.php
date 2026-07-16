@@ -3,11 +3,11 @@
 namespace Tests\Feature;
 
 use App\Enums\PaymentStatus;
+use App\Enums\SubscriptionStatus;
 use App\Models\Payment;
 use App\Models\Subscription;
-use App\Models\Workspace;
 use App\Models\User;
-use App\Services\PaymentService;
+use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\Helpers\ChargilyWebhookPayload;
@@ -15,12 +15,13 @@ use Tests\TestCase;
 
 class PaymentWebhookTest extends TestCase
 {
-    use RefreshDatabase;
     use ChargilyWebhookPayload;
+    use RefreshDatabase;
 
     private const CHARGILY_SECRET = 'test_chargily_secret_key_12345';
 
     private Workspace $workspace;
+
     private User $user;
 
     protected function setUp(): void
@@ -40,6 +41,7 @@ class PaymentWebhookTest extends TestCase
     private function signedChargilyRequest(string $rawBody, ?string $secret = null): array
     {
         $signature = hash_hmac('sha256', $rawBody, $secret ?? self::CHARGILY_SECRET);
+
         return ['signature' => $signature];
     }
 
@@ -424,7 +426,7 @@ class PaymentWebhookTest extends TestCase
     {
         $subscription = Subscription::factory()->create([
             'workspace_id' => $this->workspace->id,
-            'status' => \App\Enums\SubscriptionStatus::PastDue,
+            'status' => SubscriptionStatus::PastDue,
         ]);
 
         $payment = Payment::factory()->create([
@@ -442,6 +444,6 @@ class PaymentWebhookTest extends TestCase
 
         $response->assertOk();
         $this->assertEquals(PaymentStatus::CheckoutPaid, $payment->fresh()->status);
-        $this->assertEquals(\App\Enums\SubscriptionStatus::Active, $subscription->fresh()->status);
+        $this->assertEquals(SubscriptionStatus::Active, $subscription->fresh()->status);
     }
 }

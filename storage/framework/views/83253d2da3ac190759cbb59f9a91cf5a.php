@@ -340,7 +340,7 @@
                                     <td style="white-space:nowrap"><?php echo e($txn['date']->format('Y/m/d')); ?></td>
                                     <td><?php echo e($txn['description'] ?: '—'); ?></td>
                                     <td><?php echo e($txn['category']); ?></td>
-                                    <td class="text-end fw-bold" style="color:<?php echo e($txn['type'] === 'income' ? 'var(--success)' : 'var(--danger)'); ?>">
+                                    <td text-start fw-bold style="color:<?php echo e($txn['type'] === 'income' ? 'var(--success)' : 'var(--danger)'); ?>">
                                         <?php echo e($txn['type'] === 'income' ? '+' : '-'); ?><?php echo e(number_format($txn['amount'], 2)); ?>
 
                                     </td>

@@ -36,6 +36,7 @@ class TaxRate extends Model
         if ($this->type === 'percentage') {
             return round($amount * ($this->rate / 100), 2);
         }
+
         return $this->rate;
     }
 
@@ -57,6 +58,7 @@ class TaxRate extends Model
         if ($country) {
             return $query->where('country', $country);
         }
+
         return $query;
     }
 }

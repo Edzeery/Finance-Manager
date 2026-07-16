@@ -2,9 +2,23 @@
     <x-slot:title>{{ __('zakat.history') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('zakat.history') }}</x-slot>
 
-    <div class="d-flex justify-content-end gap-2 mb-3">
-        @php $canExportZakat = auth()->user()->hasPermission('zakat.export'); @endphp
-        <x-data-toolbar entity="zakat" :show-import="false" :show-export="$canExportZakat" />
+    <x-filter-tabs :tabs="$tabs" current="{{ $exceedsNisab }}" keyParam="exceeds_nisab" defaultKey="all" :preserve="['search','date_from','date_to','per_page']" />
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <form method="GET" action="{{ route('zakat.history') }}" class="d-flex flex-wrap align-items-center gap-2">
+            <x-search-filter name="search" :value="request('search')" size="sm" />
+
+            <input type="date" name="date_from" class="form-custom" style="width:auto;padding:6px 12px;font-size:13px" value="{{ request('date_from') }}" onchange="this.form.submit()">
+            <input type="date" name="date_to" class="form-custom" style="width:auto;padding:6px 12px;font-size:13px" value="{{ request('date_to') }}" onchange="this.form.submit()">
+
+            <x-clear-filters :filters="['exceeds_nisab','search','date_from','date_to']" :route="route('zakat.history')" />
+        </form>
+
+        <div class="d-flex gap-2 align-items-center">
+            @php $canExportZakat = auth()->user()->hasPermission('zakat.export'); @endphp
+            <x-data-toolbar entity="zakat" :show-import="false" :show-export="$canExportZakat" />
+            <x-per-page :current="request('per_page', 15)" :route="route('zakat.history')" :preserve="['exceeds_nisab','search','date_from','date_to']" />
+        </div>
     </div>
 
     <div class="card-custom">
@@ -35,7 +49,7 @@
                                         <span style="color:var(--danger)"><i class="bi bi-x-circle"></i></span>
                                     @endif
                                 </td>
-                                <td class="text-end fw-bold" style="color:var(--accent)">{{ number_format($record->zakat_amount, 2) }}</td>
+                                <td text-start fw-bold style="color:var(--accent)">{{ number_format($record->zakat_amount, 2) }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('zakat.report', $record) }}" class="action-btn" title="{{ __('zakat.report') }}">
                                         <i class="bi bi-file-text"></i>
@@ -46,8 +60,11 @@
                     </tbody>
                 </table>
                 </div>
-                <div class="p-3">
-                    {{ $records->links() }}
+                <div class="p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <x-pagination-info :items="$records" />
+                    <div>
+                        {{ $records->appends(request()->except('page'))->links() }}
+                    </div>
                 </div>
             @else
                 @include('components.empty-state', [

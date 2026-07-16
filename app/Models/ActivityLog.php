@@ -15,6 +15,7 @@ class ActivityLog extends Model
     {
         static::addGlobalScope(new WorkspaceScope);
     }
+
     protected $fillable = ['user_id', 'workspace_id', 'action', 'subject_type', 'subject_id', 'description', 'properties', 'ip_address', 'user_agent'];
 
     protected function casts(): array
@@ -27,24 +28,26 @@ class ActivityLog extends Model
         return $this->belongsTo(User::class);
     }
 
-
     public function getActionLabel(): string
-     {
-         return match($this->action) {
-             'created' => __('general.created'),
-             'updated' => __('general.updated'),
-             'deleted' => __('general.deleted'),
-             'restored' => __('general.restore'),
-             'login' => __('general.login'),
-             'logout' => __('general.logout'),
-             'two_factor_enabled' => __('general.two_factor_enabled'),
-             'two_factor_disabled' => __('general.two_factor_disabled'),
-             default => $this->action,
-         };
-     }
+    {
+        return match ($this->action) {
+            'created' => __('general.created'),
+            'updated' => __('general.updated'),
+            'deleted' => __('general.deleted'),
+            'restored' => __('general.restore'),
+            'login' => __('general.login'),
+            'logout' => __('general.logout'),
+            'two_factor_enabled' => __('general.two_factor_enabled'),
+            'two_factor_disabled' => __('general.two_factor_disabled'),
+            default => $this->action,
+        };
+    }
+
     public function getSubjectNameAttribute(): string
     {
-        if (!$this->subject_type) return __('general.unknown');
+        if (! $this->subject_type) {
+            return __('general.unknown');
+        }
 
         $name = class_basename($this->subject_type);
         $map = [
@@ -75,7 +78,9 @@ class ActivityLog extends Model
 
         $changes = [];
         foreach ($props['new'] as $key => $newValue) {
-            if (in_array($key, $ignored)) continue;
+            if (in_array($key, $ignored)) {
+                continue;
+            }
 
             $oldValue = $props['old'][$key] ?? null;
             if ($oldValue !== $newValue) {
@@ -110,7 +115,7 @@ class ActivityLog extends Model
             'icon' => 'icon',
             'color' => 'color',
             'type' => 'type',
-            'is_active' => 'status',
+            'status' => 'status',
             'is_recurring' => 'general.recurring',
             'recurring_frequency' => 'general.frequency',
             'recurring_end_date' => 'general.date',
@@ -125,7 +130,7 @@ class ActivityLog extends Model
 
     public function getActionIcon(): string
     {
-        return match($this->action) {
+        return match ($this->action) {
             'created' => 'bi-plus-circle-fill',
             'updated' => 'bi-pencil-fill',
             'deleted' => 'bi-trash-fill',
@@ -140,7 +145,7 @@ class ActivityLog extends Model
 
     public function getActionColor(): string
     {
-        return match($this->action) {
+        return match ($this->action) {
             'created' => 'success',
             'updated' => 'info',
             'deleted' => 'danger',
@@ -152,6 +157,4 @@ class ActivityLog extends Model
             default => 'primary',
         };
     }
-
-
 }

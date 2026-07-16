@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Services\Payments\Chargily\ChargilyClient;
+use Chargily\ChargilyPay\ChargilyPay;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
@@ -61,10 +62,10 @@ class ChargilyClientTest extends TestCase
 
         $client = ChargilyClient::make();
 
-        $this->assertInstanceOf(\Chargily\ChargilyPay\ChargilyPay::class, $client);
+        $this->assertInstanceOf(ChargilyPay::class, $client);
     }
 
-    public function test_forgetInstance_resets_singleton(): void
+    public function test_forget_instance_resets_singleton(): void
     {
         Config::set('payment.gateways.chargily.mode', 'test');
         Config::set('payment.gateways.chargily.public_key', 'pk_test_forget12345678');

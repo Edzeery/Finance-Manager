@@ -18,14 +18,14 @@ class CheckoutController extends Controller
             abort(403);
         }
 
-        if (!$payment->isPending()) {
+        if (! $payment->isPending()) {
             return redirect()->route('dashboard')
                 ->with('info', __('payment.already_processed'));
         }
 
         $gateway = $this->gatewayManager->driver($payment->method);
 
-        if (!$gateway->isOnline()) {
+        if (! $gateway->isOnline()) {
             return redirect()->route('onboarding.manual-proof', ['payment' => $payment->id]);
         }
 
@@ -37,7 +37,7 @@ class CheckoutController extends Controller
             'workspace_id' => $payment->workspace_id,
         ]);
 
-        if (!$result->success) {
+        if (! $result->success) {
             $fallbackRoute = $payment->subscription_id
                 ? 'account.subscriptions'
                 : 'onboarding.plan';

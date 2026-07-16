@@ -3,20 +3,32 @@
     <x-slot:page-title>{{ __('super-admin.features') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.features_desc') }}</x-slot>
 
+    <x-filter-tabs :tabs="[
+        'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-list-check'],
+        'boolean' => ['label' => 'Boolean', 'count' => $countBoolean, 'icon' => 'bi-toggle-on'],
+        'value' => ['label' => 'Value', 'count' => $countValue, 'icon' => 'bi-sliders'],
+        'text' => ['label' => 'Text', 'count' => $countText, 'icon' => 'bi-font'],
+    ]" current="{{ request('type', 'all') }}" keyParam="type" defaultKey="all"
+        :preserve="['search', 'per_page']"
+        subParam="is_core"
+        subCurrent="{{ request('is_core', '') }}"
+        :subTabs="[
+            '' => ['label' => __('super-admin.all_features')],
+            'true' => ['label' => __('super-admin.core')],
+            'false' => ['label' => __('super-admin.addon')],
+        ]" />
+
     <div class="data-grid">
         <div class="data-grid-toolbar">
             <div class="data-grid-toolbar-left">
                 <form method="GET" action="{{ route('super.admin.features.index') }}" class="d-flex flex-wrap align-items-center gap-2">
                     <x-search-filter name="search" placeholder="{{ __('general.search') }}..." value="{{ request('search') }}" />
-                    <x-select-filter name="type" :options="[
-                        'boolean' => 'Boolean',
-                        'value' => 'Value',
-                        'text' => 'Text',
-                    ]" placeholder="{{ __('super-admin.all_types') }}" min-width="110px" />
-                    <x-select-filter name="is_core" :options="[
-                        'true' => __('super-admin.core'),
-                        'false' => __('super-admin.addon'),
-                    ]" placeholder="{{ __('super-admin.all_features') }}" min-width="90px" />
+                    @if (request('type') && request('type') !== 'all')
+                        <input type="hidden" name="type" value="{{ request('type') }}">
+                    @endif
+                    @if (request('is_core'))
+                        <input type="hidden" name="is_core" value="{{ request('is_core') }}">
+                    @endif
                     <x-clear-filters :filters="['search','type','is_core']" :route="route('super.admin.features.index')" />
                 </form>
             </div>
@@ -58,11 +70,7 @@
                                 <td><code style="font-size:12px;background:var(--bg-subtle);padding:2px 8px;border-radius:4px">{{ $feature->slug }}</code></td>
                                 <td><span style="font-size:12px;color:var(--text-secondary)">{{ $feature->type }}</span></td>
                                 <td>
-                                    @if($feature->is_core)
-                                        <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('super-admin.core') }}</span>
-                                    @else
-                                        <span class="badge" style="font-size:10px;background:var(--bg-subtle);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('super-admin.addon') }}</span>
-                                    @endif
+                                    <x-status-badge domain="general" :status="$feature->is_core ? 'yes' : 'no'" set="bi" />
                                 </td>
                                 <td class="col-actions">
                                     <div class="cell-actions">

@@ -9,17 +9,20 @@ use App\Services\Payments\DTOs\GatewayDefinition;
 class PaymentGatewayRegistry
 {
     private array $definitions = [];
+
     private bool $loaded = false;
 
     public function all(): array
     {
         $this->load();
+
         return $this->definitions;
     }
 
     public function find(string $key): ?GatewayDefinition
     {
         $this->load();
+
         return $this->definitions[$key] ?? null;
     }
 
@@ -39,7 +42,7 @@ class PaymentGatewayRegistry
 
     public function byCategory(string $category): array
     {
-        return array_filter($this->all(), fn(GatewayDefinition $g) => $g->category === $category);
+        return array_filter($this->all(), fn (GatewayDefinition $g) => $g->category === $category);
     }
 
     private function load(): void
@@ -70,6 +73,6 @@ class PaymentGatewayRegistry
 
     private function hydrateFields(array $fields): array
     {
-        return array_map(fn(array $f) => FieldDefinition::fromArray($f), $fields);
+        return array_map(fn (array $f) => FieldDefinition::fromArray($f), $fields);
     }
 }

@@ -10,7 +10,7 @@ class HasPlatformPermission
 {
     public function handle(Request $request, Closure $next, string $permission): Response
     {
-        if (!$request->user() || !$request->user()->hasPlatformPermission($permission)) {
+        if (! $request->user() || ! $request->user()->hasPlatformPermission($permission)) {
             abort(403, __('messages.unauthorized'));
         }
 

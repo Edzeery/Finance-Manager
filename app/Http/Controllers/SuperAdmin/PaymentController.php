@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\Concerns\HasBreadcrumbs;
 use App\Contracts\Services\ActivityLogServiceInterface;
+use App\Enums\PaymentStatus;
+use App\Events\PaymentCompleted;
+use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\User;
 use App\Services\OnboardingService;
-use App\Services\PaymentService;
 use App\Services\Payments\PaymentGatewayRegistry;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -26,7 +28,7 @@ class PaymentController extends Controller
     {
         return array_keys(array_filter(
             $this->registry->all(),
-            fn($g) => $g->webhook,
+            fn ($g) => $g->webhook,
         ));
     }
 
@@ -38,21 +40,22 @@ class PaymentController extends Controller
 
         $query = Payment::withoutWorkspace()->with('workspace', 'subscription.plan', 'user', 'verification');
 
+        $status = $request->input('status', 'all');
+        if ($status !== 'all') {
+            $statusEnum = PaymentStatus::tryFrom($status);
+            if ($statusEnum) {
+                $query->where('status', $statusEnum->value);
+            }
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('workspace', fn($w) => $w->where('name', 'like', "%{$search}%"))
-                  ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"))
-                  ->orWhere('reference', 'like', "%{$search}%")
-                  ->orWhere('transaction_id', 'like', "%{$search}%");
+                $q->whereHas('workspace', fn ($w) => $w->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"))
+                    ->orWhere('reference', 'like', "%{$search}%")
+                    ->orWhere('transaction_id', 'like', "%{$search}%");
             });
-        }
-
-        if ($request->filled('status')) {
-            $status = \App\Enums\PaymentStatus::tryFrom($request->status);
-            if ($status) {
-                $query->where('status', $status->value);
-            }
         }
 
         if ($request->filled('refunded')) {
@@ -79,7 +82,7 @@ class PaymentController extends Controller
         $gatewayKeys = array_keys($this->registry->all());
         $webhookMethods = $this->webhookMethods();
 
-        $paymentsData = $payments->mapWithKeys(fn($p) => [
+        $paymentsData = $payments->mapWithKeys(fn ($p) => [
             $p->id => [
                 'id' => $p->id,
                 'reference' => $p->reference,
@@ -89,10 +92,25 @@ class PaymentController extends Controller
                 'metadata' => $p->metadata,
                 'gateway_payload' => $p->gateway_payload,
                 'webhook_payload' => $p->webhook_payload,
-            ]
+            ],
         ]);
 
-        return view('super-admin.payments', $this->withBreadcrumbs(compact('payments', 'gatewayKeys', 'webhookMethods', 'paymentsData')));
+        $countAll = Payment::withoutWorkspace()->count();
+        $countPending = Payment::withoutWorkspace()->where('status', 'checkout.pending')->count();
+        $countPaid = Payment::withoutWorkspace()->where('status', 'checkout.paid')->count();
+        $countFailed = Payment::withoutWorkspace()->where('status', 'checkout.failed')->count();
+        $countCanceled = Payment::withoutWorkspace()->where('status', 'checkout.canceled')->count();
+        $countExpired = Payment::withoutWorkspace()->where('status', 'checkout.expired')->count();
+
+        $methodSubTabs = collect(['' => ['label' => __('general.all')]])
+            ->union(collect($gatewayKeys)->mapWithKeys(fn ($m) => [$m => ['label' => __("super-admin.{$m}")]]))
+            ->toArray();
+
+        return view('super-admin.payments', $this->withBreadcrumbs(compact(
+            'payments', 'gatewayKeys', 'webhookMethods', 'paymentsData',
+            'countAll', 'countPending', 'countPaid', 'countFailed',
+            'countCanceled', 'countExpired', 'methodSubTabs'
+        )));
     }
 
     public function approve(int $id, Request $request)
@@ -134,7 +152,7 @@ class PaymentController extends Controller
 
         $payment->refresh();
 
-        event(new \App\Events\PaymentCompleted($payment));
+        event(new PaymentCompleted($payment));
 
         return redirect()->back()->with('success', __('super-admin.payment_approved'));
     }
@@ -146,7 +164,7 @@ class PaymentController extends Controller
         abort_unless($payment->isRefundable(), 422, __('super-admin.payment_not_refundable'));
 
         $request->validate([
-            'refund_amount' => 'required|numeric|min:0.01|max:' . $payment->amount,
+            'refund_amount' => 'required|numeric|min:0.01|max:'.$payment->amount,
             'refund_reason' => 'required|string|max:1000',
         ]);
 
@@ -194,5 +212,4 @@ class PaymentController extends Controller
 
         return redirect()->back()->with('success', __('super-admin.payment_rejected'));
     }
-
 }

@@ -1,5 +1,9 @@
 <?php
+
 // routes\tenant.php
+use App\Http\Controllers\Account\InvoiceController;
+use App\Http\Controllers\Account\PaymentController;
+use App\Http\Controllers\Account\SubscriptionController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Asset\AssetController;
 use App\Http\Controllers\Budget\BudgetController;
@@ -18,14 +22,30 @@ use App\Http\Controllers\PaymentReturnController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\Report\ReportController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Settings\DeveloperController;
+use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SettingsController;
+use App\Http\Controllers\Settings\WorkspaceController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\WorkspaceInvitationController;
 use App\Http\Controllers\WorkspaceSwitchController;
 use App\Http\Controllers\Zakat\ZakatController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->group(function () {
+
+    // Heartbeat: keeps user's online_status alive
+    Route::post('/ping', \App\Http\Controllers\PingController::class)
+        ->middleware('throttle:30,1')
+        ->name('ping');
+
+    Route::get('/account/inactive', fn () => view('account.status.inactive'))->name('account.inactive');
+    Route::get('/account/pending', fn () => view('account.status.pending'))->name('account.pending');
+    Route::get('/account/suspended', fn () => view('account.status.suspended'))->name('account.suspended');
+    Route::get('/account/banned', fn () => view('account.status.banned'))->name('account.banned');
+
     Route::prefix('onboarding')->name('onboarding.')->group(function () {
         Volt::route('/plan', 'pages.onboarding.plan')->name('plan');
         Volt::route('/manual-proof/{payment}', 'pages.onboarding.manual-proof')
@@ -246,77 +266,79 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
         ->middleware('auth')->name('coupon.validate');
 
     Route::prefix('workspace')->name('settings.workspace.')->group(function () {
-        Route::get('/create', [\App\Http\Controllers\Settings\WorkspaceController::class, 'create'])
+        Route::get('/create', [WorkspaceController::class, 'create'])
             ->name('create');
-        Route::post('/create', [\App\Http\Controllers\Settings\WorkspaceController::class, 'store'])
+        Route::post('/create', [WorkspaceController::class, 'store'])
             ->name('store');
-        Route::post('/update', [\App\Http\Controllers\Settings\WorkspaceController::class, 'update'])
+        Route::post('/update', [WorkspaceController::class, 'update'])
             ->middleware('permission:workspace-setting.update')->name('update');
 
-        Route::post('/members/invite', [\App\Http\Controllers\Settings\WorkspaceController::class, 'invite'])
+        Route::post('/members/invite', [WorkspaceController::class, 'invite'])
             ->middleware(['permission:workspace-user.invite', 'plan.feature:team_management'])->name('members.invite');
-        Route::put('/members/{user}/role', [\App\Http\Controllers\Settings\WorkspaceController::class, 'changeRole'])
+        Route::put('/members/{user}/role', [WorkspaceController::class, 'changeRole'])
             ->middleware(['permission:workspace-user.role', 'plan.feature:team_management'])->name('members.change-role');
-        Route::delete('/members/{user}', [\App\Http\Controllers\Settings\WorkspaceController::class, 'remove'])
+        Route::delete('/members/{user}', [WorkspaceController::class, 'remove'])
             ->middleware(['permission:workspace-user.remove', 'plan.feature:team_management'])->name('members.remove');
-        Route::post('/members/transfer', [\App\Http\Controllers\Settings\WorkspaceController::class, 'transferOwnership'])
+        Route::post('/members/transfer', [WorkspaceController::class, 'transferOwnership'])
             ->middleware(['permission:workspace-user.role', 'plan.feature:team_management'])->name('members.transfer');
-        Route::get('/roles', [\App\Http\Controllers\Settings\RoleController::class, 'index'])
+        Route::get('/roles', [RoleController::class, 'index'])
             ->middleware(['permission:workspace-role.view', 'plan.feature:roles_permissions'])->name('roles.index');
-        Route::get('/roles/{role}', [\App\Http\Controllers\Settings\RoleController::class, 'show'])
+        Route::get('/roles/{role}', [RoleController::class, 'show'])
             ->middleware(['permission:workspace-role.view', 'plan.feature:roles_permissions'])->name('roles.show');
     });
 
     Route::prefix('account')->name('account.')->group(function () {
-        Route::get('/profile', \App\Http\Controllers\Settings\ProfileController::class)->name('profile');
-        Route::get('/subscriptions', [\App\Http\Controllers\Account\SubscriptionController::class, 'index'])->name('subscriptions');
-        Route::get('/subscriptions/fee-breakdown', [\App\Http\Controllers\Account\SubscriptionController::class, 'feeBreakdown'])->name('subscriptions.fee-breakdown');
-        Route::post('/subscriptions/change-plan', [\App\Http\Controllers\Settings\WorkspaceController::class, 'changePlan'])
+        Route::get('/profile', ProfileController::class)->name('profile');
+        Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions');
+        Route::get('/subscriptions/fee-breakdown', [SubscriptionController::class, 'feeBreakdown'])->name('subscriptions.fee-breakdown');
+        Route::post('/subscriptions/change-plan', [WorkspaceController::class, 'changePlan'])
             ->middleware('permission:workspace-user.role')->name('subscriptions.change-plan');
-        Route::post('/subscriptions/cancel', [\App\Http\Controllers\Settings\WorkspaceController::class, 'cancel'])
+        Route::post('/subscriptions/cancel', [WorkspaceController::class, 'cancel'])
             ->name('subscriptions.cancel');
-        Route::post('/subscriptions/cancel-payment/{payment}', [\App\Http\Controllers\Account\SubscriptionController::class, 'cancelPayment'])
+        Route::post('/subscriptions/cancel-payment/{payment}', [SubscriptionController::class, 'cancelPayment'])
             ->name('subscriptions.cancel-payment');
-        Route::post('/subscriptions/resume', [\App\Http\Controllers\Account\SubscriptionController::class, 'resumeSubscription'])
+        Route::post('/subscriptions/resume', [SubscriptionController::class, 'resumeSubscription'])
             ->name('subscriptions.resume');
-        Route::post('/subscriptions/update-payment-method', [\App\Http\Controllers\Account\SubscriptionController::class, 'updatePaymentMethod'])
+        Route::post('/subscriptions/update-payment-method', [SubscriptionController::class, 'updatePaymentMethod'])
             ->name('subscriptions.update-payment-method');
-        Route::get('/payments', [\App\Http\Controllers\Account\PaymentController::class, 'index'])->name('payments');
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments');
         Route::prefix('invoices')->name('invoices.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Account\InvoiceController::class, 'index'])->name('index');
-            Route::get('/{invoice}', [\App\Http\Controllers\Account\InvoiceController::class, 'show'])->name('show');
-            Route::get('/{invoice}/pdf', [\App\Http\Controllers\Account\InvoiceController::class, 'downloadPdf'])->name('pdf');
+            Route::get('/', [InvoiceController::class, 'index'])->name('index');
+            Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
+            Route::get('/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('pdf');
         });
-        Route::get('/settings', [\App\Http\Controllers\Account\SettingsController::class, 'index'])->name('settings');
-        Route::post('/settings', [\App\Http\Controllers\Account\SettingsController::class, 'update'])->name('settings.update');
+        Route::get('/settings', [App\Http\Controllers\Account\SettingsController::class, 'index'])->name('settings');
+        Route::post('/settings', [App\Http\Controllers\Account\SettingsController::class, 'update'])->name('settings.update');
         Route::prefix('settings')->name('settings.')->group(function () {
+            Route::delete('/sessions/{sessionId}', [App\Http\Controllers\Account\SettingsController::class, 'revokeSession'])->name('sessions.revoke');
+            Route::delete('/sessions', [App\Http\Controllers\Account\SettingsController::class, 'revokeAllSessions'])->name('sessions.revoke-all');
             Route::prefix('developer')->name('developer')->middleware('plan.feature:api_access')->group(function () {
-                Route::get('/', [\App\Http\Controllers\Settings\DeveloperController::class, 'index'])->name('');
-                Route::post('/tokens', [\App\Http\Controllers\Settings\DeveloperController::class, 'store'])->name('.store');
-                Route::post('/tokens/{token}/show', [\App\Http\Controllers\Settings\DeveloperController::class, 'show'])->name('.show');
-                Route::put('/tokens/{token}', [\App\Http\Controllers\Settings\DeveloperController::class, 'update'])->name('.update');
-                Route::post('/tokens/{token}/regenerate', [\App\Http\Controllers\Settings\DeveloperController::class, 'regenerate'])->name('.regenerate');
-                Route::post('/tokens/{token}/deactivate', [\App\Http\Controllers\Settings\DeveloperController::class, 'deactivate'])->name('.deactivate');
-                Route::post('/tokens/{token}/activate', [\App\Http\Controllers\Settings\DeveloperController::class, 'activate'])->name('.activate');
-                Route::delete('/tokens/{token}', [\App\Http\Controllers\Settings\DeveloperController::class, 'destroy'])->name('.revoke');
-                Route::delete('/tokens', [\App\Http\Controllers\Settings\DeveloperController::class, 'destroyAll'])->name('.revoke-all');
-                Route::post('/verify-password', [\App\Http\Controllers\Settings\DeveloperController::class, 'verifyPassword'])->name('.verify-password');
+                Route::get('/', [DeveloperController::class, 'index'])->name('');
+                Route::post('/tokens', [DeveloperController::class, 'store'])->name('.store');
+                Route::post('/tokens/{token}/show', [DeveloperController::class, 'show'])->name('.show');
+                Route::put('/tokens/{token}', [DeveloperController::class, 'update'])->name('.update');
+                Route::post('/tokens/{token}/regenerate', [DeveloperController::class, 'regenerate'])->name('.regenerate');
+                Route::post('/tokens/{token}/deactivate', [DeveloperController::class, 'deactivate'])->name('.deactivate');
+                Route::post('/tokens/{token}/activate', [DeveloperController::class, 'activate'])->name('.activate');
+                Route::delete('/tokens/{token}', [DeveloperController::class, 'destroy'])->name('.revoke');
+                Route::delete('/tokens', [DeveloperController::class, 'destroyAll'])->name('.revoke-all');
+                Route::post('/verify-password', [DeveloperController::class, 'verifyPassword'])->name('.verify-password');
             });
         });
     });
 
     // Invitation management
     Route::prefix('invitations')->name('invitations.')->group(function () {
-        Route::post('/{invitation}/accept', [\App\Http\Controllers\WorkspaceInvitationController::class, 'doAccept'])
+        Route::post('/{invitation}/accept', [WorkspaceInvitationController::class, 'doAccept'])
             ->middleware('throttle:web-sensitive')
             ->name('do-accept');
-        Route::post('/{invitation}/decline', [\App\Http\Controllers\WorkspaceInvitationController::class, 'doDecline'])
+        Route::post('/{invitation}/decline', [WorkspaceInvitationController::class, 'doDecline'])
             ->middleware('throttle:web-sensitive')
             ->name('do-decline');
-        Route::delete('/{invitation}', [\App\Http\Controllers\WorkspaceInvitationController::class, 'cancel'])
+        Route::delete('/{invitation}', [WorkspaceInvitationController::class, 'cancel'])
             ->middleware('throttle:web-sensitive')
             ->name('cancel');
-        Route::post('/{invitation}/resend', [\App\Http\Controllers\WorkspaceInvitationController::class, 'resend'])
+        Route::post('/{invitation}/resend', [WorkspaceInvitationController::class, 'resend'])
             ->middleware(['throttle:web-invite-resend', 'permission:workspace-user.invite', 'plan.feature:team_management'])
             ->name('resend');
     });

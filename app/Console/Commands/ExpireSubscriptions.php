@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Enums\PaymentStatus;
+use App\Enums\SubscriptionStatus;
 use App\Jobs\SendSubscriptionExpiryNotification;
 use App\Models\Payment;
 use App\Models\Subscription;
-use App\Enums\SubscriptionStatus;
 use Illuminate\Console\Command;
 
 class ExpireSubscriptions extends Command

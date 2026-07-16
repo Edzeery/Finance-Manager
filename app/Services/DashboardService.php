@@ -4,11 +4,10 @@ namespace App\Services;
 
 use App\Contracts\Services\DashboardServiceInterface;
 use App\DTOs\KpiData;
-use App\Models\Income;
-use App\Models\Expense;
-use App\Models\Debt;
 use App\Models\Asset;
-use App\Services\DateFilterService;
+use App\Models\Debt;
+use App\Models\Expense;
+use App\Models\Income;
 use Illuminate\Support\Facades\Cache;
 
 class DashboardService implements DashboardServiceInterface
@@ -36,18 +35,18 @@ class DashboardService implements DashboardServiceInterface
 
             $incomeMonthly = Income::active()
                 ->whereBetween('date', [$prevMonthStart, $monthEnd])
-                ->selectRaw("
+                ->selectRaw('
                     SUM(CASE WHEN date BETWEEN ? AND ? THEN amount ELSE 0 END) as this_month,
                     SUM(CASE WHEN date BETWEEN ? AND ? THEN amount ELSE 0 END) as prev_month
-                ", [$monthStart, $monthEnd, $prevMonthStart, $prevMonthEnd])
+                ', [$monthStart, $monthEnd, $prevMonthStart, $prevMonthEnd])
                 ->first();
 
             $expenseMonthly = Expense::active()
                 ->whereBetween('date', [$prevMonthStart, $monthEnd])
-                ->selectRaw("
+                ->selectRaw('
                     SUM(CASE WHEN date BETWEEN ? AND ? THEN amount ELSE 0 END) as this_month,
                     SUM(CASE WHEN date BETWEEN ? AND ? THEN amount ELSE 0 END) as prev_month
-                ", [$monthStart, $monthEnd, $prevMonthStart, $prevMonthEnd])
+                ', [$monthStart, $monthEnd, $prevMonthStart, $prevMonthEnd])
                 ->first();
 
             $totalIncomeQuery = Income::active();
@@ -65,11 +64,11 @@ class DashboardService implements DashboardServiceInterface
             $totalExpenseAllTime = (float) Expense::active()->sum('amount');
 
             $debtStats = Debt::active()
-                ->selectRaw("
+                ->selectRaw('
                     type,
                     SUM(total_amount) as total_amount,
                     SUM(paid_amount) as paid_amount
-                ")
+                ')
                 ->groupBy('type')
                 ->get()
                 ->keyBy('type');

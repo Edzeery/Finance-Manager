@@ -28,14 +28,20 @@
         ];
     @endphp
 
+    <x-filter-tabs :tabs="[
+        'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-clock-history'],
+        'created' => ['label' => __('general.activity_created'), 'count' => $countCreated, 'icon' => 'bi-plus-circle'],
+        'updated' => ['label' => __('general.activity_updated'), 'count' => $countUpdated, 'icon' => 'bi-pencil'],
+        'deleted' => ['label' => __('general.activity_deleted'), 'count' => $countDeleted, 'icon' => 'bi-trash'],
+        'restored' => ['label' => __('general.activity_restored'), 'count' => $countRestored, 'icon' => 'bi-arrow-counterclockwise'],
+    ]" current="{{ request('action', 'all') }}" keyParam="action" defaultKey="all"
+        :preserve="['search', 'per_page', 'date_from', 'date_to']" />
+
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <form method="GET" class="d-flex flex-wrap align-items-center gap-2">
-            <x-select-filter name="action" :options="[
-                'created' => __('general.activity_created'),
-                'updated' => __('general.activity_updated'),
-                'deleted' => __('general.activity_deleted'),
-                'restored' => __('general.activity_restored'),
-            ]" placeholder="{{ __('general.all_actions') }}" min-width="130px" onchange="this.form.submit()" class="form-custom" style="padding:6px 12px" />
+            @if (request('action') && request('action') !== 'all')
+                <input type="hidden" name="action" value="{{ request('action') }}">
+            @endif
 
             <x-search-filter name="search" :value="request('search')" size="sm" placeholder="{{ __('general.search') }}" />
 

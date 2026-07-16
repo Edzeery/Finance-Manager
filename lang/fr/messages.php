@@ -124,4 +124,6 @@ return [
     'personal_plan_new_users_only' => 'Le plan Personal est uniquement disponible pour les nouveaux comptes.',
     'free_plan_new_users_only' => 'Le plan Gratuit est uniquement disponible pour les nouveaux comptes.',
     'downgrade_too_many_users' => 'Impossible de rétrograder : :current utilisateurs dépasse la limite de :max.',
+    'confirm_restore_workspace' => 'Êtes-vous sûr de vouloir restaurer cet espace de travail ?',
+    'confirm_force_delete_workspace' => 'Êtes-vous sûr de vouloir supprimer définitivement cet espace de travail ? Cette action est irréversible.',
 ];

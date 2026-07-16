@@ -5,7 +5,6 @@ namespace Tests\Feature\Expense;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\User;
-use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\WithWorkspacePermission;
@@ -16,6 +15,7 @@ class ExpenseControllerTest extends TestCase
     use WithWorkspacePermission;
 
     private User $user;
+
     private ExpenseCategory $category;
 
     protected function setUp(): void

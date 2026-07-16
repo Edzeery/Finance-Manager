@@ -23,7 +23,7 @@ class CurrencyHelper
 
     public static function baseCurrency(): string
     {
-        return config('finance.base_currency', 'USD');
+        return Setting::get('base_currency', config('finance.base_currency', 'USD'));
     }
 
     public static function symbol(string $currency): string
@@ -31,7 +31,8 @@ class CurrencyHelper
         if ($currency === 'DZD') {
             return app()->getLocale() === 'ar' ? 'د.ج' : 'DZD';
         }
-        return config('finance.currencies.' . $currency . '.symbol', $currency);
+
+        return config('finance.currencies.'.$currency.'.symbol', $currency);
     }
 
     public static function convert(float $amount, string $from, string $to): float

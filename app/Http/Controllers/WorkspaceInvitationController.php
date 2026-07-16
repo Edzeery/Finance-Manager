@@ -17,7 +17,7 @@ class WorkspaceInvitationController extends Controller
     {
         $invitation = $this->invitationService->validateToken($token);
 
-        if (!$invitation) {
+        if (! $invitation) {
             return redirect()->route('login')
                 ->with('error', __('workspace.invitation_invalid_or_expired'));
         }
@@ -30,13 +30,14 @@ class WorkspaceInvitationController extends Controller
     {
         $invitation = $this->invitationService->validateToken($token);
 
-        if (!$invitation) {
+        if (! $invitation) {
             return redirect()->route('login')
                 ->with('error', __('workspace.invitation_invalid_or_expired'));
         }
 
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             session(['invitation_token' => $token]);
+
             return redirect()->route('login')
                 ->with('info', __('workspace.invitation_login_required'));
         }
@@ -57,7 +58,7 @@ class WorkspaceInvitationController extends Controller
     {
         $this->ensureInvitationAccess($invitation);
 
-        $key = 'accept-invitation-' . $invitation->id . '-' . auth()->id();
+        $key = 'accept-invitation-'.$invitation->id.'-'.auth()->id();
         if (RateLimiter::tooManyAttempts($key, 5)) {
             return back()->with('error', __('messages.throttle'));
         }
@@ -66,7 +67,7 @@ class WorkspaceInvitationController extends Controller
         try {
             $this->invitationService->accept($invitation, auth()->user());
 
-            if (!auth()->user()->current_workspace_id) {
+            if (! auth()->user()->current_workspace_id) {
                 auth()->user()->update(['current_workspace_id' => $invitation->workspace_id]);
             }
 
@@ -83,7 +84,7 @@ class WorkspaceInvitationController extends Controller
     {
         $this->ensureInvitationAccess($invitation);
 
-        $key = 'decline-invitation-' . $invitation->id;
+        $key = 'decline-invitation-'.$invitation->id;
         if (RateLimiter::tooManyAttempts($key, 5)) {
             return back()->with('error', __('messages.throttle'));
         }
@@ -131,7 +132,7 @@ class WorkspaceInvitationController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user) {
+        if (! $user) {
             abort(401);
         }
 

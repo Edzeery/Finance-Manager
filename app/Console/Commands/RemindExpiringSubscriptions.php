@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\SubscriptionStatus;
 use App\Jobs\SendSubscriptionExpiryNotification;
 use App\Models\Subscription;
-use App\Enums\SubscriptionStatus;
 use Illuminate\Console\Command;
 
 class RemindExpiringSubscriptions extends Command

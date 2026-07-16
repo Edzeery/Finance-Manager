@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Services\AdminNotificationService;
-use Illuminate\Http\Request;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
@@ -45,7 +44,7 @@ class BackupController extends Controller
 
             $backups = $backups->sortByDesc('last_modified')->values();
         } catch (\Exception $e) {
-            Log::error('Failed to list backups: ' . $e->getMessage());
+            Log::error('Failed to list backups: '.$e->getMessage());
         }
 
         return view('super-admin.backups', $this->withBreadcrumbs(compact('backups')));
@@ -57,17 +56,18 @@ class BackupController extends Controller
             $exitCode = Artisan::call('backup:run', ['--only-db' => true, '--disable-notifications' => true]);
 
             if ($exitCode === 0) {
-                $notificationService->backupCompleted('backup-' . now()->format('Y-m-d-His'));
+                $notificationService->backupCompleted('backup-'.now()->format('Y-m-d-His'));
+
                 return redirect()->route('super.admin.backups.index')
                     ->with('success', __('super-admin.backup_created'));
             }
 
-            Log::error('Backup failed with exit code: ' . $exitCode, ['output' => Artisan::output()]);
+            Log::error('Backup failed with exit code: '.$exitCode, ['output' => Artisan::output()]);
 
             return redirect()->route('super.admin.backups.index')
                 ->with('error', __('super-admin.backup_create_error'));
         } catch (\Exception $e) {
-            Log::error('Backup exception: ' . $e->getMessage());
+            Log::error('Backup exception: '.$e->getMessage());
 
             return redirect()->route('super.admin.backups.index')
                 ->with('error', __('super-admin.backup_create_error'));
@@ -79,7 +79,7 @@ class BackupController extends Controller
         $disk = Storage::disk('local');
         $path = $this->sanitizeBackupPath($directory, $filename);
 
-        abort_if($path === null || !$disk->exists($path), 404);
+        abort_if($path === null || ! $disk->exists($path), 404);
 
         return $disk->download($path);
     }
@@ -89,13 +89,13 @@ class BackupController extends Controller
         $disk = Storage::disk('local');
         $path = $this->sanitizeBackupPath($directory, $filename);
 
-        abort_if($path === null || !$disk->exists($path), 404);
+        abort_if($path === null || ! $disk->exists($path), 404);
 
-        $tempDir = storage_path('app' . DIRECTORY_SEPARATOR . 'backup-restore-temp');
+        $tempDir = storage_path('app'.DIRECTORY_SEPARATOR.'backup-restore-temp');
 
         try {
             if (is_dir($tempDir)) {
-                (new \Illuminate\Filesystem\Filesystem)->cleanDirectory($tempDir);
+                (new Filesystem)->cleanDirectory($tempDir);
             } else {
                 mkdir($tempDir, 0755, true);
             }
@@ -118,7 +118,7 @@ class BackupController extends Controller
                 }
             }
 
-            if (!$sqlFile) {
+            if (! $sqlFile) {
                 throw new \RuntimeException('No SQL file found in backup archive');
             }
 
@@ -129,7 +129,7 @@ class BackupController extends Controller
             $dbPass = config('database.connections.mysql.password');
 
             $dumpPath = config('database.connections.mysql.dump.dump_binary_path', '');
-            $mysqlBin = $dumpPath ? rtrim($dumpPath, '\\/') . DIRECTORY_SEPARATOR . 'mysql.exe' : 'mysql';
+            $mysqlBin = $dumpPath ? rtrim($dumpPath, '\\/').DIRECTORY_SEPARATOR.'mysql.exe' : 'mysql';
 
             $command = sprintf(
                 '"%s" --host=%s --port=%s --user=%s %s %s < "%s"',
@@ -137,17 +137,17 @@ class BackupController extends Controller
                 escapeshellarg($dbHost),
                 escapeshellarg($dbPort),
                 escapeshellarg($dbUser),
-                $dbPass ? '--password=' . escapeshellarg($dbPass) : '',
+                $dbPass ? '--password='.escapeshellarg($dbPass) : '',
                 escapeshellarg($dbName),
                 $sqlFile
             );
 
             Log::info('Restoring backup', ['file' => $filename, 'db' => $dbName]);
 
-            exec($command . ' 2>&1', $output, $exitCode);
+            exec($command.' 2>&1', $output, $exitCode);
 
             if ($exitCode !== 0) {
-                throw new \RuntimeException('mysql import failed: ' . implode("\n", $output));
+                throw new \RuntimeException('mysql import failed: '.implode("\n", $output));
             }
 
             return redirect()->route('super.admin.backups.index')
@@ -162,7 +162,7 @@ class BackupController extends Controller
                 ->with('error', __('super-admin.backup_restore_error'));
         } finally {
             if (is_dir($tempDir)) {
-                (new \Illuminate\Filesystem\Filesystem)->deleteDirectory($tempDir);
+                (new Filesystem)->deleteDirectory($tempDir);
             }
         }
     }
@@ -172,7 +172,7 @@ class BackupController extends Controller
         $disk = Storage::disk('local');
         $path = $this->sanitizeBackupPath($directory, $filename);
 
-        abort_if($path === null || !$disk->exists($path), 404);
+        abort_if($path === null || ! $disk->exists($path), 404);
 
         $disk->delete($path);
 
@@ -184,13 +184,13 @@ class BackupController extends Controller
     {
         $dir = basename($directory);
         $file = basename($filename);
-        $path = $dir . '/' . $file;
+        $path = $dir.'/'.$file;
 
         $disk = Storage::disk('local');
         $root = $disk->path('');
-        $absolute = realpath($root . '/' . $path);
+        $absolute = realpath($root.'/'.$path);
 
-        if ($absolute === false || !str_starts_with($absolute, realpath($root))) {
+        if ($absolute === false || ! str_starts_with($absolute, realpath($root))) {
             return null;
         }
 

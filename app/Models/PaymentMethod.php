@@ -3,6 +3,17 @@
 namespace App\Models;
 
 use App\Enums\PaymentMethodType;
+use App\Services\Payments\BaridiMobGateway;
+use App\Services\Payments\CashGateway;
+use App\Services\Payments\Chargily\ChargilyGateway;
+use App\Services\Payments\DeliveryGateway;
+use App\Services\Payments\Noest\NoestGateway;
+use App\Services\Payments\PayoneerGateway;
+use App\Services\Payments\PayPalGateway;
+use App\Services\Payments\RedotPayGateway;
+use App\Services\Payments\StripeGateway;
+use App\Services\Payments\WiseGateway;
+use App\Services\Payments\WiseManualGateway;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -105,8 +116,8 @@ class PaymentMethod extends Model
     {
         return $query->whereHas('gateway', function ($q) use ($currency) {
             $q->whereNull('supported_currencies')
-              ->orWhere('supported_currencies', '[]')
-              ->orWhereJsonContains('supported_currencies', $currency);
+                ->orWhere('supported_currencies', '[]')
+                ->orWhereJsonContains('supported_currencies', $currency);
         });
     }
 
@@ -136,23 +147,24 @@ class PaymentMethod extends Model
         if ($gatewayClass && method_exists($gatewayClass, 'requiredFields')) {
             return $gatewayClass::requiredFields();
         }
+
         return [];
     }
 
     private function resolveGatewayClass(): ?string
     {
         return match ($this->key) {
-            'baridimob' => \App\Services\Payments\BaridiMobGateway::class,
-            'redotpay' => \App\Services\Payments\RedotPayGateway::class,
-            'cash' => \App\Services\Payments\CashGateway::class,
-            'delivery' => \App\Services\Payments\DeliveryGateway::class,
-            'noest' => \App\Services\Payments\Noest\NoestGateway::class,
-            'chargily' => \App\Services\Payments\Chargily\ChargilyGateway::class,
-            'paypal' => \App\Services\Payments\PayPalGateway::class,
-            'stripe' => \App\Services\Payments\StripeGateway::class,
-            'wise' => \App\Services\Payments\WiseGateway::class,
-            'wise_manual' => \App\Services\Payments\WiseManualGateway::class,
-            'payoneer' => \App\Services\Payments\PayoneerGateway::class,
+            'baridimob' => BaridiMobGateway::class,
+            'redotpay' => RedotPayGateway::class,
+            'cash' => CashGateway::class,
+            'delivery' => DeliveryGateway::class,
+            'noest' => NoestGateway::class,
+            'chargily' => ChargilyGateway::class,
+            'paypal' => PayPalGateway::class,
+            'stripe' => StripeGateway::class,
+            'wise' => WiseGateway::class,
+            'wise_manual' => WiseManualGateway::class,
+            'payoneer' => PayoneerGateway::class,
             default => null,
         };
     }

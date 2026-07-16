@@ -15,6 +15,7 @@ class ZakatRecordFactory extends Factory
     {
         $total = fake()->randomFloat(2, 100000, 5000000);
         $zakatable = fake()->randomFloat(2, 0, $total);
+
         return [
             'user_id' => User::factory(),
             'workspace_id' => Workspace::factory(),

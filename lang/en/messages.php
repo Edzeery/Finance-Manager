@@ -124,4 +124,6 @@ return [
     'personal_plan_new_users_only' => 'The Personal plan is only available for new accounts.',
     'free_plan_new_users_only' => 'The Free plan is only available for new accounts.',
     'downgrade_too_many_users' => 'Cannot downgrade: :current users exceed the plan limit of :max.',
+    'confirm_restore_workspace' => 'Are you sure you want to restore this workspace?',
+    'confirm_force_delete_workspace' => 'Are you sure you want to permanently delete this workspace? This action cannot be undone.',
 ];

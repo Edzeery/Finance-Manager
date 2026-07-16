@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Webhooks\WebhookSignatureValidator;
+use App\Events\PaymentCompleted;
 use App\Models\Payment;
+use App\Models\User;
 use App\Services\OnboardingService;
-use App\Services\PaymentService;
 use App\Services\Payments\Chargily\ChargilyWebhookService;
 use App\Services\Payments\Chargily\Exceptions\ChargilyException;
+use App\Services\PaymentService;
 use App\Services\Webhooks\WebhookSignatureManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -59,7 +60,7 @@ class PaymentWebhookController extends Controller
         $this->maybeCompleteOnboarding($payment);
         $payment->refresh();
 
-        event(new \App\Events\PaymentCompleted($payment));
+        event(new PaymentCompleted($payment));
     }
 
     private function handleRejected(Payment $payment, string $notes): void
@@ -69,9 +70,11 @@ class PaymentWebhookController extends Controller
 
     private function maybeCompleteOnboarding(Payment $payment): void
     {
-        if (!$payment->user_id) return;
+        if (! $payment->user_id) {
+            return;
+        }
 
-        $user = \App\Models\User::find($payment->user_id);
+        $user = User::find($payment->user_id);
         if ($user && $user->pending_plan_id) {
             $this->onboardingService->handlePaymentSuccess($user, $payment);
         }
@@ -79,7 +82,7 @@ class PaymentWebhookController extends Controller
 
     public function paypal(Request $request)
     {
-        if (!$this->signatureManager->validate('paypal', $request)) {
+        if (! $this->signatureManager->validate('paypal', $request)) {
             return response()->json(['error' => 'unauthorized'], 401);
         }
 
@@ -91,14 +94,15 @@ class PaymentWebhookController extends Controller
 
         $transactionId = $resource['id'] ?? $resource['sale_id'] ?? null;
 
-        if (!$transactionId) {
+        if (! $transactionId) {
             return response()->json(['error' => 'Invalid payload'], 400);
         }
 
         $payment = Payment::where('transaction_id', $transactionId)->first();
 
-        if (!$payment) {
+        if (! $payment) {
             Log::warning('PayPal webhook: Payment not found', ['transaction_id' => $transactionId]);
+
             return response()->json(['error' => 'Payment not found'], 404);
         }
 
@@ -113,7 +117,7 @@ class PaymentWebhookController extends Controller
 
     public function stripe(Request $request)
     {
-        if (!$this->signatureManager->validate('stripe', $request)) {
+        if (! $this->signatureManager->validate('stripe', $request)) {
             return response()->json(['error' => 'unauthorized'], 401);
         }
 
@@ -125,14 +129,15 @@ class PaymentWebhookController extends Controller
 
         $transactionId = $paymentIntent['id'] ?? null;
 
-        if (!$eventType || !$transactionId) {
+        if (! $eventType || ! $transactionId) {
             return response()->json(['error' => 'Invalid payload'], 400);
         }
 
         $payment = Payment::where('transaction_id', $transactionId)->first();
 
-        if (!$payment) {
+        if (! $payment) {
             Log::warning('Stripe webhook: Payment not found', ['transaction_id' => $transactionId]);
+
             return response()->json(['error' => 'Payment not found'], 404);
         }
 
@@ -147,7 +152,7 @@ class PaymentWebhookController extends Controller
 
     public function wise(Request $request)
     {
-        if (!$this->signatureManager->validate('wise', $request)) {
+        if (! $this->signatureManager->validate('wise', $request)) {
             return response()->json(['error' => 'unauthorized'], 401);
         }
 
@@ -157,14 +162,15 @@ class PaymentWebhookController extends Controller
         $transactionId = $payload['data']['transfer_id'] ?? $payload['resource']['id'] ?? $payload['transfer_id'] ?? null;
         $status = $payload['data']['status'] ?? $payload['resource']['status'] ?? $payload['current_state'] ?? null;
 
-        if (!$transactionId || !$status) {
+        if (! $transactionId || ! $status) {
             return response()->json(['error' => 'Invalid payload'], 400);
         }
 
         $payment = Payment::where('transaction_id', (string) $transactionId)->first();
 
-        if (!$payment) {
+        if (! $payment) {
             Log::warning('Wise webhook: Payment not found', ['transaction_id' => $transactionId]);
+
             return response()->json(['error' => 'Payment not found'], 404);
         }
 
@@ -192,7 +198,7 @@ class PaymentWebhookController extends Controller
 
     public function payoneer(Request $request)
     {
-        if (!$this->signatureManager->validate('payoneer', $request)) {
+        if (! $this->signatureManager->validate('payoneer', $request)) {
             return response()->json(['error' => 'unauthorized'], 401);
         }
 
@@ -202,14 +208,15 @@ class PaymentWebhookController extends Controller
         $transactionId = $payload['payout_id'] ?? $payload['resource']['id'] ?? null;
         $status = $payload['status'] ?? $payload['resource']['status'] ?? null;
 
-        if (!$transactionId || !$status) {
+        if (! $transactionId || ! $status) {
             return response()->json(['error' => 'Invalid payload'], 400);
         }
 
         $payment = Payment::where('transaction_id', $transactionId)->first();
 
-        if (!$payment) {
+        if (! $payment) {
             Log::warning('Payoneer webhook: Payment not found', ['transaction_id' => $transactionId]);
+
             return response()->json(['error' => 'Payment not found'], 404);
         }
 
@@ -224,7 +231,7 @@ class PaymentWebhookController extends Controller
 
     public function noest(Request $request)
     {
-        if (!$this->signatureManager->validate('noest', $request)) {
+        if (! $this->signatureManager->validate('noest', $request)) {
             return response()->json(['error' => 'unauthorized'], 401);
         }
 
@@ -234,14 +241,15 @@ class PaymentWebhookController extends Controller
         $transactionId = $payload['tracking'] ?? $payload['data']['tracking'] ?? null;
         $status = $payload['status'] ?? $payload['event'] ?? $payload['data']['status'] ?? null;
 
-        if (!$transactionId || !$status) {
+        if (! $transactionId || ! $status) {
             return response()->json(['error' => 'Invalid payload'], 400);
         }
 
         $payment = Payment::where('transaction_id', $transactionId)->first();
 
-        if (!$payment) {
+        if (! $payment) {
             Log::warning('Noest webhook: Payment not found', ['tracking' => $transactionId]);
+
             return response()->json(['error' => 'Payment not found'], 404);
         }
 
@@ -254,5 +262,4 @@ class PaymentWebhookController extends Controller
 
         return response()->json(['message' => 'Webhook processed']);
     }
-
 }

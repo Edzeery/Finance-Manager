@@ -18,22 +18,31 @@
         <span style="color:var(--success)">{{ __('debt.total_debts_owing') }}: <strong>{{ number_format($totalOwing - $paidOwing, 2) }} {{ config('finance.currency_symbol') }}</strong></span>
     </x-slot>
 
-    <x-filter-tabs :tabs="$tabs" current="{{ $tab }}" />
+    @php $showSubTabs = $tab !== 'trashed'; @endphp
+
+    <x-filter-tabs :tabs="$tabs" current="{{ $tab }}" defaultKey="all"
+        subParam="type"
+        subCurrent="{{ request('type', '') }}"
+        :subTabs="$showSubTabs ? $typeSubTabs : []"
+        :preserve="['status','search','per_page']" />
+
+    @if($tab !== 'trashed')
+        @php
+            $statusTabs = [
+                '' => ['label' => __('general.all')],
+                \App\Enums\DebtStatus::Active->value => ['label' => __('debt.active')],
+                \App\Enums\DebtStatus::Partial->value => ['label' => __('debt.partial')],
+                \App\Enums\DebtStatus::Paid->value => ['label' => __('debt.paid')],
+                \App\Enums\DebtStatus::Overdue->value => ['label' => __('debt.overdue')],
+            ];
+        @endphp
+        <x-filter-tabs :tabs="$statusTabs" current="{{ request('status', '') }}" keyParam="status" defaultKey="" :preserve="['type','search','per_page','tab']" />
+    @endif
 
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <form method="GET" action="{{ route('debt.index') }}" class="d-flex flex-wrap align-items-center gap-2">
-            <x-select-filter name="type" :options="[
-                \App\Enums\DebtType::Owed->value => __('debt.owed'),
-                \App\Enums\DebtType::Owing->value => __('debt.owing'),
-            ]" placeholder="{{ __('general.all') }}" min-width="100px" onchange="this.form.submit()" class="form-custom" style="padding:6px 12px" />
-
-            @if($tab !== 'trashed')
-                <x-select-filter name="status" :options="[
-                    \App\Enums\DebtStatus::Active->value => __('debt.active'),
-                    \App\Enums\DebtStatus::Partial->value => __('debt.partial'),
-                    \App\Enums\DebtStatus::Paid->value => __('debt.paid'),
-                    \App\Enums\DebtStatus::Overdue->value => __('debt.overdue'),
-                ]" placeholder="{{ __('general.all') }} {{ __('general.status') }}" min-width="130px" onchange="this.form.submit()" class="form-custom" style="padding:6px 12px" />
+            @if (request('type'))
+                <input type="hidden" name="type" value="{{ request('type') }}">
             @endif
 
             <x-search-filter name="search" :value="request('search')" size="sm" />
@@ -112,9 +121,7 @@
                             <tr @if($tab === 'trashed') style="opacity:0.7" @else class="{{ $debt->is_overdue ? 'bg-overdue' : '' }}" @endif>
                                 <td><input type="checkbox" name="ids[]" value="{{ $debt->id }}" class="select-item" form="bulkForm"></td>
                                 <td>
-                                    <span class="badge badge-custom {{ $debt->type === \App\Enums\DebtType::Owed ? 'badge-expense' : 'badge-income' }}">
-                                        {{ $debt->type === \App\Enums\DebtType::Owed ? __('debt.owed') : __('debt.owing') }}
-                                    </span>
+                                    <x-status-badge domain="debt_type" :status="$debt->type->value" set="bi" />
                                 </td>
                                 <td>
                                     <a href="{{ route('debt.show', $debt) }}" class="text-decoration-none" style="color:var(--text); font-weight:500">
@@ -122,7 +129,7 @@
                                     </a>
                                 </td>
                                 <td class="text-end">{{ number_format($debt->total_amount, 2) }}</td>
-                                <td class="text-end fw-bold {{ $debt->remaining_amount > 0 ? 'text-danger' : 'text-success' }}">
+                                <td class="class="text-start fw-bold" {{ $debt->remaining_amount > 0 ? 'text-danger' : 'text-success' }}">
                                     {{ number_format($debt->remaining_amount, 2) }}
                                 </td>
                                 <td>
@@ -138,17 +145,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @php
-                                        $statusColors = [
-                                            \App\Enums\DebtStatus::Active->value => 'var(--primary)',
-                                            \App\Enums\DebtStatus::Partial->value => 'var(--warning)',
-                                            \App\Enums\DebtStatus::Paid->value => 'var(--success)',
-                                            \App\Enums\DebtStatus::Overdue->value => 'var(--danger)',
-                                        ];
-                                    @endphp
-                                    <span class="badge-custom badge-status" style="background:{{ $statusColors[$debt->status->value] ?? 'var(--text-muted)' }}10; color:{{ $statusColors[$debt->status->value] ?? 'var(--text-muted)' }}; border:1px solid {{ $statusColors[$debt->status->value] ?? 'var(--text-muted)' }}40">
-                                        {{ __("debt.{$debt->status->value}") }}
-                                    </span>
+                                    <x-status-badge domain="debt" :status="$debt->status->value" set="bi" class="text-sm" />
                                 </td>
                                 @if($hasActions)
                                 <td class="text-center">

@@ -21,7 +21,9 @@ class SendSubscriptionExpiryNotification implements ShouldQueue
     public function handle(): void
     {
         $user = $this->subscription->user ?? User::find($this->subscription->user_id);
-        if (!$user) return;
+        if (! $user) {
+            return;
+        }
 
         $user->notify(new SubscriptionExpiryWarning(
             subscription: $this->subscription,

@@ -3,9 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use App\Models\Workspace;
-use App\Models\Role;
-use Database\Seeders\EnterpriseRolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt;
 use Tests\TestCase;

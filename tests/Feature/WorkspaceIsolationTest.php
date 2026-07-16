@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Expense;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Repositories\ExpenseRepository;
@@ -15,8 +16,11 @@ class WorkspaceIsolationTest extends TestCase
     use RefreshDatabase;
 
     private Workspace $workspaceA;
+
     private Workspace $workspaceB;
+
     private User $userA;
+
     private User $userB;
 
     protected function setUp(): void
@@ -34,7 +38,7 @@ class WorkspaceIsolationTest extends TestCase
         $this->userA->workspaces()->attach($this->workspaceA->id, []);
         $this->userB->workspaces()->attach($this->workspaceB->id, []);
 
-        $adminRole = \App\Models\Role::where('slug', 'workspace_admin')->first();
+        $adminRole = Role::where('slug', 'workspace_admin')->first();
         if ($adminRole) {
             $this->userA->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $this->workspaceA->id]);
             $this->userB->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $this->workspaceB->id]);

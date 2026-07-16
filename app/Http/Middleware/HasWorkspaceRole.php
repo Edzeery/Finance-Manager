@@ -10,7 +10,7 @@ class HasWorkspaceRole
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!$request->user() || !$request->user()->hasWorkspaceRole($roles)) {
+        if (! $request->user() || ! $request->user()->hasWorkspaceRole($roles)) {
             abort(403, __('messages.unauthorized'));
         }
 

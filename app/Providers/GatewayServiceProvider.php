@@ -4,29 +4,29 @@ namespace App\Providers;
 
 use App\Contracts\Services\ActivityLogServiceInterface;
 use App\Services\ActivityLogService;
+use App\Services\Payments\BaridiMobGateway;
 use App\Services\Payments\CashGateway;
+use App\Services\Payments\Chargily\ChargilyCheckoutService;
+use App\Services\Payments\Chargily\ChargilyGateway;
+use App\Services\Payments\Chargily\ChargilySignatureValidator;
+use App\Services\Payments\Chargily\ChargilyWebhookService;
 use App\Services\Payments\DeliveryGateway;
 use App\Services\Payments\GatewayManager;
 use App\Services\Payments\Noest\NoestGateway;
 use App\Services\Payments\Noest\NoestService;
-use App\Services\Payments\BaridiMobGateway;
+use App\Services\Payments\PayoneerGateway;
 use App\Services\Payments\PayPalGateway;
 use App\Services\Payments\RedotPayGateway;
 use App\Services\Payments\StripeGateway;
 use App\Services\Payments\WiseGateway;
 use App\Services\Payments\WiseManualGateway;
-use App\Services\Payments\PayoneerGateway;
-use App\Services\Payments\Chargily\ChargilyCheckoutService;
-use App\Services\Payments\Chargily\ChargilyGateway;
-use App\Services\Payments\Chargily\ChargilySignatureValidator;
-use App\Services\Payments\Chargily\ChargilyWebhookService;
 use App\Services\RedirectService;
 use App\Services\SubscriptionPaymentService;
 use App\Services\TwoFactorAuthenticationService;
-use App\Services\Webhooks\PayPalSignatureValidator;
-use App\Services\Webhooks\PayoneerSignatureValidator;
-use App\Services\Webhooks\StripeSignatureValidator;
 use App\Services\Webhooks\NoestSignatureValidator;
+use App\Services\Webhooks\PayoneerSignatureValidator;
+use App\Services\Webhooks\PayPalSignatureValidator;
+use App\Services\Webhooks\StripeSignatureValidator;
 use App\Services\Webhooks\WebhookSignatureManager;
 use App\Services\Webhooks\WiseSignatureValidator;
 use Illuminate\Support\ServiceProvider;
@@ -50,6 +50,7 @@ class GatewayServiceProvider extends ServiceProvider
             $manager->register(new WiseSignatureValidator);
             $manager->register(new PayoneerSignatureValidator);
             $manager->register(new NoestSignatureValidator);
+
             return $manager;
         });
 

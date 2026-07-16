@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
+use App\Enums\UserStatus;
+use App\Enums\OnlineStatus;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\UserStatusChanged;
 use App\Rules\PasswordRule;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,33 +23,58 @@ class UserController extends Controller
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded')
             ->addBreadcrumb(__('super-admin.users'));
 
-        $query = User::with('workspaces', 'roles');
+        $base = User::withoutTrashed()->where('id', '!=', auth()->id());
+
+        $countAll = User::withoutTrashed()->where('id', '!=', auth()->id())->count();
+        $countActive = (clone $base)->whereHas('statusRecord', fn ($q) => $q->where('status', 'active'))->count();
+        $countInactive = (clone $base)->whereHas('statusRecord', fn ($q) => $q->where('status', 'inactive'))->count();
+        $countSuspended = (clone $base)->whereHas('statusRecord', fn ($q) => $q->where('status', 'suspended'))->count();
+        $countBanned = (clone $base)->whereHas('statusRecord', fn ($q) => $q->where('status', 'banned'))->count();
+        $countTrashed = User::onlyTrashed()->where('id', '!=', auth()->id())->count();
+        $countOnline = \App\Models\UserStatus::where('online_status', OnlineStatus::Online)
+            ->where('last_activity_at', '>=', now()->subMinutes(15))
+            ->count();
+
+        $query = User::with('workspaces', 'roles', 'statusRecord')->where('id', '!=', auth()->id());
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            if ($request->status === 'trashed') {
+                $query->onlyTrashed();
+            } elseif ($request->status === 'online') {
+                $query->withoutTrashed();
+                $query->whereHas('statusRecord', fn ($q) => $q->where('online_status', OnlineStatus::Online)
+                    ->where('last_activity_at', '>=', now()->subMinutes(15)));
+            } else {
+                $query->withoutTrashed();
+                $query->whereHas('statusRecord', fn ($q) => $q->where('status', $request->status));
+            }
+        } else {
+            $query->withoutTrashed();
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
-        }
-
-        if ($request->filled('status')) {
-            $query->where('is_active', $request->status === 'active');
         }
 
         if ($request->filled('super_admin')) {
             $superAdminId = Role::where('slug', 'super_admin')->value('id');
             if ($request->super_admin === 'yes') {
-                $query->whereHas('roles', fn($q) => $q->where('role_id', $superAdminId));
+                $query->whereHas('roles', fn ($q) => $q->where('role_id', $superAdminId));
             } else {
-                $query->whereDoesntHave('roles', fn($q) => $q->where('role_id', $superAdminId));
+                $query->whereDoesntHave('roles', fn ($q) => $q->where('role_id', $superAdminId));
             }
         }
 
         $perPage = min((int) $request->input('per_page', 15), config('finance.per_page_max', 100));
         $users = $query->latest()->paginate($perPage);
 
-        return view('super-admin.users', $this->withBreadcrumbs(compact('users')));
+        return view('super-admin.users', $this->withBreadcrumbs(compact(
+            'users', 'countAll', 'countActive', 'countInactive', 'countSuspended', 'countBanned', 'countTrashed', 'countOnline'
+        )));
     }
 
     public function create()
@@ -73,7 +101,8 @@ class UserController extends Controller
             'theme' => ['nullable', Rule::in(['light', 'dark'])],
             'currency' => ['nullable', 'string', 'max:10'],
             'timezone' => ['nullable', 'string', 'max:50'],
-            'is_active' => ['boolean'],
+            'status' => ['nullable', 'string', Rule::in(['active', 'inactive', 'pending', 'suspended', 'banned'])],
+            'status_reason' => ['nullable', 'string', 'max:500'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['exists:roles,id', Rule::in($platformRoleIds)],
         ]);
@@ -86,10 +115,19 @@ class UserController extends Controller
             'theme' => $validated['theme'] ?? 'light',
             'currency' => $validated['currency'] ?? 'DZD',
             'timezone' => $validated['timezone'] ?? 'Africa/Algiers',
-            'is_active' => $validated['is_active'] ?? true,
         ]);
 
-        if (!empty($validated['roles'])) {
+        $targetStatus = $validated['status'] ?? 'active';
+
+        if ($targetStatus !== 'active' || ! empty($validated['status_reason'])) {
+            $user->statusRecord->changeStatus(
+                UserStatus::from($targetStatus),
+                $validated['status_reason'] ?? null,
+                auth()->id(),
+            );
+        }
+
+        if (! empty($validated['roles'])) {
             $user->roles()->sync($validated['roles']);
         }
 
@@ -122,7 +160,8 @@ class UserController extends Controller
             'theme' => ['nullable', Rule::in(['light', 'dark'])],
             'currency' => ['nullable', 'string', 'max:10'],
             'timezone' => ['nullable', 'string', 'max:50'],
-            'is_active' => ['boolean'],
+            'status' => ['nullable', 'string', Rule::in(['active', 'inactive', 'pending', 'suspended', 'banned'])],
+            'status_reason' => ['nullable', 'string', 'max:500'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['exists:roles,id', Rule::in($platformRoleIds)],
         ]);
@@ -134,14 +173,30 @@ class UserController extends Controller
             'theme' => $validated['theme'] ?? $user->theme,
             'currency' => $validated['currency'] ?? $user->currency,
             'timezone' => $validated['timezone'] ?? $user->timezone,
-            'is_active' => $validated['is_active'] ?? $user->is_active,
         ];
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $data['password'] = bcrypt($validated['password']);
         }
 
         $user->update($data);
+
+        if (isset($validated['status'])) {
+            $oldStatus = $user->status;
+            $newStatus = UserStatus::from($validated['status']);
+
+            if ($oldStatus !== $newStatus) {
+                $user->statusRecord->changeStatus(
+                    $newStatus,
+                    $validated['status_reason'] ?? null,
+                    auth()->id(),
+                );
+
+                $user->notify(new UserStatusChanged($oldStatus, $newStatus, $validated['status_reason'] ?? null));
+            } elseif (! empty($validated['status_reason'])) {
+                $user->statusRecord->update(['status_reason' => $validated['status_reason']]);
+            }
+        }
 
         if (isset($validated['roles'])) {
             $user->roles()->sync($validated['roles']);
@@ -158,7 +213,7 @@ class UserController extends Controller
                 ->with('error', __('messages.cannot_delete_self'));
         }
 
-        if ($user->hasRole('super_admin') && User::whereHas('roles', fn($q) => $q->where('slug', 'super_admin'))->count() <= 1) {
+        if ($user->hasRole('super_admin') && User::whereHas('roles', fn ($q) => $q->where('slug', 'super_admin'))->count() <= 1) {
             return redirect()->route('super.admin.users.index')
                 ->with('error', __('messages.cannot_delete_last_super_admin'));
         }
@@ -169,6 +224,65 @@ class UserController extends Controller
             ->with('success', __('messages.user_deleted'));
     }
 
+    public function restore($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->restore();
+
+        return redirect()->route('super.admin.users.index', ['status' => 'trashed'])
+            ->with('success', __('messages.user_restored'));
+    }
+
+    public function forceDestroy($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->forceDelete();
+
+        return redirect()->route('super.admin.users.index', ['status' => 'trashed'])
+            ->with('success', __('messages.user_force_deleted'));
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'user_ids' => ['required', 'string', 'regex:/^[\d,]+$/'],
+        ]);
+
+        $ids = array_map('intval', explode(',', $validated['user_ids']));
+        $ids = array_filter($ids, fn ($id) => $id !== auth()->id());
+
+        if (empty($ids)) {
+            return redirect()->route('super.admin.users.index')
+                ->with('error', __('messages.no_users_selected'));
+        }
+
+        $count = User::whereIn('id', $ids)->count();
+        User::whereIn('id', $ids)->delete();
+
+        return redirect()->route('super.admin.users.index')
+            ->with('success', __('messages.bulk_deleted', ['count' => $count]));
+    }
+
+    public function bulkRestore(Request $request)
+    {
+        $validated = $request->validate([
+            'user_ids' => ['required', 'string', 'regex:/^[\d,]+$/'],
+        ]);
+
+        $ids = array_map('intval', explode(',', $validated['user_ids']));
+
+        if (empty($ids)) {
+            return redirect()->route('super.admin.users.index', ['status' => 'trashed'])
+                ->with('error', __('messages.no_users_selected'));
+        }
+
+        $count = User::onlyTrashed()->whereIn('id', $ids)->count();
+        User::onlyTrashed()->whereIn('id', $ids)->restore();
+
+        return redirect()->route('super.admin.users.index', ['status' => 'trashed'])
+            ->with('success', __('messages.bulk_restored', ['count' => $count]));
+    }
+
     public function toggleStatus(User $user)
     {
         if ($user->id === auth()->id()) {
@@ -176,12 +290,34 @@ class UserController extends Controller
                 ->with('error', __('messages.cannot_disable_self'));
         }
 
-        if ($user->hasRole('super_admin') && User::whereHas('roles', fn($q) => $q->where('slug', 'super_admin'))->count() <= 1) {
+        if ($user->hasRole('super_admin') && User::whereHas('roles', fn ($q) => $q->where('slug', 'super_admin'))->count() <= 1) {
             return redirect()->route('super.admin.users.index')
                 ->with('error', __('messages.cannot_disable_last_super_admin'));
         }
 
-        $user->update(['is_active' => !$user->is_active]);
+        $oldStatus = $user->status;
+        $newStatus = $oldStatus === UserStatus::Active ? UserStatus::Inactive : UserStatus::Active;
+
+        $user->statusRecord->changeStatus($newStatus, null, auth()->id());
+        $user->notify(new UserStatusChanged($oldStatus, $newStatus));
+
+        return redirect()->route('super.admin.users.index')
+            ->with('success', __('messages.user_status_updated'));
+    }
+
+    public function setStatus(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', Rule::in(['active', 'inactive', 'pending', 'suspended', 'banned'])],
+        ]);
+
+        $oldStatus = $user->status;
+        $newStatus = UserStatus::from($validated['status']);
+
+        if ($oldStatus !== $newStatus) {
+            $user->statusRecord->changeStatus($newStatus, null, auth()->id());
+            $user->notify(new UserStatusChanged($oldStatus, $newStatus));
+        }
 
         return redirect()->route('super.admin.users.index')
             ->with('success', __('messages.user_status_updated'));

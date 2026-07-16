@@ -42,7 +42,11 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<?php $baseUrl = $route ?? request()->url(); ?>
+<?php
+    $baseUrl = $route ?? request()->url();
+    $preserved = collect(request()->except(['period', 'start_date', 'end_date']))->filter(fn($v) => $v !== '' && $v !== null);
+    $preservedStr = $preserved->isNotEmpty() ? '&' . $preserved->map(fn($v, $k) => "$k=$v")->implode('&') : '';
+?>
 
 <div class="date-filter-bar" x-data="dateFilterBar(<?php echo \Illuminate\Support\Js::from($currentPeriod)->toHtml() ?>, <?php echo \Illuminate\Support\Js::from($startDate)->toHtml() ?>, <?php echo \Illuminate\Support\Js::from($endDate)->toHtml() ?>)">
     <div class="d-flex flex-wrap align-items-center gap-2">
@@ -58,7 +62,7 @@ unset($__defined_vars, $__key, $__value); ?>
 
                     </button>
                 <?php else: ?>
-                    <a href="<?php echo e($baseUrl); ?>?period=<?php echo e($key); ?>"
+                    <a href="<?php echo e($baseUrl); ?>?period=<?php echo e($key); ?><?php echo e($preservedStr); ?>"
                         class="filter-period-btn <?php echo e($currentPeriod === $key ? 'active' : ''); ?>"
                         role="tab"
                         aria-selected="<?php echo e($currentPeriod === $key ? 'true' : 'false'); ?>"
@@ -92,7 +96,7 @@ unset($__defined_vars, $__key, $__value); ?>
                 <input type="date" x-model="endDate" class="form-custom">
             </div>
             <template x-if="startDate && endDate">
-                <a x-bind:href="'<?php echo e($baseUrl); ?>?period=custom&start_date=' + startDate + '&end_date=' + endDate"
+                <a x-bind:href="'<?php echo e($baseUrl); ?>?period=custom&start_date=' + startDate + '&end_date=' + endDate + '<?php echo e($preservedStr); ?>'"
                     class="btn btn-accent btn-sm px-3">
                     <i class="bi bi-check-lg"></i>
                     <span><?php echo e(__('filters.apply')); ?></span>

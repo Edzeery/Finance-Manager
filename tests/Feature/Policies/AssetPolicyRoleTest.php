@@ -16,10 +16,15 @@ class AssetPolicyRoleTest extends TestCase
     use RefreshDatabase;
 
     private AssetPolicy $policy;
+
     private User $owner;
+
     private User $viewer;
+
     private User $admin;
+
     private Asset $asset;
+
     private Workspace $workspace;
 
     protected function setUp(): void

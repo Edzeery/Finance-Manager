@@ -3,23 +3,32 @@
     <x-slot:page-title>{{ __('super-admin.subscriptions') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.subscriptions_desc') }}</x-slot>
 
+    @php $showPlanSubTabs = true; @endphp
+
+    <x-filter-tabs :tabs="[
+        'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-credit-card'],
+        'active' => ['label' => __('general.active'), 'count' => $countActive, 'icon' => 'bi-check-circle'],
+        'trialing' => ['label' => __('super-admin.trialing'), 'count' => $countTrialing, 'icon' => 'bi-star'],
+        'past_due' => ['label' => __('super-admin.past_due'), 'count' => $countPastDue, 'icon' => 'bi-exclamation-triangle'],
+        'canceled' => ['label' => __('super-admin.canceled'), 'count' => $countCanceled, 'icon' => 'bi-slash-circle'],
+        'expired' => ['label' => __('super-admin.expired'), 'count' => $countExpired, 'icon' => 'bi-hourglass-split'],
+    ]" current="{{ request('status', 'all') }}" keyParam="status" defaultKey="all"
+        :preserve="['search', 'per_page']"
+        subParam="plan_id"
+        subCurrent="{{ request('plan_id', '') }}"
+        :subTabs="$planSubTabs" />
+
     <div class="data-grid">
         <div class="data-grid-toolbar">
             <div class="data-grid-toolbar-left">
-                @php
-                    $planOptions = $plans->pluck('name', 'id')->toArray();
-                @endphp
-
                 <form method="GET" action="{{ route('super.admin.subscriptions.index') }}" class="d-flex flex-wrap align-items-center gap-2">
                     <x-search-filter name="search" placeholder="{{ __('super-admin.search_invoice') }}..." value="{{ request('search') }}" min-width="200px" />
-                    <x-select-filter name="status" :options="[
-                        'active' => __('general.active'),
-                        'trialing' => __('super-admin.trialing'),
-                        'past_due' => __('super-admin.past_due'),
-                        'canceled' => __('super-admin.canceled'),
-                        'expired' => __('super-admin.expired'),
-                    ]" placeholder="{{ __('general.all_status') }}" min-width="120px" />
-                    <x-select-filter name="plan_id" :options="$planOptions" placeholder="{{ __('general.all_plans') }}" min-width="120px" />
+                    @if (request('status') && request('status') !== 'all')
+                        <input type="hidden" name="status" value="{{ request('status') }}">
+                    @endif
+                    @if (request('plan_id'))
+                        <input type="hidden" name="plan_id" value="{{ request('plan_id') }}">
+                    @endif
                     <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
                     <x-clear-filters :filters="['search','status','plan_id']" :route="route('super.admin.subscriptions.index')" />
                 </form>
@@ -53,25 +62,15 @@
                                     <span class="badge" style="font-size:11px;background:var(--bg-subtle);color:var(--text);padding:2px 10px;border-radius:6px">{{ $sub->plan?->name ?? '—' }}</span>
                                 </td>
                                 <td>
-                                    @php
-                                        $statusColors = ['active' => 'var(--success)', 'trialing' => 'var(--info)', 'past_due' => 'var(--warning)', 'canceled' => 'var(--text-muted)', 'expired' => 'var(--danger)'];
-                                        $statusBg = ['active' => 'var(--success-light)', 'trialing' => 'var(--info-light)', 'past_due' => 'var(--warning-light)', 'canceled' => 'var(--border)', 'expired' => 'var(--danger-light)'];
-                                    @endphp
-                                    <span class="badge" style="font-size:10px;background:{{ $statusBg[$sub->status->value] ?? 'var(--border)' }};color:{{ $statusColors[$sub->status->value] ?? 'var(--text-muted)' }};padding:3px 10px;border-radius:6px;font-weight:600">
-                                        {{ $sub->status->label() }}
-                                    </span>
+                                    <x-status-badge domain="subscription" :status="$sub->status->value" set="bi" />
                                 </td>
                                 <td class="cell-muted">{{ $sub->starts_at?->format('Y/m/d') ?? '—' }}</td>
                                 <td class="cell-muted">{{ $sub->ends_at?->format('Y/m/d') ?? '—' }}</td>
                                 <td>
-                                    @if($sub->auto_renew)
-                                        <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.yes') }}</span>
-                                    @else
-                                        <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.no') }}</span>
-                                    @endif
+                                    <x-status-badge domain="general" :status="$sub->auto_renew ? 'yes' : 'no'" set="bi" />
                                 </td>
                                 <td class="col-actions">
-                                    <a href="{{ route('super.admin.subscriptions.show', $sub) }}" class="btn" style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" title="{{ __('general.view') }}">
+                                    <a href="{{ route('super.admin.subscriptions.show', $sub) }}" class="btn btn-icon" title="{{ __('general.view') }}">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 </td>

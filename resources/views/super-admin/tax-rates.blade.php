@@ -50,11 +50,7 @@
                                 <td class="cell-muted">{{ $taxRate->country ? strtoupper($taxRate->country) : '—' }}</td>
                                 <td class="cell-muted">{{ $taxRate->region ?? '—' }}</td>
                                 <td>
-                                    @if($taxRate->is_active)
-                                        <span class="badge" style="font-size:10px;background:var(--success-light);color:var(--success);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.active') }}</span>
-                                    @else
-                                        <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:3px 10px;border-radius:6px;font-weight:600">{{ __('general.inactive') }}</span>
-                                    @endif
+                                    <x-status-badge domain="general" :status="$taxRate->is_active ? 'active' : 'inactive'" set="bi" />
                                 </td>
                                 <td class="col-actions">
                                     <div class="cell-actions">

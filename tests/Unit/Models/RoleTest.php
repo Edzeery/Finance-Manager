@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Workspace;
 use Database\Seeders\EnterpriseRolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -60,7 +60,7 @@ class RoleTest extends TestCase
     public function test_user_has_workspace_permission_through_role(): void
     {
         $user = User::factory()->create();
-        $workspace = \App\Models\Workspace::factory()->create();
+        $workspace = Workspace::factory()->create();
         $adminRole = Role::where('slug', 'workspace_admin')->first();
         $user->workspaceRoleUsers()->attach($adminRole->id, ['workspace_id' => $workspace->id]);
         $user->current_workspace_id = $workspace->id;

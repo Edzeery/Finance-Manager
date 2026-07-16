@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Api\Subscription;
 
-use App\Models\SubscriptionPlan;
 use App\Http\Requests\Api\ApiRequest;
+use App\Models\SubscriptionPlan;
 
 class ChangePlanRequest extends ApiRequest
 {
@@ -28,7 +28,7 @@ class ChangePlanRequest extends ApiRequest
             'billing' => ['required', 'in:monthly,yearly'],
             'coupon' => ['nullable', 'string', 'max:50'],
             'payment_method' => [
-                $this->targetPlan && !$this->targetPlan->isFree() ? 'required' : 'nullable',
+                $this->targetPlan && ! $this->targetPlan->isFree() ? 'required' : 'nullable',
                 'string',
                 "in:$allowedMethods",
             ],

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Expense extends Model
 {
-    use HasFactory, SoftDeletes, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory, SoftDeletes;
 
     protected static function booted(): void
     {
@@ -48,8 +48,7 @@ class Expense extends Model
             $dates[] = $this->getOriginal('date');
         }
 
-        $categories = \App\Models\BudgetCategory::whereHas('budget', fn($q) =>
-            $q->where('user_id', $this->user_id)
+        $categories = BudgetCategory::whereHas('budget', fn ($q) => $q->where('user_id', $this->user_id)
         )->whereIn('expense_category_id', array_unique($categoryIds))->get();
 
         foreach ($categories as $bc) {
@@ -118,6 +117,7 @@ class Expense extends Model
         if ($type === 'periodic') {
             return $query->where('is_recurring', true);
         }
-        return $query->whereHas('category', fn($q) => $q->where('type', $type));
+
+        return $query->whereHas('category', fn ($q) => $q->where('type', $type));
     }
 }

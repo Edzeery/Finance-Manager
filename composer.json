@@ -8,14 +8,8 @@
         "framework"
     ],
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Edzeery/mystatuskit"
-        }
-    ],
     "require": {
-        "edzeery/mystatuskit": "^1.0",
+        "edzeery/mystatuskit": "^1.1",
         "php": "^8.3",
         "ext-bcmath": "*",
         "ext-fileinfo": "*",
@@ -41,6 +35,7 @@
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.3",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "*",
         "laravel-lang/common": "^6.8",
         "laravel/dusk": "^8.6",
         "laravel/pail": "^1.2.5",

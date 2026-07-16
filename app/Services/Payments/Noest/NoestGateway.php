@@ -19,12 +19,13 @@ class NoestGateway implements PaymentGateway
         if (empty(config('payment.gateways.noest.api_token'))) {
             return ValidationResult::invalid('Noest gateway is not configured. Please contact support.');
         }
-        if (!empty($data['noest_phone']) && !preg_match('/^(05|06|07)[0-9]{8}$/', $data['noest_phone'])) {
+        if (! empty($data['noest_phone']) && ! preg_match('/^(05|06|07)[0-9]{8}$/', $data['noest_phone'])) {
             return ValidationResult::invalid('Invalid phone number format. Must start with 05, 06, or 07 and be 10 digits.');
         }
         if (empty($data['noest_wilaya'])) {
             return ValidationResult::invalid('Wilaya is required.');
         }
+
         return ValidationResult::valid();
     }
 
@@ -36,7 +37,7 @@ class NoestGateway implements PaymentGateway
     public function charge(array $data): PaymentResult
     {
         $payment = Payment::find($data['payment_id']);
-        if (!$payment) {
+        if (! $payment) {
             return PaymentResult::failed('Payment not found.');
         }
 
@@ -55,9 +56,9 @@ class NoestGateway implements PaymentGateway
                 'produit' => $data['noest_produit'] ?? 'Finance Manager Subscription',
                 'type_id' => 1,
                 'poids' => 0.5,
-                'stop_desk' => !empty($data['noest_stop_desk']) ? 1 : 0,
+                'stop_desk' => ! empty($data['noest_stop_desk']) ? 1 : 0,
                 'station_code' => $data['noest_station_code'] ?? '',
-                'can_open' => !empty($data['noest_can_open']) ? 1 : 0,
+                'can_open' => ! empty($data['noest_can_open']) ? 1 : 0,
                 'remboursement' => isset($data['noest_remboursement']) ? ($data['noest_remboursement'] ? 1 : 0) : 1,
                 'is_payed' => 1,
                 'remarque' => $data['noest_remarque'] ?? '',
@@ -69,7 +70,7 @@ class NoestGateway implements PaymentGateway
                 ?? $response['tracking']
                 ?? null;
 
-            if (!$tracking) {
+            if (! $tracking) {
                 return PaymentResult::failed('No tracking number received from Noest.');
             }
 
@@ -85,6 +86,7 @@ class NoestGateway implements PaymentGateway
             );
         } catch (\Exception $e) {
             $apiMessage = $e->getMessage();
+
             return PaymentResult::failed(NoestErrorHandler::translate($apiMessage));
         }
     }
@@ -97,19 +99,20 @@ class NoestGateway implements PaymentGateway
     public function verify(Payment $payment): PaymentResult
     {
         $tracking = $payment->transaction_id;
-        if (!$tracking) {
+        if (! $tracking) {
             return PaymentResult::failed('No tracking number found for this payment.');
         }
 
         try {
             $info = app(NoestService::class)->getTrackingInfo($tracking);
+
             return PaymentResult::success(
                 message: 'Tracking info retrieved.',
                 transactionId: $tracking,
                 metadata: ['tracking_info' => $info],
             );
         } catch (\Exception $e) {
-            return PaymentResult::failed('Failed to retrieve tracking info: ' . $e->getMessage());
+            return PaymentResult::failed('Failed to retrieve tracking info: '.$e->getMessage());
         }
     }
 

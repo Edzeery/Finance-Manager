@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\Workspace;
 use App\Notifications\WorkspaceInvitation as WorkspaceInvitationNotification;
 use Carbon\Carbon;
+use Database\Seeders\EnterpriseRolePermissionSeeder;
+use Database\Seeders\SubscriptionPlanSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -20,9 +22,13 @@ class InvitationFlowTest extends TestCase
     use RefreshDatabase;
 
     private Workspace $workspace;
+
     private User $owner;
+
     private User $invitee;
+
     private string $inviteeEmail = 'invited@example.com';
+
     private string $newEmail = 'newuser@example.com';
 
     protected function setUp(): void
@@ -32,8 +38,8 @@ class InvitationFlowTest extends TestCase
         Notification::fake();
 
         $this->seed([
-            \Database\Seeders\EnterpriseRolePermissionSeeder::class,
-            \Database\Seeders\SubscriptionPlanSeeder::class,
+            EnterpriseRolePermissionSeeder::class,
+            SubscriptionPlanSeeder::class,
         ]);
 
         $this->workspace = Workspace::factory()->create(['name' => 'Test Workspace']);

@@ -360,9 +360,7 @@
                             </div>
                         </div>
                         @if($subscription)
-                            <span class="badge badge-status {{ $subscription->isActive() ? 'badge-configured' : 'badge-not-configured' }}" style="font-size:12px;padding:4px 14px;">
-                                {{ $subscription->status->label() }}
-                            </span>
+                            <x-status-badge domain="subscription" :status="$subscription->status->value" set="bi" />
                         @endif
                     </div>
 
@@ -403,7 +401,7 @@
                             </div>
                             <div class="col-4">
                                 <div class="text-muted-sm" style="font-size:12px;">{{ __('settings.plan_status') }}</div>
-                                <div style="font-weight:600;font-size:15px;">{{ $subscription->status->label() }}</div>
+                                <div style="font-weight:600;font-size:15px;"><x-status-badge domain="subscription" :status="$subscription->status->value" set="bi" /></div>
                             </div>
                         </div>
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
+use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
@@ -70,7 +70,7 @@ class CouponController extends Controller
     public function update(Request $request, Coupon $coupon)
     {
         $validated = $request->validate([
-            'code' => ['required', 'string', 'max:50', 'unique:coupons,code,' . $coupon->id],
+            'code' => ['required', 'string', 'max:50', 'unique:coupons,code,'.$coupon->id],
             'type' => ['required', 'in:fixed,percentage'],
             'value' => ['required', 'numeric', 'min:0'],
             'min_amount' => ['nullable', 'numeric', 'min:0'],

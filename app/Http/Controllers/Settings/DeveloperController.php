@@ -19,7 +19,7 @@ class DeveloperController extends Controller
         $user = auth()->user();
         $allTokens = $user->tokens()->orderBy('created_at', 'desc')->get();
 
-        $tokens = $allTokens->map(fn($t) => [
+        $tokens = $allTokens->map(fn ($t) => [
             'id' => $t->id,
             'name' => $t->name,
             'abilities' => $t->abilities,
@@ -33,9 +33,9 @@ class DeveloperController extends Controller
         $now = now();
         $stats = [
             'total' => $tokens->count(),
-            'active' => $tokens->filter(fn($t) => !$t['expires_at'] || $t['expires_at'] > $now)->filter(fn($t) => !$t['deactivated_at'])->count(),
-            'expired' => $tokens->filter(fn($t) => $t['expires_at'] && $t['expires_at'] <= $now)->count(),
-            'never_used' => $tokens->filter(fn($t) => !$t['last_used_at'])->count(),
+            'active' => $tokens->filter(fn ($t) => ! $t['expires_at'] || $t['expires_at'] > $now)->filter(fn ($t) => ! $t['deactivated_at'])->count(),
+            'expired' => $tokens->filter(fn ($t) => $t['expires_at'] && $t['expires_at'] <= $now)->count(),
+            'never_used' => $tokens->filter(fn ($t) => ! $t['last_used_at'])->count(),
         ];
 
         $subscription = $user->activeSubscription();
@@ -62,10 +62,11 @@ class DeveloperController extends Controller
             ->groupBy('token_id')
             ->get()
             ->keyBy('token_id')
-            ->map(fn($item) => $item->count);
+            ->map(fn ($item) => $item->count);
 
         $tokens = $tokens->map(function ($token) use ($tokenUsage) {
             $token['usage_7d'] = $tokenUsage[$token['id']] ?? 0;
+
             return $token;
         });
 
@@ -99,11 +100,11 @@ class DeveloperController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'abilities' => ['required', 'array', 'min:1'],
-            'abilities.*' => ['string', 'in:' . implode(',', array_keys(config('api-abilities')))],
+            'abilities.*' => ['string', 'in:'.implode(',', array_keys(config('api-abilities')))],
             'expires_at' => ['nullable', 'date', 'after:now'],
         ]);
 
-        $expiresAt = !empty($validated['expires_at']) ? Carbon::parse($validated['expires_at']) : null;
+        $expiresAt = ! empty($validated['expires_at']) ? Carbon::parse($validated['expires_at']) : null;
 
         $newToken = $user->createToken(
             $validated['name'],
@@ -126,7 +127,7 @@ class DeveloperController extends Controller
 
         $user = Auth::user();
 
-        if (!Hash::check($request->password, $user->password)) {
+        if (! Hash::check($request->password, $user->password)) {
             return response()->json(['message' => __('developer.invalid_password')], 403);
         }
 
@@ -136,7 +137,7 @@ class DeveloperController extends Controller
             abort(403);
         }
 
-        if (!$token->plaintext_token) {
+        if (! $token->plaintext_token) {
             return response()->json(['message' => __('developer.token_not_available')], 404);
         }
 

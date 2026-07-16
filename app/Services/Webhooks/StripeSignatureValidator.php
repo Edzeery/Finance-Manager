@@ -16,12 +16,12 @@ class StripeSignatureValidator implements WebhookSignatureValidator
     public function validate(Request $request): bool
     {
         $signature = $request->header('stripe-signature');
-        if (!$signature) {
+        if (! $signature) {
             return $this->fallbackTokenCheck($request);
         }
 
         $secret = config('payment.gateways.stripe.webhook_secret');
-        if (!$secret) {
+        if (! $secret) {
             return $this->fallbackTokenCheck($request);
         }
 
@@ -42,14 +42,16 @@ class StripeSignatureValidator implements WebhookSignatureValidator
     private function fallbackTokenCheck(Request $request): bool
     {
         $secret = config('payment.webhook_secret');
-        if (!$secret) {
+        if (! $secret) {
             Log::warning('Stripe webhook: no webhook_secret configured');
+
             return false;
         }
 
         $token = $request->header('X-Webhook-Token');
-        if (!$token || !hash_equals($secret, $token)) {
+        if (! $token || ! hash_equals($secret, $token)) {
             Log::warning('Stripe webhook: invalid shared token');
+
             return false;
         }
 

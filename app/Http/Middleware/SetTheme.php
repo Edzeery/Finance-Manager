@@ -18,7 +18,7 @@ class SetTheme
             $currency = $request->session()->get('currency', config('finance.currency'));
         }
 
-        if (!in_array($theme, ['light', 'dark'])) {
+        if (! in_array($theme, ['light', 'dark'])) {
             $theme = 'light';
         }
 
@@ -26,7 +26,7 @@ class SetTheme
         view()->share('theme', $theme);
 
         $allowedCurrencies = array_keys(config('finance.currencies', ['DZD' => [], 'USD' => [], 'EUR' => []]));
-        if (!$currency || !in_array($currency, $allowedCurrencies)) {
+        if (! $currency || ! in_array($currency, $allowedCurrencies)) {
             $currency = config('finance.currency', 'DZD');
         }
 

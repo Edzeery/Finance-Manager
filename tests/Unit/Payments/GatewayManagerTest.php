@@ -4,7 +4,6 @@ namespace Tests\Unit\Payments;
 
 use App\Services\Payments\GatewayManager;
 use App\Services\Payments\PaymentGateway;
-use App\Services\Payments\PaymentResult;
 use InvalidArgumentException;
 use Tests\TestCase;
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\SubscriptionService;
-use Illuminate\Http\Request;
 
 class CouponValidationController extends Controller
 {
@@ -14,9 +13,10 @@ class CouponValidationController extends Controller
     public function check(string $code, ?float $amount = null)
     {
         $coupon = $this->subscriptionService->validateCoupon($code, $amount);
-        if (!$coupon) {
+        if (! $coupon) {
             return response()->json(['valid' => false, 'message' => __('messages.coupon_invalid')]);
         }
+
         return response()->json([
             'valid' => true,
             'code' => $coupon->code,

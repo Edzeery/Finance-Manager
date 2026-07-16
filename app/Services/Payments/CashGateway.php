@@ -3,7 +3,6 @@
 namespace App\Services\Payments;
 
 use App\Models\Payment;
-use App\Services\Payments\ValidationResult;
 
 class CashGateway implements PaymentGateway
 {

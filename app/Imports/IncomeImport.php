@@ -4,18 +4,19 @@ namespace App\Imports;
 
 use App\Models\Income;
 use App\Models\IncomeCategory;
+use Maatwebsite\Excel\Concerns\Importable;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Validators\Failure;
 
-class IncomeImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
+class IncomeImport implements SkipsOnFailure, ToModel, WithHeadingRow, WithValidation
 {
     use Importable;
 
     private int $imported = 0;
+
     private array $failures = [];
 
     public function __construct(
@@ -26,25 +27,25 @@ class IncomeImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFa
     public function model(array $row): ?Income
     {
         $category = null;
-        if (!empty($row['category'])) {
+        if (! empty($row['category'])) {
             $category = IncomeCategory::where(function ($q) use ($row) {
                 $q->where('name_ar', $row['category'])
-                  ->orWhere('name_en', $row['category'])
-                  ->orWhere('name_fr', $row['category']);
+                    ->orWhere('name_en', $row['category'])
+                    ->orWhere('name_fr', $row['category']);
             })->first();
         }
 
         $this->imported++;
 
         return new Income([
-            'user_id'       => $this->userId,
-            'workspace_id'  => $this->workspaceId,
-            'category_id'   => $category?->id,
-            'amount'        => static::normalizeAmount($row['amount']),
-            'description'   => $row['description'] ?? null,
-            'date'          => $row['date'] ?? now()->format('Y-m-d'),
-            'is_recurring'  => !empty($row['recurring']) && in_array(strtolower($row['recurring']), ['yes', '1', 'true', 'نعم']),
-            'notes'         => $row['notes'] ?? null,
+            'user_id' => $this->userId,
+            'workspace_id' => $this->workspaceId,
+            'category_id' => $category?->id,
+            'amount' => static::normalizeAmount($row['amount']),
+            'description' => $row['description'] ?? null,
+            'date' => $row['date'] ?? now()->format('Y-m-d'),
+            'is_recurring' => ! empty($row['recurring']) && in_array(strtolower($row['recurring']), ['yes', '1', 'true', 'نعم']),
+            'notes' => $row['notes'] ?? null,
         ]);
     }
 
@@ -57,6 +58,7 @@ class IncomeImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFa
         } else {
             $value = str_replace(',', '.', $value);
         }
+
         return (float) $value;
     }
 
@@ -64,7 +66,7 @@ class IncomeImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFa
     {
         return [
             'amount' => 'required',
-            'date'   => 'nullable|date',
+            'date' => 'nullable|date',
         ];
     }
 
@@ -73,6 +75,13 @@ class IncomeImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFa
         $this->failures = array_merge($this->failures, $failures);
     }
 
-    public function getImportedCount(): int { return $this->imported; }
-    public function getFailures(): array { return $this->failures; }
+    public function getImportedCount(): int
+    {
+        return $this->imported;
+    }
+
+    public function getFailures(): array
+    {
+        return $this->failures;
+    }
 }
