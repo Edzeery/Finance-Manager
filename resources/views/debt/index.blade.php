@@ -137,7 +137,7 @@
                                         <span style="color:{{ $debt->is_overdue ? 'var(--danger)' : 'var(--text)' }}">
                                             {{ $debt->due_date->format('Y/m/d') }}
                                             @if($debt->is_overdue)
-                                                <i class="bi bi-exclamation-triangle-fill ms-1" style="color:var(--danger)" title="{{ __('debt.overdue') }}"></i>
+                                                <x-status-icon domain="general" status="danger" set="bi" class="ms-1" title="{{ __('debt.overdue') }}" />
                                             @endif
                                         </span>
                                     @else

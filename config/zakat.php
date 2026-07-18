@@ -8,6 +8,15 @@ return [
         'silver_grams' => 595, // 595 grams of silver
     ],
 
+    'karat_purity' => [
+        24 => 1.0,
+        22 => 0.9167,
+        21 => 0.875,
+        18 => 0.75,
+        14 => 0.5833,
+        10 => 0.4167,
+    ],
+
     'prices' => [
         'gold_per_gram' => env('ZAKAT_GOLD_PRICE', 0),
         'silver_per_gram' => env('ZAKAT_SILVER_PRICE', 0),

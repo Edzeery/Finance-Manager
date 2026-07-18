@@ -70,11 +70,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-percent"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('super-admin.no_tax_rates') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-percent" :title="__('general.no_data')" />
             @endif
         </div>
 

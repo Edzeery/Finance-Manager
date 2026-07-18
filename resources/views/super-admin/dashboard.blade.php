@@ -59,7 +59,7 @@
         <div class="kpi-card kpi-blue">
             <div class="kpi-card-header">
                 <div class="kpi-card-icon kpi-icon-blue"><i class="bi bi-building"></i></div>
-                <span class="kpi-card-trend up"><i class="bi bi-check-circle"></i>{{ $data['active_workspaces'] }} {{ __('general.active') }}</span>
+                    <span class="kpi-card-trend up"><x-status-icon domain="general" status="success" set="bi" /> {{ $data['active_workspaces'] }} {{ __('general.active') }}</span>
             </div>
             <div class="kpi-card-label">{{ __('super-admin.workspaces') }}</div>
             <div class="kpi-card-value">{{ $data['total_workspaces'] }}</div>
@@ -71,12 +71,12 @@
         <div class="kpi-card kpi-green">
             <div class="kpi-card-header">
                 <div class="kpi-card-icon kpi-icon-green"><i class="bi bi-credit-card"></i></div>
-                <span class="kpi-card-trend up"><i class="bi bi-check-circle"></i>{{ $data['active_subscriptions'] }} {{ __('super-admin.active') }}</span>
+                    <span class="kpi-card-trend up"><x-status-icon domain="general" status="success" set="bi" /> {{ $data['active_subscriptions'] }} {{ __('super-admin.active') }}</span>
             </div>
             <div class="kpi-card-label">{{ __('super-admin.active_subscriptions') }}</div>
             <div class="kpi-card-value">{{ $data['active_subscriptions'] }}</div>
             <div class="kpi-card-compare">
-                <i class="bi bi-x-circle"></i> {{ $data['canceled_subscriptions'] }} {{ __('super-admin.canceled') }}
+                <x-status-icon domain="general" status="danger" set="bi" /> {{ $data['canceled_subscriptions'] }} {{ __('super-admin.canceled') }}
             </div>
         </div>
 
@@ -90,7 +90,7 @@
             <div class="kpi-card-label">{{ __('super-admin.pending_payments') }}</div>
             <div class="kpi-card-value">{{ $data['pending_payments'] }}</div>
             <div class="kpi-card-compare">
-                <i class="bi bi-check-circle"></i> {{ $data['completed_payments'] }} {{ __('super-admin.completed') }}
+                <x-status-icon domain="general" status="success" set="bi" /> {{ $data['completed_payments'] }} {{ __('super-admin.completed') }}
             </div>
         </div>
 
@@ -102,7 +102,7 @@
             <div class="kpi-card-label">{{ __('super-admin.coupon_stats') }}</div>
             <div class="kpi-card-value">{{ $data['active_coupons'] ?? '—' }} / {{ $data['total_coupons'] ?? '—' }}</div>
             <div class="kpi-card-compare">
-                <i class="bi bi-clock"></i> {{ $data['expired_coupons'] ?? '—' }} {{ __('super-admin.expired') }}
+                <x-status-icon domain="general" status="expired" set="bi" /> {{ $data['expired_coupons'] ?? '—' }} {{ __('super-admin.expired') }}
             </div>
         </div>
     </div>
@@ -131,7 +131,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="empty-state"><div class="empty-icon" style="background:var(--border);color:var(--text-muted)"><i class="bi bi-pie-chart"></i></div><h4>{{ __('general.no_data') }}</h4></div>
+                    <x-empty-state icon="bi bi-pie-chart" :title="__('general.no_data')" />
                 @endforelse
             </div>
         </div>
@@ -162,7 +162,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="empty-state"><div class="empty-icon" style="background:var(--border);color:var(--text-muted)"><i class="bi bi-bar-chart"></i></div><h4>{{ __('general.no_data') }}</h4></div>
+                    <x-empty-state icon="bi bi-bar-chart" :title="__('general.no_data')" />
                 @endforelse
             </div>
         </div>
@@ -194,7 +194,7 @@
                             </div>
                         @endforeach
                     @else
-                        <div class="empty-state"><div class="empty-icon" style="background:var(--border);color:var(--text-muted)"><i class="bi bi-clock-history"></i></div><h4>{{ __('general.no_data') }}</h4></div>
+                        <x-empty-state icon="bi bi-clock-history" :title="__('general.no_data')" />
                     @endif
                 </div>
             </div>
@@ -337,7 +337,7 @@
     @php $subPlans = $data['plan_options'] ?? []; @endphp
     <div class="kpi-grid stagger-fade-in mb-4">
         <div class="kpi-card kpi-green">
-            <div class="kpi-card-header"><div class="kpi-card-icon kpi-icon-green"><i class="bi bi-check-circle"></i></div></div>
+            <div class="kpi-card-header"><div class="kpi-card-icon kpi-icon-green"><x-status-icon domain="general" status="success" set="bi" /></div></div>
             <div class="kpi-card-label">{{ __('super-admin.active') }}</div>
             <div class="kpi-card-value">{{ $data['active'] }}</div>
         </div>
@@ -347,12 +347,12 @@
             <div class="kpi-card-value">{{ $data['suspended'] }}</div>
         </div>
         <div class="kpi-card kpi-red" style="--kpi-accent:#EF4444">
-            <div class="kpi-card-header"><div class="kpi-card-icon" style="background:rgba(239,68,68,0.12);color:#EF4444"><i class="bi bi-x-circle"></i></div></div>
+            <div class="kpi-card-header"><div class="kpi-card-icon" style="background:rgba(239,68,68,0.12);color:#EF4444"><x-status-icon domain="general" status="danger" set="bi" /></div></div>
             <div class="kpi-card-label">{{ __('super-admin.canceled') }}</div>
             <div class="kpi-card-value">{{ $data['canceled'] }}</div>
         </div>
         <div class="kpi-card" style="--kpi-accent:#9ca3af">
-            <div class="kpi-card-header"><div class="kpi-card-icon" style="background:rgba(156,163,175,0.12);color:#9ca3af"><i class="bi bi-clock"></i></div></div>
+            <div class="kpi-card-header"><div class="kpi-card-icon" style="background:rgba(156,163,175,0.12);color:#9ca3af"><x-status-icon domain="general" status="expired" set="bi" /></div></div>
             <div class="kpi-card-label">{{ __('super-admin.expired') }}</div>
             <div class="kpi-card-value">{{ $data['expired'] }}</div>
         </div>
@@ -362,7 +362,7 @@
             <div class="kpi-card-value">{{ $data['churn_rate'] }}%</div>
         </div>
         <div class="kpi-card kpi-blue">
-            <div class="kpi-card-header"><div class="kpi-card-icon kpi-icon-blue"><i class="bi bi-clock-history"></i></div></div>
+            <div class="kpi-card-header"><div class="kpi-card-icon kpi-icon-blue"><x-status-icon domain="general" status="pending" set="bi" /></div></div>
             <div class="kpi-card-label">{{ __('super-admin.avg_lifetime') }}</div>
             <div class="kpi-card-value">{{ $data['avg_lifetime_days'] }}</div>
         </div>
@@ -409,7 +409,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="empty-state"><div class="empty-icon" style="background:var(--border);color:var(--text-muted)"><i class="bi bi-pie-chart"></i></div><h4>{{ __('general.no_data') }}</h4></div>
+                        <x-empty-state icon="bi bi-pie-chart" :title="__('general.no_data')" />
                     @endforelse
                 </div>
             </div>
@@ -545,10 +545,7 @@
     </div>
     @endif
     @else
-    <div class="empty-state">
-        <div class="empty-icon" style="background:var(--border);color:var(--text-muted)"><i class="bi bi-people"></i></div>
-        <h4>{{ __('general.no_data') }}</h4>
-    </div>
+    <x-empty-state icon="bi bi-people" :title="__('general.no_data')" />
     @endif
     @endif
 </x-super-admin-layout>

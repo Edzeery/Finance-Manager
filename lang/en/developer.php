@@ -74,18 +74,4 @@ return [
     'token_deactivated_desc' => 'This token is deactivated and cannot be used. Activate it first to view the token value.',
     'token_usage' => 'Token Usage',
     'token_limit_reached' => 'You have reached the maximum number of tokens (:limit) allowed by your plan.',
-
-    // API Quota
-    'api_quota' => 'API Quota',
-    'per_minute' => 'Per Minute',
-    'per_hour' => 'Per Hour',
-    'per_day' => 'Per Day',
-    'remaining' => 'remaining',
-    'quota_unlimited' => 'Unlimited',
-    'quota_not_available' => 'API quota is not available for your current plan.',
-
-    // Usage History
-    'requests_7d' => 'req (7d)',
-    'usage_history' => 'Usage History (7 Days)',
-    'usage_history_desc' => ':total requests in the last 7 days.',
 ];

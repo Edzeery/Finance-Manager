@@ -192,14 +192,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)">
-                        <i class="bi bi-{{ request('status') === 'trashed' ? 'trash' : 'people' }}"></i>
-                    </div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ request('status') === 'trashed' ? __('messages.no_trashed') : __('messages.no_results') }}
-                    </p>
-                </div>
+                <x-empty-state icon="bi bi-{{ request('status') === 'trashed' ? 'trash' : 'people' }}" :title="__('general.no_data')" :description="request('status') === 'trashed' ? __('messages.no_trashed') : __('messages.no_results')" />
             @endif
         </div>
 

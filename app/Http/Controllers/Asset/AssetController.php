@@ -100,9 +100,20 @@ class AssetController extends BaseCrudController
 
     public function create()
     {
-        $types = AssetType::cases();
+        $this->resetBreadcrumbs()
+            ->resourceBreadcrumbs('general.asset', 'asset.index', 'bi-pie-chart-fill')
+            ->addBreadcrumb(__('asset.add'));
 
-        return view('asset.create', compact('types'));
+        $types = AssetType::cases();
+        $karatPurity = config('zakat.karat_purity', []);
+        $assetTypeMap = collect($types)->mapWithKeys(fn ($t) => [$t->value => [
+            'label' => $t->label(),
+            'icon' => $t->icon(),
+            'color' => $t->color(),
+            'zakatable' => $t->isZakatable(),
+        ]])->toArray();
+
+        return view('asset.create', $this->withBreadcrumbs(compact('types', 'karatPurity', 'assetTypeMap')));
     }
 
     public function store(StoreAssetRequest $request)

@@ -10,10 +10,9 @@
     <x-slot:page-description>{{ __('settings.invoices_desc') }}</x-slot>
 
     @if(!$hasSubscriptions)
-        <div class="settings-card">
+            <div class="settings-card">
             <div class="text-center py-5">
-                <i class="bi bi-receipt" style="font-size:48px;color:var(--text-muted);opacity:0.4"></i>
-                <p class="text-muted mt-3 mb-0">{{ __('settings.no_subscription') }}</p>
+                <x-empty-state icon="bi bi-receipt" :title="__('settings.no_subscription')" />
             </div>
         </div>
     @else

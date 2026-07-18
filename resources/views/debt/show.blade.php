@@ -68,8 +68,7 @@
                         </div>
                     @else
                         <div class="p-4 text-center" style="color:var(--text-muted); font-size:14px">
-                            <i class="bi bi-inbox" style="font-size:24px; display:block; margin-bottom:8px"></i>
-                            {{ __('general.no_data') }}
+                            <x-empty-state icon="bi bi-inbox" :title="__('general.no_data')" />
                         </div>
                     @endif
                 </div>

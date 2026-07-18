@@ -65,11 +65,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-currency-dollar"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('super-admin.no_prices') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-currency-dollar" :title="__('general.no_data')" :description="__('super-admin.no_prices')" />
             @endif
         </div>
 

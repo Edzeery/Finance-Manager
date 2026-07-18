@@ -30,7 +30,7 @@ class LogAuthEvent
 
     public function handleLogout(Logout $event): void
     {
-        $this->log($event->user?->id, 'logout', 'auth.logout', [
+        $this->log($event->user?->id, 'logout', 'general.logout', [
             'guard' => $event->guard,
         ]);
 

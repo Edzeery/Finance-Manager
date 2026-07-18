@@ -80,7 +80,7 @@
                             <div style="font-weight:600;font-size:14px;">{{ $workspaceOwner?->name }}</div>
                             <div style="font-size:12px;color:var(--text-muted);">{{ $workspaceOwner?->email }}</div>
                         </div>
-                        <span class="badge ms-auto" style="font-size:11px;background:var(--accent-light);color:var(--accent);padding:4px 12px;border-radius:6px;">{{ __('workspace.owner') }}</span>
+                        <x-status-badge domain="general" status="paid" set="bi" size="xs" class="ms-auto" />
                     </div>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                                 <i class="bi bi-people"></i>
                                 <span>{{ $userCount }} / {{ $userLimit }} {{ __('general.users') }}</span>
                                 @if(!$workspace->canAddUser())
-                                    <span class="badge bg-danger ms-1" style="font-size:10px;">{{ __('settings.user_limit_reached') }}</span>
+                                    <x-status-badge domain="general" status="danger" set="bi" size="xs" class="ms-1" />
                                 @endif
                             </div>
                         @endif
@@ -158,9 +158,7 @@
                                         <tr>
                                             <td class="cell-muted">{{ $invitation->email }}</td>
                                             <td>
-                                                <span class="badge" style="font-size:11px;background:var(--bg-subtle);color:var(--text);padding:4px 10px;border-radius:6px;">
-                                                    {{ $roles[$invitation->role] ?? $invitation->role }}
-                                                </span>
+                                                <x-status-badge domain="general" status="pending" set="bi" size="xs" />
                                             </td>
                                             <td class="cell-muted">{{ $invitation->inviter->name ?? '—' }}</td>
                                             <td class="cell-muted">{{ $invitation->created_at->format('Y/m/d') }}</td>
@@ -231,9 +229,7 @@
                                                     </div>
                                                     <span style="font-weight:500">{{ $member->name }}</span>
                                                     @if($memberWsRole === 'workspace_admin')
-                                                        <span class="badge" style="font-size:10px;background:var(--sa-indigo-light);color:var(--sa-indigo);padding:2px 8px;border-radius:4px">
-                                                            <i class="bi bi-star-fill me-1"></i>{{ __('workspace.owner') }}
-                                                        </span>
+                                                        <x-status-badge domain="general" status="verified" set="bi" size="xs" />
                                                     @endif
                                                 </div>
                                             </td>
@@ -251,9 +247,7 @@
                                                         </select>
                                                     </form>
                                                 @else
-                                                    <span class="badge" style="font-size:11px;background:var(--bg-subtle);color:var(--text);padding:4px 10px;border-radius:6px;">
-                                                        {{ $roles[$memberWsRole] ?? $memberWsRole }}
-                                                    </span>
+                                                    <x-status-badge domain="general" status="inactive" set="bi" size="xs" />
                                                 @endif
                                             </td>
                                             <td class="cell-muted">{{ $member->pivot->joined_at ? \Carbon\Carbon::parse($member->pivot->joined_at)->format('Y/m/d') : '—' }}</td>
@@ -275,8 +269,7 @@
                         </div>
                     @else
                         <div class="text-center py-4">
-                            <i class="bi bi-people" style="font-size:32px;color:var(--text-muted);opacity:0.4"></i>
-                            <p class="text-muted mt-2 mb-0">{{ __('workspace.no_members') }}</p>
+                            <x-empty-state icon="bi bi-people" :title="__('workspace.no_members')" />
                         </div>
                     @endif
                 </div>

@@ -15,4 +15,16 @@ return [
     'downgrade_min_days' => 'You can only downgrade your plan after :days days from subscription start.',
     'downgrade_min_discount' => 'The price difference between the two plans is too small (:current% only). The discount must be at least :min%.',
     'personal_new_users_only' => 'The Personal plan is available for new accounts only.',
+    'personal_existing_users' => 'The Personal plan is not available for existing accounts.',
+    'personal_existing_users_desc' => 'You are currently on a paid plan. The Personal plan is only available for new accounts. Please contact support if you wish to downgrade.',
+    'expiry_alert_title' => 'Your subscription is expiring soon',
+    'expiry_alert_message' => 'Your subscription will expire in :days days on :date. Renew now to avoid service interruption.',
+    'expiry_alert_snoozed' => 'We will remind you again tomorrow.',
+    'expiry_alert_snooze' => 'Remind me tomorrow',
+
+    'personal_plan_description' => 'Start with a free 30-day trial — then unlock premium finance management for individuals.',
+    'business_plan_description' => 'For small businesses and teams needing multiple workspaces.',
+    'professional_plan_description' => 'For professionals and businesses needing advanced features and priority support.',
+    'enterprise_plan_description' => 'For large enterprises needing custom features and dedicated support.',
+    'free_plan_description' => 'Free plan with limited features for individuals and small teams.',
 ];

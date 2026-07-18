@@ -44,6 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'two_factor_methods' => 'array',
             'two_factor_email_code' => 'encrypted',
             'two_factor_email_code_at' => 'datetime',
+            'email_verified_at' => 'datetime',
         ];
     }
 

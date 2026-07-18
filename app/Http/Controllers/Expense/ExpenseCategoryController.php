@@ -30,6 +30,8 @@ class ExpenseCategoryController extends Controller
 
     public function store(StoreExpenseCategoryRequest $request)
     {
+        $this->authorize('create', ExpenseCategory::class);
+
         ExpenseCategory::create(array_merge($request->validated(), [
             'user_id' => auth()->id(),
             'sort_order' => ExpenseCategory::max('sort_order') + 1,

@@ -50,8 +50,7 @@
                 </div>
             @else
                 <div class="text-center py-5">
-                    <i class="bi bi-search" style="font-size:48px; color:var(--text-muted); display:block; margin-bottom:16px"></i>
-                    <h5 style="color:var(--text-muted)">@lang('messages.no_search_results')</h5>
+                    <x-empty-state icon="bi bi-search" :title="__('messages.no_search_results')" />
                 </div>
             @endif
         </div>

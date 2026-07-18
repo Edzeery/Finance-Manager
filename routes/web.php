@@ -14,10 +14,6 @@ Route::get('/', function () {
     return view('landing', compact('plans'));
 })->name('landing');
 
-Route::get('/mystatuskit', function () {
-    return view('mystatuskit');
-})->name('mystatuskit');
-
 Route::post('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 Route::post('/theme/switch', [ThemeController::class, 'switch'])

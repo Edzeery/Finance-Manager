@@ -84,10 +84,7 @@
                             </table>
                         </div>
                     @else
-                        <div class="empty-state">
-                            <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-receipt"></i></div>
-                            <h4>{{ __('super-admin.no_invoices') }}</h4>
-                        </div>
+                        <x-empty-state icon="bi bi-receipt" :title="__('super-admin.no_invoices')" />
                     @endif
                 </div>
             </div>
@@ -151,10 +148,7 @@
                             </div>
                         @endforeach
                     @else
-                        <div class="empty-state">
-                            <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-cash-coin"></i></div>
-                            <h4>{{ __('messages.no_results') }}</h4>
-                        </div>
+                        <x-empty-state icon="bi bi-cash-coin" :title="__('messages.no_results')" />
                     @endif
                 </div>
             </div>

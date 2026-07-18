@@ -48,7 +48,7 @@
                         <form method="POST" action="{{ route('notifications.read', $notification) }}" style="flex-shrink:0">
                             @csrf
                             <button type="submit" class="btn btn-sm p-1" style="color:var(--accent); background:none; border:none; font-size:18px; line-height:1" title="{{ __('notifications.mark_read') ?? 'Mark as read' }}">
-                                <i class="bi bi-check-circle"></i>
+                                <x-status-icon domain="general" status="success" set="bi" />
                             </button>
                         </form>
                     @endif

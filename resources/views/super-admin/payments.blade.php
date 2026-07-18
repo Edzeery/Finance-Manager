@@ -169,10 +169,10 @@
                                                     </a>
                                                 @endif
                                                 <button type="button" class="btn" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:none;background:var(--success-light);color:var(--success);font-weight:600;cursor:pointer" @click="approvePayment({{ $payment->id }})">
-                                                    <i class="bi bi-check-lg"></i> {{ __('super-admin.approve') }}
+                                                    <x-status-icon domain="general" status="success" set="bi" /> {{ __('super-admin.approve') }}
                                                 </button>
                                                 <button type="button" class="btn" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:none;background:var(--danger-light);color:var(--danger);font-weight:600;cursor:pointer" @click="rejectPayment({{ $payment->id }})">
-                                                    <i class="bi bi-x-lg"></i> {{ __('super-admin.reject') }}
+                                                    <x-status-icon domain="general" status="failed" set="bi" /> {{ __('super-admin.reject') }}
                                                 </button>
                                             @endif
                                             @if ($canRefund && $payment->isRefundable())
@@ -193,11 +193,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-cash-coin"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('messages.no_results') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-cash-coin" :title="__('general.no_data')" :description="__('messages.no_results')" />
             @endif
         </div>
 
@@ -229,7 +225,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px">
-                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-check-circle me-2" style="color:var(--success)"></i>{{ __('super-admin.approve_payment') }}</h5>
+                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><x-status-icon domain="general" status="success" set="bi" /> {{ __('super-admin.approve_payment') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="approveForm" method="POST">
@@ -257,7 +253,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px">
-                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-x-circle me-2" style="color:var(--danger)"></i>{{ __('super-admin.reject_payment') }}</h5>
+                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><x-status-icon domain="general" status="danger" set="bi" /> {{ __('super-admin.reject_payment') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="rejectForm" method="POST">

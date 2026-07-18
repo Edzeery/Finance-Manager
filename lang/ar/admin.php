@@ -7,11 +7,11 @@ return [
     'edit_user' => 'تعديل المستخدم',
     'create_user' => 'إنشاء مستخدم',
     'save_user' => 'حفظ المستخدم',
-    'user_details' => 'تفاصيل المستخدم',
+    'user_details' => 'بيانات المستخدم',
     'roles' => 'الأدوار',
     'password_leave_blank' => 'اتركه فارغاً للاحتفاظ بكلمة المرور الحالية',
     'users_count' => 'عدد المستخدمين',
-    'add_user_desc' => 'إنشاء مستخدم جديد وتعيين الأدوار.',
+    'add_user_desc' => 'إنشاء مستخدم جديد للمنصة وتعيين الأدوار.',
 
     'notifications' => 'الإشعارات',
     'notifications_description' => 'عرض :count إشعار(ات)',

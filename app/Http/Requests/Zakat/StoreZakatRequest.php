@@ -14,10 +14,12 @@ class StoreZakatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'gold_price' => ['required', 'numeric', 'min:0'],
+            'gold_items' => ['nullable', 'array'],
+            'gold_items.*.karat' => ['required_with:gold_items.*', 'integer', 'in:24,22,21,18,14,10'],
+            'gold_items.*.weight' => ['required_with:gold_items.*', 'numeric', 'min:0'],
+            'gold_items.*.price' => ['nullable', 'numeric', 'min:0'],
             'silver_price' => ['required', 'numeric', 'min:0'],
-            'gold_value' => ['nullable', 'numeric', 'min:0'],
-            'silver_value' => ['nullable', 'numeric', 'min:0'],
+            'silver_weight' => ['nullable', 'numeric', 'min:0'],
             'cash_value' => ['nullable', 'numeric', 'min:0'],
             'bank_value' => ['nullable', 'numeric', 'min:0'],
             'ccp_value' => ['nullable', 'numeric', 'min:0'],

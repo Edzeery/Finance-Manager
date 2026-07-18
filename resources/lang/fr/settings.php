@@ -38,14 +38,6 @@ return [
     'cancel_subscription' => 'Annuler l\'Abonnement',
     'cancel_scheduled' => 'Votre abonnement sera annulé à la fin de la période actuelle.',
     'cancel_confirm' => 'Êtes-vous sûr de vouloir annuler votre abonnement ? Vous perdrez l\'accès aux fonctionnalités premium à la fin de la période de facturation.',
-    'cancel_payment' => 'Annuler le paiement',
-    'cancel_payment_confirm' => 'Annuler ce paiement en attente ?',
-    'resume_subscription' => 'Reprendre l\'abonnement',
-    'resume_confirm' => 'Reprendre votre abonnement ? Vous continuerez avec le forfait actuel.',
-    'change_payment_method' => 'Changer le moyen de paiement',
-    'premium' => 'PRO',
-    'premium_feature' => 'Disponible dans les forfaits supérieurs',
-    'premium_feature_upgrade' => 'Mettez à niveau pour accéder à cette fonctionnalité',
     'user_limit_reached' => 'Limite d\'utilisateurs atteinte',
     'activity_log' => "Journal d'activité",
     'currency_dzd' => 'DZD (د.ج)',
@@ -120,4 +112,23 @@ return [
     'preferences_redirect' => 'Les préférences personnelles sont désormais gérées depuis les Paramètres du compte.',
     'tab_preferences' => 'Préférences',
     'tab_security' => 'Sécurité',
+
+    // Session Management
+    'active_sessions' => 'Sessions actives',
+    'active_sessions_help' => 'Gérez vos sessions de connexion actives sur tous vos appareils.',
+    'current_session' => 'Actuelle',
+    'revoke_session' => 'Révoquer la session',
+    'revoke_all_others' => 'Révoquer toutes les autres',
+    'confirm_revoke_all' => 'Êtes-vous sûr de vouloir révoquer toutes les autres sessions ? Vous serez déconnecté de tous les autres appareils.',
+    'session_revoked' => 'Session révoquée avec succès.',
+    'all_sessions_revoked' => 'Toutes les autres sessions ont été révoquées.',
+    'session_not_found' => 'Session non trouvée.',
+    'cannot_revoke_current' => 'Vous ne pouvez pas révoquer votre session actuelle.',
+    'no_sessions' => 'Aucune session active trouvée.',
+
+    // Login History
+    'login_history' => 'Historique de connexion',
+    'login_history_help' => 'Tentatives de connexion récentes sur votre compte.',
+    'no_login_history' => 'Aucun historique de connexion trouvé.',
+    'suspicious_activity' => 'Activité suspecte',
 ];

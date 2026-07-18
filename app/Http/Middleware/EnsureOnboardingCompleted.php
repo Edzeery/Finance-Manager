@@ -28,7 +28,6 @@ class EnsureOnboardingCompleted
         'theme.switch',
         'currency.switch',
         'logout',
-        'mystatuskit',
         'invitations.accept',
         'invitations.decline',
 

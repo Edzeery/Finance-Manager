@@ -117,6 +117,7 @@
         <div class="modal-dialog">
             <div class="modal-content modal-custom">
                 <form id="editForm" method="POST" data-categories='@json($categories->items())'>
+                    @method('PUT')
                     <div class="modal-header">
                         <h5 class="modal-title">{{ __('general.edit') }} {{ __('expense.category') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

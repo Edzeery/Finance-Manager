@@ -66,7 +66,7 @@
                         <span class="info-label">{{ __('general.roles') }}</span>
                         <span class="info-value">
                             @foreach($user->roles as $role)
-                                <span class="badge bg-secondary me-1">{{ $role->name }}</span>
+                                <x-status-badge domain="general" status="info" set="bi" size="xs" class="me-1" />
                             @endforeach
                         </span>
                     </div>

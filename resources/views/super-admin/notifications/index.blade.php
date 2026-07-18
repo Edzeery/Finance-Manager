@@ -68,7 +68,7 @@
                                             {{ $title ?: $notification->title_en }}
                                         </a>
                                         @if (!$notification->is_read)
-                                            <span class="badge bg-primary ms-1" style="font-size:10px">{{ __('admin.new') }}</span>
+                                            <x-status-badge domain="general" status="info" set="bi" size="xs" class="ms-1" />
                                         @endif
                                     </h6>
                                     <p class="mb-0 text-muted small text-truncate" style="max-width:600px">

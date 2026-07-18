@@ -57,6 +57,26 @@
                                 <input type="text" name="account_number" value="{{ old('account_number', $asset->account_number) }}" class="form-custom" maxlength="255">
                             </div>
 
+                            <div class="col-md-6" id="field-karat" style="display:none">
+                                <label class="form-label-custom">{{ __('asset.karat') }}</label>
+                                <select name="karat" id="karat" class="form-custom">
+                                    <option value="">--</option>
+                                    <option value="24" {{ old('karat', $asset->karat) == 24 ? 'selected' : '' }}>24 {{ __('zakat.karat_24') }}</option>
+                                    <option value="22" {{ old('karat', $asset->karat) == 22 ? 'selected' : '' }}>22 {{ __('zakat.karat_22') }}</option>
+                                    <option value="21" {{ old('karat', $asset->karat) == 21 ? 'selected' : '' }}>21 {{ __('zakat.karat_21') }}</option>
+                                    <option value="18" {{ old('karat', $asset->karat) == 18 ? 'selected' : '' }}>18 {{ __('zakat.karat_18') }}</option>
+                                    <option value="14" {{ old('karat', $asset->karat) == 14 ? 'selected' : '' }}>14 {{ __('zakat.karat_14') }}</option>
+                                    <option value="10" {{ old('karat', $asset->karat) == 10 ? 'selected' : '' }}>10 {{ __('zakat.karat_10') }}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6" id="field-weight_grams" style="display:none">
+                                <label class="form-label-custom">{{ __('asset.weight_grams') }}</label>
+                                <input type="number" step="0.0001" min="0" name="weight_grams" id="weight_grams"
+                                    value="{{ old('weight_grams', $asset->weight_grams) }}"
+                                    class="form-custom" placeholder="0.0000">
+                            </div>
+
                             <div class="col-6">
                                 <div class="mb-1">
                                     <x-toggle-switch name="is_liquid" :checked="old('is_liquid', $asset->is_liquid)" label="{{ __('asset.is_liquid') }}" hint="{{ __('asset.liquid_help') }}" />
@@ -100,6 +120,8 @@
         var bankFields = ['bank_name', 'account_number'];
         var qtyFields = ['quantity', 'unit_price'];
         var isBank = type === 'bank_account' || type === 'ccp';
+        var isGold = type === 'gold';
+        var isMetal = type === 'gold' || type === 'silver';
 
         bankFields.forEach(function(f) {
             var el = document.getElementById('field-' + f);
@@ -107,8 +129,14 @@
         });
         qtyFields.forEach(function(f) {
             var el = document.getElementById('field-' + f);
-            if (el) el.style.display = type === 'gold' || type === 'silver' ? 'block' : 'none';
+            if (el) el.style.display = isMetal ? 'block' : 'none';
         });
+
+        var karatEl = document.getElementById('field-karat');
+        if (karatEl) karatEl.style.display = isGold ? 'block' : 'none';
+
+        var weightEl = document.getElementById('field-weight_grams');
+        if (weightEl) weightEl.style.display = isMetal ? 'block' : 'none';
     }
     toggleAssetFields();
     </script>

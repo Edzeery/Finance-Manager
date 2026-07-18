@@ -68,11 +68,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-ticket-perforated"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('super-admin.no_coupons') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-ticket-perforated" :title="__('general.no_data')" :description="__('super-admin.no_coupons')" />
             @endif
         </div>
 

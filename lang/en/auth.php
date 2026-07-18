@@ -11,4 +11,6 @@ return [
     '2fa_enabled_log' => 'Two-factor authentication enabled.',
     '2fa_disabled_log' => 'Two-factor authentication disabled.',
     'invalid_2fa_code' => 'Invalid verification code. Please try again.',
+    'invalid_token' => 'Invalid token.',
+    'forbidden' => 'Forbidden.',
 ];

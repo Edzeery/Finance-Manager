@@ -9,6 +9,7 @@
     @vite(['resources/css/app.css'])
 </head>
 <body class="error-layout" style="--error-gradient:linear-gradient(135deg,var(--danger),#dc2626);--error-icon-bg:var(--danger-light);--error-icon-color:var(--danger)">
+    <x-page-loader />
     <div class="error-page">
         <div class="app-name"><i class="bi bi-shield-check"></i>{{ config('app.name') }}</div>
         <div class="error-icon"><i class="bi bi-exclamation-triangle"></i></div>

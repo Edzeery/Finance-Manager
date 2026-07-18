@@ -25,7 +25,7 @@
                             <span style="font-size:12px;color:var(--text-muted)">—</span>
                         @endforelse
                         @if($role->permissions->count() > 5)
-                            <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:2px 8px;border-radius:4px">+{{ $role->permissions->count() - 5 }}</span>
+                            <x-status-badge domain="general" status="info" set="bi" size="xs" class="ms-1" />
                         @endif
                     </div>
                     <a href="{{ route('settings.workspace.roles.show', $role) }}" class="btn" style="width:100%;padding:9px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:16px">

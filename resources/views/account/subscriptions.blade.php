@@ -39,7 +39,7 @@
     @if($pendingPayment)
         @php $continueUrl = $pendingPayment->getContinueUrl(); @endphp
         <div class="alert alert-warning d-flex align-items-center gap-3 flex-wrap" role="alert">
-            <i class="bi bi-exclamation-triangle" style="font-size:20px"></i>
+            <x-status-icon domain="general" status="warning" set="bi" style="font-size:20px" />
             <span class="flex-grow-1">{{ __('settings.pending_payment_block') }}</span>
             <div class="d-flex gap-2 flex-shrink-0">
                 @if($continueUrl)
@@ -272,8 +272,7 @@
                         </div>
                     @else
                         <div class="text-center py-4">
-                            <i class="bi bi-inbox" style="font-size:32px;color:var(--text-muted);opacity:0.4"></i>
-                            <p class="text-muted mt-2 mb-0">{{ __('settings.no_payments') }}</p>
+                            <x-empty-state icon="bi bi-inbox" :title="__('settings.no_payments')" />
                         </div>
                     @endif
                 </div>
@@ -349,8 +348,7 @@
 
                     @if($pendingPayment)
                         <div class="text-center py-4">
-                            <i class="bi bi-exclamation-triangle" style="font-size:32px;color:var(--warning);opacity:0.6"></i>
-                            <p class="text-muted mt-2 mb-0">{{ __('settings.pending_payment_block') }}</p>
+                            <x-empty-state icon="bi bi-exclamation-triangle" :title="__('settings.pending_payment_block')" />
                         </div>
                     @elseif($isOwner)
                         @php $currentPlan = $subscription?->plan; @endphp
@@ -376,9 +374,7 @@
                                         @endif
                                     </div>
                                     @if($isCurrent)
-                                        <span class="badge" style="background:var(--accent-light);color:var(--accent);font-size:10px;padding:3px 10px;border-radius:20px;font-weight:600">
-                                            {{ __('settings.current') }}
-                                        </span>
+                                        <x-status-badge domain="general" status="active" set="bi" size="xs" />
                                     @endif
                                 </div>
 
@@ -390,7 +386,7 @@
                                             <div style="font-size:12px;color:var(--text-muted);padding:2px 0"
                                                 x-show="showAll || {{ $index < 5 ? 'true' : 'false' }}"
                                                 x-transition:enter.duration.200ms>
-                                                <i class="bi bi-check-circle" style="color:var(--success);margin-inline-end:6px;font-size:11px"></i>
+                                                <x-status-icon domain="general" status="success" set="bi" style="margin-inline-end:6px;font-size:11px" />
                                                 {{ $fName }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
                                             </div>
                                         @endforeach

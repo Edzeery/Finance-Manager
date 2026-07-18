@@ -76,12 +76,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i
-                            class="bi bi-receipt"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('super-admin.no_invoices') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-receipt" :title="__('general.no_data')" :description="__('super-admin.no_invoices')" />
             @endif
         </div>
 

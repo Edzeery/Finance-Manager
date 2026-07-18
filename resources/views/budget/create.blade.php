@@ -53,13 +53,14 @@
 
                             <div class="col-md-6">
                                 <label class="form-label-custom">{{ __('budget.start_date') }} <span class="text-danger">*</span></label>
-                                <input type="date" name="start_date" value="{{ old('start_date', date('Y-m-d')) }}" class="form-custom @error('start_date') is-invalid @enderror" required>
+                                <input type="date" name="start_date" value="{{ old('start_date', date('Y-m-d')) }}" class="form-custom @error('start_date') is-invalid @enderror" required id="budget_start_date">
                                 @error('start_date') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label-custom">{{ __('budget.end_date') }}</label>
-                                <input type="date" name="end_date" value="{{ old('end_date') }}" class="form-custom @error('end_date') is-invalid @enderror">
+                                <input type="date" name="end_date" value="{{ old('end_date') }}" class="form-custom @error('end_date') is-invalid @enderror" id="budget_end_date">
+                                <small class="text-muted">{{ __('budget.auto_end_date_hint') }}</small>
                                 @error('end_date') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
                             </div>
 
@@ -118,10 +119,35 @@
         var el = document.getElementById('allocated-total');
         if (el) el.textContent = total.toFixed(2);
     }
+    function autoCalcEndDate() {
+        var type = document.querySelector('select[name="type"]').value;
+        var startDate = document.getElementById('budget_start_date').value;
+        var endDateField = document.getElementById('budget_end_date');
+
+        if (!startDate || type === 'custom') return;
+
+        var start = new Date(startDate);
+        var end = new Date(start);
+
+        if (type === 'monthly') {
+            end.setMonth(end.getMonth() + 1);
+            end.setDate(end.getDate() - 1);
+        } else if (type === 'yearly') {
+            end.setFullYear(end.getFullYear() + 1);
+            end.setDate(end.getDate() - 1);
+        }
+
+        endDateField.value = end.toISOString().split('T')[0];
+    }
     function initBudgetForm() {
         document.querySelectorAll('.category-amount').forEach(function(input) {
             input.addEventListener('input', updateAllocatedTotal);
         });
+        var typeSelect = document.querySelector('select[name="type"]');
+        var startInput = document.getElementById('budget_start_date');
+        if (typeSelect) typeSelect.addEventListener('change', autoCalcEndDate);
+        if (startInput) startInput.addEventListener('change', autoCalcEndDate);
+        autoCalcEndDate();
     }
     initBudgetForm();
     </script>

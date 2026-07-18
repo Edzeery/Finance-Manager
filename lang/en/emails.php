@@ -25,6 +25,7 @@ return [
     'log_in' => 'Log In',
     'debt_reminder_line' => 'This is a reminder that you have a debt payment due.',
     'payment_receipt_line' => 'A payment has been processed for your subscription.',
+    'welcome_line' => 'Thank you for joining :app. We are excited to have you on board!',
 
     'welcome_greeting' => 'Welcome aboard, :name!',
     'welcome_intro' => 'Thank you for creating an account with :app. We\'re truly excited to have you join our community!',
@@ -54,10 +55,6 @@ return [
 
     'subscription_cancelled_subject' => 'Subscription Cancelled — :app',
     'subscription_cancelled_line' => 'Your :plan plan has been cancelled. You will retain access until the end of your billing period.',
-    'plan' => 'Plan',
-    'end_date' => 'End Date',
-    'immediately' => 'Immediately',
-    'view_subscriptions' => 'View Subscriptions',
 
     'payment_failed_subject' => 'Payment Failed — :app',
     'payment_failed_line' => 'A payment attempt has failed. Please check your payment method and try again.',
@@ -76,9 +73,4 @@ return [
 
     'subscription_downgraded_subject' => 'Subscription Downgraded — :app',
     'subscription_downgraded_line' => 'Your subscription will be downgraded from :old_plan to :new_plan at the end of your billing period.',
-
-    'status_changed_subject' => 'Account Status Updated — :app',
-    'status_changed_line' => 'Your account status has been changed to: :status.',
-    'status_reason' => 'Reason: :reason',
-    'status_changed_footer' => 'If you have questions, please contact support.',
 ];

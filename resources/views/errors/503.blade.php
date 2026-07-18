@@ -9,6 +9,7 @@
     @vite(['resources/css/app.css'])
 </head>
 <body class="error-layout" style="--error-gradient:linear-gradient(135deg,var(--info),var(--accent));--error-icon-bg:var(--info-light);--error-icon-color:var(--info)">
+    <x-page-loader />
     <div class="error-page">
         <div class="app-name"><i class="bi bi-tools"></i>{{ config('app.name') }}</div>
         <div class="error-icon"><i class="bi bi-gear-wide-connected"></i></div>

@@ -91,9 +91,9 @@
                                 </td>
                                 <td class="text-start">
                                     @if ($txn['is_archived'])
-                                        <span class="badge" style="background:rgba(148,163,184,0.12); color:var(--text-muted); padding:4px 8px; border-radius:6px; font-size:11px">{{ __('transactions.archived') }}</span>
+                                        <x-status-badge domain="general" status="archived" set="bi" size="xs" />
                                     @else
-                                        <span class="badge" style="background:rgba(34,197,94,0.12); color:var(--success); padding:4px 8px; border-radius:6px; font-size:11px">{{ __('transactions.active') }}</span>
+                                        <x-status-badge domain="general" status="active" set="bi" size="xs" />
                                     @endif
                                 </td>
                                 <td class="text-end">

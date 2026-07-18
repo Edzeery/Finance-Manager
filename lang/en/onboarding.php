@@ -87,6 +87,8 @@ return [
     'coupon_min_amount' => 'Minimum order amount of :amount not met.',
     'coupon_fully_covered' => 'Coupon covers the full amount! No payment needed.',
     'coupon_applied' => 'Coupon applied successfully.',
+    'coupon_requires_gateway' => 'Please select a payment method first.',
+    'coupon_not_for_gateway' => 'This coupon is not valid for the selected payment method.',
     'plan_price' => 'Plan price',
     'coupon_discount' => 'Discount',
     'total' => 'Total',
@@ -144,6 +146,11 @@ return [
     'noest_clear' => 'Clear',
     'noest_no_desks_for_wilaya' => 'No delivery desks available in this wilaya.',
 
+    // Delivery method
+    'delivery_info' => 'Delivery Address',
+    'delivery_address' => 'Address',
+    'delivery_phone' => 'Phone Number',
+
     // Verification details
     'proof_details_title' => 'Submitted Proof Details',
     'receipt_preview' => 'Receipt Preview',
@@ -179,10 +186,6 @@ return [
     'payment_pending_desc' => 'Your payment is being processed. Please wait for confirmation.',
     'check_status' => 'Check Status',
 
-    // Development
-    'force_complete' => 'Complete Payment (Dev)',
-    'force_complete_hint' => 'Development only: complete the payment and activate subscription.',
-
     // Trust & Security
     'secure_payment' => 'Your payments are secured with encryption',
     'encrypted' => 'All transactions are encrypted and secure',
@@ -194,4 +197,8 @@ return [
     'pending_plan_banner' => 'You have a pending payment for plan \":plan\". Selecting a different plan will cancel the current payment.',
     'resume_payment' => 'Resume Payment',
     'change_plan' => 'Change Plan',
+
+    // Development
+    'force_complete' => 'Complete Payment (Dev)',
+    'force_complete_hint' => 'Development only: complete the payment and activate subscription.',
 ];

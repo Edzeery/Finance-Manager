@@ -19,4 +19,10 @@ return [
     'expiry_alert_message' => 'سينتهي اشتراكك خلال :days أيام في :date. جدد الآن لتجنب انقطاع الخدمة.',
     'expiry_alert_snoozed' => 'سنذكرك مرة أخرى غداً.',
     'expiry_alert_snooze' => 'ذكرني بعد يوم',
+
+    'personal_plan_description' => ' ابدأ بتجربة مجانية لمدة 30 يومًا — ثم افتح إدارة مالية متميزة للأفراد.',
+    'business_plan_description' => 'للشركات الصغيرة والفرق التي تحتاج إلى مساحات عمل متعددة.',
+    'professional_plan_description' => 'للمهنيين والشركات التي تحتاج إلى ميزات متقدمة ودعم أولوية.',
+    'enterprise_plan_description' => 'للمؤسسات الكبيرة التي تحتاج إلى ميزات مخصصة ودعم مخصص.',
+    'free_plan_description' => ' خطة مجانية بميزات محدودة للأفراد والفرق الصغيرة.',
 ];

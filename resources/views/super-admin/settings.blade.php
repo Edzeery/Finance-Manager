@@ -230,7 +230,8 @@
                         <div class="section-card-body">
                             @if ($twoFactorEnabled)
                                 <div class="d-flex align-items-center gap-2 mb-3" style="font-size:13px;background:var(--success-light);color:var(--success);border-radius:var(--radius-sm);padding:10px 14px">
-                                    <i class="bi bi-check-circle-fill"></i>{{ __('messages.two_factor_enabled') }}
+                                    <x-status-icon domain="general" status="success" set="bi" />
+                                    {{ __('messages.two_factor_enabled') }}
                                 </div>
                                 <form method="POST" action="{{ route('super.admin.settings.2fa.disable') }}">
                                     @csrf @method('PUT')
@@ -240,7 +241,8 @@
                                 </form>
                             @else
                                 <div class="d-flex align-items-center gap-2 mb-3" style="font-size:13px;background:var(--warning-light);color:var(--warning);border-radius:var(--radius-sm);padding:10px 14px">
-                                    <i class="bi bi-exclamation-triangle-fill"></i>{{ __('auth.2fa_not_enabled') }}
+                                    <x-status-icon domain="general" status="warning" set="bi" />
+                                    {{ __('auth.2fa_not_enabled') }}
                                 </div>
                                 <a href="{{ route('two-factor.setup') }}" class="btn" style="padding:8px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px">
                                     <i class="bi bi-shield-plus"></i>{{ __('general.setup_2fa') }}

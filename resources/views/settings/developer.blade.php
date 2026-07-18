@@ -177,11 +177,11 @@
                                                 <div class="d-flex align-items-center gap-2 flex-wrap">
                                                     <span id="token-name-{{ $token['id'] }}" class="fw-semibold" style="font-size:14px">{{ $token['name'] }}</span>
                                                     @if($isExpired)
-                                                        <span class="badge" style="background:var(--danger-light, #fef2f2);color:var(--danger);font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600">{{ __('general.expired') }}</span>
+                                                        <x-status-badge domain="general" status="expired" set="bi" size="xs" />
                                                     @elseif($isDeactivated)
-                                                        <span class="badge" style="background:var(--warning-light, #fef3c7);color:var(--warning);font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600">{{ __('developer.deactivated') }}</span>
+                                                        <x-status-badge domain="general" status="inactive" set="bi" size="xs" />
                                                     @elseif($expiresSoon)
-                                                        <span class="badge" style="background:var(--warning-light, #fef3c7);color:var(--warning);font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600">{{ __('general.expires_soon') }}</span>
+                                                        <x-status-badge domain="general" status="warning" set="bi" size="xs" />
                                                     @endif
                                                 </div>
                                                 <div class="d-flex align-items-center gap-3 flex-wrap" style="font-size:12px;color:var(--text-muted);margin-top:4px">
@@ -452,7 +452,7 @@
             <div class="modal-content">
                 <div class="modal-header border-0" style="padding-bottom:0">
                     <h5 class="modal-title d-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <x-status-icon domain="general" status="success" set="bi" class="text-success" />
                         <span>{{ __('developer.token_generated') }}</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" @click="setTimeout(() => location.reload(), 100)"></button>
@@ -460,7 +460,7 @@
                 <div class="modal-body pt-3">
                     <div class="alert" style="background:var(--danger-light, #fef2f2);border:1px solid var(--danger-border, #fecaca);border-radius:8px;padding:12px;margin-bottom:16px">
                         <div class="d-flex align-items-start gap-2">
-                            <i class="bi bi-exclamation-triangle-fill text-danger flex-shrink-0" style="margin-top:2px"></i>
+                            <x-status-icon domain="general" status="danger" set="bi" class="flex-shrink-0" style="margin-top:2px" />
                             <div>
                                 <p class="fw-semibold mb-1" style="font-size:13px;color:var(--danger)">{{ __('developer.token_one_time') }}</p>
                                 <p class="mb-0 small text-muted">{{ __('developer.token_generated_desc') }}</p>

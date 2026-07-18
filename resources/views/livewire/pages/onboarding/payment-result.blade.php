@@ -456,7 +456,7 @@ new #[Layout('layouts.guest')] class extends Component
                 </div>
                 <div class="my-4">
                     <div class="success-anim">
-                        <div class="circle"><i class="bi bi-check-lg"></i></div>
+                        <div class="circle"><x-status-icon domain="general" status="success" set="bi" /></div>
                     </div>
                 </div>
                 <p class="fw-bold">{{ __('onboarding.payment_success') }}</p>
@@ -485,7 +485,7 @@ new #[Layout('layouts.guest')] class extends Component
             </div>
             <div class="text-center mb-3">
                 <div class="fail-anim">
-                    <div class="circle"><i class="bi bi-x-lg"></i></div>
+                    <div class="circle"><x-status-icon domain="general" status="failed" set="bi" /></div>
                 </div>
             </div>
             <div class="alert alert-danger py-2 small">{{ $error }}</div>
@@ -515,7 +515,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <span class="logo-text">{{ __('general.app_name') }}</span>
             </div>
             <div class="text-center mb-3">
-                <div class="text-warning" style="font-size:3rem"><i class="bi bi-x-lg"></i></div>
+                <div class="text-warning" style="font-size:3rem"><x-status-icon domain="general" status="cancelled" set="bi" /></div>
             </div>
             <div class="alert alert-warning py-2 small">{{ $error }}</div>
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
@@ -607,7 +607,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <span class="logo-text">{{ __('general.app_name') }}</span>
             </div>
             <div class="text-center mb-3">
-                <div class="text-muted" style="font-size:3rem"><i class="bi bi-exclamation-triangle"></i></div>
+                <x-status-icon domain="general" status="danger" set="bi" style="font-size:3rem" />
             </div>
             <div class="alert alert-danger py-2 small">{{ $error }}</div>
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')

@@ -27,6 +27,7 @@
 </head>
 
 <body>
+    <x-page-loader />
     <div class="app-layout" x-data="appLayout" :class="{ 'sidebar-collapsed': collapsed }">
         @include('layouts.partials._user-sidebar')
 

@@ -11,4 +11,6 @@ return [
     '2fa_enabled_log' => 'Authentification à deux facteurs activée.',
     '2fa_disabled_log' => 'Authentification à deux facteurs désactivée.',
     'invalid_2fa_code' => 'Code de vérification invalide. Veuillez réessayer.',
+    'invalid_token' => 'Jeton invalide.',
+    'forbidden' => 'Interdit.',
 ];

@@ -38,6 +38,7 @@
 </head>
 
 <body class="landing-page" x-data="">
+    <x-page-loader />
     <nav class="landing-nav">
         <a href="/" class="nav-logo">
             <div class="logo-icon">FM</div>

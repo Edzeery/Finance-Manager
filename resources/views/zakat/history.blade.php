@@ -2,6 +2,8 @@
     <x-slot:title>{{ __('zakat.history') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('zakat.history') }}</x-slot>
 
+    @include('zakat._nav')
+
     <x-filter-tabs :tabs="$tabs" current="{{ $exceedsNisab }}" keyParam="exceeds_nisab" defaultKey="all" :preserve="['search','date_from','date_to','per_page']" />
 
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -44,12 +46,12 @@
                                 <td class="text-end">{{ number_format($record->total_zakatable, 2) }}</td>
                                 <td>
                                     @if($record->exceeds_nisab)
-                                        <span style="color:var(--success)"><i class="bi bi-check-circle"></i></span>
+                                        <x-status-icon domain="general" status="success" set="bi" />
                                     @else
-                                        <span style="color:var(--danger)"><i class="bi bi-x-circle"></i></span>
+                                        <x-status-icon domain="general" status="failed" set="bi" />
                                     @endif
                                 </td>
-                                <td text-start fw-bold style="color:var(--accent)">{{ number_format($record->zakat_amount, 2) }}</td>
+                                <td class="text-start fw-bold" style="color:var(--accent)">{{ number_format($record->zakat_amount, 2) }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('zakat.report', $record) }}" class="action-btn" title="{{ __('zakat.report') }}">
                                         <i class="bi bi-file-text"></i>

@@ -25,6 +25,7 @@
 </head>
 
 <body class="auth-page sa-guest overflow-y-auto">
+    <x-page-loader />
     {{ $slot }}
 
     @livewireScripts

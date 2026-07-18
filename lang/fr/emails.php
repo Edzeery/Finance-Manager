@@ -25,6 +25,7 @@ return [
     'log_in' => 'Connexion',
     'debt_reminder_line' => 'Ceci est un rappel qu\'un paiement de dette est dû.',
     'payment_receipt_line' => 'Un paiement a été traité pour votre abonnement.',
+    'welcome_line' => 'Merci d\'avoir rejoint :app. Nous sommes ravis de vous compter parmi nous !',
 
     'welcome_greeting' => 'Bienvenue à bord, :name !',
     'welcome_intro' => 'Merci d\'avoir créé un compte sur :app. Nous sommes vraiment ravis de vous accueillir dans notre communauté !',
@@ -54,10 +55,6 @@ return [
 
     'subscription_cancelled_subject' => 'Abonnement annulé — :app',
     'subscription_cancelled_line' => 'Votre abonnement :plan a été annulé. Vous conserverez l\'accès jusqu\'à la fin de votre période de facturation.',
-    'plan' => 'Forfait',
-    'end_date' => 'Date de fin',
-    'immediately' => 'Immédiatement',
-    'view_subscriptions' => 'Voir les abonnements',
 
     'payment_failed_subject' => 'Paiement échoué — :app',
     'payment_failed_line' => 'Une tentative de paiement a échoué. Veuillez vérifier votre moyen de paiement et réessayer.',
@@ -68,17 +65,7 @@ return [
 
     'subscription_upgraded_subject' => 'Abonnement amélioré — :app',
     'subscription_upgraded_line' => 'Votre abonnement a été amélioré de :old_plan à :new_plan.',
-    'old_plan' => 'Ancien forfait',
-    'new_plan' => 'Nouveau forfait',
-    'next_billing' => 'Prochaine facturation',
-    'effective_date' => 'Date d\'effet',
-    'now' => 'Maintenant',
 
     'subscription_downgraded_subject' => 'Abonnement rétrogradé — :app',
     'subscription_downgraded_line' => 'Votre abonnement sera rétrogradé de :old_plan à :new_plan à la fin de votre période de facturation.',
-
-    'status_changed_subject' => 'Statut du compte mis à jour — :app',
-    'status_changed_line' => 'Le statut de votre compte a été modifié en : :status.',
-    'status_reason' => 'Raison : :reason',
-    'status_changed_footer' => 'Si vous avez des questions, veuillez contacter le support.',
 ];

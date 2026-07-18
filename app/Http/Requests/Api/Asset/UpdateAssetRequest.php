@@ -18,6 +18,8 @@ class UpdateAssetRequest extends ApiRequest
         return [
             'name' => ['sometimes', 'string', 'max:255'],
             'type' => ['sometimes', Rule::in(AssetType::values())],
+            'karat' => ['nullable', 'integer', 'in:24,22,21,18,14,10'],
+            'weight_grams' => ['nullable', 'numeric', 'min:0'],
             'total_value' => ['sometimes', 'numeric', 'min:0'],
             'description' => ['nullable', 'string', 'max:1000'],
             'quantity' => ['nullable', 'numeric', 'min:0'],

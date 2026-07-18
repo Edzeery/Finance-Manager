@@ -87,6 +87,8 @@ return [
     'coupon_min_amount' => 'لم يتم استيفاء الحد الأدنى للمبلغ :amount.',
     'coupon_fully_covered' => 'الكوبون يغطي المبلغ بالكامل! لا حاجة للدفع.',
     'coupon_applied' => 'تم تطبيق الكوبون بنجاح.',
+    'coupon_requires_gateway' => 'يرجى اختيار طريقة دفع أولاً.',
+    'coupon_not_for_gateway' => 'هذا الكوبون غير صالح لطريقة الدفع المحددة.',
     'plan_price' => 'سعر الخطة',
     'coupon_discount' => 'الخصم',
     'total' => 'المجموع',
@@ -144,6 +146,11 @@ return [
     'noest_clear' => 'مسح',
     'noest_no_desks_for_wilaya' => 'لا توجد مكاتب توصيل متاحة في هذه الولاية.',
 
+    // Delivery method
+    'delivery_info' => 'عنوان التوصيل',
+    'delivery_address' => 'العنوان',
+    'delivery_phone' => 'رقم الهاتف',
+
     // Verification details
     'proof_details_title' => 'تفاصيل الإثبات المقدم',
     'receipt_preview' => 'معاينة الإيصال',
@@ -179,10 +186,6 @@ return [
     'payment_pending_desc' => 'يتم معالجة دفعتك. يرجى انتظار التأكيد.',
     'check_status' => 'تحقق من الحالة',
 
-    // Development
-    'force_complete' => 'إكمال الدفع (تجريبي)',
-    'force_complete_hint' => 'للتطوير فقط: إكمال الدفع وتفعيل الاشتراك.',
-
     // Trust & Security
     'secure_payment' => 'مدفوعاتك محمية بتقنية التشفير',
     'encrypted' => 'جميع المعاملات مشفرة وآمنة',
@@ -194,4 +197,8 @@ return [
     'pending_plan_banner' => 'لديك دفع معلق لخطة «:plan». اختيار خطة مختلفة سيلغي الدفع الحالي.',
     'resume_payment' => 'متابعة الدفع',
     'change_plan' => 'تغيير الخطة',
+
+    // Development
+    'force_complete' => 'إكمال الدفع (تجريبي)',
+    'force_complete_hint' => 'للتطوير فقط: إكمال الدفع وتفعيل الاشتراك.',
 ];

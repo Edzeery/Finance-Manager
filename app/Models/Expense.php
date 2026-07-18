@@ -67,7 +67,7 @@ class Expense extends Model
     protected $fillable = [
         'user_id', 'workspace_id', 'category_id', 'amount', 'description', 'date',
         'is_recurring', 'recurring_frequency', 'recurring_end_date',
-        'is_archived', 'receipt_path', 'notes',
+        'is_archived', 'receipt_path', 'notes', 'debt_id',
     ];
 
     protected function casts(): array
@@ -90,6 +90,11 @@ class Expense extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(ExpenseCategory::class, 'category_id');
+    }
+
+    public function debt(): BelongsTo
+    {
+        return $this->belongsTo(Debt::class);
     }
 
     public function scopeForPeriod($query, $start, $end)

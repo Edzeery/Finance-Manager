@@ -1,17 +1,17 @@
 <?php
 
 return [
-    'title' => 'Gestion des utilisateurs',
-    'description' => 'Gérer les utilisateurs, les rôles et les permissions',
-    'add_user' => 'Ajouter un utilisateur',
-    'edit_user' => 'Modifier l\'utilisateur',
-    'create_user' => 'Créer un utilisateur',
-    'save_user' => 'Enregistrer l\'utilisateur',
-    'user_details' => 'Détails de l\'utilisateur',
+    'title' => 'Gestion des Utilisateurs',
+    'description' => 'Gérer les utilisateurs, rôles et permissions',
+    'add_user' => 'Ajouter un Utilisateur',
+    'edit_user' => 'Modifier l\'Utilisateur',
+    'create_user' => 'Créer l\'Utilisateur',
+    'save_user' => 'Enregistrer l\'Utilisateur',
+    'user_details' => 'Détails de l\'Utilisateur',
     'roles' => 'Rôles',
     'password_leave_blank' => 'Laissez vide pour conserver le mot de passe actuel',
     'users_count' => 'Nombre d\'utilisateurs',
-    'add_user_desc' => 'Créer un nouvel utilisateur et attribuer des rôles.',
+    'add_user_desc' => 'Créer un nouvel utilisateur de la plateforme et attribuer des rôles.',
 
     'notifications' => 'Notifications',
     'notifications_description' => 'Affichage de :count notification(s)',

@@ -18,6 +18,8 @@ class StoreAssetRequest extends ApiRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', Rule::in(AssetType::values())],
+            'karat' => ['nullable', 'integer', 'in:24,22,21,18,14,10'],
+            'weight_grams' => ['nullable', 'numeric', 'min:0'],
             'total_value' => ['required', 'numeric', 'min:0'],
             'description' => ['nullable', 'string', 'max:1000'],
             'quantity' => ['nullable', 'numeric', 'min:0'],

@@ -118,10 +118,7 @@
                     <div>{{ $logs->appends(request()->except('page'))->links() }}</div>
                 </div>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-clock-history"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                </div>
+                <x-empty-state icon="bi bi-clock-history" :title="__('general.no_data')" />
             @endif
         </div>
     </div>

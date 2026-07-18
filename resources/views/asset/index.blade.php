@@ -158,13 +158,21 @@
                                     </td>
                                     <td>
                                         <span style="font-weight:500">{{ $asset->name }}</span>
+                                        @if ($asset->type->value === 'gold' && $asset->karat)
+                                            <x-status-badge domain="general" status="warning" set="bi" size="xs" class="ms-1" />
+                                        @endif
                                         @if ($asset->description)
                                             <br><small
                                                 style="color:var(--text-muted)">{{ $asset->description }}</small>
                                         @endif
                                     </td>
                                     <td class="text-start">
-                                        {{ $asset->quantity ? number_format($asset->quantity, 4) : '—' }}</td>
+                                        @if (($asset->type->value === 'gold' || $asset->type->value === 'silver') && $asset->weight_grams)
+                                            {{ number_format($asset->weight_grams, 4) }}g
+                                        @else
+                                            {{ $asset->quantity ? number_format($asset->quantity, 4) : '—' }}
+                                        @endif
+                                    </td>
                                     <td class="text-start fw-bold">{{ number_format($asset->total_value, 2) }} <small
                                             style="font-weight:400; color:var(--text-muted)">{{ config('finance.currency_symbol') }}</small>
                                     </td>

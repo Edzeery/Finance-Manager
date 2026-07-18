@@ -66,6 +66,25 @@
                             </div>
 
                             <div class="col-12">
+                                <div class="mb-3">
+                                    <x-toggle-switch name="is_new_debt" id="is_new_debt" :checked="old('is_new_debt')" label="{{ __('expense.create_as_debt') }}" />
+                                </div>
+                            </div>
+
+                            <div id="debtFields" class="col-12 row g-3" style="display:{{ old('is_new_debt') ? 'flex' : 'none' }}">
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">{{ __('debt.counterparty_name') }} <span class="text-danger">*</span></label>
+                                    <input type="text" name="debt_counterparty" value="{{ old('debt_counterparty') }}" class="form-custom @error('debt_counterparty') is-invalid @enderror" placeholder="{{ __('debt.counterparty_name') }}">
+                                    @error('debt_counterparty') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">{{ __('debt.due_date') }} <span class="text-danger">*</span></label>
+                                    <input type="date" name="debt_due_date" value="{{ old('debt_due_date') }}" class="form-custom @error('debt_due_date') is-invalid @enderror">
+                                    @error('debt_due_date') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12">
                                 <label class="form-label-custom">{{ __('expense.notes') }}</label>
                                 <textarea name="notes" class="form-custom" rows="3" placeholder="{{ __('expense.notes') }}" maxlength="1000">{{ old('notes') }}</textarea>
                             </div>
@@ -92,11 +111,19 @@
         document.getElementById('recurringFields').style.display =
             hidden && hidden.value === '1' ? 'flex' : 'none';
     }
+    function toggleDebtFields() {
+        var hidden = document.getElementById('is_new_debt_hidden');
+        document.getElementById('debtFields').style.display =
+            hidden && hidden.value === '1' ? 'flex' : 'none';
+    }
     document.addEventListener('click', function(e) {
         var btn = e.target.closest && e.target.closest('#is_recurring');
         if (btn) setTimeout(toggleRecurring, 10);
+        var btn2 = e.target.closest && e.target.closest('#is_new_debt');
+        if (btn2) setTimeout(toggleDebtFields, 10);
     });
     toggleRecurring();
+    toggleDebtFields();
     </script>
     @endpush
 </x-app-layout>

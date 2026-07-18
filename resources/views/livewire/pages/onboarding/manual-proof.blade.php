@@ -286,7 +286,7 @@ new #[Layout('layouts.guest')] class extends Component
 
     @elseif ($view === 'completed')
         <div class="text-center mb-4">
-            <div class="mb-3" style="font-size:4rem"><i class="bi bi-check-circle-fill text-success"></i></div>
+            <x-status-icon domain="general" status="success" set="bi" class="mb-3" style="font-size:4rem" />
             <h5>{{ __('onboarding.payment_success') }}</h5>
             <p class="text-muted small">{{ __('onboarding.proof_approved_desc') }}</p>
         </div>
@@ -300,7 +300,7 @@ new #[Layout('layouts.guest')] class extends Component
     @elseif ($view === 'rejected')
         @php $v = $payment->verification; @endphp
         <div class="text-center mb-4">
-            <div class="mb-3" style="font-size:3rem"><i class="bi bi-x-circle-fill text-danger"></i></div>
+            <x-status-icon domain="general" status="failed" set="bi" class="mb-3" style="font-size:3rem" />
             <h5>{{ __('onboarding.proof_rejected') }}</h5>
             <p class="text-muted small">{{ __('onboarding.proof_rejected_desc') }}</p>
         </div>
@@ -343,7 +343,7 @@ new #[Layout('layouts.guest')] class extends Component
     @elseif ($view === 'submitted')
         @php $v = $payment->verification; @endphp
         <div class="text-center mb-4">
-            <i class="bi bi-clock-history text-warning" style="font-size:3rem;"></i>
+            <x-status-icon domain="general" status="pending" set="bi" style="font-size:3rem" />
             <h5 class="mt-3">{{ __('onboarding.proof_pending_review') }}</h5>
             <p class="text-muted small">{{ __('onboarding.proof_pending_review_desc') }}</p>
         </div>

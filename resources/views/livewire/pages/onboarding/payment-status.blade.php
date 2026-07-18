@@ -257,7 +257,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <span class="logo-sub">{{ __('onboarding.resume_payment') }}</span>
             </div>
             <div class="text-center mb-3">
-                <div class="text-warning" style="font-size:3rem"><i class="bi bi-clock-history"></i></div>
+                <x-status-icon domain="general" status="pending" set="bi" style="font-size:3rem" />
                 <p class="mt-2">{{ __('onboarding.payment_pending_desc') ?? __('onboarding.payment_pending') }}</p>
             </div>
 
@@ -296,7 +296,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <span class="logo-text">{{ __('general.app_name') }}</span>
             </div>
             <div class="text-center mb-3">
-                <div class="text-danger" style="font-size:3rem"><i class="bi bi-x-circle-fill"></i></div>
+                <x-status-icon domain="general" status="failed" set="bi" style="font-size:3rem" />
             </div>
             <div class="alert alert-danger py-2 small">{{ $errorMessage ?? __('onboarding.payment_failed') }}</div>
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
@@ -321,7 +321,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <span class="logo-text">{{ __('general.app_name') }}</span>
             </div>
             <div class="text-center mb-3">
-                <div class="text-warning" style="font-size:3rem"><i class="bi bi-x-lg"></i></div>
+                <x-status-icon domain="general" status="cancelled" set="bi" style="font-size:3rem" />
             </div>
             <div class="alert alert-warning py-2 small text-center">{{ __('onboarding.payment_cancelled_desc') }}</div>
 
@@ -384,7 +384,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <span class="logo-text">{{ __('general.app_name') }}</span>
             </div>
             <div class="text-center mb-3">
-                <div class="text-muted" style="font-size:3rem"><i class="bi bi-exclamation-triangle"></i></div>
+                <x-status-icon domain="general" status="expired" set="bi" style="font-size:3rem" />
             </div>
             <div class="alert alert-danger py-2 small">{{ $errorMessage ?? __('onboarding.no_pending_payment') }}</div>
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')

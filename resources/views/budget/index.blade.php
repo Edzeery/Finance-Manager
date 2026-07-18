@@ -119,11 +119,13 @@
 
                             @if($isExceeded)
                                 <div class="mt-2" style="font-size:12px; color:var(--danger); background:rgba(239,68,68,0.08); padding:6px 10px; border-radius:6px">
-                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ __('budget.exceeded') }}
+                                    <x-status-icon domain="general" status="danger" set="bi" class="me-1" />
+                                    {{ __('budget.exceeded') }}
                                 </div>
                             @elseif($pct > 80)
                                 <div class="mt-2" style="font-size:12px; color:var(--warning); background:rgba(245,158,11,0.08); padding:6px 10px; border-radius:6px">
-                                    <i class="bi bi-exclamation-circle me-1"></i>{{ __('budget.warning', ['percent' => $pct]) }}
+                                    <x-status-icon domain="general" status="warning" set="bi" class="me-1" />
+                                    {{ __('budget.warning', ['percent' => $pct]) }}
                                 </div>
                             @endif
 

@@ -74,18 +74,4 @@ return [
     'token_deactivated_desc' => 'هذا المفتاح متوقف ولا يمكن استخدامه. قم بتفعيله أولاً لعرض قيمة المفتاح.',
     'token_usage' => 'استخدام المفاتيح',
     'token_limit_reached' => 'لقد وصلت إلى الحد الأقصى لعدد المفاتيح (:limit) المسموح به في خطتك.',
-
-    // API Quota
-    'api_quota' => 'حصة API',
-    'per_minute' => 'في الدقيقة',
-    'per_hour' => 'في الساعة',
-    'per_day' => 'في اليوم',
-    'remaining' => 'متبقي',
-    'quota_unlimited' => 'غير محدود',
-    'quota_not_available' => 'حصة API غير متاحة لخطتك الحالية.',
-
-    // Usage History
-    'requests_7d' => 'طلب (7أ)',
-    'usage_history' => 'سجل الاستخدام (آخر 7 أيام)',
-    'usage_history_desc' => ':total طلب في آخر 7 أيام.',
 ];

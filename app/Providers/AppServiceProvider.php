@@ -9,7 +9,11 @@ use App\Listeners\CompleteOnboarding;
 use App\Listeners\CreateAdminNotification;
 use App\Listeners\LogAuthEvent;
 use App\Listeners\SendPaymentReceipt;
+use App\Models\DebtPayment;
+use App\Models\Invoice;
 use App\Models\PersonalAccessToken;
+use App\Observers\DebtPaymentObserver;
+use App\Observers\InvoiceObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Vite;
 use Illuminate\Pagination\Paginator;
@@ -65,6 +69,9 @@ class AppServiceProvider extends ServiceProvider
             Registered::class,
             CreateAdminNotification::class,
         );
+
+        DebtPayment::observe(DebtPaymentObserver::class);
+        Invoice::observe(InvoiceObserver::class);
 
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
 

@@ -609,7 +609,7 @@ new #[Layout('layouts.guest')] class extends Component {
         <div class="alert alert-warning d-flex align-items-start gap-3 mb-4 p-3 rounded-3 border-0 shadow-sm"
             style="background: #fff3cd; border: 1px solid #ffc107;">
             <div class="flex-shrink-0">
-                <i class="bi bi-exclamation-triangle-fill fs-4" style="color: #856404;"></i>
+                <x-status-icon domain="general" status="warning" set="bi" class="fs-4" />
             </div>
             <div class="flex-grow-1">
                 <strong class="d-block mb-1"
@@ -707,7 +707,7 @@ new #[Layout('layouts.guest')] class extends Component {
                                 @if ($feature['icon'])
                                     <i class="{{ $feature['icon'] }}"></i>
                                 @else
-                                    <i class="bi bi-check-circle-fill"></i>
+                                    <x-status-icon domain="general" status="success" set="bi" />
                                 @endif
                                 @php
                                     $nameKey = 'name_' . app()->getLocale();
@@ -734,7 +734,7 @@ new #[Layout('layouts.guest')] class extends Component {
                             @endif
                         @else
                             @foreach (is_array($plan['features'] ?? null) ? $plan['features'] : [] as $feature)
-                                <li><i class="bi bi-check-circle-fill"></i> {{ $feature }}</li>
+                                <li><x-status-icon domain="general" status="success" set="bi" /> {{ $feature }}</li>
                             @endforeach
                         @endif
                     </ul>

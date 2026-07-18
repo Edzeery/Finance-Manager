@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Expense;
 
 use App\Contracts\Repositories\ExpenseRepositoryInterface;
+use App\Enums\DebtStatus;
+use App\Enums\DebtType;
 use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\Expense\StoreExpenseRequest;
 use App\Http\Requests\Expense\UpdateExpenseRequest;
+use App\Models\Debt;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
@@ -100,9 +103,25 @@ class ExpenseController extends BaseCrudController
 
     public function store(StoreExpenseRequest $request)
     {
-        $this->expenseRepo->create(array_merge($request->validated(), [
-            'user_id' => auth()->id(),
-        ]));
+        $data = $request->validated();
+        $data['user_id'] = auth()->id();
+
+        if ($request->boolean('is_new_debt') && $request->filled('debt_counterparty')) {
+            $debt = Debt::create([
+                'user_id' => auth()->id(),
+                'type' => DebtType::Owing,
+                'counterparty_name' => $request->input('debt_counterparty'),
+                'total_amount' => $request->input('amount'),
+                'paid_amount' => 0,
+                'due_date' => $request->input('debt_due_date'),
+                'status' => DebtStatus::Active,
+                'description' => $request->input('description'),
+                'notes' => 'تم إنشاؤه تلقائياً من مصروف: ' . ($request->input('description') ?? ''),
+            ]);
+            $data['debt_id'] = $debt->id;
+        }
+
+        $this->expenseRepo->create($data);
 
         return redirect()->route('expense.index')
             ->with('success', __('messages.expense_created'));

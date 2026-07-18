@@ -92,7 +92,7 @@
                 <div class="kpi-label">{{ __('dashboard.total_debts') }} ({{ __('dashboard.all_time') }})</div>
                 <div class="kpi-value">{{ number_format($kpi->totalDebts, 2) }} {{ config('finance.currency_symbol') }}</div>
                 <div class="kpi-trend down">
-                    <i class="bi bi-exclamation-circle"></i>
+                    <x-status-icon domain="general" status="failed" set="bi" />
                     {{ $kpi->overdueDebts }} {{ __('dashboard.overdue_debts') }}
                 </div>
             </div>
@@ -208,7 +208,7 @@
             <div class="dashboard-chart-card h-100">
                 <div class="chart-header">
                     <h5 class="d-flex align-items-center gap-2">
-                        <i class="bi bi-exclamation-triangle" style="color:var(--warning)"></i>
+                        <x-status-icon domain="general" status="warning" set="bi" />
                         <span>{{ __('dashboard.budget_alerts') }}</span>
                     </h5>
                     <a href="{{ route('budget.index') }}" wire:navigate style="font-size:13px;color:var(--accent);text-decoration:none">{{ __('dashboard.view_all') }}</a>
@@ -311,8 +311,7 @@
                             @empty
                                 <tr>
                                     <td colspan="4" class="text-center text-muted py-4">
-                                        <i class="bi bi-inbox" style="font-size:24px; display:block; margin-bottom:8px"></i>
-                                        {{ __('general.no_data') }}
+                                        <x-empty-state icon="bi bi-inbox" :title="__('general.no_data')" />
                                     </td>
                                 </tr>
                             @endforelse

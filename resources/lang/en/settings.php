@@ -38,14 +38,6 @@ return [
     'cancel_subscription' => 'Cancel Subscription',
     'cancel_scheduled' => 'Your subscription will be canceled at the end of the current billing period.',
     'cancel_confirm' => 'Are you sure you want to cancel your subscription? You will lose access to premium features at the end of the billing period.',
-    'cancel_payment' => 'Cancel Payment',
-    'cancel_payment_confirm' => 'Cancel this pending payment?',
-    'resume_subscription' => 'Resume Subscription',
-    'resume_confirm' => 'Resume your subscription? You will continue with the current plan.',
-    'change_payment_method' => 'Change Payment Method',
-    'premium' => 'PRO',
-    'premium_feature' => 'Available on higher plans',
-    'premium_feature_upgrade' => 'Upgrade to access this feature',
     'user_limit_reached' => 'User limit reached',
     'activity_log' => 'Activity Log',
     'currency_dzd' => 'DZD (د.ج)',
@@ -122,4 +114,23 @@ return [
     'preferences_redirect' => 'Personal preferences are now managed from Account Settings.',
     'tab_preferences' => 'Preferences',
     'tab_security' => 'Security',
+
+    // Session Management
+    'active_sessions' => 'Active Sessions',
+    'active_sessions_help' => 'Manage your active login sessions across devices.',
+    'current_session' => 'Current',
+    'revoke_session' => 'Revoke Session',
+    'revoke_all_others' => 'Revoke All Others',
+    'confirm_revoke_all' => 'Are you sure you want to revoke all other sessions? This will log you out from all other devices.',
+    'session_revoked' => 'Session revoked successfully.',
+    'all_sessions_revoked' => 'All other sessions have been revoked.',
+    'session_not_found' => 'Session not found.',
+    'cannot_revoke_current' => 'You cannot revoke your current session.',
+    'no_sessions' => 'No active sessions found.',
+
+    // Login History
+    'login_history' => 'Login History',
+    'login_history_help' => 'Recent login attempts on your account.',
+    'no_login_history' => 'No login history found.',
+    'suspicious_activity' => 'Suspicious Activity',
 ];

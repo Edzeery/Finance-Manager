@@ -285,4 +285,5 @@ return [
     'next' => 'Suivant',
     'suspended' => 'Suspendu',
     'banned' => 'Banni',
+    'pc' => 'Bureau'
 ];

@@ -104,11 +104,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-currency-dollar"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('super-admin.no_plans') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-currency-dollar" :title="__('general.no_data')" :description="__('super-admin.no_plans')" />
             @endif
         </div>
 
@@ -199,11 +195,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-list-check"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('super-admin.no_features') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-list-check" :title="__('general.no_data')" :description="__('super-admin.no_features')" />
             @endif
         </div>
 
@@ -282,17 +274,9 @@
                     </tbody>
                 </table>
             @elseif($selectedPlan && !$prices->count())
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-currency-dollar"></i></div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('super-admin.no_prices_for_plan') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-currency-dollar" :title="__('general.no_data')" />
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-currency-dollar"></i></div>
-                    <h4>{{ __('super-admin.select_plan') }}</h4>
-                    <p>{{ __('super-admin.prices_select_plan_hint') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-currency-dollar" :title="__('super-admin.select_plan')" />
             @endif
         </div>
     </div>

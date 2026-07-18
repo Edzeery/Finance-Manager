@@ -246,6 +246,8 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
             ->middleware('permission:zakat.create')->name('calculate');
         Route::get('/history', [ZakatController::class, 'history'])->name('history');
         Route::get('/report/{zakatRecord}', [ZakatController::class, 'report'])->name('report');
+        Route::get('/fetch-prices', [ZakatController::class, 'fetchPrices'])
+            ->middleware('permission:zakat.create')->name('fetch-prices');
     });
 
     Route::prefix('report')->name('report.')->middleware(['throttle:web-search', 'permission:report.view', 'plan.feature:reports'])->group(function () {
@@ -256,8 +258,6 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
 
     Route::prefix('settings')->name('settings.')->middleware(['permission:workspace-setting.view', 'plan.feature:team_management', 'throttle:web-crud'])->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('index');
-        Route::post('/', [SettingsController::class, 'update'])
-            ->middleware('permission:workspace-setting.update')->name('update');
     });
 
     Route::permanentRedirect('/settings/subscriptions', '/account/subscriptions')->name('settings.subscriptions');

@@ -55,6 +55,7 @@ return [
         'published' => ['variant' => 'success', 'light' => 'text-green-700 bg-green-100',   'dark' => 'dark:text-green-300 dark:bg-green-900/40',  'hex' => '#16a34a', 'icon' => 'published'],
         'unpublished' => ['variant' => 'gray',    'light' => 'text-gray-700 bg-gray-100',      'dark' => 'dark:text-gray-300 dark:bg-gray-800',        'hex' => '#9ca3af', 'icon' => 'unpublished'],
         'archived' => ['variant' => 'gray',    'light' => 'text-gray-700 bg-gray-100',      'dark' => 'dark:text-gray-300 dark:bg-gray-800',        'hex' => '#9ca3af', 'icon' => 'archived'],
+        'pc' => ['variant' => 'gray',    'light' => 'text-gray-700 bg-gray-100',      'dark' => 'dark:text-gray-300 dark:bg-gray-800',        'hex' => '#9ca3af', 'icon' => 'pc'],
         'default' => ['variant' => 'gray',    'light' => 'text-gray-700 bg-gray-100',      'dark' => 'dark:text-gray-300 dark:bg-gray-800',        'hex' => '#9ca3af', 'icon' => 'default'],
     ],
 
@@ -319,7 +320,9 @@ return [
     // الدومين العام — بادجات + أيقونات قابلة لإعادة الاستعمال
     // ══════════════════════════════════════════════════════════════
     'general' => [
+
         // ── حالات مشتركة (من _shared) ──
+        'pc' => 'pc',
         'active' => 'active', 'inactive' => 'inactive', 'pending' => 'pending',
         'approved' => 'approved', 'rejected' => 'rejected', 'suspended' => 'suspended',
         'blocked' => 'blocked', 'banned' => 'banned', 'draft' => 'draft',

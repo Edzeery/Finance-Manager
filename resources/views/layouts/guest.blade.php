@@ -25,6 +25,7 @@
 </head>
 
 <body class="auth-page overflow-y-auto">
+    <x-page-loader />
     <x-navbar variant="guest" />
     @isset($slot)
         {{ $slot }}

@@ -17,6 +17,8 @@ class UpdateAssetRequest extends FormRequest
     {
         return [
             'type' => ['required', Rule::in(AssetType::values())],
+            'karat' => ['nullable', 'integer', 'in:24,22,21,18,14,10'],
+            'weight_grams' => ['nullable', 'numeric', 'min:0'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'quantity' => ['nullable', 'numeric', 'min:0'],

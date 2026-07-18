@@ -21,13 +21,16 @@ class Asset extends Model
     }
 
     protected $fillable = [
-        'user_id', 'workspace_id', 'type', 'name', 'description', 'quantity', 'unit_price',
+        'user_id', 'workspace_id', 'type', 'karat', 'weight_grams',
+        'name', 'description', 'quantity', 'unit_price',
         'total_value', 'currency', 'bank_name', 'account_number', 'is_liquid', 'is_zakatable', 'notes',
     ];
 
     protected function casts(): array
     {
         return [
+            'karat' => 'integer',
+            'weight_grams' => 'decimal:4',
             'quantity' => 'decimal:4',
             'unit_price' => 'decimal:2',
             'total_value' => 'decimal:2',

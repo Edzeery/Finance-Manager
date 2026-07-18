@@ -79,13 +79,7 @@
                     </tbody>
                 </table>
             @else
-                <div class="empty-state">
-                    <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)">
-                        <i class="bi bi-credit-card"></i>
-                    </div>
-                    <h4>{{ __('general.no_data') }}</h4>
-                    <p>{{ __('messages.no_results') }}</p>
-                </div>
+                <x-empty-state icon="bi bi-credit-card" :title="__('general.no_data')" :description="__('messages.no_results')" />
             @endif
         </div>
 

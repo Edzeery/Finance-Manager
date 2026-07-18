@@ -25,6 +25,7 @@
 </head>
 
 <body class="super-admin-layout" x-data="superAdminLayout" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
+    <x-page-loader />
     @include('layouts.super-admin.partials.sidebar')
 
     <div class="main-content">

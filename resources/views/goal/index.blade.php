@@ -112,7 +112,7 @@
                                         @if($remaining !== null)
                                             <span>{{ $remaining }} {{ __('goal.days_remaining') }}</span>
                                             @if($isBehind)
-                                                <span class="ms-2" style="color:var(--danger)"><i class="bi bi-exclamation-triangle-fill"></i> {{ __('goal.behind') }}</span>
+                                                <span class="ms-2" style="color:var(--danger)"><x-status-icon domain="general" status="danger" set="bi" /> {{ __('goal.behind') }}</span>
                                             @endif
                                         @endif
                                     @endif

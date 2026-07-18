@@ -21,13 +21,16 @@ class StoreExpenseRequest extends FormRequest
     {
         return [
             'category_id' => ['required', 'exists:expense_categories,id'],
-            'amount' => ['required', 'numeric', 'min:0'],
+            'amount' => ['required', 'numeric', 'min:0.01'],
             'date' => ['required', 'date'],
             'description' => ['nullable', 'string', 'max:1000'],
             'is_recurring' => ['boolean'],
             'recurring_frequency' => ['nullable', 'required_if:is_recurring,true', Rule::in(RecurringFrequency::values())],
             'recurring_end_date' => ['nullable', 'date', 'after_or_equal:date'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'is_new_debt' => ['boolean'],
+            'debt_counterparty' => ['nullable', 'string', 'max:255', 'required_if:is_new_debt,true'],
+            'debt_due_date' => ['nullable', 'date', 'required_if:is_new_debt,true'],
         ];
     }
 

@@ -28,7 +28,14 @@ class CategorySeeder extends Seeder
             ['name_ar' => 'الفواتير', 'name_fr' => 'Factures', 'name_en' => 'Utilities', 'icon' => 'bi-lightning', 'color' => '#F97316', 'type' => 'fixed', 'sort_order' => 7],
             ['name_ar' => 'الاتصالات', 'name_fr' => 'Télécom', 'name_en' => 'Telecom', 'icon' => 'bi-phone', 'color' => '#14B8A6', 'type' => 'fixed', 'sort_order' => 8],
             ['name_ar' => 'ملابس', 'name_fr' => 'Vêtements', 'name_en' => 'Clothing', 'icon' => 'bi-handbag', 'color' => '#E11D48', 'type' => 'variable', 'sort_order' => 9],
-            ['name_ar' => 'أخرى', 'name_fr' => 'Autres', 'name_en' => 'Other', 'icon' => 'bi-three-dots', 'color' => '#64748B', 'type' => 'variable', 'sort_order' => 10],
+            ['name_ar' => 'الاشتراكات', 'name_fr' => 'Abonnements', 'name_en' => 'Subscriptions', 'icon' => 'bi-arrow-repeat', 'color' => '#7C3AED', 'type' => 'recurring', 'sort_order' => 10],
+            ['name_ar' => 'الصدقات والعبادات', 'name_fr' => 'Charité', 'name_en' => 'Charity', 'icon' => 'bi-heart', 'color' => '#16A34A', 'type' => 'variable', 'sort_order' => 11],
+            ['name_ar' => 'الهدايا', 'name_fr' => 'Cadeaux', 'name_en' => 'Gifts', 'icon' => 'bi-gift', 'color' => '#CA8A04', 'type' => 'variable', 'sort_order' => 12],
+            ['name_ar' => 'الصيانة والإصلاحات', 'name_fr' => 'Réparations', 'name_en' => 'Repairs', 'icon' => 'bi-wrench', 'color' => '#9333EA', 'type' => 'variable', 'sort_order' => 13],
+            ['name_ar' => 'التأمين', 'name_fr' => 'Assurance', 'name_en' => 'Insurance', 'icon' => 'bi-shield-check', 'color' => '#0891B2', 'type' => 'fixed', 'sort_order' => 14],
+            ['name_ar' => 'الضرائب والرسوم', 'name_fr' => 'Taxes', 'name_en' => 'Taxes', 'icon' => 'bi-file-earmark-text', 'color' => '#DC2626', 'type' => 'fixed', 'sort_order' => 15],
+            ['name_ar' => 'سداد القروض', 'name_fr' => 'Prêts', 'name_en' => 'Loan Repayment', 'icon' => 'bi-bank', 'color' => '#B91C1C', 'type' => 'fixed', 'sort_order' => 16],
+            ['name_ar' => 'أخرى', 'name_fr' => 'Autres', 'name_en' => 'Other', 'icon' => 'bi-three-dots', 'color' => '#64748B', 'type' => 'variable', 'sort_order' => 17],
         ];
 
         foreach ($incomeCategories as $cat) {

@@ -13,17 +13,42 @@ class AssetFactory extends Factory
 
     public function definition(): array
     {
+        $type = fake()->randomElement(['cash', 'bank_account', 'gold', 'silver', 'real_estate', 'stocks']);
+        $isGold = $type === 'gold';
+        $isMetal = in_array($type, ['gold', 'silver']);
+        $karat = $isGold ? fake()->randomElement([24, 22, 21, 18, 14, 10]) : null;
+        $weightGrams = $isMetal ? fake()->randomFloat(4, 1, 500) : null;
+
         return [
             'user_id' => User::factory(),
             'workspace_id' => Workspace::factory(),
-            'type' => fake()->randomElement(['cash', 'bank_account', 'gold', 'real_estate', 'stocks']),
+            'type' => $type,
+            'karat' => $karat,
+            'weight_grams' => $weightGrams,
             'name' => fake()->word(),
             'description' => fake()->optional()->sentence(),
-            'quantity' => fake()->randomFloat(4, 1, 100),
-            'unit_price' => fake()->randomFloat(2, 100, 100000),
+            'quantity' => $isMetal ? null : fake()->randomFloat(4, 1, 100),
+            'unit_price' => $isMetal ? null : fake()->randomFloat(2, 100, 100000),
             'total_value' => fake()->randomFloat(2, 1000, 10000000),
             'is_liquid' => fake()->boolean(),
         ];
+    }
+
+    public function gold(): static
+    {
+        return $this->state(fn (array $attrs) => [
+            'type' => 'gold',
+            'karat' => fake()->randomElement([24, 22, 21, 18, 14, 10]),
+            'weight_grams' => fake()->randomFloat(4, 1, 500),
+        ]);
+    }
+
+    public function silver(): static
+    {
+        return $this->state(fn (array $attrs) => [
+            'type' => 'silver',
+            'weight_grams' => fake()->randomFloat(4, 1, 500),
+        ]);
     }
 
     public function liquid(): static

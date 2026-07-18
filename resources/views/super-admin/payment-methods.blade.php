@@ -118,11 +118,7 @@
                             <div>{{ $paymentMethods->appends(request()->except('page'))->links() }}</div>
                         </div>
                     @else
-                        <div class="empty-state">
-                            <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-credit-card-2-front"></i></div>
-                            <h4>{{ __('general.no_data') }}</h4>
-                            <p>{{ __('super-admin.no_payment_methods') }}</p>
-                        </div>
+                        <x-empty-state icon="bi bi-credit-card-2-front" :title="__('general.no_data')" />
                     @endif
                 </div>
             </div>
@@ -189,11 +185,7 @@
                             </tbody>
                         </table>
                     @else
-                        <div class="empty-state">
-                            <div class="empty-icon" style="background:var(--bg-subtle);color:var(--text-muted)"><i class="bi bi-diagram-3"></i></div>
-                            <h4>{{ __('general.no_data') }}</h4>
-                            <p>{{ __('super-admin.no_gateway_structures') }}</p>
-                        </div>
+                        <x-empty-state icon="bi bi-diagram-3" :title="__('general.no_data')" />
                     @endif
                 </div>
             </div>

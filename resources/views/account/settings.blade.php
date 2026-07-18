@@ -4,41 +4,41 @@
     <x-slot:page-description>{{ __('profile.page_description') }}</x-slot>
 
     @php
-        $recentNotifications = \App\Models\Notification::where('user_id', $user->id)
-            ->latest()->take(10)->get();
-        $unreadCount = \App\Models\Notification::where('user_id', $user->id)
-            ->where('is_read', false)->count();
+        $recentNotifications = \App\Models\Notification::where('user_id', $user->id)->latest()->take(10)->get();
+        $unreadCount = \App\Models\Notification::where('user_id', $user->id)->where('is_read', false)->count();
     @endphp
 
     <div class="profile-grid" x-data="{ tab: 'profile' }">
         <div class="profile-sidebar">
             <div class="profile-card">
-                <div class="profile-avatar">
+                <div class="profile-avatar mb-3">
                     <div class="avatar-circle">{{ $initials }}</div>
+                    <div class="avatar-online"></div>
                 </div>
                 <h4 class="profile-name mt-3">{{ $user->name }}</h4>
                 <p class="profile-email">{{ $user->email }}</p>
+                <span class="profile-joined">{{ __('profile.member_since') }} {{ $user->created_at->translatedFormat('F Y') }}</span>
                 <nav class="profile-nav mt-3">
-                    <button @click="tab = 'profile'" :class="{ 'active': tab === 'profile' }" class="profile-nav-item" style="background:none;border:none;cursor:pointer;text-align:start;width:100%;">
+                    <button @click="tab = 'profile'" :class="{ 'active': tab === 'profile' }" class="profile-tab-btn">
                         <i class="bi bi-person"></i>
                         <span>{{ __('profile.tab_profile_info') }}</span>
                     </button>
-                    <button @click="tab = 'preferences'" :class="{ 'active': tab === 'preferences' }" class="profile-nav-item" style="background:none;border:none;cursor:pointer;text-align:start;width:100%;">
+                    <button @click="tab = 'preferences'" :class="{ 'active': tab === 'preferences' }" class="profile-tab-btn">
                         <i class="bi bi-sliders2"></i>
                         <span>{{ __('settings.preferences') }}</span>
                     </button>
-                    <button @click="tab = 'security'" :class="{ 'active': tab === 'security' }" class="profile-nav-item" style="background:none;border:none;cursor:pointer;text-align:start;width:100%;">
+                    <button @click="tab = 'security'" :class="{ 'active': tab === 'security' }" class="profile-tab-btn">
                         <i class="bi bi-shield-lock"></i>
                         <span>{{ __('settings.security') }}</span>
                     </button>
-                    <button @click="tab = 'notifications'" :class="{ 'active': tab === 'notifications' }" class="profile-nav-item" style="background:none;border:none;cursor:pointer;text-align:start;width:100%;">
+                    <button @click="tab = 'notifications'" :class="{ 'active': tab === 'notifications' }" class="profile-tab-btn">
                         <i class="bi bi-bell"></i>
                         <span>{{ __('profile.notifications') }}</span>
                         @if ($unreadCount > 0)
-                            <span class="badge bg-danger ms-auto" style="font-size:10px;">{{ $unreadCount }}</span>
+                            <x-status-badge domain="general" status="pending" set="bi" format="dot" size="xs" class="ms-auto" />
                         @endif
                     </button>
-                    <a href="{{ route('account.settings.developer') }}" wire:navigate class="profile-nav-item">
+                    <a href="{{ route('account.settings.developer') }}" wire:navigate class="profile-tab-btn">
                         <i class="bi bi-code-slash"></i>
                         <span>{{ __('developer.api_tokens') }}</span>
                     </a>
@@ -51,12 +51,15 @@
             <div x-show="tab === 'profile'" x-transition:enter.duration.200ms>
                 <div class="settings-card">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
                             <i class="bi bi-person" style="color:var(--accent);font-size:16px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('profile.account_info') }}</h5>
-                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('profile.account_info_help') }}</p>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('profile.account_info') }}
+                            </h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">
+                                {{ __('profile.account_info_help') }}</p>
                         </div>
                     </div>
                     <livewire:profile.update-profile-information-form />
@@ -67,12 +70,15 @@
             <div x-show="tab === 'preferences'" x-cloak x-transition:enter.duration.200ms>
                 <div class="settings-card">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
                             <i class="bi bi-sliders2" style="color:var(--accent);font-size:16px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('settings.preferences') }}</h5>
-                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('settings.preferences_desc') }}</p>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('settings.preferences') }}
+                            </h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">
+                                {{ __('settings.preferences_desc') }}</p>
                         </div>
                     </div>
 
@@ -83,9 +89,12 @@
                             <div class="col-md-6">
                                 <label class="form-label-custom">{{ __('settings.language') }}</label>
                                 <select name="language" class="form-custom">
-                                    <option value="ar" {{ $user->locale === 'ar' ? 'selected' : '' }}>{{ __('general.ar') }}</option>
-                                    <option value="fr" {{ $user->locale === 'fr' ? 'selected' : '' }}>{{ __('general.fr') }}</option>
-                                    <option value="en" {{ $user->locale === 'en' ? 'selected' : '' }}>{{ __('general.en') }}</option>
+                                    <option value="ar" {{ $user->locale === 'ar' ? 'selected' : '' }}>
+                                        {{ __('general.ar') }}</option>
+                                    <option value="fr" {{ $user->locale === 'fr' ? 'selected' : '' }}>
+                                        {{ __('general.fr') }}</option>
+                                    <option value="en" {{ $user->locale === 'en' ? 'selected' : '' }}>
+                                        {{ __('general.en') }}</option>
                                 </select>
                             </div>
 
@@ -93,7 +102,9 @@
                                 <label class="form-label-custom">{{ __('settings.currency') }}</label>
                                 <select name="currency" class="form-custom">
                                     @foreach (\App\Helpers\CurrencyHelper::availableCurrencies() ?: [['code' => 'DZD', 'name' => 'Algerian Dinar'], ['code' => 'USD', 'name' => 'US Dollar'], ['code' => 'EUR', 'name' => 'Euro']] as $cur)
-                                        <option value="{{ $cur['code'] }}" {{ $user->currency === $cur['code'] ? 'selected' : '' }}>{{ $cur['name'] }}</option>
+                                        <option value="{{ $cur['code'] }}"
+                                            {{ $user->currency === $cur['code'] ? 'selected' : '' }}>
+                                            {{ $cur['name'] }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -114,8 +125,10 @@
                                             'America/Los_Angeles' => 'America/Los_Angeles (UTC-8)',
                                         ];
                                     @endphp
-                                    @foreach($timezones as $value => $label)
-                                        <option value="{{ $value }}" {{ $user->timezone === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                    @foreach ($timezones as $value => $label)
+                                        <option value="{{ $value }}"
+                                            {{ $user->timezone === $value ? 'selected' : '' }}>{{ $label }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -123,10 +136,12 @@
                             <div class="col-md-6">
                                 <label class="form-label-custom">{{ __('settings.theme') }}</label>
                                 <div class="d-flex gap-2">
-                                    <button type="button" @click="$store.theme.set('light')" class="btn {{ session('theme', 'light') === 'light' ? 'btn-accent' : 'btn-outline-secondary' }} btn-custom flex-fill">
+                                    <button type="button" @click="$store.theme.set('light')"
+                                        class="btn {{ session('theme', 'light') === 'light' ? 'btn-accent' : 'btn-outline-secondary' }} btn-custom flex-fill">
                                         <i class="bi bi-sun-fill me-1"></i>{{ __('settings.light') }}
                                     </button>
-                                    <button type="button" @click="$store.theme.set('dark')" class="btn {{ session('theme', 'light') === 'dark' ? 'btn-accent' : 'btn-outline-secondary' }} btn-custom flex-fill">
+                                    <button type="button" @click="$store.theme.set('dark')"
+                                        class="btn {{ session('theme', 'light') === 'dark' ? 'btn-accent' : 'btn-outline-secondary' }} btn-custom flex-fill">
                                         <i class="bi bi-moon-fill me-1"></i>{{ __('settings.dark') }}
                                     </button>
                                 </div>
@@ -144,12 +159,15 @@
             <div x-show="tab === 'security'" x-cloak x-transition:enter.duration.200ms>
                 <div class="settings-card mb-4">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
                             <i class="bi bi-shield-lock" style="color:var(--accent);font-size:16px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('general.update_password') }}</h5>
-                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('profile.password_help') }}</p>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">
+                                {{ __('general.update_password') }}</h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">
+                                {{ __('profile.password_help') }}</p>
                         </div>
                     </div>
                     <livewire:profile.update-password-form />
@@ -157,12 +175,15 @@
 
                 <div class="settings-card mb-4">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
                             <i class="bi bi-shield-check" style="color:var(--accent);font-size:16px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('settings.two_factor') }}</h5>
-                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('messages.add_2fa_security') }}</p>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">
+                                {{ __('settings.two_factor') }}</h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">
+                                {{ __('messages.add_2fa_security') }}</p>
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
@@ -185,16 +206,19 @@
                 <div class="settings-card mb-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(59,130,246,0.1);flex-shrink:0;">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle"
+                                style="width:36px;height:36px;background:rgba(59,130,246,0.1);flex-shrink:0;">
                                 <i class="bi bi-pc-display" style="color:#3b82f6;font-size:16px;"></i>
                             </div>
                             <div>
-                                <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('settings.active_sessions') }}</h5>
-                                <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('settings.active_sessions_help') }}</p>
+                                <h5 class="mb-0" style="font-weight:600;font-size:15px;">
+                                    {{ __('settings.active_sessions') }}</h5>
+                                <p class="mb-0" style="font-size:13px;color:var(--text-muted);">
+                                    {{ __('settings.active_sessions_help') }}</p>
                             </div>
                         </div>
                         @if ($sessions->count() > 1)
-                            <form method="POST" action="{{ route('settings.settings.revoke-all') }}">
+                            <form method="POST" action="{{ route('account.settings.sessions.revoke-all') }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm"
@@ -208,7 +232,8 @@
 
                     <div class="sessions-list">
                         @forelse ($sessions as $session)
-                            <div class="session-item d-flex align-items-center justify-content-between py-3 {{ $loop->first ? '' : 'border-top' }}">
+                            <div
+                                class="session-item d-flex align-items-center justify-content-between py-3 {{ $loop->first ? '' : 'border-top' }}">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="d-flex align-items-center justify-content-center rounded-circle"
                                         style="width:40px;height:40px;background:{{ $session->is_current ? 'rgba(21,183,108,0.1)' : 'var(--bg-secondary)' }};flex-shrink:0;">
@@ -217,24 +242,28 @@
                                     </div>
                                     <div>
                                         <div class="d-flex align-items-center gap-2">
-                                            <span style="font-weight:500;font-size:14px;">{{ $session->browser }} on {{ $session->os }}</span>
+                                            <span style="font-weight:500;font-size:14px;">{{ $session->browser }} on
+                                                {{ $session->os }}</span>
                                             @if ($session->is_current)
-                                                <span style="font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(21,183,108,0.1);color:var(--accent);font-weight:600;">{{ __('settings.current_session') }}</span>
+                                                <x-status-badge domain="general" status="active" set="bi" size="xs" />
                                             @endif
                                         </div>
                                         <div style="font-size:12px;color:var(--text-muted);">
                                             <i class="bi bi-globe me-1"></i>{{ $session->ip_address }}
                                             &middot;
-                                            <i class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() }}
+                                            <i
+                                                class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() }}
                                             @if ($session->login_at)
                                                 &middot;
-                                                <i class="bi bi-box-arrow-in-right me-1"></i>{{ $session->login_at->diffForHumans() }}
+                                                <i
+                                                    class="bi bi-box-arrow-in-right me-1"></i>{{ $session->login_at->diffForHumans() }}
                                             @endif
                                         </div>
                                     </div>
                                 </div>
-                                @if (! $session->is_current)
-                                    <form method="POST" action="{{ route('settings.settings.revoke', $session->id) }}">
+                                @if (!$session->is_current)
+                                    <form method="POST"
+                                        action="{{ route('account.settings.sessions.revoke', $session->id) }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm"
@@ -247,8 +276,7 @@
                             </div>
                         @empty
                             <div class="text-center py-3">
-                                <i class="bi bi-pc-display" style="font-size:2rem;color:var(--text-muted);"></i>
-                                <p class="text-muted mt-2 mb-0">{{ __('settings.no_sessions') }}</p>
+                                <x-empty-state icon="bi bi-pc-display" :title="__('settings.no_sessions')" />
                             </div>
                         @endforelse
                     </div>
@@ -257,12 +285,15 @@
                 {{-- Login History --}}
                 <div class="settings-card mb-4">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(168,85,247,0.1);flex-shrink:0;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width:36px;height:36px;background:rgba(168,85,247,0.1);flex-shrink:0;">
                             <i class="bi bi-clock-history" style="color:#a855f7;font-size:16px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('settings.login_history') }}</h5>
-                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('settings.login_history_help') }}</p>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">
+                                {{ __('settings.login_history') }}</h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">
+                                {{ __('settings.login_history_help') }}</p>
                         </div>
                     </div>
 
@@ -274,7 +305,7 @@
                                         <th>{{ __('general.status') }}</th>
                                         <th>{{ __('general.ip_address') }}</th>
                                         <th>{{ __('general.device') }}</th>
-                                        <th>{{ __('general.browser') }}</th>
+                                        <th>{{ __('general.user_agent') }}</th>
                                         <th>{{ __('general.os') }}</th>
                                         <th>{{ __('general.date') }}</th>
                                     </tr>
@@ -284,25 +315,30 @@
                                         <tr>
                                             <td>
                                                 @if ($attempt->status === 'success')
-                                                    <span style="color:var(--accent);font-weight:500;">
-                                                        <i class="bi bi-check-circle-fill me-1"></i>{{ __('general.success') }}
-                                                    </span>
+                                                    <x-status-icon domain="general" status="success" set="bi" class="me-1 text-success" />
+                                                    <span style="color:var(--accent);font-weight:500;">{{ __('general.success') }}</span>
                                                 @else
-                                                    <span style="color:var(--danger);font-weight:500;">
-                                                        <i class="bi bi-x-circle-fill me-1"></i>{{ __('general.failed') }}
-                                                    </span>
+                                                    <x-status-icon domain="general" status="failed" set="bi" class="me-1 text-danger" />
+                                                    <span style="color:var(--danger);font-weight:500;">{{ __('general.failed') }}</span>
                                                 @endif
                                                 @if ($attempt->suspicious)
-                                                    <span style="font-size:11px;padding:2px 6px;border-radius:99px;background:rgba(239,68,68,0.1);color:var(--danger);font-weight:600;margin-left:4px;">
-                                                        <i class="bi bi-exclamation-triangle"></i> {{ __('general.suspicious') }}
-                                                    </span>
+                                                    <x-status-badge domain="general" status="suspended" set="bi" size="xs" class="ms-1" />
                                                 @endif
                                             </td>
-                                            <td style="font-family:monospace;font-size:13px;">{{ $attempt->ip_address }}</td>
-                                            <td><i class="bi bi-{{ $attempt->device === 'phone' ? 'phone' : ($attempt->device === 'tablet' ? 'tablet' : 'pc-display') }} me-1"></i>{{ ucfirst($attempt->device) }}</td>
+                                            <td style="font-family:monospace;font-size:13px;">
+                                                {{ $attempt->ip_address }}</td>
+                                            <td>
+
+                                                <x-status-badge domain="general" status="{{ $attempt->device === 'phone' ? 'phone'
+                                                    : ($attempt->device === 'tablet' ? 'tablet' : 'pc') }}" set="bi" size="xs" class="ms-1" />
+                                                <i
+                                                    class="bi bi-{{ $attempt->device === 'phone' ? 'phone' : ($attempt->device === 'tablet' ? 'tablet' : 'pc-display') }}
+                                                     ms-1"></i>{{ __('general.' . $attempt->device) }}
+                                            </td>
                                             <td>{{ $attempt->browser }}</td>
                                             <td>{{ $attempt->os }}</td>
-                                            <td style="font-size:13px;color:var(--text-muted);">{{ $attempt->created_at->diffForHumans() }}</td>
+                                            <td style="font-size:13px;color:var(--text-muted);">
+                                                {{ $attempt->created_at->diffForHumans() }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -310,20 +346,22 @@
                         </div>
                     @else
                         <div class="text-center py-3">
-                            <i class="bi bi-clock-history" style="font-size:2rem;color:var(--text-muted);"></i>
-                            <p class="text-muted mt-2 mb-0">{{ __('settings.no_login_history') }}</p>
+                            <x-empty-state icon="bi bi-clock-history" :title="__('settings.no_login_history')" />
                         </div>
                     @endif
                 </div>
 
                 <div class="settings-card" style="border-color:rgba(239,68,68,0.2);">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(239,68,68,0.1);flex-shrink:0;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width:36px;height:36px;background:rgba(239,68,68,0.1);flex-shrink:0;">
                             <i class="bi bi-exclamation-triangle" style="color:var(--danger);font-size:16px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0" style="font-weight:600;font-size:15px;color:var(--danger);">{{ __('general.danger_zone') }}</h5>
-                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('profile.delete_account_help') }}</p>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;color:var(--danger);">
+                                {{ __('general.danger_zone') }}</h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">
+                                {{ __('profile.delete_account_help') }}</p>
                         </div>
                     </div>
                     <livewire:profile.delete-user-form />
@@ -334,47 +372,55 @@
             <div x-show="tab === 'notifications'" x-cloak x-transition:enter.duration.200ms>
                 <div class="settings-card">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
                             <i class="bi bi-bell" style="color:var(--accent);font-size:16px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('profile.notifications') }}</h5>
-                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('profile.notifications_help') }}</p>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">
+                                {{ __('profile.notifications') }}</h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">
+                                {{ __('profile.notifications_help') }}</p>
                         </div>
                     </div>
-@if ($recentNotifications->count())
-    <div class="notifications-list">
-        @foreach ($recentNotifications as $notification)
-            @php
-                $notifIcon = match($notification->type) {
-                    'budget_exceeded', 'budget_nearing_limit' => 'bi-exclamation-triangle text-danger',
-                    'debt_reminder' => 'bi-credit-card-2-front text-warning',
-                    'goal_achieved', 'goal_milestone' => 'bi-flag text-success',
-                    'goal_deadline' => 'bi-clock text-info',
-                    'zakat_reminder' => 'bi-heart text-primary',
-                    'role_changed' => 'bi-shield-check text-warning',
-                    default => 'bi-info-circle text-info',
-                };
-            @endphp
-            <div class="notification-item {{ $notification->is_read ? '' : 'notification-unread' }}">
-                <div class="notification-icon">
-                    <i class="bi {{ $notifIcon }}"></i>
-                </div>
-                <div class="notification-body">
-                    <p class="notification-title">{{ $notification->{'title_' . app()->getLocale()} }}</p>
-                    <p class="notification-message">{{ $notification->{'message_' . app()->getLocale()} }}</p>
-                    <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
-                </div>
-                @if (!$notification->is_read)
-                    <span class="notification-dot"></span>
-                @endif
-            </div>
-        @endforeach
-    </div>
-@else
+                    @if ($recentNotifications->count())
+                        <div class="notifications-list">
+                            @foreach ($recentNotifications as $notification)
+                                @php
+                                    $notifIcon = match ($notification->type) {
+                                        'budget_exceeded',
+                                        'budget_nearing_limit'
+                                            => 'bi-exclamation-triangle text-danger',
+                                        'debt_reminder' => 'bi-credit-card-2-front text-warning',
+                                        'goal_achieved', 'goal_milestone' => 'bi-flag text-success',
+                                        'goal_deadline' => 'bi-clock text-info',
+                                        'zakat_reminder' => 'bi-heart text-primary',
+                                        'role_changed' => 'bi-shield-check text-warning',
+                                        default => 'bi-info-circle text-info',
+                                    };
+                                @endphp
+                                <div
+                                    class="notification-item {{ $notification->is_read ? '' : 'notification-unread' }}">
+                                    <div class="notification-icon">
+                                        <i class="bi {{ $notifIcon }}"></i>
+                                    </div>
+                                    <div class="notification-body">
+                                        <p class="notification-title">
+                                            {{ $notification->{'title_' . app()->getLocale()} }}</p>
+                                        <p class="notification-message">
+                                            {{ $notification->{'message_' . app()->getLocale()} }}</p>
+                                        <span
+                                            class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    @if (!$notification->is_read)
+                                        <span class="notification-dot"></span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
                         <div class="text-center py-4">
-                            <i class="bi bi-bell-slash" style="font-size:2rem;color:var(--text-muted);"></i>
-                            <p class="text-muted mt-2 mb-0">{{ __('profile.no_notifications') }}</p>
+                            <x-empty-state icon="bi bi-bell-slash" :title="__('profile.no_notifications')" />
                         </div>
                     @endif
                 </div>

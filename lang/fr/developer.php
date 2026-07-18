@@ -74,18 +74,4 @@ return [
     'token_deactivated_desc' => 'Ce jeton est désactivé et ne peut pas être utilisé. Activez-le d\'abord pour voir la valeur du jeton.',
     'token_usage' => 'Utilisation des jetons',
     'token_limit_reached' => 'Vous avez atteint le nombre maximum de jetons (:limit) autorisé par votre forfait.',
-
-    // API Quota
-    'api_quota' => 'Quota API',
-    'per_minute' => 'Par minute',
-    'per_hour' => 'Par heure',
-    'per_day' => 'Par jour',
-    'remaining' => 'restant',
-    'quota_unlimited' => 'Illimité',
-    'quota_not_available' => 'Le quota API n\'est pas disponible pour votre forfait actuel.',
-
-    // Usage History
-    'requests_7d' => 'req (7j)',
-    'usage_history' => 'Historique d\'utilisation (7 jours)',
-    'usage_history_desc' => ':total requêtes au cours des 7 derniers jours.',
 ];

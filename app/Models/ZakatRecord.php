@@ -22,10 +22,15 @@ class ZakatRecord extends Model
     protected $fillable = [
         'user_id', 'workspace_id', 'calculation_date', 'hijri_year',
         'nisab_gold', 'nisab_silver',
+        'gold_price_per_gram', 'silver_price_per_gram',
+        'gold_weight', 'silver_weight',
         'gold_value', 'silver_value', 'cash_value', 'bank_value', 'ccp_value',
         'business_goods_value', 'stocks_value', 'crypto_value', 'real_estate_value',
-        'expected_receivables', 'total_wealth', 'total_zakatable',
-        'exceeds_nisab', 'zakat_amount', 'notes',
+        'expected_receivables',
+        'total_wealth', 'total_zakatable', 'net_zakatable', 'total_debts',
+        'exceeds_nisab', 'zakat_amount',
+        'cash_zakat', 'gold_zakat', 'silver_zakat', 'business_zakat', 'investments_zakat',
+        'notes',
     ];
 
     protected function casts(): array
@@ -34,9 +39,20 @@ class ZakatRecord extends Model
             'calculation_date' => 'date',
             'nisab_gold' => 'decimal:2',
             'nisab_silver' => 'decimal:2',
+            'gold_price_per_gram' => 'decimal:2',
+            'silver_price_per_gram' => 'decimal:2',
+            'gold_weight' => 'decimal:4',
+            'silver_weight' => 'decimal:4',
             'total_wealth' => 'decimal:2',
             'total_zakatable' => 'decimal:2',
+            'net_zakatable' => 'decimal:2',
+            'total_debts' => 'decimal:2',
             'zakat_amount' => 'decimal:2',
+            'cash_zakat' => 'decimal:2',
+            'gold_zakat' => 'decimal:2',
+            'silver_zakat' => 'decimal:2',
+            'business_zakat' => 'decimal:2',
+            'investments_zakat' => 'decimal:2',
             'exceeds_nisab' => 'boolean',
         ];
     }

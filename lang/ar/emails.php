@@ -25,6 +25,7 @@ return [
     'log_in' => 'تسجيل الدخول',
     'debt_reminder_line' => 'هذا تذكير بوجود دفعة دين مستحقة.',
     'payment_receipt_line' => 'تمت معالجة دفعة لاشتراكك.',
+    'welcome_line' => 'شكراً لانضمامك إلى :app. نحن متحمسون لوجودك معنا!',
 
     'welcome_greeting' => 'أهلاً بك، :name!',
     'welcome_intro' => 'شكراً لإنشاء حساب في :app. نحن سعداء حقاً بانضمامك إلى مجتمعنا!',
@@ -53,7 +54,7 @@ return [
     'team' => 'فريق :app',
 
     'subscription_cancelled_subject' => 'تم إلغاء الاشتراك — :app',
-    'subscription_cancelled_line' => 'تم إلغاء اشتراكك في خطة :plan. سيظل الوصول متاحاً حتى نهاية فترة الفوترة.',
+    'subscription_cancelled_line' => 'تم إلغاء خطتك :plan. ستبقى صلاحية الوصول سارية حتى نهاية فترة الفوترة.',
     'plan' => 'الخطة',
     'end_date' => 'تاريخ الانتهاء',
     'immediately' => 'فوراً',
@@ -61,24 +62,19 @@ return [
 
     'payment_failed_subject' => 'فشل الدفع — :app',
     'payment_failed_line' => 'فشلت محاولة الدفع. يرجى التحقق من طريقة الدفع والمحاولة مرة أخرى.',
-    'retry_payment' => 'إعادة المحاولة',
+    'retry_payment' => 'إعادة محاولة الدفع',
 
     'payment_canceled_subject' => 'تم إلغاء الدفع — :app',
-    'payment_canceled_line' => 'تم إلغاء دفعتك. إذا لم تقصد الإلغاء، يمكنك إعادة المحاولة.',
+    'payment_canceled_line' => 'تم إلغاء دفعتك. إذا لم تكن تنوي الإلغاء، يمكنك إعادة المحاولة.',
 
     'subscription_upgraded_subject' => 'تم ترقية الاشتراك — :app',
     'subscription_upgraded_line' => 'تم ترقية اشتراكك من :old_plan إلى :new_plan.',
     'old_plan' => 'الخطة القديمة',
     'new_plan' => 'الخطة الجديدة',
-    'next_billing' => 'الفاتورة القادمة',
+    'next_billing' => 'الفوترة التالية',
     'effective_date' => 'تاريخ التفعيل',
     'now' => 'الآن',
 
     'subscription_downgraded_subject' => 'تم تخفيض الاشتراك — :app',
     'subscription_downgraded_line' => 'سيتم تخفيض اشتراكك من :old_plan إلى :new_plan في نهاية فترة الفوترة.',
-
-    'status_changed_subject' => 'تم تحديث حالة الحساب — :app',
-    'status_changed_line' => 'تم تغيير حالة حسابك إلى: :status.',
-    'status_reason' => 'السبب: :reason',
-    'status_changed_footer' => 'إذا كان لديك أي استفسار، يرجى التواصل مع الدعم الفني.',
 ];

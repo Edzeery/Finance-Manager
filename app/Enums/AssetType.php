@@ -12,6 +12,8 @@ enum AssetType: string
     case RealEstate = 'real_estate';
     case Stocks = 'stocks';
     case Crypto = 'crypto';
+    case BusinessGoods = 'business_goods';
+    case ExpectedReceivables = 'expected_receivables';
     case Other = 'other';
 
     public static function values(): array
@@ -30,6 +32,8 @@ enum AssetType: string
             self::RealEstate => __('asset.real_estate'),
             self::Stocks => __('asset.stocks'),
             self::Crypto => __('asset.crypto'),
+            self::BusinessGoods => __('asset.business_goods'),
+            self::ExpectedReceivables => __('asset.expected_receivables'),
             self::Other => __('asset.other'),
         };
     }
@@ -45,6 +49,8 @@ enum AssetType: string
             self::RealEstate => 'bi-house',
             self::Stocks => 'bi-bar-chart',
             self::Crypto => 'bi-currency-bitcoin',
+            self::BusinessGoods => 'bi-box-seam',
+            self::ExpectedReceivables => 'bi-person-check',
             self::Other => 'bi-box',
         };
     }
@@ -60,6 +66,8 @@ enum AssetType: string
             self::RealEstate => '#F59E0B',
             self::Stocks => '#06B6D4',
             self::Crypto => '#EF4444',
+            self::BusinessGoods => '#F97316',
+            self::ExpectedReceivables => '#14B8A6',
             self::Other => '#64748B',
         };
     }
@@ -69,8 +77,8 @@ enum AssetType: string
         return match ($this) {
             self::Cash, self::BankAccount, self::CCP,
             self::Gold, self::Silver, self::Stocks,
-            self::Crypto => true,
-            self::RealEstate, self::Other => false,
+            self::Crypto, self::BusinessGoods => true,
+            self::ExpectedReceivables, self::RealEstate, self::Other => false,
         };
     }
 
@@ -84,6 +92,7 @@ enum AssetType: string
             self::Silver,
             self::Stocks,
             self::Crypto,
+            self::BusinessGoods,
         ];
     }
 
