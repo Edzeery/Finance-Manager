@@ -678,6 +678,8 @@ return [
     'currencies_reset_default' => 'Reset to Default',
     'currency_duplicate_code' => 'Duplicate currency codes are not allowed.',
     'currency_in_use_by_gateways' => 'Currency :currency is used by gateways: :gateways. Remove it from those gateways first.',
+    'currency_field_required' => 'This field is required.',
+    'currency_code_length' => 'Code must be 2 to 3 characters.',
 
     // ─── Role name translations ───
     'role_name_billing_manager' => 'Billing Manager',

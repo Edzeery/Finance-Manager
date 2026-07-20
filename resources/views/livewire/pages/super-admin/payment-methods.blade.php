@@ -330,7 +330,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px">
-                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-trash me-2" style="color:var(--danger)"></i>{{ __('general.confirm') }}</h5>
+                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-trash ms-2" style="color:var(--danger)"></i>{{ __('general.confirm') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="padding:20px;text-align:center">
@@ -353,7 +353,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px">
-                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-trash me-2" style="color:var(--danger)"></i>{{ __('general.confirm') }}</h5>
+                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-trash ms-2" style="color:var(--danger)"></i>{{ __('general.confirm') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="padding:20px;text-align:center">

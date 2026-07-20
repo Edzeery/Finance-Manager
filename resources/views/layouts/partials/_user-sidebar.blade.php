@@ -98,22 +98,28 @@
                 @if($cTxn)
                 <a href="{{ route('transactions.index') }}" class="sidebar-nav-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('transactions.title') }}">
                     <i class="bi bi-arrow-left-right"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('transactions.title') }}@if(!$feat('income_expense')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('transactions.title') }}@if(!$feat('income_expense'))  <x-status-badge domain="general" status="premium" set="bi" /> @endif</span>
                 </a>
                 @endif
                 @if($cInc)
                 <a href="{{ route('income.index') }}" class="sidebar-nav-item {{ request()->routeIs('income.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.income') }}">
                     <i class="bi bi-cash-stack"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.income') }}@if(!$feat('income_expense')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('general.income') }}@if(!$feat('income_expense'))<x-status-badge domain="general" status="premium" set="bi" /> @endif</span>
                 </a>
                 @endif
                 @if($cExp)
                 <div x-data="{ expOpen: {{ request()->routeIs('expense.index') || request()->routeIs('expense.categories.*') ? 'true' : 'false' }} }">
-                    <a href="{{ route('expense.index') }}" class="sidebar-nav-item sidebar-nav-parent {{ request()->routeIs('expense.index') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.expense') }}">
+                    <a href="{{ route('expense.index') }}" class="sidebar-nav-item sidebar-nav-parent {{ request()->routeIs('expense.index') && !request()->routeIs('expense.categories.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.expense') }}">
                         <i class="bi bi-cart"></i>
-                        <span x-show="!collapsed" x-cloak>{{ __('general.expense') }}@if(!$feat('income_expense')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                        <span x-show="!collapsed" x-cloak>{{ __('general.expense') }}@if(!$feat('income_expense')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                         <i class="bi bi-chevron-down nav-parent-chevron" :class="expOpen ? '' : 'collapsed'" x-show="!collapsed" x-cloak @click.prevent.stop="expOpen = !expOpen"></i>
                     </a>
+                    <div x-show="expOpen" x-collapse style="display: none;">
+                        <a href="{{ route('expense.categories.index') }}" class="sidebar-nav-item {{ request()->routeIs('expense.categories.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('expense.categories') }}">
+                            <i class="bi bi-tags"></i>
+                            <span x-show="!collapsed" x-cloak>{{ __('expense.categories') }}</span>
+                        </a>
+                    </div>
                 </div>
                 @endif
             </div>
@@ -136,13 +142,13 @@
                 @if($cBud)
                 <a href="{{ route('budget.index') }}" class="sidebar-nav-item {{ request()->routeIs('budget.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.budget') }}">
                     <i class="bi bi-calculator-fill"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.budget') }}@if(!$feat('budget')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('general.budget') }}@if(!$feat('budget')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 @endif
                 @if($cGoal)
                 <a href="{{ route('goal.index') }}" class="sidebar-nav-item {{ request()->routeIs('goal.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.goal') }}">
                     <i class="bi bi-flag-fill"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.goal') }}@if(!$feat('goals')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('general.goal') }}@if(!$feat('goals')) <x-status-badge domain="general" status="premium" set="bi" /> @endif</span>
                 </a>
                 @endif
             </div>
@@ -165,13 +171,13 @@
                 @if($cAst)
                 <a href="{{ route('asset.index') }}" class="sidebar-nav-item {{ request()->routeIs('asset.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.asset') }}">
                     <i class="bi bi-pie-chart-fill"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.asset') }}@if(!$feat('debt')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('general.asset') }}@if(!$feat('debt')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 @endif
                 @if($cDebt)
                 <a href="{{ route('debt.index') }}" class="sidebar-nav-item {{ request()->routeIs('debt.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.debt') }}">
                     <i class="bi bi-credit-card-2-front"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.debt') }}@if(!$feat('debt')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('general.debt') }}@if(!$feat('debt')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 @endif
             </div>
@@ -195,19 +201,19 @@
                 @if($cZak)
                 <a href="{{ route('zakat.calculator') }}" class="sidebar-nav-item {{ request()->routeIs('zakat.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.zakat') }}">
                     <i class="bi bi-heart-fill"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.zakat') }}@if(!$feat('zakat')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('general.zakat') }}@if(!$feat('zakat')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 @endif
                 @if($cRpt)
                 <a href="{{ route('report.index') }}" class="sidebar-nav-item {{ request()->routeIs('report.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.report') }}">
                     <i class="bi bi-file-earmark-bar-graph-fill"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.report') }}@if(!$feat('reports')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('general.report') }}@if(!$feat('reports')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 @endif
                 @if($cAct)
                 <a href="{{ route('activity.logs') }}" class="sidebar-nav-item {{ request()->routeIs('activity.logs') ? 'active' : '' }}" wire:navigate data-label="{{ __('settings.activity_log') }}">
                     <i class="bi bi-clock-history"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('settings.activity_log') }}@if(!$feat('activity_logs')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('settings.activity_log') }}@if(!$feat('activity_logs')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 @endif
             </div>
@@ -242,7 +248,7 @@
                 </a>
                 <a href="{{ route('account.settings.developer') }}" class="sidebar-nav-item {{ request()->routeIs('account.settings.developer*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.developers') }}">
                     <i class="bi bi-code-slash"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.developers') }}@if(!$feat('api_access')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('general.developers') }}@if(!$feat('api_access')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 <a href="{{ route('two-factor.setup') }}" class="sidebar-nav-item" wire:navigate data-label="{{ __('general.security') }}">
                     <i class="bi bi-shield-lock-fill"></i>
@@ -263,12 +269,12 @@
             <div x-show="open" style="display:none">
                 <a href="{{ route('settings.index') }}" class="sidebar-nav-item {{ request()->routeIs('settings.index') ? 'active' : '' }}" wire:navigate data-label="{{ __('workspace.settings') }}">
                     <i class="bi bi-building"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('workspace.settings') }}@if(!$feat('team_management')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('workspace.settings') }}@if(!$feat('team_management')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 @if($user->workspaceHasPermission('workspace-role.view'))
                 <a href="{{ route('settings.workspace.roles.index') }}" class="sidebar-nav-item {{ request()->routeIs('settings.workspace.roles*') ? 'active' : '' }}" wire:navigate data-label="{{ __('workspace.roles') }}">
                     <i class="bi bi-shield-check"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('workspace.roles') }}@if(!$feat('roles_permissions')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+                    <span x-show="!collapsed" x-cloak>{{ __('workspace.roles') }}@if(!$feat('roles_permissions')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
                 </a>
                 @endif
             </div>
@@ -281,7 +287,7 @@
     <nav class="sidebar-nav" x-show="!collapsed" x-cloak>
         <a href="{{ route('api.documentation') }}" class="sidebar-nav-item" target="_blank" data-label="{{ __('general.api_documentation') }}">
             <i class="bi bi-file-earmark-text"></i>
-            <span>{{ __('general.api_documentation') }}@if(!$feat('api_access')) <span class="premium-badge">{{ __('settings.premium') }}</span>@endif</span>
+            <span>{{ __('general.api_documentation') }}@if(!$feat('api_access')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
         </a>
     </nav>
 

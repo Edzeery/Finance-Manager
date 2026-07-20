@@ -97,8 +97,8 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
 
         <button type="submit" class="btn btn-accent btn-custom w-100">
-            <div wire:loading wire:target="resetPassword" class="spinner-border spinner-border-sm me-2" role="status"></div>
-            <i class="bi bi-shield-check me-2" wire:loading.remove wire:target="resetPassword"></i>
+            <div wire:loading wire:target="resetPassword" class="spinner-border spinner-border-sm ms-2" role="status"></div>
+            <i class="bi bi-shield-check ms-2" wire:loading.remove wire:target="resetPassword"></i>
             {{ __('general.reset_password') }}
         </button>
 

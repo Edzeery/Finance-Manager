@@ -210,7 +210,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:14px 20px">
-                    <h5 class="modal-title" style="font-size:15px;font-weight:600"><i class="bi bi-receipt me-2"></i>{{ __('super-admin.payment_details') }}</h5>
+                    <h5 class="modal-title" style="font-size:15px;font-weight:600"><i class="bi bi-receipt ms-2"></i>{{ __('super-admin.payment_details') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" style="padding:20px;text-align:center">
@@ -280,7 +280,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px">
-                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-arrow-counterclockwise me-2" style="color:var(--info)"></i>{{ __('super-admin.refund_payment') }}</h5>
+                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-arrow-counterclockwise ms-2" style="color:var(--info)"></i>{{ __('super-admin.refund_payment') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="refundForm" method="POST">
@@ -314,7 +314,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:14px 20px">
-                    <h5 class="modal-title" style="font-size:15px;font-weight:600"><i class="bi bi-info-circle me-2"></i>{{ __('super-admin.payment_raw_details') }}</h5>
+                    <h5 class="modal-title" style="font-size:15px;font-weight:600"><i class="bi bi-info-circle ms-2"></i>{{ __('super-admin.payment_raw_details') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" style="padding:20px">

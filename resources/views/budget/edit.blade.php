@@ -66,7 +66,7 @@
 
                             <div class="col-12">
                                 <hr>
-                                <h5 class="fw-bold mb-3"><i class="bi bi-list-ul me-2"></i>{{ __('budget.categories') }}</h5>
+                                <h5 class="fw-bold mb-3"><i class="bi bi-list-ul ms-2"></i>{{ __('budget.categories') }}</h5>
                                 @php $selectedCatIds = $budget->categories->pluck('expense_category_id')->toArray(); @endphp
                                 @foreach($categories as $cat)
                                     @php

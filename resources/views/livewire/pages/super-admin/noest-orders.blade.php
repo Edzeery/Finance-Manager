@@ -558,7 +558,7 @@ $ss = [
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px">
-                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-pencil-square me-2" style="color:var(--accent)"></i>{{ __("super-admin.noest_edit_title") }}</h5>
+                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-pencil-square ms-2" style="color:var(--accent)"></i>{{ __("super-admin.noest_edit_title") }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="font-size:12px"></button>
                 </div>
                 <div class="modal-body" style="padding:20px">
@@ -647,7 +647,7 @@ $ss = [
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px">
-                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-check2-circle me-2" style="color:var(--success)"></i>{{ __("super-admin.noest_validate_title") }}</h5>
+                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-check2-circle ms-2" style="color:var(--success)"></i>{{ __("super-admin.noest_validate_title") }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="padding:20px;text-align:center">
@@ -670,7 +670,7 @@ $ss = [
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius:var(--radius-md);border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
                 <div class="modal-header" style="border-bottom:1px solid var(--border);padding:16px 20px">
-                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-trash me-2" style="color:var(--danger)"></i>{{ __("super-admin.noest_delete_title") }}</h5>
+                    <h5 class="modal-title" style="font-size:16px;font-weight:600"><i class="bi bi-trash ms-2" style="color:var(--danger)"></i>{{ __("super-admin.noest_delete_title") }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="padding:20px;text-align:center">

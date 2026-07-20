@@ -147,7 +147,7 @@ new class extends Component
             </div>
 
             <button wire:click="confirm" class="btn btn-accent btn-custom">
-                <div wire:loading wire:target="confirm" class="spinner-border spinner-border-sm me-2" role="status"></div>
+                <div wire:loading wire:target="confirm" class="spinner-border spinner-border-sm ms-2" role="status"></div>
                 {{ __('general.confirm_enable') }}
             </button>
         @endif

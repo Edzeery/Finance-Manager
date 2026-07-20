@@ -21,12 +21,12 @@
             <ul class="dropdown-menu dropdown-menu-end" style="min-width:120px">
                 <li>
                     <a class="dropdown-item" href="{{ route('data.export', ['entity' => $entity, 'format' => 'xlsx']) . '?' . http_build_query(request()->query()) }}">
-                        <i class="bi bi-file-earmark-excel me-2"></i>Excel
+                        <i class="bi bi-file-earmark-excel ms-2"></i>Excel
                     </a>
                 </li>
                 <li>
                     <a class="dropdown-item" href="{{ route('data.export', ['entity' => $entity, 'format' => 'csv']) . '?' . http_build_query(request()->query()) }}">
-                        <i class="bi bi-file-earmark-text me-2"></i>CSV
+                        <i class="bi bi-file-earmark-text ms-2"></i>CSV
                     </a>
                 </li>
             </ul>

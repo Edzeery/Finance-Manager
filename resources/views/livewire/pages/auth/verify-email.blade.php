@@ -49,15 +49,15 @@ new #[Layout('layouts.guest')] class extends Component
 
     @if (session('status') == 'verification-link-sent')
         <div class="alert-success-custom mb-3">
-            <i class="bi bi-check-circle-fill me-2"></i>
+            <i class="bi bi-check-circle-fill ms-2"></i>
             {{ __('general.verification_link_sent') }}
         </div>
     @endif
 
     <div class="d-flex gap-3 mt-2">
         <button wire:click="sendVerification" class="btn btn-accent btn-custom flex-grow-1">
-            <div wire:loading wire:target="sendVerification" class="spinner-border spinner-border-sm me-2" role="status"></div>
-            <i class="bi bi-envelope me-2" wire:loading.remove wire:target="sendVerification"></i>
+            <div wire:loading wire:target="sendVerification" class="spinner-border spinner-border-sm ms-2" role="status"></div>
+            <i class="bi bi-envelope ms-2" wire:loading.remove wire:target="sendVerification"></i>
             {{ __('general.resend_verification_email') }}
         </button>
         <button wire:click="logout" class="btn btn-outline-secondary btn-custom btn-icon" title="{{ __('general.logout') }}">

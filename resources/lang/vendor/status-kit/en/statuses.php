@@ -102,6 +102,15 @@ return [
         'deputy_super_admin' => 'Deputy Super Admin',
     ],
 
+    'workspace_role' => [
+        'workspace_admin'           => 'Admin (Owner)',
+        'workspace_deputy_admin'    => 'Deputy Admin',
+        'workspace_finance_manager' => 'Finance Manager',
+        'workspace_accountant'      => 'Accountant',
+        'workspace_editor'          => 'Editor',
+        'workspace_viewer'          => 'Viewer',
+    ],
+
     'invoice' => [
         'draft'     => 'Draft',
         'paid'      => 'Paid',

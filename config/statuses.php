@@ -187,6 +187,18 @@ return [
     ],
 
     // ══════════════════════════════════════════════════════════════
+    // أدوار مساحة العمل
+    // ══════════════════════════════════════════════════════════════
+    'workspace_role' => [
+        'workspace_admin' => ['variant' => 'danger', 'light' => 'text-red-700 bg-red-100', 'dark' => 'dark:text-red-400 dark:bg-red-950', 'hex' => '#991b1b', 'icon' => 'shield-exclamation'],
+        'workspace_deputy_admin' => ['variant' => 'warning', 'light' => 'text-yellow-700 bg-yellow-100', 'dark' => 'dark:text-yellow-400 dark:bg-yellow-950', 'hex' => '#ca8a04', 'icon' => 'shield-check'],
+        'workspace_finance_manager' => ['variant' => 'info', 'light' => 'text-blue-700 bg-blue-100', 'dark' => 'dark:text-blue-400 dark:bg-blue-950', 'hex' => '#2563eb', 'icon' => 'credit-card'],
+        'workspace_accountant' => ['variant' => 'info', 'light' => 'text-blue-600 bg-blue-100', 'dark' => 'dark:text-blue-400 dark:bg-blue-950', 'hex' => '#3b82f6', 'icon' => 'calculator'],
+        'workspace_editor' => ['variant' => 'gray', 'light' => 'text-gray-600 bg-gray-100', 'dark' => 'dark:text-gray-400 dark:bg-gray-900', 'hex' => '#6b7280', 'icon' => 'pencil-square'],
+        'workspace_viewer' => ['variant' => 'gray', 'light' => 'text-gray-500 bg-gray-100', 'dark' => 'dark:text-gray-500 dark:bg-gray-900', 'hex' => '#9ca3af', 'icon' => 'eye'],
+    ],
+
+    // ══════════════════════════════════════════════════════════════
     // الفواتير
     // ══════════════════════════════════════════════════════════════
     'invoice' => [

@@ -91,8 +91,8 @@ new #[Layout('layouts.super-admin.guest')] class extends Component
         </div>
 
         <button type="submit" class="btn btn-accent btn-custom w-100 py-2" style="background:linear-gradient(135deg,#6366F1,#8B5CF6); border:none">
-            <div wire:loading wire:target="login" class="spinner-border spinner-border-sm me-2" role="status"></div>
-            <i class="bi bi-shield-lock me-2" wire:loading.remove wire:target="login"></i>
+            <div wire:loading wire:target="login" class="spinner-border spinner-border-sm ms-2" role="status"></div>
+            <i class="bi bi-shield-lock ms-2" wire:loading.remove wire:target="login"></i>
             {{ __('super-admin.login_btn') }}
         </button>
     </form>

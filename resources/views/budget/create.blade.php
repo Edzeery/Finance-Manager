@@ -71,7 +71,7 @@
 
                             <div class="col-12">
                                 <hr>
-                                <h5 class="fw-bold mb-3"><i class="bi bi-list-ul me-2"></i>{{ __('budget.categories') }}</h5>
+                                <h5 class="fw-bold mb-3"><i class="bi bi-list-ul ms-2"></i>{{ __('budget.categories') }}</h5>
                                 <div id="categories-container">
                                     @foreach($categories as $cat)
                                         <div class="category-row d-flex align-items-center gap-3 mb-2 p-2" style="background:var(--bg); border-radius:8px">

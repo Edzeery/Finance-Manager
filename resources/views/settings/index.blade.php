@@ -104,13 +104,12 @@
                                 <input type="email" name="email" class="form-custom" value="{{ old('email') }}" required placeholder="user@example.com">
                             </div>
                             <div class="col-md-4">
-                                <select name="role" class="form-custom">
-                                    @foreach($roles as $val => $label)
-                                        @if($val !== 'workspace_admin')
-                                            <option value="{{ $val }}">{{ $label }}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
+                                <x-status-select
+                                    domain="workspace_role"
+                                    name="role"
+                                    size="md"
+                                    set="bi"
+                                />
                             </div>
                             <div class="col-md-3">
                                 <button type="submit" class="btn btn-accent btn-custom w-100">
@@ -238,13 +237,14 @@
                                                 @if($isOwner && $memberWsRole !== 'workspace_admin')
                                                     <form action="{{ route('settings.workspace.members.change-role', $member) }}" method="POST" class="d-flex align-items-center gap-1">
                                                         @csrf @method('PUT')
-                                                        <select name="role" class="form-custom filter-fw-sm" style="width:auto;padding:4px 8px;font-size:12px" @change="$el.form.submit()">
-                                                            @foreach($roles as $val => $label)
-                                                                @if($val !== 'workspace_admin')
-                                                                    <option value="{{ $val }}" {{ $memberWsRole === $val ? 'selected' : '' }}>{{ $label }}</option>
-                                                                @endif
-                                                            @endforeach
-                                                        </select>
+                                                        <x-status-select
+                                                            domain="workspace_role"
+                                                            name="role"
+                                                            :selected="$memberWsRole"
+                                                            size="sm"
+                                                            set="bi"
+                                                            x-on:change="$el.closest('form').submit()"
+                                                        />
                                                     </form>
                                                 @else
                                                     <x-status-badge domain="general" status="inactive" set="bi" size="xs" />

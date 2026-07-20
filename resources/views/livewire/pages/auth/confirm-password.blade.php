@@ -51,7 +51,7 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
 
         <button type="submit" class="btn btn-accent btn-custom w-100">
-            <i class="bi bi-shield-check me-2"></i>{{ __('general.confirm') }}
+            <i class="bi bi-shield-check ms-2"></i>{{ __('general.confirm') }}
         </button>
 
     </form>

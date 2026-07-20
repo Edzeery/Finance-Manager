@@ -13,6 +13,7 @@ return [
         'checkout_failed'   => 'فشل (الدفع)',
         'checkout_canceled' => 'ملغى (الدفع)',
         'checkout_expired'  => 'منتهي الصلاحية (الدفع)',
+        'checkout_completed'  => 'مكتمل (الدفع)',
     ],
 
     'subscription' => [
@@ -101,6 +102,15 @@ return [
         'qa_team'            => 'فريق الجودة والاختبار',
         'platform_manager'   => 'مسيَر المنصة',
         'deputy_super_admin' => 'نائب المشرف العام',
+    ],
+
+    'workspace_role' => [
+        'workspace_admin'           => 'المشرف (المالك)',
+        'workspace_deputy_admin'    => 'نائب المشرف',
+        'workspace_finance_manager' => 'مدير المالية',
+        'workspace_accountant'      => 'محاسب',
+        'workspace_editor'          => 'محرر',
+        'workspace_viewer'          => 'مشاهد',
     ],
 
     'invoice' => [

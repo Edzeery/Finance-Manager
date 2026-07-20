@@ -31,7 +31,7 @@
                         @foreach($backups as $backup)
                             <tr>
                                 <td>
-                                    <i class="bi bi-file-earmark-zip me-2" style="color:var(--text-muted)"></i>
+                                    <i class="bi bi-file-earmark-zip ms-2" style="color:var(--text-muted)"></i>
                                     {{ $backup['name'] }}
                                 </td>
                                 <td>

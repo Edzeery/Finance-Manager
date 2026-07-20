@@ -9,6 +9,16 @@ use Illuminate\Http\Request;
 
 class ExpenseCategoryController extends Controller
 {
+    public function create()
+    {
+        return redirect()->route('expense.categories.index');
+    }
+
+    public function edit(ExpenseCategory $category)
+    {
+        return redirect()->route('expense.categories.index');
+    }
+
     public function index(Request $request)
     {
         $query = ExpenseCategory::query();

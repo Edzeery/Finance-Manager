@@ -78,7 +78,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         <button type="submit" class="btn btn-accent btn-custom w-100 mb-2"
             wire:loading.attr="disabled" wire:target="complete">
-            <div wire:loading wire:target="complete" class="spinner-border spinner-border-sm me-2" role="status"></div>
+            <div wire:loading wire:target="complete" class="spinner-border spinner-border-sm ms-2" role="status"></div>
             {{ __('onboarding.finish') }}
         </button>
 

@@ -182,9 +182,9 @@ new #[Layout('layouts.guest')] class extends Component {
                     </div>
 
                     <button type="submit" class="btn btn-accent btn-custom w-100 mb-3">
-                        <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm me-2"
+                        <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm ms-2"
                             role="status"></div>
-                        <i class="bi bi-check-circle me-2" wire:loading.remove wire:target="verify"></i>
+                        <i class="bi bi-check-circle ms-2" wire:loading.remove wire:target="verify"></i>
                         {{ __('general.verify') }}
                     </button>
 
@@ -227,9 +227,9 @@ new #[Layout('layouts.guest')] class extends Component {
                 </div>
 
                 <button type="submit" class="btn btn-accent btn-custom w-100 mb-3">
-                    <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm me-2" role="status">
+                    <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm ms-2" role="status">
                     </div>
-                    <i class="bi bi-check-circle me-2" wire:loading.remove wire:target="verify"></i>
+                    <i class="bi bi-check-circle ms-2" wire:loading.remove wire:target="verify"></i>
                     {{ __('general.verify') }}
                 </button>
 
@@ -259,9 +259,9 @@ new #[Layout('layouts.guest')] class extends Component {
                 </div>
 
                 <button type="submit" class="btn btn-accent btn-custom w-100 mb-3">
-                    <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm me-2"
+                    <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm ms-2"
                         role="status"></div>
-                    <i class="bi bi-check-circle me-2" wire:loading.remove wire:target="verify"></i>
+                    <i class="bi bi-check-circle ms-2" wire:loading.remove wire:target="verify"></i>
                     {{ __('general.verify') }}
                 </button>
 

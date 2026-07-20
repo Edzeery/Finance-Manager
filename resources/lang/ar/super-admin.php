@@ -688,6 +688,8 @@ return [
     'currencies_reset_default' => 'استعادة الافتراضي',
     'currency_duplicate_code' => 'رموز العملات المكررة غير مسموح بها.',
     'currency_in_use_by_gateways' => 'العملة :currency مستخدمة من قبل البوابات: :gateways. قم بإزالتها من تلك البوابات أولاً.',
+    'currency_field_required' => 'هذا الحقل مطلوب.',
+    'currency_code_length' => 'يجب أن يكون الرمز من 2 إلى 3 أحرف.',
 
     // ─── Role name translations ───
     'role_name_billing_manager' => 'مدير الفوترة',

@@ -677,6 +677,8 @@ return [
     'currencies_reset_default' => 'Réinitialiser par défaut',
     'currency_duplicate_code' => 'Les codes de devise en double ne sont pas autorisés.',
     'currency_in_use_by_gateways' => 'La devise :currency est utilisée par les passerelles : :gateways. Supprimez-la d\'abord de ces passerelles.',
+    'currency_field_required' => 'Ce champ est obligatoire.',
+    'currency_code_length' => 'Le code doit contenir de 2 à 3 caractères.',
 
     // ─── Role name translations ───
     'role_name_billing_manager' => 'Responsable facturation',

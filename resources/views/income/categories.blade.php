@@ -23,8 +23,7 @@
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-6">
-                                <label class="form-label-custom">{{ __('general.icon') }}</label>
-                                <input type="text" name="icon" class="form-custom" value="{{ old('icon', 'bi-currency-dollar') }}" maxlength="50" placeholder="bi-currency-dollar">
+                                <x-icon-picker name="icon" :value="old('icon', 'bi-currency-dollar')" />
                             </div>
                             <div class="col-6">
                                 <label class="form-label-custom">{{ __('general.color') }}</label>
@@ -136,8 +135,7 @@
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-6">
-                                <label class="form-label-custom">{{ __('general.icon') }}</label>
-                                <input type="text" name="icon" id="edit_icon" class="form-custom" maxlength="50">
+                                <x-icon-picker name="icon" id="edit_icon" value="" />
                             </div>
                             <div class="col-6">
                                 <label class="form-label-custom">{{ __('general.color') }}</label>
@@ -196,7 +194,16 @@
         document.getElementById('edit_name_ar').value = cat.name_ar;
         document.getElementById('edit_name_fr').value = cat.name_fr;
         document.getElementById('edit_name_en').value = cat.name_en;
-        document.getElementById('edit_icon').value = cat.icon || 'bi-currency-dollar';
+        var iconVal = cat.icon || 'bi-currency-dollar';
+        var iconInput = document.getElementById('edit_icon');
+        if (iconInput) iconInput.value = iconVal;
+        var wrap = iconInput ? iconInput.closest('.icon-picker-wrap') : null;
+        if (wrap) {
+            var uid = wrap.querySelector('[x-data]').getAttribute('x-data').match(/iconPicker_(\w+)/);
+            if (uid) {
+                window.dispatchEvent(new CustomEvent('icon-picker-set', { detail: { id: uid[1], value: iconVal } }));
+            }
+        }
         document.getElementById('edit_color').value = cat.color || '#22C55E';
         document.getElementById('edit_type').value = cat.type;
         setToggle('edit_is_active', Boolean(cat.is_active));

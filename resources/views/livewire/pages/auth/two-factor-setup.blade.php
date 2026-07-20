@@ -316,7 +316,7 @@ new #[Layout('layouts.app')] class extends Component
                             </div>
                         </div>
                         <button wire:click="showQrCode" class="btn btn-accent btn-custom px-4">
-                            <i class="bi bi-qr-code me-2"></i>
+                            <i class="bi bi-qr-code ms-2"></i>
                             {{ __('general.setup_2fa') }}
                         </button>
                     </div>
@@ -365,8 +365,8 @@ new #[Layout('layouts.app')] class extends Component
                         @enderror
                     </div>
                     <button wire:click="confirm" class="btn btn-accent btn-custom w-100">
-                        <div wire:loading wire:target="confirm" class="spinner-border spinner-border-sm me-2" role="status"></div>
-                        <i class="bi bi-shield-check me-2" wire:loading.remove wire:target="confirm"></i>
+                        <div wire:loading wire:target="confirm" class="spinner-border spinner-border-sm ms-2" role="status"></div>
+                        <i class="bi bi-shield-check ms-2" wire:loading.remove wire:target="confirm"></i>
                         {{ __('general.confirm_enable') }}
                     </button>
                 @endif
@@ -385,8 +385,8 @@ new #[Layout('layouts.app')] class extends Component
                             {{ __('messages.email_2fa_description') }}
                         </p>
                         <button wire:click="sendEmailCode" class="btn btn-accent btn-custom px-4">
-                            <div wire:loading wire:target="sendEmailCode" class="spinner-border spinner-border-sm me-2" role="status"></div>
-                            <i class="bi bi-send me-2" wire:loading.remove wire:target="sendEmailCode"></i>
+                            <div wire:loading wire:target="sendEmailCode" class="spinner-border spinner-border-sm ms-2" role="status"></div>
+                            <i class="bi bi-send ms-2" wire:loading.remove wire:target="sendEmailCode"></i>
                             {{ __('general.send_code_to_email') }}
                         </button>
                     </div>
@@ -415,8 +415,8 @@ new #[Layout('layouts.app')] class extends Component
                         @enderror
                     </div>
                     <button wire:click="confirmEmailCode" class="btn btn-accent btn-custom w-100 mb-2">
-                        <div wire:loading wire:target="confirmEmailCode" class="spinner-border spinner-border-sm me-2" role="status"></div>
-                        <i class="bi bi-shield-check me-2" wire:loading.remove wire:target="confirmEmailCode"></i>
+                        <div wire:loading wire:target="confirmEmailCode" class="spinner-border spinner-border-sm ms-2" role="status"></div>
+                        <i class="bi bi-shield-check ms-2" wire:loading.remove wire:target="confirmEmailCode"></i>
                         {{ __('general.confirm_enable') }}
                     </button>
                     <div class="text-center">
@@ -509,7 +509,7 @@ new #[Layout('layouts.app')] class extends Component
             {{-- Disable all --}}
             @if ($enabled)
                 <button wire:click="confirmDisable" class="btn btn-outline-danger w-100 mt-2">
-                    <i class="bi bi-shield-slash me-2"></i>
+                    <i class="bi bi-shield-slash ms-2"></i>
                     {{ __('general.disable') }}
                 </button>
             @endif

@@ -86,16 +86,16 @@
                         icon-position="left">{{ __('general.dashboard') }}</x-button>
                     <a href="{{ route('api.documentation') }}"
                         class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-book me-2"></i>API
+                        <i class="bi bi-book ms-2"></i>API
                     </a>
                 @else
                     <a href="{{ route('register') }}"
                         class="btn btn-accent btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-person-plus me-2"></i>{{ __('welcome.hero_cta_started') }}
+                        <i class="bi bi-person-plus ms-2"></i>{{ __('welcome.hero_cta_started') }}
                     </a>
                     <a href="#features"
                         class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-play-circle me-2"></i>{{ __('welcome.hero_cta_demo') }}
+                        <i class="bi bi-play-circle ms-2"></i>{{ __('welcome.hero_cta_demo') }}
                     </a>
                 @endauth
             </div>
@@ -479,12 +479,12 @@
             @auth
                 <a href="{{ route('dashboard') }}"
                     class="btn btn-accent btn-custom btn-lg d-flex align-items-center gap-2 mx-auto" style="width:220px">
-                    <i class="bi bi-grid-1x2-fill me-2"></i>{{ __('general.dashboard') }}
+                    <i class="bi bi-grid-1x2-fill ms-2"></i>{{ __('general.dashboard') }}
                 </a>
             @else
                 <a href="{{ route('register') }}"
                     class="btn btn-accent btn-custom btn-lg d-flex align-items-center gap-2 mx-auto" style="width:220px">
-                    <i class="bi bi-person-plus me-2"></i>{{ __('welcome.hero_cta_started') }}
+                    <i class="bi bi-person-plus ms-2"></i>{{ __('welcome.hero_cta_started') }}
                 </a>
             @endauth
         </div>

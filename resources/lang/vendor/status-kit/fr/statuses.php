@@ -102,6 +102,15 @@ return [
         'deputy_super_admin' => 'Administrateur Général Adjoint',
     ],
 
+    'workspace_role' => [
+        'workspace_admin'           => 'Admin (Propriétaire)',
+        'workspace_deputy_admin'    => 'Admin adjoint',
+        'workspace_finance_manager' => 'Gestionnaire financier',
+        'workspace_accountant'      => 'Comptable',
+        'workspace_editor'          => 'Éditeur',
+        'workspace_viewer'          => 'Visualisateur',
+    ],
+
     'invoice' => [
         'draft'     => 'Brouillon',
         'paid'      => 'Payé',

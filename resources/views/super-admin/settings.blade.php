@@ -10,28 +10,28 @@
                 <div class="settings-tabs-sidebar">
                     <nav class="nav flex-column nav-pills settings-nav">
                         <button @click="switchTab('general')" :class="{ active: tab === 'general' }" class="settings-nav-link">
-                            <i class="bi bi-sliders me-2"></i>{{ __('super-admin.tab_general') }}
+                            <i class="bi bi-sliders ms-2"></i>{{ __('super-admin.tab_general') }}
                         </button>
                         <button @click="switchTab('system')" :class="{ active: tab === 'system' }" class="settings-nav-link">
-                            <i class="bi bi-gear-wide-connected me-2"></i>{{ __('super-admin.tab_environment') }}
+                            <i class="bi bi-gear-wide-connected ms-2"></i>{{ __('super-admin.tab_environment') }}
                         </button>
                         <button @click="switchTab('security')" :class="{ active: tab === 'security' }" class="settings-nav-link">
-                            <i class="bi bi-shield-check me-2"></i>{{ __('super-admin.tab_security') }}
+                            <i class="bi bi-shield-check ms-2"></i>{{ __('super-admin.tab_security') }}
                         </button>
                         <button @click="switchTab('payments')" :class="{ active: tab === 'payments' }" class="settings-nav-link">
-                            <i class="bi bi-credit-card-2-front me-2"></i>{{ __('super-admin.tab_payments') }}
+                            <i class="bi bi-credit-card-2-front ms-2"></i>{{ __('super-admin.tab_payments') }}
                         </button>
                         <button @click="switchTab('exchangeRates')" :class="{ active: tab === 'exchangeRates' }" class="settings-nav-link">
-                            <i class="bi bi-currency-exchange me-2"></i>{{ __('super-admin.tab_exchange_rates') }}
+                            <i class="bi bi-currency-exchange ms-2"></i>{{ __('super-admin.tab_exchange_rates') }}
                         </button>
                         <button @click="switchTab('rateLimits')" :class="{ active: tab === 'rateLimits' }" class="settings-nav-link">
-                            <i class="bi bi-speedometer2 me-2"></i>{{ __('super-admin.tab_rate_limits') }}
+                            <i class="bi bi-speedometer2 ms-2"></i>{{ __('super-admin.tab_rate_limits') }}
                         </button>
                         <button @click="switchTab('currencies')" :class="{ active: tab === 'currencies' }" class="settings-nav-link">
-                            <i class="bi bi-currency-exchange me-2"></i>{{ __('super-admin.tab_currencies') }}
+                            <i class="bi bi-currency-exchange ms-2"></i>{{ __('super-admin.tab_currencies') }}
                         </button>
                         <button @click="switchTab('zakatPrices')" :class="{ active: tab === 'zakatPrices' }" class="settings-nav-link">
-                            <i class="bi bi-gem me-2"></i>{{ __('super-admin.tab_zakat_prices') }}
+                            <i class="bi bi-gem ms-2"></i>{{ __('super-admin.tab_zakat_prices') }}
                         </button>
                     </nav>
                 </div>
@@ -374,8 +374,8 @@
                         <div class="section-card-header">
                             <h5><i class="bi bi-currency-exchange"></i>{{ __('super-admin.currencies') }}</h5>
                             <div class="section-card-actions">
-                                <button @click="resetDefault()" class="btn btn-sm" style="padding:4px 10px;font-size:12px;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted)">
-                                    <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('super-admin.currencies_reset_default') }}
+                                <button @click="resetDefault()" class="btn btn-sm btn-ghost" style="padding:4px 10px;font-size:12px;border-radius:var(--radius-xs)">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('super-admin.currencies_reset_default') }}
                                 </button>
                             </div>
                         </div>
@@ -388,7 +388,7 @@
 
                             <form method="POST" action="{{ route('super.admin.settings.currencies.update') }}" id="currencies-form">
                                 @csrf @method('PUT')
-                                <input type="hidden" name="currencies" id="currencies-input" value="{{ htmlspecialchars(json_encode($currenciesList)) }}">
+                                <input type="hidden" name="currencies" id="currencies-input" value="{{ json_encode($currenciesList) }}">
 
                                 <div class="table-responsive mt-3">
                                     <table class="data-table" id="currencies-table">
@@ -423,7 +423,7 @@
                                 </div>
 
                                 <button type="button" class="btn btn-accent btn-custom mt-3" @click="addCurrency()">
-                                    <i class="bi bi-plus-lgms-1"></i>{{ __('super-admin.add_currency') }}
+                                    <i class="bi bi-plus-lg me-1"></i>{{ __('super-admin.add_currency') }}
                                 </button>
 
                                 <div class="text-end mt-3">
@@ -436,33 +436,39 @@
                     </div>
 
                     {{-- Add/Edit Currency Modal --}}
-                    <div class="modal-overlay" x-show="showModal" x-cloak x-transition.opacity
-                         @click.self="showModal = false" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem">
-                        <div class="modal-content" style="background:var(--bg);border-radius:var(--radius-md);padding:1.5rem;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2)" @click.stop>
-                            <h5 style="margin:0 0 1rem;font-size:15px;font-weight:600">
-                                <span x-text="editingIndex !== null ? '{{ __('super-admin.edit_currency') }}' : '{{ __('super-admin.add_currency') }}'"></span>
-                            </h5>
-
-                            <div class="mb-3">
-                                <label class="form-label-custom">{{ __('super-admin.currency_code') }} <span class="text-danger">*</span></label>
-                                <input type="text" x-model="form.code" maxlength="3" class="form-control" placeholder="USD" style="text-transform:uppercase">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label-custom">{{ __('super-admin.currency_name') }} <span class="text-danger">*</span></label>
-                                <input type="text" x-model="form.name" class="form-control" placeholder="US Dollar">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label-custom">{{ __('super-admin.currency_symbol') }} <span class="text-danger">*</span></label>
-                                <input type="text" x-model="form.symbol" class="form-control" placeholder="$" style="max-width:100px">
-                            </div>
-
-                            <div class="d-flex gap-2 justify-content-end mt-3">
-                                <button type="button" class="btn btn-custom" style="padding:6px 16px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px" @click="showModal = false">
-                                    {{ __('general.cancel') }}
-                                </button>
-                                <button type="button" class="btn btn-accent btn-custom" @click="confirmCurrency()">
-                                    {{ __('general.confirm') }}
-                                </button>
+                    <div class="modal fade" id="currencyModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content modal-custom">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" style="font-size:16px;font-weight:600">
+                                        <i class="bi bi-currency-exchange ms-2" style="color:var(--accent)"></i>
+                                        <span x-text="editingIndex !== null ? '{{ __('super-admin.edit_currency') }}' : '{{ __('super-admin.add_currency') }}'"></span>
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('general.close') }}"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">{{ __('super-admin.currency_code') }} <span class="text-danger">*</span></label>
+                                        <input type="text" x-model="form.code" maxlength="3" class="form-custom" placeholder="USD" style="text-transform:uppercase" x-ref="codeInput">
+                                        <div class="text-danger small mt-1" x-show="formError.code" x-text="formError.code"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">{{ __('super-admin.currency_name') }} <span class="text-danger">*</span></label>
+                                        <input type="text" x-model="form.name" class="form-custom" placeholder="US Dollar">
+                                        <div class="text-danger small mt-1" x-show="formError.name" x-text="formError.name"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">{{ __('super-admin.currency_symbol') }} <span class="text-danger">*</span></label>
+                                        <input type="text" x-model="form.symbol" class="form-custom" placeholder="$" style="max-width:100px">
+                                        <div class="text-danger small mt-1" x-show="formError.symbol" x-text="formError.symbol"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary btn-custom" data-bs-dismiss="modal">{{ __('general.cancel') }}</button>
+                                    <button type="button" class="btn btn-accent btn-custom" @click="confirmCurrency()">
+                                        <i class="bi bi-check2 me-1"></i>{{ __('general.confirm') }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -558,9 +564,10 @@
             function currenciesManager() {
                 return {
                     currencies: [],
-                    showModal: false,
                     editingIndex: null,
                     form: { code: '', name: '', symbol: '' },
+                    formError: { code: '', name: '', symbol: '' },
+                    modalInstance: null,
                     init() {
                         const input = document.getElementById('currencies-input');
                         try {
@@ -574,28 +581,81 @@
                                 document.getElementById('currencies-input').value = JSON.stringify(this.currencies);
                             });
                         }
+                        const modalEl = document.getElementById('currencyModal');
+                        if (modalEl) {
+                            this.modalInstance = new bootstrap.Modal(modalEl);
+                            modalEl.addEventListener('hidden.bs.modal', () => {
+                                this.formError = { code: '', name: '', symbol: '' };
+                            });
+                        }
+                    },
+                    openModal() {
+                        if (this.modalInstance) {
+                            this.modalInstance.show();
+                            this.$nextTick(() => {
+                                if (this.$refs.codeInput) this.$refs.codeInput.focus();
+                            });
+                        }
+                    },
+                    closeModal() {
+                        if (this.modalInstance) {
+                            this.modalInstance.hide();
+                        }
                     },
                     addCurrency() {
                         this.editingIndex = null;
                         this.form = { code: '', name: '', symbol: '' };
-                        this.showModal = true;
+                        this.formError = { code: '', name: '', symbol: '' };
+                        this.openModal();
                     },
                     editCurrency(index) {
                         this.editingIndex = index;
                         this.form = { ...this.currencies[index] };
-                        this.showModal = true;
+                        this.formError = { code: '', name: '', symbol: '' };
+                        this.openModal();
                     },
-                    confirmCurrency() {
+                    validateForm() {
+                        let valid = true;
+                        this.formError = { code: '', name: '', symbol: '' };
                         const code = this.form.code.toUpperCase().trim();
                         const name = this.form.name.trim();
                         const symbol = this.form.symbol.trim();
-                        if (!code || !name || !symbol) return;
+                        if (!code) {
+                            this.formError.code = '{{ __("super-admin.currency_field_required") }}';
+                            valid = false;
+                        } else if (code.length < 2 || code.length > 3) {
+                            this.formError.code = '{{ __("super-admin.currency_code_length") }}';
+                            valid = false;
+                        } else {
+                            const isDuplicate = this.currencies.some((c, i) =>
+                                c.code.toUpperCase() === code && i !== this.editingIndex
+                            );
+                            if (isDuplicate) {
+                                this.formError.code = '{{ __("super-admin.currency_duplicate_code") }}';
+                                valid = false;
+                            }
+                        }
+                        if (!name) {
+                            this.formError.name = '{{ __("super-admin.currency_field_required") }}';
+                            valid = false;
+                        }
+                        if (!symbol) {
+                            this.formError.symbol = '{{ __("super-admin.currency_field_required") }}';
+                            valid = false;
+                        }
+                        return valid;
+                    },
+                    confirmCurrency() {
+                        if (!this.validateForm()) return;
+                        const code = this.form.code.toUpperCase().trim();
+                        const name = this.form.name.trim();
+                        const symbol = this.form.symbol.trim();
                         if (this.editingIndex !== null) {
                             this.currencies[this.editingIndex] = { code, name, symbol };
                         } else {
                             this.currencies.push({ code, name, symbol });
                         }
-                        this.showModal = false;
+                        this.closeModal();
                     },
                     removeCurrency(index) {
                         showConfirmModal(
@@ -683,6 +743,60 @@
 
             [dir="rtl"] .settings-nav-link {
                 text-align: right;
+            }
+
+            /* Currency Modal */
+            #currencyModal .modal-content {
+                border-radius: 16px;
+                box-shadow: 0 25px 80px rgba(0,0,0,0.15);
+                animation: modalSlideUp 0.25s ease;
+            }
+
+            [data-theme="dark"] #currencyModal .modal-content {
+                box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+            }
+
+            #currencyModal .modal-header {
+                border-bottom: 1px solid var(--border);
+                padding: 1rem 1.25rem 0;
+            }
+
+            #currencyModal .modal-body {
+                padding: 1.25rem;
+            }
+
+            #currencyModal .modal-footer {
+                border-top: 1px solid var(--border);
+                padding: 0 1.25rem 1.25rem;
+            }
+
+            [dir="rtl"] #currencyModal .form-custom[style*="text-transform:uppercase"] {
+                text-align: right;
+                letter-spacing: 0.5px;
+            }
+
+            @media (max-width: 576px) {
+                #currencyModal .modal-content {
+                    margin: 8px;
+                    border-radius: 12px;
+                }
+
+                #currencyModal .modal-header {
+                    padding: 12px 16px 0;
+                }
+
+                #currencyModal .modal-body {
+                    padding: 16px;
+                }
+
+                #currencyModal .modal-footer {
+                    padding: 0 16px 16px;
+                    flex-direction: column;
+                }
+
+                #currencyModal .modal-footer .btn {
+                    width: 100%;
+                }
             }
 
             @media (max-width: 767px) {
