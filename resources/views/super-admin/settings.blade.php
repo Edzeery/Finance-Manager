@@ -161,6 +161,16 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-floating-group">
+                                            <select name="session_driver" class="form-control">
+                                                @foreach(['database', 'redis', 'file', 'array', 'cookie'] as $driver)
+                                                    <option value="{{ $driver }}" {{ ($systemSettings['session_driver'] ?? config('session.driver', 'database')) === $driver ? 'selected' : '' }}>{{ ucfirst($driver) }}</option>
+                                                @endforeach
+                                            </select>
+                                            <label>{{ __('super-admin.session_driver') }}</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating-group">
                                             <input type="url" name="app_url" class="form-control" placeholder=" " value="{{ $systemSettings['app_url'] ?? config('app.url') }}">
                                             <label>{{ __('super-admin.app_url') }}</label>
                                         </div>

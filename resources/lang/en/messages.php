@@ -27,6 +27,7 @@ return [
     'zakat_saved' => 'Zakat calculation saved successfully',
     'settings_saved' => 'Settings saved successfully',
     'settings_update_protected' => 'This setting is protected and cannot be changed at runtime.',
+    'settings_update_failed' => 'Failed to update system settings. Please check file permissions.',
     'confirm_delete' => 'Are you sure you want to delete?',
     'confirm_bulk_delete' => 'Are you sure you want to delete the selected items?',
     'confirm_force_delete' => 'Are you sure you want to permanently delete this item? This action cannot be undone.',

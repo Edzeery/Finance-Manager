@@ -156,7 +156,7 @@ return [
         'approved' => 'Approuvé',
         'rejected' => 'Rejeté',
         'closed'   => 'Fermé',
-        'overspent'=> 'Dépassement',
+        'overspent' => 'Dépassement',
         'on_track' => 'Sur la bonne voie',
         'at_risk'  => 'À risque',
     ],
@@ -230,6 +230,7 @@ return [
         'verified'    => 'Vérifié',
         'archived'    => 'Archivé',
         'deleted'     => 'Supprimé',
+        'premium' => 'Premium',
 
         // Couleurs
         'info'    => 'Information',

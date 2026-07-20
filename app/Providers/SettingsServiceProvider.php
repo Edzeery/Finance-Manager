@@ -36,12 +36,35 @@ class SettingsServiceProvider extends ServiceProvider
                 config()->set('finance.base_currency', strtoupper($baseCurrency));
             }
 
-            // Load rate limits from database into config
             $rateLimitKeys = array_keys(config('finance.rate_limits', []));
             foreach ($rateLimitKeys as $key) {
                 $dbValue = Setting::get("rate_limit.{$key}");
                 if ($dbValue !== null && is_numeric($dbValue)) {
                     config()->set("finance.rate_limits.{$key}", (int) $dbValue);
+                }
+            }
+
+            $systemConfigMap = [
+                'system.app_env' => 'app.env',
+                'system.app_debug' => 'app.debug',
+                'system.app_url' => 'app.url',
+                'system.log_level' => 'logging.level',
+                'system.log_channel' => 'logging.default',
+                'system.session_driver' => 'session.driver',
+                'system.session_encrypt' => 'session.encrypt',
+                'system.session_secure_cookie' => 'session.secure',
+                'system.session_same_site' => 'session.same_site',
+            ];
+
+            $booleanKeys = ['system.app_debug', 'system.session_encrypt', 'system.session_secure_cookie'];
+
+            foreach ($systemConfigMap as $dbKey => $configKey) {
+                $value = Setting::get($dbKey);
+                if ($value !== null) {
+                    if (in_array($dbKey, $booleanKeys, true)) {
+                        $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                    }
+                    config()->set($configKey, $value);
                 }
             }
         } catch (\Throwable $e) {

@@ -56,6 +56,7 @@ return [
         'unpublished' => ['variant' => 'gray',    'light' => 'text-gray-700 bg-gray-100',      'dark' => 'dark:text-gray-300 dark:bg-gray-800',        'hex' => '#9ca3af', 'icon' => 'unpublished'],
         'archived' => ['variant' => 'gray',    'light' => 'text-gray-700 bg-gray-100',      'dark' => 'dark:text-gray-300 dark:bg-gray-800',        'hex' => '#9ca3af', 'icon' => 'archived'],
         'pc' => ['variant' => 'gray',    'light' => 'text-gray-700 bg-gray-100',      'dark' => 'dark:text-gray-300 dark:bg-gray-800',        'hex' => '#9ca3af', 'icon' => 'pc'],
+        'premium' => ['variant' => 'warning', 'light' => 'text-yellow-700 bg-yellow-100', 'dark' => 'dark:text-yellow-300 dark:bg-yellow-900/40', 'hex' => '#facc15', 'icon' => 'star'],
         'default' => ['variant' => 'gray',    'light' => 'text-gray-700 bg-gray-100',      'dark' => 'dark:text-gray-300 dark:bg-gray-800',        'hex' => '#9ca3af', 'icon' => 'default'],
     ],
 
@@ -87,6 +88,7 @@ return [
         'expired' => 'expired',
         'canceled' => 'canceled',
         'suspended' => 'suspended',
+
     ],
 
     // ══════════════════════════════════════════════════════════════
@@ -323,14 +325,32 @@ return [
 
         // ── حالات مشتركة (من _shared) ──
         'pc' => 'pc',
-        'active' => 'active', 'inactive' => 'inactive', 'pending' => 'pending',
-        'approved' => 'approved', 'rejected' => 'rejected', 'suspended' => 'suspended',
-        'blocked' => 'blocked', 'banned' => 'banned', 'draft' => 'draft',
-        'completed' => 'completed', 'cancelled' => 'cancelled', 'canceled' => 'canceled',
-        'failed' => 'failed', 'paid' => 'paid', 'unpaid' => 'unpaid',
-        'refunded' => 'refunded', 'expired' => 'expired', 'processing' => 'processing',
-        'closed' => 'closed', 'online' => 'online', 'offline' => 'offline',
-        'verified' => 'verified', 'archived' => 'archived', 'deleted' => 'deleted',
+        'active' => 'active',
+        'inactive' => 'inactive',
+        'pending' => 'pending',
+        'approved' => 'approved',
+        'rejected' => 'rejected',
+        'suspended' => 'suspended',
+        'blocked' => 'blocked',
+        'banned' => 'banned',
+        'draft' => 'draft',
+        'completed' => 'completed',
+        'cancelled' => 'cancelled',
+        'canceled' => 'canceled',
+        'failed' => 'failed',
+        'paid' => 'paid',
+        'unpaid' => 'unpaid',
+        'refunded' => 'refunded',
+        'expired' => 'expired',
+        'processing' => 'processing',
+        'closed' => 'closed',
+        'online' => 'online',
+        'offline' => 'offline',
+        'verified' => 'verified',
+        'archived' => 'archived',
+        'deleted' => 'deleted',
+
+        'premium' => ['icon' => 'star'],
 
         // ── ألوان عامة ──
         'info' => ['variant' => 'info',    'light' => 'text-blue-700 bg-blue-100', 'dark' => 'dark:text-blue-300 dark:bg-blue-900/40', 'hex' => '#2563eb', 'icon' => 'info'],
@@ -375,7 +395,7 @@ return [
 
         // ── سلة/نجمة/قلب/علم ──
         'cart' => ['icon' => 'cart'],
-        'star' => ['variant' => 'warning', 'light' => 'text-yellow-700 bg-yellow-100', 'dark' => 'dark:text-yellow-300 dark:bg-yellow-900/40', 'hex' => '#facc15', 'icon' => 'star'],
+        'star' => ['icon' => 'star'],
         'heart' => ['icon' => 'heart'],
         'flag' => ['icon' => 'flag'],
 

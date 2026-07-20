@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'created' => 'Créé avec succès',
@@ -27,6 +27,7 @@ return [
     'zakat_saved' => 'Calcul de Zakat enregistré avec succès',
     'settings_saved' => 'Paramètres enregistrés avec succès',
     'settings_update_protected' => 'Ce paramètre est protégé et ne peut pas être modifié à l’exécution.',
+    'settings_update_failed' => 'Échec de la mise à jour des paramètres système. Veuillez vérifier les permissions du fichier.',
     'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer ?',
     'confirm_bulk_delete' => 'Êtes-vous sûr de vouloir supprimer les éléments sélectionnés ?',
     'confirm_force_delete' => 'Êtes-vous sûr de vouloir supprimer définitivement cet élément ? Cette action est irréversible.',

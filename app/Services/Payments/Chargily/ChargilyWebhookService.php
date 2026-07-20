@@ -74,13 +74,16 @@ class ChargilyWebhookService
     {
         return PaymentWebhookLog::where('checkout_id', $checkoutId)
             ->where('event_type', $eventType)
-            ->where('status', PaymentWebhookLogStatus::Processed->value)
             ->exists();
     }
 
     private function handlePaid(Payment $payment, $checkoutElement, array $payload): void
     {
-        if (in_array($payment->status, [PaymentStatus::CheckoutPaid, PaymentStatus::CheckoutFailed, PaymentStatus::CheckoutCanceled])) {
+        if ($payment->status === PaymentStatus::CheckoutPaid) {
+            return;
+        }
+
+        if (in_array($payment->status, [PaymentStatus::CheckoutFailed, PaymentStatus::CheckoutCanceled])) {
             return;
         }
 

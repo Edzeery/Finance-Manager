@@ -7,9 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Models\PaymentGateway;
 use App\Models\PaymentMethod;
 use App\Models\Setting;
+use App\Services\EnvWriter;
 use App\Services\Payments\PaymentGatewayRegistry;
 use App\Services\TwoFactorAuthenticationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
@@ -48,6 +50,7 @@ class SettingsController extends Controller
             'app_debug' => Setting::get('system.app_debug', config('app.debug') ? 'true' : 'false'),
             'log_level' => Setting::get('system.log_level', config('logging.level', 'warning')),
             'log_channel' => Setting::get('system.log_channel', config('logging.default', 'daily')),
+            'session_driver' => Setting::get('system.session_driver', config('session.driver', 'database')),
             'session_encrypt' => Setting::get('system.session_encrypt', config('session.encrypt') ? 'true' : 'false'),
             'session_secure_cookie' => Setting::get('system.session_secure_cookie', config('session.secure') !== null && config('session.secure') ? 'true' : 'false'),
             'session_same_site' => Setting::get('system.session_same_site', config('session.same_site', 'lax')),
@@ -99,12 +102,12 @@ class SettingsController extends Controller
             ->with('success', __('messages.settings_saved'));
     }
 
-    public function updateSystem(Request $request)
+    public function updateSystem(Request $request, EnvWriter $envWriter)
     {
         $validated = $request->validate([
             'app_env' => ['required', Rule::in(['local', 'production', 'testing', 'staging'])],
-            'app_debug' => ['required', Rule::in(['true', 'false'])],
             'app_url' => ['required', 'url', 'max:255'],
+            'session_driver' => ['required', Rule::in(['database', 'redis', 'file', 'array', 'cookie'])],
             'log_level' => ['required', Rule::in(['debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency'])],
             'log_channel' => ['required', Rule::in(['single', 'daily', 'slack', 'syslog', 'errorlog', 'stack'])],
             'session_encrypt' => ['required', Rule::in(['true', 'false'])],
@@ -112,22 +115,44 @@ class SettingsController extends Controller
             'session_same_site' => ['required', Rule::in(['lax', 'strict', 'none'])],
         ]);
 
-        $blockedKeys = array_values(array_filter(array_keys($validated), fn (string $key): bool => Setting::isProtectedRuntimeKey("system.{$key}")));
+        $envMap = [
+            'app_env' => 'APP_ENV',
+            'app_url' => 'APP_URL',
+            'session_driver' => 'SESSION_DRIVER',
+            'log_level' => 'LOG_LEVEL',
+            'log_channel' => 'LOG_CHANNEL',
+            'session_encrypt' => 'SESSION_ENCRYPT',
+            'session_secure_cookie' => 'SESSION_SECURE_COOKIE',
+            'session_same_site' => 'SESSION_SAME_SITE',
+        ];
 
-        if ($blockedKeys !== []) {
-            Log::warning('Blocked attempt to update protected system settings', [
-                'keys' => $blockedKeys,
+        $updates = [];
+        foreach ($envMap as $field => $envKey) {
+            if (isset($validated[$field])) {
+                $updates[$envKey] = $validated[$field];
+            }
+        }
+
+        try {
+            $changes = $envWriter->update($updates);
+        } catch (\RuntimeException $e) {
+            Log::error('Failed to update .env file', [
                 'user_id' => $request->user()?->id,
                 'ip' => $request->ip(),
+                'error' => $e->getMessage(),
             ]);
 
             return redirect()->back()
-                ->withErrors(['system' => __('messages.settings_update_protected')])
+                ->withErrors(['system' => __('messages.settings_update_failed')])
                 ->withInput();
         }
 
-        foreach ($validated as $key => $value) {
-            Setting::set("system.{$key}", $value);
+        try {
+            Artisan::call('config:clear');
+        } catch (\Throwable $e) {
+            Log::warning('Failed to clear config cache after .env update', [
+                'error' => $e->getMessage(),
+            ]);
         }
 
         return redirect()->route('super.admin.settings.index')

@@ -23,6 +23,7 @@ return [
         'expired'   => 'منتهي',
         'canceled'  => 'ملغى',
         'suspended' => 'موقوف',
+
     ],
 
     'user' => [
@@ -230,6 +231,7 @@ return [
         'verified'    => 'تم التحقق',
         'archived'    => 'مؤرشف',
         'deleted'     => 'محذوف',
+        'premium' =>  'مميز',
 
         // ألوان عامة
         'info'    => 'معلومة',
