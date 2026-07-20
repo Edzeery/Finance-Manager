@@ -25,7 +25,7 @@
                                 <h3 style="font-weight:700;color:#fff;margin-bottom:0">{{ __('developer.api') }} <span style="font-weight:400;font-size:14px;color:rgba(255,255,255,0.6)">{{ __('developer.api_tokens_desc') }}</span></h3>
                             </div>
                             <button class="btn btn-custom flex-shrink-0" style="background:rgba(255,255,255,0.2);color:#fff;border:none" data-bs-toggle="modal" data-bs-target="#createTokenModal">
-                                <i class="bi bi-plus-lg me-1"></i>{{ __('developer.create_token') }}
+                                <i class="bi bi-plus-lg ms-1"></i>{{ __('developer.create_token') }}
                             </button>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
                                     </div>
                                     <div style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">
                                         <span>{{ $remaining }} {{ __('developer.remaining') }}</span>
-                                        <span><i class="bi bi-arrow-clockwise me-1"></i>{{ $reset->diffForHumans() }}</span>
+                                        <span><i class="bi bi-arrow-clockwise ms-1"></i>{{ $reset->diffForHumans() }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -131,12 +131,12 @@
                                     <form action="{{ route('account.settings.developer.revoke-all') }}" method="POST" id="revoke-all-form">
                                         @csrf @method('DELETE')
                                         <button type="button" class="btn btn-sm btn-outline-danger" @click="showConfirmModal('{{ __('developer.revoke_all') }}', '{{ __('developer.revoke_all_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('revoke-all-form').submit(); }, '{{ __('developer.revoke_all') }}', 'btn-danger')">
-                                            <i class="bi bi-trash me-1"></i>{{ __('developer.revoke_all') }}
+                                            <i class="bi bi-trash ms-1"></i>{{ __('developer.revoke_all') }}
                                         </button>
                                     </form>
                                 @endif
                                 <button class="btn btn-accent btn-custom btn-sm" data-bs-toggle="modal" data-bs-target="#createTokenModal">
-                                    <i class="bi bi-plus-lg me-1"></i>{{ __('developer.create_token') }}
+                                    <i class="bi bi-plus-lg ms-1"></i>{{ __('developer.create_token') }}
                                 </button>
                             </div>
                         @endif
@@ -150,7 +150,7 @@
                             <p class="fw-medium mb-1">{{ __('developer.no_tokens') }}</p>
                             <p class="text-muted small mb-3">{{ __('developer.no_tokens_desc') }}</p>
                             <button class="btn btn-accent btn-custom" data-bs-toggle="modal" data-bs-target="#createTokenModal">
-                                <i class="bi bi-plus-lg me-1"></i>{{ __('developer.create_token') }}
+                                <i class="bi bi-plus-lg ms-1"></i>{{ __('developer.create_token') }}
                             </button>
                         </div>
                     @else
@@ -185,14 +185,14 @@
                                                     @endif
                                                 </div>
                                                 <div class="d-flex align-items-center gap-3 flex-wrap" style="font-size:12px;color:var(--text-muted);margin-top:4px">
-                                                    <span><i class="bi bi-calendar3 me-1"></i>{{ $token['created_at']->format('M d, Y') }}</span>
-                                                    <span><i class="bi bi-clock-history me-1"></i>{{ $token['last_used_at'] ? $token['last_used_at']->diffForHumans() : __('developer.never_used') }}</span>
+                                                    <span><i class="bi bi-calendar3 ms-1"></i>{{ $token['created_at']->format('M d, Y') }}</span>
+                                                    <span><i class="bi bi-clock-history ms-1"></i>{{ $token['last_used_at'] ? $token['last_used_at']->diffForHumans() : __('developer.never_used') }}</span>
                                                 @if($token['expires_at'])
-                                                    <span class="{{ $isExpired ? 'text-danger' : '' }}"><i class="bi bi-hourglass-split me-1"></i>{{ $token['expires_at']->format('M d, Y') }}</span>
+                                                    <span class="{{ $isExpired ? 'text-danger' : '' }}"><i class="bi bi-hourglass-split ms-1"></i>{{ $token['expires_at']->format('M d, Y') }}</span>
                                                 @else
-                                                    <span><i class="bi bi-infinity me-1"></i>{{ __('developer.never_expires') }}</span>
+                                                    <span><i class="bi bi-infinity ms-1"></i>{{ __('developer.never_expires') }}</span>
                                                 @endif
-                                                    <span><i class="bi bi-graph-up me-1"></i>{{ $token['usage_7d'] }} {{ __('developer.requests_7d') }}</span>
+                                                    <span><i class="bi bi-graph-up ms-1"></i>{{ $token['usage_7d'] }} {{ __('developer.requests_7d') }}</span>
                                             </div>
                                                 @if($token['expires_at'] && !$isExpired && $expiryPercent !== null)
                                                     <div style="margin-top:8px;max-width:240px">
@@ -207,7 +207,7 @@
                                                 @if($maskedToken)
                                                     <div style="margin-top:6px;display:flex;align-items:center;gap:6px">
                                                         <code style="font-size:11px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-muted);letter-spacing:0.5px;direction:ltr;display:inline-block">{{ $maskedToken }}</code>
-                                                        <span style="font-size:10px;color:var(--text-muted)"><i class="bi bi-lock-fill me-1"></i>{{ __('developer.token_masked') }}</span>
+                                                        <span style="font-size:10px;color:var(--text-muted)"><i class="bi bi-lock-fill ms-1"></i>{{ __('developer.token_masked') }}</span>
                                                     </div>
                                                 @endif
                                                 <div style="margin-top:6px;display:flex;align-items:center;gap:4px;flex-wrap:wrap">
@@ -294,7 +294,7 @@
                     @if($tokens->isNotEmpty())
                         <div class="mt-2 d-flex gap-1">
                             <button class="btn btn-sm btn-outline-accent flex-fill" @click="testApiToken()">
-                                <i class="bi bi-play-fill me-1"></i>{{ __('general.test_connection') }}
+                                <i class="bi bi-play-fill ms-1"></i>{{ __('general.test_connection') }}
                             </button>
                         </div>
                         <div id="apiTestResult" class="mt-2 d-none"></div>
@@ -373,7 +373,7 @@
                     </h5>
                     <p class="section-desc mt-2 mb-3">{{ __('developer.api_documentation_desc') }}</p>
                     <a href="{{ route('api.documentation') }}" class="btn btn-accent btn-custom w-100" target="_blank">
-                        <i class="bi bi-box-arrow-up-right me-1"></i>{{ __('general.api_documentation') }}
+                        <i class="bi bi-box-arrow-up-right ms-1"></i>{{ __('general.api_documentation') }}
                     </a>
                 </div>
 
@@ -472,14 +472,14 @@
                         <div class="d-flex align-items-center gap-1" style="background:var(--bg-subtle);border:2px dashed var(--accent);border-radius:8px;padding:10px 12px">
                             <code id="tokenValueDisplay" style="font-size:12px;word-break:break-all;flex:1;background:none;border:none;padding:0" class="copy-target"></code>
                             <button class="btn btn-accent btn-custom btn-sm flex-shrink-0" @click="copyTokenValue()" id="copyTokenBtn">
-                                <i class="bi bi-clipboard me-1"></i>{{ __('developer.copy_token') }}
+                                <i class="bi bi-clipboard ms-1"></i>{{ __('developer.copy_token') }}
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 justify-content-center pt-2">
                     <button type="button" class="btn btn-accent btn-custom px-4" data-bs-dismiss="modal" @click="setTimeout(() => location.reload(), 100)">
-                        <i class="bi bi-check-lg me-1"></i>{{ __('general.got_it') }}
+                        <i class="bi bi-check-lg ms-1"></i>{{ __('general.got_it') }}
                     </button>
                 </div>
             </div>
@@ -539,7 +539,7 @@
                             <div class="d-flex align-items-center gap-1" style="background:var(--bg-subtle);border:2px dashed var(--accent);border-radius:8px;padding:10px 12px">
                                 <code id="detailsTokenFullDisplay" style="font-size:12px;word-break:break-all;flex:1;background:none;border:none;padding:0" class="copy-target"></code>
                                 <button class="btn btn-accent btn-custom btn-sm flex-shrink-0" @click="copyDetailsToken()" id="copyDetailsTokenBtn">
-                                    <i class="bi bi-clipboard me-1"></i>{{ __('developer.copy_token') }}
+                                    <i class="bi bi-clipboard ms-1"></i>{{ __('developer.copy_token') }}
                                 </button>
                             </div>
                         </div>
@@ -566,10 +566,10 @@
     function copyTokenValue() {
         const btn = document.getElementById('copyTokenBtn');
         navigator.clipboard.writeText(currentTokenValue).then(() => {
-            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>{{ __('general.copied') }}';
+            btn.innerHTML = '<i class="bi bi-check-lg ms-1"></i>{{ __('general.copied') }}';
             btn.className = 'btn btn-success btn-custom btn-sm flex-shrink-0';
             setTimeout(() => {
-                btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>{{ __('developer.copy_token') }}';
+                btn.innerHTML = '<i class="bi bi-clipboard ms-1"></i>{{ __('developer.copy_token') }}';
                 btn.className = 'btn btn-accent btn-custom btn-sm flex-shrink-0';
             }, 2500);
         });
@@ -586,10 +586,10 @@
     function copyDetailsToken() {
         const btn = document.getElementById('copyDetailsTokenBtn');
         navigator.clipboard.writeText(currentTokenValue).then(() => {
-            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>{{ __('general.copied') }}';
+            btn.innerHTML = '<i class="bi bi-check-lg ms-1"></i>{{ __('general.copied') }}';
             btn.className = 'btn btn-success btn-custom btn-sm flex-shrink-0';
             setTimeout(() => {
-                btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>{{ __('developer.copy_token') }}';
+                btn.innerHTML = '<i class="bi bi-clipboard ms-1"></i>{{ __('developer.copy_token') }}';
                 btn.className = 'btn btn-accent btn-custom btn-sm flex-shrink-0';
             }, 2500);
         });

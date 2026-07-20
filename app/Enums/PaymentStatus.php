@@ -36,7 +36,7 @@ enum PaymentStatus: string
 
     public function canTransitionTo(self $target): bool
     {
-        return in_array($target, self::allowedTransitions()[$this->value] ?? []);
+        return in_array($target->value, self::allowedTransitions()[$this->value] ?? []);
     }
 
     public static function allowedTransitions(): array

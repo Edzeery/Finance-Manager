@@ -1,6 +1,6 @@
 # Security & RBAC — Finance Manager
 
-> آخر تحديث: 2026-07-07
+> آخر تحديث: 2026-07-20
 
 ---
 
@@ -9,9 +9,10 @@
 - **Session-based** (web) with `auth` middleware
 - **Token-based** (API) with Sanctum + ability scoping
 - **2FA** via Google2FA (pragmarx) — intended for `super_admin`, `deputy_super_admin`, `workspace_admin`
-- ⚠️ `ForceTwoFactor` middleware (`app/Http/Middleware/ForceTwoFactor.php:15-23`) is **currently inert** — `handle()` has all logic commented out. 2FA setup works but is **not enforced** for any role.
+- ⚠️ `ForceTwoFactor` middleware is **currently inert** — 2FA setup works but is **not enforced** for any role.
 - **2FA secret** encrypted at rest (`encrypted` cast on `google2fa_secret`)
 - **Email verification** required for workspace access
+- **OTP lifetime**: 30 minutes (configured in `config/google2fa.php`)
 
 ### API Token Abilities
 
@@ -146,6 +147,11 @@ Actions: create | view | update | delete | restore | archive | approve | export 
 - **Encrypted settings**: `Setting::getSecret/setSecret` with `Crypt::encryptString`
 - **Encrypted asset fields**: `account_number`, `bank_name` cast as `encrypted`
 - **Security headers**: `SecurityHeaders` middleware adds CSP, HSTS, X-Frame-Options
+- **Auth on theme/currency routes**: `auth` middleware required (fixed 2026-07-20)
+- **Permission on 2FA disable**: `permission:platform-setting.general` required (fixed 2026-07-20)
+- **API Resources**: All 14 API controllers use Resources to prevent data exposure (fixed 2026-07-20)
+- **Zakat policy**: Owner-only access for view/update/delete (fixed 2026-07-20)
+- **Session secure cookie**: `null` (not hardcoded `true`) — allows HTTP in development (fixed 2026-07-20)
 
 ## Rate Limiting (API)
 

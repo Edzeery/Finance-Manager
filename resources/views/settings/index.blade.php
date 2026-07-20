@@ -114,7 +114,7 @@
                             </div>
                             <div class="col-md-3">
                                 <button type="submit" class="btn btn-accent btn-custom w-100">
-                                    <i class="bi bi-person-plus me-1"></i>{{ __('workspace.invite') }}
+                                    <i class="bi bi-person-plusms-1"></i>{{ __('workspace.invite') }}
                                 </button>
                             </div>
                         </form>
@@ -298,7 +298,7 @@
                             <div class="col-md-4">
                                 <button type="submit" class="btn btn-danger btn-custom w-100"
                                         @click="$event.preventDefault();showConfirmModal('{{ __('general.confirm') }}','{{ __('workspace.transfer_confirm') }}',function(c){if(c){$el.closest('form').submit();}},'{{ __('workspace.transfer') }}','btn-danger')">
-                                    <i class="bi bi-arrow-left-right me-1"></i>{{ __('workspace.transfer') }}
+                                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('workspace.transfer') }}
                                 </button>
                             </div>
                         </form>
@@ -333,7 +333,7 @@
                         @endforeach
                     </div>
                     <p class="text-muted mt-3 mb-0" style="font-size:12px;">
-                        <i class="bi bi-info-circle me-1"></i>{{ __('workspace.roles_manage_desc') }}
+                        <i class="bi bi-info-circlems-1"></i>{{ __('workspace.roles_manage_desc') }}
                         <a href="{{ route('settings.workspace.roles.index') }}" wire:navigate style="color:var(--accent);text-decoration:none;font-weight:500;">{{ __('workspace.view_roles') }}</a>
                     </p>
                 </div>
@@ -400,15 +400,15 @@
 
                         <div class="d-flex gap-2 pt-3" style="border-top:1px solid var(--border);">
                             <a href="{{ route('account.subscriptions') }}" class="btn btn-accent btn-custom">
-                                <i class="bi bi-credit-card me-1"></i>{{ __('settings.manage_subscription') }}
+                                <i class="bi bi-credit-cardms-1"></i>{{ __('settings.manage_subscription') }}
                             </a>
                             @if(auth()->user()->isWorkspaceOwner($workspace) && !$subscription->plan->isFree() && $subscription->isActive() && !$subscription->canceled_at)
                                 <button type="button" class="btn btn-outline-danger btn-custom" @click="confirmCancelSubscription()">
-                                    <i class="bi bi-x-circle me-1"></i>{{ __('settings.cancel_subscription') }}
+                                    <i class="bi bi-x-circlems-1"></i>{{ __('settings.cancel_subscription') }}
                                 </button>
                             @elseif($subscription->canceled_at)
                                 <span class="text-muted-sm" style="font-size:13px">
-                                    <i class="bi bi-info-circle me-1"></i>{{ __('settings.cancel_scheduled') }}
+                                    <i class="bi bi-info-circlems-1"></i>{{ __('settings.cancel_scheduled') }}
                                 </span>
                             @endif
                         </div>
@@ -417,7 +417,7 @@
                             <i class="bi bi-credit-card-2-front" style="font-size:40px;color:var(--text-muted);opacity:0.4;"></i>
                             <p class="text-muted mt-2 mb-3">{{ __('settings.no_subscription') }}</p>
                             <a href="{{ route('account.subscriptions') }}" class="btn btn-accent btn-custom">
-                                <i class="bi bi-credit-card me-1"></i>{{ __('settings.subscriptions') }}
+                                <i class="bi bi-credit-cardms-1"></i>{{ __('settings.subscriptions') }}
                             </a>
                         </div>
                     @endif

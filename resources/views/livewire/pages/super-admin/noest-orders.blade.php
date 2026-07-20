@@ -430,11 +430,11 @@ $ss = [
                         @endforeach
                     </select>
                     <button type="button" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer" wire:click="exportCsv">
-                        <i class="bi bi-download me-1"></i>{{ __("super-admin.noest_export_csv") }}
+                        <i class="bi bi-downloadms-1"></i>{{ __("super-admin.noest_export_csv") }}
                     </button>
                     @if(count($selectedOrders))
                         <button type="button" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--sa-indigo-light);color:var(--sa-indigo);font-weight:600;border:none;cursor:pointer" wire:click="bulkValidate">
-                            <i class="bi bi-check2-all me-1"></i>{{ __("super-admin.noest_bulk_validate") }} ({{ count($selectedOrders) }})
+                            <i class="bi bi-check2-allms-1"></i>{{ __("super-admin.noest_bulk_validate") }} ({{ count($selectedOrders) }})
                         </button>
                     @endif
                     @if($search || $statusFilter || $wilayaFilter)
@@ -566,7 +566,7 @@ $ss = [
                         @php $isShipped = in_array($editData["status"] ?? "", ["fdr_activated","livre","mise_a_jour"]); @endphp
                         @if($isShipped)
                             <div class="alert alert-warning" style="padding:10px 14px;font-size:12px;border-radius:var(--radius-sm);margin-bottom:16px">
-                                <i class="bi bi-info-circle-fill me-1"></i>{{ __("super-admin.noest_edit_shipped_warning") }}
+                                <i class="bi bi-info-circle-fillms-1"></i>{{ __("super-admin.noest_edit_shipped_warning") }}
                             </div>
                         @endif
                         <div class="row g-3">

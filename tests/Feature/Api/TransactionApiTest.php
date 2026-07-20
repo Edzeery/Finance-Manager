@@ -54,7 +54,7 @@ class TransactionApiTest extends TestCase
             ->getJson('/api/workspace/transactions');
 
         $response->assertOk()
-            ->assertJsonCount(5);
+            ->assertJsonCount(5, 'data');
     }
 
     public function test_transactions_sorted_by_date_desc(): void
@@ -74,7 +74,7 @@ class TransactionApiTest extends TestCase
             ->getJson('/api/workspace/transactions');
 
         $response->assertOk();
-        $data = $response->json();
+        $data = $response->json('data');
         $dates = array_column($data, 'date');
         $this->assertTrue($dates[0] >= $dates[1]);
     }

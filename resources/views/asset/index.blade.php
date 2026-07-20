@@ -18,46 +18,43 @@
     {{-- KPI Summary Cards --}}
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:rgba(21,183,108,0.1); color:var(--accent)">
-                    <i class="bi bi-safe2"></i>
-                </div>
-                <div class="kpi-label">{{ __('asset.total_assets') }}</div>
-                <div class="kpi-value">{{ number_format($totalValue, 2) }} <small
-                        style="font-size:14px; font-weight:400; color:var(--text-muted)">{{ config('finance.currency_symbol') }}</small>
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-safe2"
+                iconBg="rgba(21,183,108,0.1)"
+                iconColor="var(--accent)"
+                :label="__('asset.total_assets')"
+                :value="number_format($totalValue, 2)"
+                :currency="config('finance.currency_symbol')"
+            />
         </div>
         <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:rgba(21,183,108,0.1); color:var(--accent)">
-                    <i class="bi bi-water"></i>
-                </div>
-                <div class="kpi-label">{{ __('asset.total_liquid') }}</div>
-                <div class="kpi-value">{{ number_format($liquidValue, 2) }} <small
-                        style="font-size:14px; font-weight:400; color:var(--text-muted)">{{ config('finance.currency_symbol') }}</small>
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-water"
+                iconBg="rgba(21,183,108,0.1)"
+                iconColor="var(--accent)"
+                :label="__('asset.total_liquid')"
+                :value="number_format($liquidValue, 2)"
+                :currency="config('finance.currency_symbol')"
+            />
         </div>
         <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:rgba(245,158,11,0.1); color:var(--warning)">
-                    <i class="bi bi-heart"></i>
-                </div>
-                <div class="kpi-label">{{ __('asset.total_zakatable') }}</div>
-                <div class="kpi-value">{{ number_format($zakatableValue, 2) }} <small
-                        style="font-size:14px; font-weight:400; color:var(--text-muted)">{{ config('finance.currency_symbol') }}</small>
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-heart"
+                iconBg="rgba(245,158,11,0.1)"
+                iconColor="var(--warning)"
+                :label="__('asset.total_zakatable')"
+                :value="number_format($zakatableValue, 2)"
+                :currency="config('finance.currency_symbol')"
+            />
         </div>
         <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:rgba(59,130,246,0.1); color:var(--info)">
-                    <i class="bi bi-boxes"></i>
-                </div>
-                <div class="kpi-label">{{ __('asset.total_count') }}</div>
-                <div class="kpi-value">{{ $assets->total() }}</div>
-            </div>
+            <x-kpi-card
+                icon="bi-boxes"
+                iconBg="rgba(59,130,246,0.1)"
+                iconColor="var(--info)"
+                :label="__('asset.total_count')"
+                :value="$assets->total()"
+            />
         </div>
     </div>
 
@@ -82,7 +79,7 @@
             <x-per-page :current="request('per_page', 15)" :route="route('asset.index')" :preserve="['type', 'search', 'tab']" />
             @if ($tab !== 'trashed' && $canCreate)
                 <a href="{{ route('asset.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lg me-1"></i>{{ __('asset.add') }}
+                    <i class="bi bi-plus-lgms-1"></i>{{ __('asset.add') }}
                 </a>
             @endif
         </div>
@@ -110,20 +107,20 @@
                     @if ($canRestore)
                         <button type="submit" form="bulkForm" formaction="{{ route('asset.bulk-restore') }}"
                             class="btn btn-sm btn-outline-success btn-custom">
-                            <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('general.restore') }}
+                            <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('general.restore') }}
                         </button>
                     @endif
                     @if ($canForceDelete)
                         <button type="button" class="btn btn-sm btn-outline-danger btn-custom"
                             @click="confirmBulkForceDelete()">
-                            <i class="bi bi-trash3 me-1"></i>{{ __('general.force_delete') }}
+                            <i class="bi bi-trash3ms-1"></i>{{ __('general.force_delete') }}
                         </button>
                     @endif
                 @else
                     @if ($canDelete)
                         <button type="button" class="btn btn-sm btn-outline-danger btn-custom"
                             @click="confirmBulkDelete('asset')">
-                            <i class="bi bi-trash me-1"></i>{{ __('general.delete') }}
+                            <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
                         </button>
                     @endif
                 @endif
@@ -159,7 +156,7 @@
                                     <td>
                                         <span style="font-weight:500">{{ $asset->name }}</span>
                                         @if ($asset->type->value === 'gold' && $asset->karat)
-                                            <x-status-badge domain="general" status="warning" set="bi" size="xs" class="ms-1" />
+                                            <span class="badge ms-1" style="font-size:10px;background:rgba(245,158,11,0.12);color:var(--warning);padding:2px 6px;border-radius:4px;font-weight:500">{{ $asset->karat }}K</span>
                                         @endif
                                         @if ($asset->description)
                                             <br><small

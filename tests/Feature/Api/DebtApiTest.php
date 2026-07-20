@@ -60,7 +60,7 @@ class DebtApiTest extends TestCase
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonFragment(['type' => 'owed', 'total_amount' => '50000.00']);
+            ->assertJsonFragment(['type' => 'owed', 'total_amount' => 50000]);
     }
 
     public function test_show(): void
@@ -91,7 +91,7 @@ class DebtApiTest extends TestCase
             ]);
 
         $response->assertOk()
-            ->assertJsonFragment(['counterparty_name' => 'Updated Bank', 'total_amount' => '60000.00']);
+            ->assertJsonFragment(['counterparty_name' => 'Updated Bank', 'total_amount' => 60000]);
     }
 
     public function test_destroy(): void

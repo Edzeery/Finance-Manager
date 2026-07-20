@@ -220,7 +220,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $subscription = Subscription::withoutWorkspace()
             ->where('user_id', $this->id)
-            ->where('status', PaymentStatus::CheckoutPending->value)
+            ->where('status', SubscriptionStatus::PastDue->value)
             ->latest()
             ->first();
 

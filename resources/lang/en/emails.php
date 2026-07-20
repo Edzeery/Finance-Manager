@@ -55,6 +55,10 @@ return [
 
     'subscription_cancelled_subject' => 'Subscription Cancelled — :app',
     'subscription_cancelled_line' => 'Your :plan plan has been cancelled. You will retain access until the end of your billing period.',
+    'plan' => 'Plan',
+    'end_date' => 'End Date',
+    'immediately' => 'Immediately',
+    'view_subscriptions' => 'View Subscriptions',
 
     'payment_failed_subject' => 'Payment Failed — :app',
     'payment_failed_line' => 'A payment attempt has failed. Please check your payment method and try again.',

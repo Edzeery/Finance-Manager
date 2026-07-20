@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:run --only-db --disable-notifications')->dailyAt('02:00')->withoutOverlapping();
         $schedule->command('backup:clean --disable-notifications')->dailyAt('02:30')->withoutOverlapping();
         $schedule->command('subscriptions:expire')->dailyAt('00:01')->withoutOverlapping();
+        $schedule->command('subscriptions:renew')->dailyAt('00:30')->withoutOverlapping();
 
         // Grace period expiry reminders (3 days before ends_at)
         $schedule->command('subscriptions:remind-expiry')->dailyAt('09:00')->withoutOverlapping();

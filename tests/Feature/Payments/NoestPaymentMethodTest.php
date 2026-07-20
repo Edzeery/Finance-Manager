@@ -197,6 +197,7 @@ class NoestPaymentMethodTest extends TestCase
             $this->user,
             paymentMethod: 'noest',
             billingPeriod: 'monthly',
+            gatewayData: ['noest_wilaya' => '16'],
         );
 
         $this->assertNotNull($payment);
@@ -225,6 +226,7 @@ class NoestPaymentMethodTest extends TestCase
             $this->user,
             paymentMethod: 'noest',
             billingPeriod: 'monthly',
+            gatewayData: ['noest_wilaya' => '16'],
         );
     }
 }

@@ -61,7 +61,7 @@ class SubscriptionPlanSeeder extends Seeder
                 ],
                 'prices' => [
                     ['billing_period' => 'monthly', 'currency' => 'USD', 'price' => 3.99],
-                    ['billing_period' => 'yearly', 'currency' => 'USD', 'price' => 39.99],
+                    ['billing_period' => 'yearly', 'currency' => 'USD', 'price' => 39.74],
                 ],
             ],
 

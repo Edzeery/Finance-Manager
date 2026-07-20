@@ -210,6 +210,7 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
         Route::put('/exchange-rates', [SettingsController::class, 'updateExchangeRates'])
             ->middleware('permission:platform-setting.general')->name('exchange-rates.update');
         Route::put('/2fa/disable', [SettingsController::class, 'disable2fa'])
+            ->middleware('permission:platform-setting.general')
             ->name('2fa.disable');
         Route::put('/rate-limits', [SettingsController::class, 'updateRateLimits'])
             ->middleware('permission:platform-setting.general')
@@ -217,6 +218,9 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
         Route::put('/currencies', [SettingsController::class, 'updateCurrencies'])
             ->middleware('permission:platform-setting.general')
             ->name('currencies.update');
+        Route::put('/zakat-prices', [SettingsController::class, 'updateZakatPrices'])
+            ->middleware('permission:platform-setting.general')
+            ->name('zakat-prices.update');
     });
 
     Route::get('/test-checklist', [TestChecklistController::class, 'index'])

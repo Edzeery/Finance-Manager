@@ -1,6 +1,6 @@
 <div class="info-section mb-3">
     <div class="info-section-header">
-        <i class="bi bi-credit-card-2-front me-1"></i>
+        <i class="bi bi-credit-card-2-frontms-1"></i>
         {{ __('onboarding.payment_info') }}
     </div>
     <div class="info-grid">
@@ -40,7 +40,7 @@
 @isset($plan)
 <div class="info-section mb-3">
     <div class="info-section-header">
-        <i class="bi bi-box-seam me-1"></i>
+        <i class="bi bi-box-seamms-1"></i>
         {{ __('onboarding.subscription_info') }}
     </div>
     <div class="info-grid">
@@ -73,7 +73,7 @@
 @if ($_hasFees)
 <div class="info-section mb-3">
     <div class="info-section-header">
-        <i class="bi bi-receipt me-1"></i>
+        <i class="bi bi-receiptms-1"></i>
         {{ __('onboarding.fee_breakdown') }}
     </div>
     <div class="info-grid">
@@ -106,7 +106,7 @@
 @isset($invoice)
 <div class="info-section mb-3">
     <div class="info-section-header">
-        <i class="bi bi-receipt me-1"></i>
+        <i class="bi bi-receiptms-1"></i>
         {{ __('onboarding.invoice_info') }}
     </div>
     <div class="info-grid">

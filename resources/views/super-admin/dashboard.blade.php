@@ -28,83 +28,94 @@
     {{-- ==================== TAB: OVERVIEW ==================== --}}
     @if($data['current_tab'] === 'overview')
     <div class="kpi-grid stagger-fade-in mb-4">
-        <div class="kpi-card kpi-green">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-green"><i class="bi bi-currency-dollar"></i></div>
-                <span class="kpi-card-trend up">
-                    <i class="bi bi-arrow-up"></i>{{ number_format(($data['total_revenue'] ? $data['revenue_this_month'] / max($data['total_revenue'], 1) * 100 : 0), 1) }}%
-                </span>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.total_revenue') }}</div>
-            <div class="kpi-card-value">{{ number_format($data['total_revenue'], 0) }} {{ $baseSym }}</div>
+        <x-kpi-card
+            icon="bi-currency-dollar"
+            iconBg="rgba(21,183,108,0.12)"
+            iconColor="var(--accent)"
+            :label="__('super-admin.total_revenue')"
+            :value="number_format($data['total_revenue'], 0).' '.$baseSym"
+            :trendIcon="'bi-arrow-up'"
+            :trendDir="'up'"
+            :trend="number_format(($data['total_revenue'] ? $data['revenue_this_month'] / max($data['total_revenue'], 1) * 100 : 0), 1).'%'"
+        >
             <div class="kpi-card-compare">
                 <i class="bi bi-cash-coin"></i> {{ __('super-admin.net_revenue') }}: {{ number_format($data['net_revenue'], 0) }} {{ $baseSym }}
             </div>
-        </div>
+        </x-kpi-card>
 
-        <div class="kpi-card kpi-indigo">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-indigo"><i class="bi bi-people-fill"></i></div>
-                <span class="kpi-card-trend up"><i class="bi bi-person-check"></i>{{ $data['active_users'] }} {{ __('general.active') }}</span>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.users') }}</div>
-            <div class="kpi-card-value">{{ $data['total_users'] }}</div>
+        <x-kpi-card
+            icon="bi-people-fill"
+            iconBg="rgba(99,102,241,0.12)"
+            iconColor="#6366F1"
+            :label="__('super-admin.users')"
+            :value="$data['total_users']"
+            :trendIcon="'bi-person-check'"
+            :trendDir="'up'"
+            :trend="$data['active_users'].' '.__('general.active')"
+        >
             <div class="kpi-card-compare">
                 <i class="bi bi-circle-fill text-success" style="font-size:0.5rem"></i> {{ $data['online_users'] }} {{ __('general.online') }}
                 &nbsp;&middot;&nbsp;
                 <i class="bi bi-shield-shaded"></i> {{ $data['super_admins'] ?? '—' }} {{ __('super-admin.super_admins') }}
             </div>
-        </div>
+        </x-kpi-card>
 
-        <div class="kpi-card kpi-blue">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-blue"><i class="bi bi-building"></i></div>
-                    <span class="kpi-card-trend up"><x-status-icon domain="general" status="success" set="bi" /> {{ $data['active_workspaces'] }} {{ __('general.active') }}</span>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.workspaces') }}</div>
-            <div class="kpi-card-value">{{ $data['total_workspaces'] }}</div>
+        <x-kpi-card
+            icon="bi-building"
+            iconBg="rgba(59,130,246,0.12)"
+            iconColor="var(--info)"
+            :label="__('super-admin.workspaces')"
+            :value="$data['total_workspaces']"
+            :trendDir="'up'"
+            :trend="$data['active_workspaces'].' '.__('general.active')"
+        >
             <div class="kpi-card-compare">
                 <i class="bi bi-building"></i> {{ __('super-admin.total') }}
             </div>
-        </div>
+        </x-kpi-card>
 
-        <div class="kpi-card kpi-green">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-green"><i class="bi bi-credit-card"></i></div>
-                    <span class="kpi-card-trend up"><x-status-icon domain="general" status="success" set="bi" /> {{ $data['active_subscriptions'] }} {{ __('super-admin.active') }}</span>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.active_subscriptions') }}</div>
-            <div class="kpi-card-value">{{ $data['active_subscriptions'] }}</div>
+        <x-kpi-card
+            icon="bi-credit-card"
+            iconBg="rgba(21,183,108,0.12)"
+            iconColor="var(--accent)"
+            :label="__('super-admin.active_subscriptions')"
+            :value="$data['active_subscriptions']"
+            :trendDir="'up'"
+            :trend="$data['active_subscriptions'].' '.__('super-admin.active')"
+        >
             <div class="kpi-card-compare">
                 <x-status-icon domain="general" status="danger" set="bi" /> {{ $data['canceled_subscriptions'] }} {{ __('super-admin.canceled') }}
             </div>
-        </div>
+        </x-kpi-card>
 
-        <div class="kpi-card kpi-amber">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-amber"><i class="bi bi-hourglass-split"></i></div>
-                <span class="kpi-card-trend {{ $data['pending_amount'] > 0 ? 'down' : 'up' }}">
-                    <i class="bi bi-cash"></i>{{ number_format($data['pending_amount'], 0) }} {{ $baseSym }}
-                </span>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.pending_payments') }}</div>
-            <div class="kpi-card-value">{{ $data['pending_payments'] }}</div>
+        <x-kpi-card
+            icon="bi-hourglass-split"
+            iconBg="rgba(245,158,11,0.12)"
+            iconColor="var(--warning)"
+            :label="__('super-admin.pending_payments')"
+            :value="$data['pending_payments']"
+            :trendIcon="'bi-cash'"
+            :trendDir="$data['pending_amount'] > 0 ? 'down' : 'up'"
+            :trend="number_format($data['pending_amount'], 0).' '.$baseSym"
+        >
             <div class="kpi-card-compare">
                 <x-status-icon domain="general" status="success" set="bi" /> {{ $data['completed_payments'] }} {{ __('super-admin.completed') }}
             </div>
-        </div>
+        </x-kpi-card>
 
-        <div class="kpi-card kpi-purple">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-purple"><i class="bi bi-tags-fill"></i></div>
-                <span class="kpi-card-trend up">{{ $data['total_coupon_uses'] ?? '—' }} {{ __('super-admin.total_uses') }}</span>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.coupon_stats') }}</div>
-            <div class="kpi-card-value">{{ $data['active_coupons'] ?? '—' }} / {{ $data['total_coupons'] ?? '—' }}</div>
+        <x-kpi-card
+            icon="bi-tags-fill"
+            iconBg="rgba(139,92,246,0.12)"
+            iconColor="#8B5CF6"
+            :label="__('super-admin.coupon_stats')"
+            :value="($data['active_coupons'] ?? '—').' / '.($data['total_coupons'] ?? '—')"
+            :trendDir="'up'"
+            :trend="($data['total_coupon_uses'] ?? '—').' '.__('super-admin.total_uses')"
+        >
             <div class="kpi-card-compare">
                 <x-status-icon domain="general" status="expired" set="bi" /> {{ $data['expired_coupons'] ?? '—' }} {{ __('super-admin.expired') }}
             </div>
-        </div>
+        </x-kpi-card>
     </div>
 
     <div class="analytics-grid mb-4">
@@ -225,37 +236,40 @@
         $revPlans = $data['plan_options'] ?? [];
     @endphp
     <div class="kpi-grid stagger-fade-in mb-4">
-        <div class="kpi-card kpi-green">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-green"><i class="bi bi-currency-dollar"></i></div>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.total_revenue') }}</div>
-            <div class="kpi-card-value">{{ number_format($data['gross'], 0) }} {{ $baseSym }}</div>
-        </div>
-        <div class="kpi-card kpi-blue">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-blue"><i class="bi bi-cash-coin"></i></div>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.net_revenue') }}</div>
-            <div class="kpi-card-value">{{ number_format($data['net'], 0) }} {{ $baseSym }}</div>
+        <x-kpi-card
+            icon="bi-currency-dollar"
+            iconBg="rgba(21,183,108,0.12)"
+            iconColor="var(--accent)"
+            :label="__('super-admin.total_revenue')"
+            :value="number_format($data['gross'], 0).' '.$baseSym"
+        />
+        <x-kpi-card
+            icon="bi-cash-coin"
+            iconBg="rgba(59,130,246,0.12)"
+            iconColor="var(--info)"
+            :label="__('super-admin.net_revenue')"
+            :value="number_format($data['net'], 0).' '.$baseSym"
+        >
             <div class="kpi-card-compare">{{ __('super-admin.total_fees') }}: {{ number_format($data['fees'], 0) }} {{ $baseSym }}</div>
-        </div>
-        <div class="kpi-card kpi-amber">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-amber"><i class="bi bi-arrow-uturn-left"></i></div>
-            </div>
-            <div class="kpi-card-label">{{ __('super-admin.refunded_amount') }}</div>
-            <div class="kpi-card-value">{{ number_format($data['refunded'], 0) }} {{ $baseSym }}</div>
+        </x-kpi-card>
+        <x-kpi-card
+            icon="bi-arrow-uturn-left"
+            iconBg="rgba(245,158,11,0.12)"
+            iconColor="var(--warning)"
+            :label="__('super-admin.refunded_amount')"
+            :value="number_format($data['refunded'], 0).' '.$baseSym"
+        >
             <div class="kpi-card-compare">{{ __('super-admin.refund_rate') }}: {{ $data['refund_rate'] }}%</div>
-        </div>
-        <div class="kpi-card kpi-purple">
-            <div class="kpi-card-header">
-                <div class="kpi-card-icon kpi-icon-purple"><i class="bi bi-graph-up-arrow"></i></div>
-            </div>
-            <div class="kpi-card-label">MRR</div>
-            <div class="kpi-card-value">{{ number_format($data['mrr'], 0) }} {{ $baseSym }}</div>
+        </x-kpi-card>
+        <x-kpi-card
+            icon="bi-graph-up-arrow"
+            iconBg="rgba(139,92,246,0.12)"
+            iconColor="#8B5CF6"
+            label="MRR"
+            :value="number_format($data['mrr'], 0).' '.$baseSym"
+        >
             <div class="kpi-card-compare">ARR: {{ number_format($data['arr'], 0) }} {{ $baseSym }}</div>
-        </div>
+        </x-kpi-card>
     </div>
 
     <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
@@ -336,36 +350,48 @@
     @elseif($data['current_tab'] === 'subscriptions')
     @php $subPlans = $data['plan_options'] ?? []; @endphp
     <div class="kpi-grid stagger-fade-in mb-4">
-        <div class="kpi-card kpi-green">
-            <div class="kpi-card-header"><div class="kpi-card-icon kpi-icon-green"><x-status-icon domain="general" status="success" set="bi" /></div></div>
-            <div class="kpi-card-label">{{ __('super-admin.active') }}</div>
-            <div class="kpi-card-value">{{ $data['active'] }}</div>
-        </div>
-        <div class="kpi-card kpi-amber">
-            <div class="kpi-card-header"><div class="kpi-card-icon kpi-icon-amber"><i class="bi bi-hourglass-split"></i></div></div>
-            <div class="kpi-card-label">{{ __('super-admin.suspended') }}</div>
-            <div class="kpi-card-value">{{ $data['suspended'] }}</div>
-        </div>
-        <div class="kpi-card kpi-red" style="--kpi-accent:#EF4444">
-            <div class="kpi-card-header"><div class="kpi-card-icon" style="background:rgba(239,68,68,0.12);color:#EF4444"><x-status-icon domain="general" status="danger" set="bi" /></div></div>
-            <div class="kpi-card-label">{{ __('super-admin.canceled') }}</div>
-            <div class="kpi-card-value">{{ $data['canceled'] }}</div>
-        </div>
-        <div class="kpi-card" style="--kpi-accent:#9ca3af">
-            <div class="kpi-card-header"><div class="kpi-card-icon" style="background:rgba(156,163,175,0.12);color:#9ca3af"><x-status-icon domain="general" status="expired" set="bi" /></div></div>
-            <div class="kpi-card-label">{{ __('super-admin.expired') }}</div>
-            <div class="kpi-card-value">{{ $data['expired'] }}</div>
-        </div>
-        <div class="kpi-card kpi-purple">
-            <div class="kpi-card-header"><div class="kpi-card-icon kpi-icon-purple"><i class="bi bi-percent"></i></div></div>
-            <div class="kpi-card-label">{{ __('super-admin.churn_rate') }}</div>
-            <div class="kpi-card-value">{{ $data['churn_rate'] }}%</div>
-        </div>
-        <div class="kpi-card kpi-blue">
-            <div class="kpi-card-header"><div class="kpi-card-icon kpi-icon-blue"><x-status-icon domain="general" status="pending" set="bi" /></div></div>
-            <div class="kpi-card-label">{{ __('super-admin.avg_lifetime') }}</div>
-            <div class="kpi-card-value">{{ $data['avg_lifetime_days'] }}</div>
-        </div>
+        <x-kpi-card
+            icon="bi-check-circle"
+            iconBg="rgba(21,183,108,0.12)"
+            iconColor="var(--accent)"
+            :label="__('super-admin.active')"
+            :value="$data['active']"
+        />
+        <x-kpi-card
+            icon="bi-hourglass-split"
+            iconBg="rgba(245,158,11,0.12)"
+            iconColor="var(--warning)"
+            :label="__('super-admin.suspended')"
+            :value="$data['suspended']"
+        />
+        <x-kpi-card
+            icon="bi-x-circle"
+            iconBg="rgba(239,68,68,0.12)"
+            iconColor="#EF4444"
+            :label="__('super-admin.canceled')"
+            :value="$data['canceled']"
+        />
+        <x-kpi-card
+            icon="bi-clock-history"
+            iconBg="rgba(156,163,175,0.12)"
+            iconColor="#9ca3af"
+            :label="__('super-admin.expired')"
+            :value="$data['expired']"
+        />
+        <x-kpi-card
+            icon="bi-percent"
+            iconBg="rgba(139,92,246,0.12)"
+            iconColor="#8B5CF6"
+            :label="__('super-admin.churn_rate')"
+            :value="$data['churn_rate'].'%'"
+        />
+        <x-kpi-card
+            icon="bi-clock"
+            iconBg="rgba(59,130,246,0.12)"
+            iconColor="var(--info)"
+            :label="__('super-admin.avg_lifetime')"
+            :value="$data['avg_lifetime_days']"
+        />
     </div>
 
     <div class="d-flex flex-wrap align-items-center gap-3 mb-3">

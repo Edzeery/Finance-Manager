@@ -62,7 +62,7 @@ class BudgetApiTest extends TestCase
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonFragment(['name_en' => 'Monthly Budget', 'total_amount' => '100000.00']);
+            ->assertJsonFragment(['name' => 'Monthly Budget', 'total_amount' => 100000]);
     }
 
     public function test_show(): void
@@ -93,7 +93,7 @@ class BudgetApiTest extends TestCase
             ]);
 
         $response->assertOk()
-            ->assertJsonFragment(['name_en' => 'Updated Budget', 'total_amount' => '200000.00']);
+            ->assertJsonFragment(['name' => 'Updated Budget', 'total_amount' => 200000]);
     }
 
     public function test_destroy(): void

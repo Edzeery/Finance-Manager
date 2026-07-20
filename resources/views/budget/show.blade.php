@@ -133,7 +133,7 @@
             <div class="d-flex gap-2 mt-4">
                 @if($canEditBudget)
                     <a href="{{ route('budget.edit', $budget) }}" class="btn btn-outline-secondary btn-custom" style="flex:1">
-                        <i class="bi bi-pencil me-1"></i>{{ __('general.edit') }}
+                        <i class="bi bi-pencilms-1"></i>{{ __('general.edit') }}
                     </a>
                 @endif
                 @if($canDeleteBudget)
@@ -141,7 +141,7 @@
                         @csrf @method('DELETE')
                     </form>
                     <button type="button" class="btn btn-outline-danger btn-custom w-100" @click="window.confirmDelete('budget', {{ $budget->id }})">
-                        <i class="bi bi-trash me-1"></i>{{ __('general.delete') }}
+                        <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
                     </button>
                 @endif
             </div>

@@ -193,14 +193,14 @@ new #[Layout('layouts.super-admin.app')] class extends Component {
             <button @click="tab = 'coupons'"
                 :class="{ 'active-tab': tab === 'coupons' }" class="btn btn-sm px-3 d-flex gap-2"
                 style="border:none;background:none;font-weight:500;color:var(--text-muted);transition:all 0.15s">
-                <i class="bi bi-tags me-1"></i>{{ __('super-admin.coupons') }}
+                <i class="bi bi-tagsms-1"></i>{{ __('super-admin.coupons') }}
             </button>
         @endif
         @if ($this->canViewTaxRates())
             <button @click="tab = 'taxRates'"
                 :class="{ 'active-tab': tab === 'taxRates' }" class="btn btn-sm px-3 d-flex gap-2"
                 style="border:none;background:none;font-weight:500;color:var(--text-muted);transition:all 0.15s">
-                <i class="bi bi-percent me-1"></i>{{ __('super-admin.tax_rates') }}
+                <i class="bi bi-percentms-1"></i>{{ __('super-admin.tax_rates') }}
             </button>
         @endif
     </div>

@@ -285,5 +285,15 @@ return [
     'next' => 'Suivant',
     'suspended' => 'Suspendu',
     'banned' => 'Banni',
-    'pc' => 'Bureau'
+    'pc' => 'Bureau',
+    'device' => 'Appareil',
+    'os' => 'Système',
+    'failed' => 'Échoué',
+    'suspicious' => 'Suspect',
+    'online' => 'En ligne',
+    'offline' => 'Hors ligne',
+    'optional' => 'Optionnel',
+    'reason' => 'Raison',
+    'saving' => 'Enregistrement...',
+    'unsaved' => 'Non enregistré'
 ];

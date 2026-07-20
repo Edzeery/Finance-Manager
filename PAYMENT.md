@@ -1,6 +1,6 @@
 # Payment System — Finance Manager
 
-> آخر تحديث: 2026-07-11 (v5)
+> آخر تحديث: 2026-07-20 (v6)
 
 ---
 
@@ -297,6 +297,13 @@ Session expiry during onboarding returns a JSON 401 with `{"message": "...", "st
 
 ### Important: PaymentStatus Enum Values
 All gateways now write PaymentStatus enum values (`CheckoutPending`, `CheckoutPaid`, `CheckoutFailed`, `CheckoutCanceled`, `CheckoutExpired`). The `isCompleted()` method checks `=== PaymentStatus::CheckoutPaid`. This is consistent across all services. No raw string statuses remain in application code for the Payment model.
+
+**PaymentTransitionValidator** is now actively used across all payment flows:
+- `PaymentService::applyPaymentSideEffects()` — transitions on approval/rejection
+- `PaymentStatusService` — Blade-level transitions via `cancel()`, `retry()`
+- `SubscriptionActivationService` — payment status updates
+- `ChargilyWebhookService` — webhook-driven transitions
+- `canTransitionTo()` uses `$target->value` for correct PHP 8.1+ enum comparison (fixed 2026-07-20)
 
 ### Configuration
 

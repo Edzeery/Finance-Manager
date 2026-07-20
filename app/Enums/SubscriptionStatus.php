@@ -8,7 +8,6 @@ enum SubscriptionStatus: string
     case PastDue = 'past_due';
     case Expired = 'expired';
     case Canceled = 'canceled';
-    case Cancelled = 'cancelled';
     case Trialing = 'trialing';
 
     public function isTerminal(): bool
@@ -16,7 +15,6 @@ enum SubscriptionStatus: string
         return in_array($this, [
             self::Expired,
             self::Canceled,
-            self::Cancelled,
         ]);
     }
 
@@ -44,7 +42,6 @@ enum SubscriptionStatus: string
             self::PastDue => __('enums.subscription_status.past_due'),
             self::Expired => __('enums.subscription_status.expired'),
             self::Canceled => __('enums.subscription_status.canceled'),
-            self::Cancelled => __('enums.subscription_status.canceled'),
             self::Trialing => __('enums.subscription_status.trialing'),
         };
     }

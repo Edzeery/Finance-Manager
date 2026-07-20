@@ -42,7 +42,7 @@ class PaymentFlowTest extends TestCase
         ChargilyClient::forgetInstance();
         Cache::forget('payment_gateway_config.chargily');
 
-        Role::create(['slug' => 'workspace_admin', 'name_en' => 'Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 1]);
+        Role::create(['slug' => 'workspace_admin', 'name' => 'Admin', 'level' => 'workspace', 'is_system' => true, 'sort_order' => 1]);
 
         $this->freePlan = SubscriptionPlan::create([
             'slug' => 'personal', 'name_en' => 'Personal', 'is_free' => true,

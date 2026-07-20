@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Enums\UserStatus;
 use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\EnterpriseRolePermissionSeeder;
@@ -111,12 +112,12 @@ class UserControllerTest extends TestCase
     public function test_toggle_status(): void
     {
         $this->actingAs($this->admin);
-        $this->assertTrue($this->member->is_active);
+        $this->assertEquals(UserStatus::Active, $this->member->status);
 
         $this->post(route('super.admin.users.toggle-status', $this->member))
             ->assertRedirect(route('super.admin.users.index'));
 
-        $this->assertFalse($this->member->fresh()->is_active);
+        $this->assertEquals(UserStatus::Inactive, $this->member->fresh()->status);
     }
 
     public function test_destroy_user(): void
@@ -126,6 +127,6 @@ class UserControllerTest extends TestCase
         $this->delete(route('super.admin.users.destroy', $this->member))
             ->assertRedirect(route('super.admin.users.index'));
 
-        $this->assertDatabaseMissing('users', ['id' => $this->member->id]);
+        $this->assertSoftDeleted($this->member);
     }
 }

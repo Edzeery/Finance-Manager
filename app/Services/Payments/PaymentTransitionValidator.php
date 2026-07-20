@@ -4,7 +4,6 @@ namespace App\Services\Payments;
 
 use App\Enums\PaymentStatus;
 use App\Models\Payment;
-use Illuminate\Support\Facades\DB;
 
 class PaymentTransitionValidator
 {
@@ -26,34 +25,23 @@ class PaymentTransitionValidator
 
     public function transition(Payment $payment, PaymentStatus $target, array $extra = []): Payment
     {
-        DB::transaction(function () use ($payment, $target, $extra) {
-            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+        $this->assert($payment, $target);
 
-            if (! $payment) {
-                throw new \RuntimeException('Payment not found for transition');
-            }
+        $data = array_merge(['status' => $target], $extra);
 
-            $this->assert($payment, $target);
+        if ($target->isFailure() && ! isset($extra['failed_at'])) {
+            $data['failed_at'] = now();
+        }
 
-            $data = array_merge([
-                'status' => $target,
-                'webhook_processed_at' => now(),
-            ], $extra);
+        if ($target === PaymentStatus::CheckoutPaid && ! isset($extra['paid_at'])) {
+            $data['paid_at'] = now();
+        }
 
-            if ($target->isFailure() && ! isset($extra['failed_at'])) {
-                $data['failed_at'] = now();
-            }
+        if ($target === PaymentStatus::CheckoutCanceled && ! isset($extra['canceled_at'])) {
+            $data['canceled_at'] = now();
+        }
 
-            if ($target === PaymentStatus::CheckoutPaid && ! isset($extra['paid_at'])) {
-                $data['paid_at'] = now();
-            }
-
-            if ($target === PaymentStatus::CheckoutCanceled && ! isset($extra['canceled_at'])) {
-                $data['canceled_at'] = now();
-            }
-
-            $payment->update($data);
-        });
+        $payment->update($data);
 
         return $payment->fresh();
     }

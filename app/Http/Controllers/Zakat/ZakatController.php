@@ -39,6 +39,13 @@ class ZakatController extends Controller
         $owingDebts = $service->getUserOwingDebts();
         $owingDebtsTotal = $owingDebts->sum('remaining_amount');
 
+        $recentRecords = $this->zakatRepo->history(filters: ['per_page' => 5]);
+        $defaultSilverPrice = $this->goldPriceService->convertCurrency(
+            $this->goldPriceService->getSilverGramUsd() ?? 0,
+            'USD',
+            config('finance.currency', 'USD')
+        );
+
         return view('zakat.calculator', $this->withBreadcrumbs([
             'assets' => $assets,
             'goldItems' => $goldItems,
@@ -47,6 +54,8 @@ class ZakatController extends Controller
             'owedDebtsTotal' => $owedDebtsTotal,
             'owingDebts' => $owingDebts,
             'owingDebtsTotal' => $owingDebtsTotal,
+            'recentRecords' => $recentRecords,
+            'defaultSilverPrice' => $defaultSilverPrice,
         ]));
     }
 
@@ -109,6 +118,12 @@ class ZakatController extends Controller
             'owedDebtsTotal' => $owedDebtsTotal,
             'owingDebts' => $owingDebts,
             'owingDebtsTotal' => $owingDebtsTotal,
+            'recentRecords' => $this->zakatRepo->history(filters: ['per_page' => 5]),
+            'defaultSilverPrice' => $this->goldPriceService->convertCurrency(
+                $this->goldPriceService->getSilverGramUsd() ?? 0,
+                'USD',
+                $userCurrency
+            ),
         ]);
     }
 

@@ -340,12 +340,12 @@
             <div class="d-flex gap-3 justify-content-center flex-wrap">
                 <a href="{{ route('api.documentation') }}"
                     class="btn btn-accent btn-custom d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-book me-1"></i>{{ __('developer.api_documentation_link') }}
+                    <i class="bi bi-bookms-1"></i>{{ __('developer.api_documentation_link') }}
                 </a>
                 @auth
                     <a href="{{ route('account.settings.developer') }}"
                         class="btn btn-outline-secondary btn-custom d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-key me-1"></i>{{ __('developer.api_tokens') }}
+                        <i class="bi bi-keyms-1"></i>{{ __('developer.api_tokens') }}
                     </a>
                 @endauth
             </div>
@@ -390,7 +390,7 @@
                                 <li x-show="showAll || {{ $index < 3 ? 'true' : 'false' }}"
                                     x-transition:enter.duration.200ms>
                                     <i
-                                        class="bi bi-check-lg me-1"></i>{{ $landingFeatureName($feature) }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
+                                        class="bi bi-check-lgms-1"></i>{{ $landingFeatureName($feature) }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
                                 </li>
                             @endforeach
                         @endif

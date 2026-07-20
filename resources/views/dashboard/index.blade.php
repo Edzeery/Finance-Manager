@@ -13,89 +13,82 @@
 
     <div class="row g-3 mb-4 animate-fade-in">
         <div class="col-xl-2 col-lg-4 col-md-6 col-12">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(34,197,94,0.12); color: var(--success)">
-                    <i class="bi bi-cash-stack"></i>
-                </div>
-                <div class="kpi-label">
-                    @if ($period === 'all_time')
-                        {{ __('dashboard.total_income') }}
-                    @elseif ($period === 'this_month')
-                        {{ __('dashboard.all_time') }} — {{ __('dashboard.total_income') }}
-                    @else
-                        {{ __('filters.filtered_by') }}: {{ __("filters.{$period}") }}
-                    @endif
-                </div>
-                <div class="kpi-value">{{ number_format($kpi->totalIncome, 2) }} {{ config('finance.currency_symbol') }}</div>
-                <div class="kpi-trend up">
-                    <i class="bi bi-calendar3"></i>
-                    {{ __('dashboard.all_time') }}: {{ number_format($kpi->totalIncomeAllTime, 2) }}
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-cash-stack"
+                iconBg="rgba(34,197,94,0.12)"
+                iconColor="var(--success)"
+                :label="$period === 'all_time' ? __('dashboard.total_income') : ($period === 'this_month' ? __('dashboard.all_time').' — '.__('dashboard.total_income') : __('filters.filtered_by').': '.__('filters.{$period}'))"
+                :value="number_format($kpi->totalIncome, 2)"
+                :currency="config('finance.currency_symbol')"
+                :trendIcon="'bi-calendar3'"
+                :trendDir="'up'"
+                :trend="__('dashboard.all_time').': '.number_format($kpi->totalIncomeAllTime, 2)"
+            />
         </div>
         <div class="col-xl-2 col-lg-4 col-md-6 col-12">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(239,68,68,0.12); color: var(--danger)">
-                    <i class="bi bi-cart"></i>
-                </div>
-                <div class="kpi-label">{{ __('dashboard.total_expense') }}</div>
-                <div class="kpi-value">{{ number_format($kpi->totalExpense, 2) }} {{ config('finance.currency_symbol') }}</div>
-                <div class="kpi-trend {{ $kpi->expenseChange <= 0 ? 'up' : 'down' }}">
-                    <i class="bi {{ $kpi->expenseChange <= 0 ? 'bi-arrow-down' : 'bi-arrow-up' }}"></i>
-                    {{ __('dashboard.all_time') }}: {{ number_format($kpi->totalExpenseAllTime, 2) }}
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-cart"
+                iconBg="rgba(239,68,68,0.12)"
+                iconColor="var(--danger)"
+                :label="__('dashboard.total_expense')"
+                :value="number_format($kpi->totalExpense, 2)"
+                :currency="config('finance.currency_symbol')"
+                :trendIcon="$kpi->expenseChange <= 0 ? 'bi-arrow-down' : 'bi-arrow-up'"
+                :trendDir="$kpi->expenseChange <= 0 ? 'up' : 'down'"
+                :trend="__('dashboard.all_time').': '.number_format($kpi->totalExpenseAllTime, 2)"
+            />
         </div>
         <div class="col-xl-2 col-lg-4 col-md-6 col-12">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(59,130,246,0.12); color: var(--info)">
-                    <i class="bi bi-wallet2"></i>
-                </div>
-                <div class="kpi-label">{{ __('dashboard.net_balance') }} ({{ __("filters.{$period}") }})</div>
-                <div class="kpi-value {{ $kpi->netBalance >= 0 ? '' : 'text-danger' }}">{{ number_format($kpi->netBalance, 2) }} {{ config('finance.currency_symbol') }}</div>
-                <div class="kpi-trend {{ $kpi->netBalance >= 0 ? 'up' : 'down' }}">
-                    <i class="bi {{ $kpi->netBalance >= 0 ? 'bi-arrow-up' : 'bi-arrow-down' }}"></i>
-                    {{ __('dashboard.total_savings') }}: {{ number_format($kpi->totalSavings, 2) }}
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-wallet2"
+                iconBg="rgba(59,130,246,0.12)"
+                iconColor="var(--info)"
+                :label="__('dashboard.net_balance').' ('.  __('filters.{$period}')  .')'"
+                :value="number_format($kpi->netBalance, 2)"
+                :currency="config('finance.currency_symbol')"
+                :valueClass="$kpi->netBalance >= 0 ? '' : 'text-danger'"
+                :trendIcon="$kpi->netBalance >= 0 ? 'bi-arrow-up' : 'bi-arrow-down'"
+                :trendDir="$kpi->netBalance >= 0 ? 'up' : 'down'"
+                :trend="__('dashboard.total_savings').': '.number_format($kpi->totalSavings, 2)"
+            />
         </div>
         <div class="col-xl-2 col-lg-4 col-md-6 col-12">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(139,92,246,0.12); color:#8B5CF6">
-                    <i class="bi bi-piggy-bank"></i>
-                </div>
-                <div class="kpi-label">{{ __('dashboard.total_savings') }} ({{ __('dashboard.all_time') }})</div>
-                <div class="kpi-value {{ $kpi->totalSavings >= 0 ? '' : 'text-danger' }}">
-                    {{ number_format($kpi->totalSavings, 2) }} {{ config('finance.currency_symbol') }}
-                </div>
-                <div class="kpi-trend up">
-                    <i class="bi bi-clock-history"></i>
-                    {{ __('filters.all_time') }}
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-piggy-bank"
+                iconBg="rgba(139,92,246,0.12)"
+                iconColor="#8B5CF6"
+                :label="__('dashboard.total_savings').' ('.__('dashboard.all_time').')'"
+                :value="number_format($kpi->totalSavings, 2)"
+                :currency="config('finance.currency_symbol')"
+                :valueClass="$kpi->totalSavings >= 0 ? '' : 'text-danger'"
+                :trendIcon="'bi-clock-history'"
+                :trendDir="'up'"
+                :trend="__('filters.all_time')"
+            />
         </div>
         <div class="col-xl-2 col-lg-4 col-md-6 col-12">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(34,197,94,0.12); color: var(--success)">
-                    <i class="bi bi-pie-chart-fill"></i>
-                </div>
-                <div class="kpi-label">{{ __('dashboard.total_assets') }} ({{ __('dashboard.all_time') }})</div>
-                <div class="kpi-value">{{ number_format($kpi->totalAssets, 2) }} {{ config('finance.currency_symbol') }}</div>
-                <div class="kpi-trend up">{{ __('dashboard.all_time') }}</div>
-            </div>
+            <x-kpi-card
+                icon="bi-pie-chart-fill"
+                iconBg="rgba(34,197,94,0.12)"
+                iconColor="var(--success)"
+                :label="__('dashboard.total_assets').' ('.__('dashboard.all_time').')'"
+                :value="number_format($kpi->totalAssets, 2)"
+                :currency="config('finance.currency_symbol')"
+                :trendDir="'up'"
+                :trend="__('dashboard.all_time')"
+            />
         </div>
         <div class="col-xl-2 col-lg-4 col-md-6 col-12">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(245,158,11,0.12); color: var(--warning)">
-                    <i class="bi bi-credit-card-2-front"></i>
-                </div>
-                <div class="kpi-label">{{ __('dashboard.total_debts') }} ({{ __('dashboard.all_time') }})</div>
-                <div class="kpi-value">{{ number_format($kpi->totalDebts, 2) }} {{ config('finance.currency_symbol') }}</div>
-                <div class="kpi-trend down">
-                    <x-status-icon domain="general" status="failed" set="bi" />
-                    {{ $kpi->overdueDebts }} {{ __('dashboard.overdue_debts') }}
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-credit-card-2-front"
+                iconBg="rgba(245,158,11,0.12)"
+                iconColor="var(--warning)"
+                :label="__('dashboard.total_debts').' ('.__('dashboard.all_time').')'"
+                :value="number_format($kpi->totalDebts, 2)"
+                :currency="config('finance.currency_symbol')"
+                :trendDir="'down'"
+                :trend="$kpi->overdueDebts.' '.__('dashboard.overdue_debts')"
+            />
         </div>
     </div>
 
@@ -259,7 +252,7 @@
                             <div style="font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ $debt->counterparty_name }}</div>
                             <div style="font-size:11px; color:var(--text-muted)">
                                 {{ number_format($debt->remaining_amount, 2) }} {{ config('finance.currency_symbol') }}
-                                · {{ $debt->type === \App\Enums\DebtType::Owed ? __('general.you_owe') : __('general.owed_to_you') }}
+                                · {{ $debt->type === \App\Enums\DebtType::Owed ? __('general.owed_to_you') : __('general.you_owe') }}
                             </div>
                         </div>
                         <span style="font-size:12px; font-weight:500; white-space:nowrap; color:{{ $daysLeft <= 0 ? 'var(--danger)' : ($daysLeft <= 7 ? 'var(--warning)' : 'var(--text-muted)') }}">

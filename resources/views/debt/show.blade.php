@@ -9,29 +9,39 @@
 
     <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="stat-box stat-income">
-                <div class="stat-label">{{ __('debt.total_amount') }}</div>
-                <div class="stat-value">{{ number_format($debt->total_amount, 2) }}</div>
-                <small style="color:var(--text-muted)">{{ config('finance.currency_symbol') }}</small>
-            </div>
+            <x-kpi-card
+                icon="bi-cash-coin"
+                iconBg="rgba(34,197,94,0.12)"
+                iconColor="var(--success)"
+                :label="__('debt.total_amount')"
+                :value="number_format($debt->total_amount, 2)"
+                :currency="config('finance.currency_symbol')"
+            />
         </div>
         <div class="col-md-4">
-            <div class="stat-box stat-expense">
-                <div class="stat-label">{{ __('debt.remaining_amount') }}</div>
-                <div class="stat-value">{{ number_format($debt->remaining_amount, 2) }}</div>
-                <small style="color:var(--text-muted)">{{ config('finance.currency_symbol') }}</small>
-            </div>
+            <x-kpi-card
+                icon="bi-hourglass-split"
+                iconBg="rgba(239,68,68,0.12)"
+                iconColor="var(--danger)"
+                :label="__('debt.remaining_amount')"
+                :value="number_format($debt->remaining_amount, 2)"
+                :currency="config('finance.currency_symbol')"
+            />
         </div>
         <div class="col-md-4">
-            <div class="stat-box" style="background:var(--bg)">
-                <div class="stat-label">{{ __('general.status') }}</div>
-                <div class="d-flex align-items-center gap-2">
+            <x-kpi-card
+                icon="bi-graph-up-arrow"
+                iconBg="rgba(59,130,246,0.12)"
+                iconColor="var(--info)"
+                :label="__('general.status')"
+            >
+                <div class="d-flex align-items-center gap-2 mt-2">
                     <div class="progress" style="flex:1; height:8px; background:var(--border)">
                         <div class="progress-bar" style="width:{{ $debt->progress }}%; background:{{ $debt->progress >= 100 ? 'var(--success)' : 'var(--accent)' }}; border-radius:4px"></div>
                     </div>
                     <span class="fw-bold" style="font-size:14px">{{ $debt->progress }}%</span>
                 </div>
-            </div>
+            </x-kpi-card>
         </div>
     </div>
 
@@ -102,7 +112,7 @@
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-accent btn-custom">
-                                    <i class="bi bi-check-lg me-1"></i>{{ __('debt.add_payment') }}
+                                    <i class="bi bi-check-lgms-1"></i>{{ __('debt.add_payment') }}
                                 </button>
                             </div>
                         </form>
@@ -148,7 +158,7 @@
                     <div class="d-flex gap-2 mt-3">
                         @if($canEditDebt)
                             <a href="{{ route('debt.edit', $debt) }}" class="btn btn-outline-secondary btn-custom" style="flex:1">
-                                <i class="bi bi-pencil me-1"></i>{{ __('general.edit') }}
+                                <i class="bi bi-pencilms-1"></i>{{ __('general.edit') }}
                             </a>
                         @endif
                         @if($canDeleteDebt)
@@ -156,7 +166,7 @@
                                 @csrf @method('DELETE')
                             </form>
                             <button type="button" class="btn btn-outline-danger btn-custom w-100" @click="window.confirmDelete('debt', {{ $debt->id }})">
-                                <i class="bi bi-trash me-1"></i>{{ __('general.delete') }}
+                                <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
                             </button>
                         @endif
                     </div>

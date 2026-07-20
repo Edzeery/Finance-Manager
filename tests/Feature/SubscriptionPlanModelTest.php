@@ -44,7 +44,8 @@ class SubscriptionPlanModelTest extends TestCase
     {
         $this->seed(SubscriptionPlanSeeder::class);
 
-        $this->assertDatabaseCount('subscription_plans', 4);
+        $this->assertDatabaseCount('subscription_plans', 5);
+        $this->assertDatabaseHas('subscription_plans', ['slug' => 'free']);
         $this->assertDatabaseHas('subscription_plans', ['slug' => 'personal']);
         $this->assertDatabaseHas('subscription_plans', ['slug' => 'business']);
         $this->assertDatabaseHas('subscription_plans', ['slug' => 'professional']);
@@ -54,7 +55,7 @@ class SubscriptionPlanModelTest extends TestCase
     public function test_personal_plan_is_free(): void
     {
         $this->seed(SubscriptionPlanSeeder::class);
-        $plan = SubscriptionPlan::where('slug', 'personal')->first();
+        $plan = SubscriptionPlan::where('slug', 'free')->first();
 
         $this->assertTrue($plan->isFree());
         $this->assertTrue($plan->is_free);
@@ -214,7 +215,7 @@ class SubscriptionPlanModelTest extends TestCase
         $this->seed(SubscriptionPlanSeeder::class);
         $plans = SubscriptionPlan::active()->public()->orderBy('sort_order')->get();
 
-        $expectedOrder = ['personal', 'business', 'professional'];
+        $expectedOrder = ['free', 'personal', 'business', 'professional'];
         foreach ($plans as $i => $plan) {
             $this->assertEquals($expectedOrder[$i], $plan->slug);
         }
@@ -223,10 +224,10 @@ class SubscriptionPlanModelTest extends TestCase
     public function test_free_plan_cannot_be_mistaken_for_enterprise(): void
     {
         $this->seed(SubscriptionPlanSeeder::class);
-        $personal = SubscriptionPlan::where('slug', 'personal')->first();
+        $free = SubscriptionPlan::where('slug', 'free')->first();
         $enterprise = SubscriptionPlan::where('slug', 'enterprise')->first();
 
-        $this->assertTrue($personal->isFree());
+        $this->assertTrue($free->isFree());
         $this->assertFalse($enterprise->isFree());
     }
 }

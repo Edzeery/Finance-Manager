@@ -125,10 +125,10 @@ new #[Layout('layouts.super-admin.app')] class extends Component
      @toast.window="window.Toast[$event.detail.type]($event.detail.message)">
     <div class="d-flex gap-2 mb-4 border-bottom pb-2">
         <button @click="tab = 'methods'" :class="{ 'active-tab': tab === 'methods' }" class="btn btn-sm px-3 d-flex gap-2" style="border:none;background:none;font-weight:500;color:var(--text-muted);transition:all 0.15s">
-            <i class="bi bi-credit-card-2-front me-1"></i>{{ __('super-admin.payment_methods') }}
+            <i class="bi bi-credit-card-2-frontms-1"></i>{{ __('super-admin.payment_methods') }}
         </button>
         <button @click="tab = 'gateways'" :class="{ 'active-tab': tab === 'gateways' }" class="btn btn-sm px-3 d-flex gap-2" style="border:none;background:none;font-weight:500;color:var(--text-muted);transition:all 0.15s">
-            <i class="bi bi-diagram-3 me-1"></i>{{ __('super-admin.gateway_structures') }}
+            <i class="bi bi-diagram-3ms-1"></i>{{ __('super-admin.gateway_structures') }}
         </button>
     </div>
 

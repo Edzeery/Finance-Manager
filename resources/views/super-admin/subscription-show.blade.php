@@ -123,7 +123,7 @@
                                     @endforeach
                                 </select>
                                 <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer;white-space:nowrap">
-                                    <i class="bi bi-check-lg me-1"></i>{{ __('general.save') }}
+                                    <i class="bi bi-check-lgms-1"></i>{{ __('general.save') }}
                                 </button>
                             </div>
                         </div>

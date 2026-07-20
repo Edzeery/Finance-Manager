@@ -106,7 +106,7 @@ new #[Layout('layouts.guest')] class extends Component
 
     <div class="auth-footer">
         <a href="{{ route('login') }}" wire:navigate class="link-muted">
-            <i class="bi bi-arrow-left me-1"></i>{{ __('general.back_to_login') }}
+            <i class="bi bi-arrow-leftms-1"></i>{{ __('general.back_to_login') }}
         </a>
     </div>
 

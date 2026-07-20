@@ -20,26 +20,26 @@
                 <span class="profile-joined">{{ __('profile.member_since') }} {{ $user->created_at->translatedFormat('F Y') }}</span>
                 <nav class="profile-nav mt-3">
                     <button @click="tab = 'profile'" :class="{ 'active': tab === 'profile' }" class="profile-tab-btn">
-                        <i class="bi bi-person"></i>
+                        <i class="bi bi-person ms-1 "></i>
                         <span>{{ __('profile.tab_profile_info') }}</span>
                     </button>
                     <button @click="tab = 'preferences'" :class="{ 'active': tab === 'preferences' }" class="profile-tab-btn">
-                        <i class="bi bi-sliders2"></i>
+                        <i class="bi bi-sliders2 ms-1 "></i>
                         <span>{{ __('settings.preferences') }}</span>
                     </button>
                     <button @click="tab = 'security'" :class="{ 'active': tab === 'security' }" class="profile-tab-btn">
-                        <i class="bi bi-shield-lock"></i>
+                        <i class="bi bi-shield-lock ms-1 "></i>
                         <span>{{ __('settings.security') }}</span>
                     </button>
                     <button @click="tab = 'notifications'" :class="{ 'active': tab === 'notifications' }" class="profile-tab-btn">
-                        <i class="bi bi-bell"></i>
+                        <i class="bi bi-bell  ms-1 "></i>
                         <span>{{ __('profile.notifications') }}</span>
                         @if ($unreadCount > 0)
                             <x-status-badge domain="general" status="pending" set="bi" format="dot" size="xs" class="ms-auto" />
                         @endif
                     </button>
                     <a href="{{ route('account.settings.developer') }}" wire:navigate class="profile-tab-btn">
-                        <i class="bi bi-code-slash"></i>
+                        <i class="bi bi-code-slash ms-1 "></i>
                         <span>{{ __('developer.api_tokens') }}</span>
                     </a>
                 </nav>
@@ -53,7 +53,7 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="d-flex align-items-center justify-content-center rounded-circle"
                             style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
-                            <i class="bi bi-person" style="color:var(--accent);font-size:16px;"></i>
+                            <i class="bi bi-person" style="color:var(--accent);font-size:16px; ms-1 "></i>
                         </div>
                         <div>
                             <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('profile.account_info') }}
@@ -72,7 +72,7 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="d-flex align-items-center justify-content-center rounded-circle"
                             style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
-                            <i class="bi bi-sliders2" style="color:var(--accent);font-size:16px;"></i>
+                            <i class="bi bi-sliders2" style="color:var(--accent);font-size:16px; ms-1 "></i>
                         </div>
                         <div>
                             <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('settings.preferences') }}
@@ -138,18 +138,18 @@
                                 <div class="d-flex gap-2">
                                     <button type="button" @click="$store.theme.set('light')"
                                         class="btn {{ session('theme', 'light') === 'light' ? 'btn-accent' : 'btn-outline-secondary' }} btn-custom flex-fill">
-                                        <i class="bi bi-sun-fill me-1"></i>{{ __('settings.light') }}
+                                        <i class="bi bi-sun-fillms-1 ms-1 "></i>{{ __('settings.light') }}
                                     </button>
                                     <button type="button" @click="$store.theme.set('dark')"
                                         class="btn {{ session('theme', 'light') === 'dark' ? 'btn-accent' : 'btn-outline-secondary' }} btn-custom flex-fill">
-                                        <i class="bi bi-moon-fill me-1"></i>{{ __('settings.dark') }}
+                                        <i class="bi bi-moon-fillms-1 ms-1 "></i>{{ __('settings.dark') }}
                                     </button>
                                 </div>
                             </div>
                         </div>
 
                         <button type="submit" class="btn btn-accent btn-custom">
-                            <i class="bi bi-check-lg me-1"></i>{{ __('general.save') }}
+                            <i class="bi bi-check-lgms-1 ms-1 "></i>{{ __('general.save') }}
                         </button>
                     </form>
                 </div>
@@ -161,7 +161,7 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="d-flex align-items-center justify-content-center rounded-circle"
                             style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
-                            <i class="bi bi-shield-lock" style="color:var(--accent);font-size:16px;"></i>
+                            <i class="bi bi-shield-lock" style="color:var(--accent);font-size:16px; ms-1 "></i>
                         </div>
                         <div>
                             <h5 class="mb-0" style="font-weight:600;font-size:15px;">
@@ -177,7 +177,7 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="d-flex align-items-center justify-content-center rounded-circle"
                             style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
-                            <i class="bi bi-shield-check" style="color:var(--accent);font-size:16px;"></i>
+                            <i class="bi bi-shield-check" style="color:var(--accent);font-size:16px; ms-1 "></i>
                         </div>
                         <div>
                             <h5 class="mb-0" style="font-weight:600;font-size:15px;">
@@ -196,7 +196,7 @@
                             @endif
                         </div>
                         <a href="{{ route('two-factor.setup') }}" class="btn btn-accent btn-sm">
-                            <i class="bi bi-shield-plus me-1"></i>
+                            <i class="bi bi-shield-plusms-1 ms-1 "></i>
                             <span>{{ __('general.manage') }}</span>
                         </a>
                     </div>
@@ -208,7 +208,7 @@
                         <div class="d-flex align-items-center gap-3">
                             <div class="d-flex align-items-center justify-content-center rounded-circle"
                                 style="width:36px;height:36px;background:rgba(59,130,246,0.1);flex-shrink:0;">
-                                <i class="bi bi-pc-display" style="color:#3b82f6;font-size:16px;"></i>
+                                <i class="bi bi-pc-display" style="color:#3b82f6;font-size:16px; ms-1 "></i>
                             </div>
                             <div>
                                 <h5 class="mb-0" style="font-weight:600;font-size:15px;">
@@ -224,7 +224,7 @@
                                 <button type="submit" class="btn btn-sm"
                                     style="background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);"
                                     onclick="return confirm('{{ __('settings.confirm_revoke_all') }}')">
-                                    <i class="bi bi-box-arrow-right me-1"></i>{{ __('settings.revoke_all_others') }}
+                                    <i class="bi bi-box-arrow-rightms-1 ms-1 "></i>{{ __('settings.revoke_all_others') }}
                                 </button>
                             </form>
                         @endif
@@ -238,7 +238,7 @@
                                     <div class="d-flex align-items-center justify-content-center rounded-circle"
                                         style="width:40px;height:40px;background:{{ $session->is_current ? 'rgba(21,183,108,0.1)' : 'var(--bg-secondary)' }};flex-shrink:0;">
                                         <i class="bi {{ $session->device === 'phone' ? 'bi-phone' : ($session->device === 'tablet' ? 'bi-tablet' : 'bi-pc-display') }}"
-                                            style="color:{{ $session->is_current ? 'var(--accent)' : 'var(--text-muted)' }};font-size:18px;"></i>
+                                            style="color:{{ $session->is_current ? 'var(--accent)' : 'var(--text-muted)' }};font-size:18px; ms-1 "></i>
                                     </div>
                                     <div>
                                         <div class="d-flex align-items-center gap-2">
@@ -249,14 +249,14 @@
                                             @endif
                                         </div>
                                         <div style="font-size:12px;color:var(--text-muted);">
-                                            <i class="bi bi-globe me-1"></i>{{ $session->ip_address }}
+                                            <i class="bi bi-globems-1 ms-1 "></i>{{ $session->ip_address }}
                                             &middot;
                                             <i
-                                                class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() }}
+                                                class="bi bi-clockms-1 ms-1 "></i>{{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() }}
                                             @if ($session->login_at)
                                                 &middot;
                                                 <i
-                                                    class="bi bi-box-arrow-in-right me-1"></i>{{ $session->login_at->diffForHumans() }}
+                                                    class="bi bi-box-arrow-in-rightms-1 ms-1 "></i>{{ $session->login_at->diffForHumans() }}
                                             @endif
                                         </div>
                                     </div>
@@ -269,7 +269,7 @@
                                         <button type="submit" class="btn btn-sm"
                                             style="background:transparent;color:var(--text-muted);border:1px solid var(--border-color);"
                                             title="{{ __('settings.revoke_session') }}">
-                                            <i class="bi bi-x-lg"></i>
+                                            <i class="bi bi-x-lg ms-1 "></i>
                                         </button>
                                     </form>
                                 @endif
@@ -287,7 +287,7 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="d-flex align-items-center justify-content-center rounded-circle"
                             style="width:36px;height:36px;background:rgba(168,85,247,0.1);flex-shrink:0;">
-                            <i class="bi bi-clock-history" style="color:#a855f7;font-size:16px;"></i>
+                            <i class="bi bi-clock-history" style="color:#a855f7;font-size:16px; ms-1 "></i>
                         </div>
                         <div>
                             <h5 class="mb-0" style="font-weight:600;font-size:15px;">
@@ -315,10 +315,10 @@
                                         <tr>
                                             <td>
                                                 @if ($attempt->status === 'success')
-                                                    <x-status-icon domain="general" status="success" set="bi" class="me-1 text-success" />
+                                                    <x-status-icon domain="general" status="success" set="bi" class="ms-1 text-success" />
                                                     <span style="color:var(--accent);font-weight:500;">{{ __('general.success') }}</span>
                                                 @else
-                                                    <x-status-icon domain="general" status="failed" set="bi" class="me-1 text-danger" />
+                                                    <x-status-icon domain="general" status="failed" set="bi" class="ms-1 text-danger" />
                                                     <span style="color:var(--danger);font-weight:500;">{{ __('general.failed') }}</span>
                                                 @endif
                                                 @if ($attempt->suspicious)
@@ -333,7 +333,7 @@
                                                     : ($attempt->device === 'tablet' ? 'tablet' : 'pc') }}" set="bi" size="xs" class="ms-1" />
                                                 <i
                                                     class="bi bi-{{ $attempt->device === 'phone' ? 'phone' : ($attempt->device === 'tablet' ? 'tablet' : 'pc-display') }}
-                                                     ms-1"></i>{{ __('general.' . $attempt->device) }}
+                                                     ms-1 ms-1 "></i>{{ __('general.' . $attempt->device) }}
                                             </td>
                                             <td>{{ $attempt->browser }}</td>
                                             <td>{{ $attempt->os }}</td>
@@ -355,7 +355,7 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="d-flex align-items-center justify-content-center rounded-circle"
                             style="width:36px;height:36px;background:rgba(239,68,68,0.1);flex-shrink:0;">
-                            <i class="bi bi-exclamation-triangle" style="color:var(--danger);font-size:16px;"></i>
+                            <i class="bi bi-exclamation-triangle" style="color:var(--danger);font-size:16px; ms-1 "></i>
                         </div>
                         <div>
                             <h5 class="mb-0" style="font-weight:600;font-size:15px;color:var(--danger);">
@@ -374,7 +374,7 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="d-flex align-items-center justify-content-center rounded-circle"
                             style="width:36px;height:36px;background:rgba(21,183,108,0.1);flex-shrink:0;">
-                            <i class="bi bi-bell" style="color:var(--accent);font-size:16px;"></i>
+                            <i class="bi bi-bell" style="color:var(--accent);font-size:16px; ms-1 "></i>
                         </div>
                         <div>
                             <h5 class="mb-0" style="font-weight:600;font-size:15px;">
@@ -402,7 +402,7 @@
                                 <div
                                     class="notification-item {{ $notification->is_read ? '' : 'notification-unread' }}">
                                     <div class="notification-icon">
-                                        <i class="bi {{ $notifIcon }}"></i>
+                                        <i class="bi {{ $notifIcon }} ms-1 "></i>
                                     </div>
                                     <div class="notification-body">
                                         <p class="notification-title">

@@ -31,7 +31,7 @@
                     <strong>{{ __('admin.notifications') }}</strong>
                     <template x-if="unreadCount > 0">
                         <button class="btn btn-sm btn-link p-0 text-decoration-none" type="button" @click="markAllRead">
-                            <i class="bi bi-check-all me-1"></i>{{ __('admin.mark_all_read') }}
+                            <i class="bi bi-check-allms-1"></i>{{ __('admin.mark_all_read') }}
                         </button>
                     </template>
                 </div>

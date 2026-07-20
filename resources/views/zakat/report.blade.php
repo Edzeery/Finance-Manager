@@ -153,12 +153,12 @@
                     </h2>
                     @if($r->exceeds_nisab)
                         <p style="color:var(--success); font-size:14px" class="mb-0">
-                            <i class="bi bi-check-circle-fill me-1"></i>
+                            <i class="bi bi-check-circle-fillms-1"></i>
                             {{ __('zakat.exceeds_nisab') }}: <x-status-badge domain="general" status="yes" set="bi" />
                         </p>
                     @else
                         <p style="color:var(--text-muted); font-size:14px" class="mb-0">
-                            <i class="bi bi-info-circle me-1"></i>
+                            <i class="bi bi-info-circlems-1"></i>
                             {{ __('zakat.exceeds_nisab') }}: <x-status-badge domain="general" status="no" set="bi" />
                         </p>
                     @endif
@@ -201,10 +201,10 @@
 
             <div class="mt-4 d-flex gap-2">
                 <a href="{{ route('zakat.calculator') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-left me-1"></i>{{ __('zakat.calculate') }}
+                    <i class="bi bi-arrow-leftms-1"></i>{{ __('zakat.calculate') }}
                 </a>
                 <a href="{{ route('zakat.history') }}" class="btn btn-outline-secondary btn-custom" style="flex:1">
-                    <i class="bi bi-clock-history me-1"></i>{{ __('zakat.history') }}
+                    <i class="bi bi-clock-historyms-1"></i>{{ __('zakat.history') }}
                 </a>
             </div>
         </div>

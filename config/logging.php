@@ -186,13 +186,8 @@ return [
         ],
 
         'sentry' => [
-            'driver' => 'monolog',
+            'via' => \Sentry\Laravel\LogChannel::class,
             'level' => env('SENTRY_LOG_LEVEL', 'error'),
-            'handler' => StreamHandler::class,
-            'handler_with' => [
-                'stream' => storage_path('logs/sentry.json'),
-            ],
-            'formatter' => JsonFormatter::class,
         ],
 
     ],

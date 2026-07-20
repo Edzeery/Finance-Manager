@@ -18,6 +18,7 @@ use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Payments\GatewayManager;
+use App\Services\Payments\PaymentTransitionValidator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -30,6 +31,7 @@ class SubscriptionService
         private readonly SubscriptionProrationService $prorationService,
         private readonly SubscriptionActivationService $activationService,
         private readonly SubscriptionCancellationService $cancellationService,
+        private readonly PaymentTransitionValidator $transitionValidator,
     ) {}
 
     public function validateCoupon(?string $code, ?float $amount = null, ?string $paymentMethod = null): ?Coupon
@@ -134,7 +136,9 @@ class SubscriptionService
             $currentPrice = $subscription->billing_period === 'yearly'
                 ? $subscription->plan->yearly_price
                 : $subscription->plan->monthly_price;
-            $targetPrice = $targetPlan->monthly_price;
+            $targetPrice = $subscription->billing_period === 'yearly'
+                ? $targetPlan->yearly_price
+                : $targetPlan->monthly_price;
 
             if ($currentPrice > 0) {
                 $discountPercent = (($currentPrice - $targetPrice) / $currentPrice) * 100;
@@ -323,7 +327,7 @@ class SubscriptionService
                     if ($result->isPending()) {
                         // لا تُفعّل الاشتراك — قيد الانتظار
                     } elseif (OnboardingService::isAutoComplete($paymentMethod) && $payment->transaction_id) {
-                        $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
+                        $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
                         $oldEndsAt = $currentSub?->ends_at;
                         $this->cancellationService->cancelCurrentSubscription($currentSub, $subscription);
                         $subscription->update([
@@ -345,7 +349,7 @@ class SubscriptionService
                     ];
                 }
 
-                $payment->update(['status' => PaymentStatus::CheckoutFailed, 'failed_at' => now()]);
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutFailed);
                 $subscription->update(['status' => SubscriptionStatus::Canceled->value, 'canceled_at' => now()]);
 
                 return [
@@ -479,8 +483,12 @@ class SubscriptionService
             return;
         }
 
-        $oldPrice = $oldSub->plan?->monthly_price ?? 0;
-        $newPrice = $newPlan->monthly_price;
+        $oldPrice = $oldSub->billing_period === 'yearly'
+            ? ($oldSub->plan?->yearly_price ?? 0)
+            : ($oldSub->plan?->monthly_price ?? 0);
+        $newPrice = $newSubscription->billing_period === 'yearly'
+            ? $newPlan->yearly_price
+            : $newPlan->monthly_price;
 
         $mailable = $newPrice > $oldPrice
             ? new SubscriptionUpgraded($newSubscription, $oldPlanName)

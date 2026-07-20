@@ -13,6 +13,7 @@ use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Payments\GatewayManager;
+use App\Services\Payments\PaymentTransitionValidator;
 use Illuminate\Support\Facades\DB;
 
 class OnboardingService
@@ -22,6 +23,7 @@ class OnboardingService
         private readonly SubscriptionService $subscriptionService,
         private readonly GatewayManager $gatewayManager,
         private readonly WorkspaceService $workspaceService,
+        private readonly PaymentTransitionValidator $transitionValidator,
     ) {}
 
     public function getAvailablePlans(): array
@@ -240,7 +242,7 @@ class OnboardingService
                         'coupon_id' => $payment->coupon_id,
                         'user_id' => $user->id,
                     ]);
-                    $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
+                    $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
                     $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
                     $user->markPlanConfirmed();
                     session()->put('pending_payment_id', $payment->id);
@@ -276,7 +278,7 @@ class OnboardingService
                 if ($result->isPending()) {
                     // لا تُفعّل الاشتراك — قيد الانتظار (مثلاً Noest بانتظار التسليم)
                 } elseif (self::isAutoComplete($paymentMethod) && $payment->transaction_id) {
-                    $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
+                    $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
                     $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
                     $user->markPlanConfirmed();
                 }

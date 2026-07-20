@@ -101,7 +101,7 @@ new #[Layout('layouts.super-admin.guest')] class extends Component
 
     <div class="auth-footer">
         <a href="{{ route('login') }}" wire:navigate style="color:var(--accent); text-decoration:none">
-            <i class="bi bi-arrow-left me-1"></i>{{ __('super-admin.back_to_user_login') }}
+            <i class="bi bi-arrow-leftms-1"></i>{{ __('super-admin.back_to_user_login') }}
         </a>
     </div>
 </div>

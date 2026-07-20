@@ -15,6 +15,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\Workspace;
 use App\Services\Payments\GatewayManager;
+use App\Services\Payments\PaymentTransitionValidator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -24,6 +25,7 @@ class PaymentService
     public function __construct(
         private readonly GatewayManager $gatewayManager,
         private readonly SubscriptionActivationService $activationService,
+        private readonly PaymentTransitionValidator $transitionValidator,
     ) {}
 
     public function chargeForPlan(
@@ -235,7 +237,7 @@ class PaymentService
                     return;
                 }
 
-                $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
 
                 if ($payment->subscription_id) {
                     $newSub = Subscription::withoutWorkspace()->lockForUpdate()->find($payment->subscription_id);
@@ -275,7 +277,7 @@ class PaymentService
                     $payment->coupon->markUsed();
                 }
             } elseif ($status === 'rejected') {
-                $payment->update(['status' => PaymentStatus::CheckoutFailed]);
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutFailed);
                 if ($payment->subscription_id) {
                     $rejectedSub = Subscription::withoutWorkspace()->find($payment->subscription_id);
                     if ($rejectedSub && $rejectedSub->status === SubscriptionStatus::PastDue) {

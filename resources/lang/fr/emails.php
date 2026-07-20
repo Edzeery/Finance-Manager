@@ -55,6 +55,10 @@ return [
 
     'subscription_cancelled_subject' => 'Abonnement annulé — :app',
     'subscription_cancelled_line' => 'Votre abonnement :plan a été annulé. Vous conserverez l\'accès jusqu\'à la fin de votre période de facturation.',
+    'plan' => 'Plan',
+    'end_date' => 'Date de fin',
+    'immediately' => 'Immédiatement',
+    'view_subscriptions' => 'Voir les abonnements',
 
     'payment_failed_subject' => 'Paiement échoué — :app',
     'payment_failed_line' => 'Une tentative de paiement a échoué. Veuillez vérifier votre moyen de paiement et réessayer.',
@@ -65,6 +69,11 @@ return [
 
     'subscription_upgraded_subject' => 'Abonnement amélioré — :app',
     'subscription_upgraded_line' => 'Votre abonnement a été amélioré de :old_plan à :new_plan.',
+    'old_plan' => 'Ancien plan',
+    'new_plan' => 'Nouveau plan',
+    'next_billing' => 'Prochaine facturation',
+    'effective_date' => 'Date d\'effet',
+    'now' => 'Maintenant',
 
     'subscription_downgraded_subject' => 'Abonnement rétrogradé — :app',
     'subscription_downgraded_line' => 'Votre abonnement sera rétrogradé de :old_plan à :new_plan à la fin de votre période de facturation.',

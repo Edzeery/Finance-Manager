@@ -41,22 +41,22 @@
         </div>
 
         <a href="{{ route('account.subscriptions') }}" class="btn btn-accent btn-custom btn-sm w-100 mb-2">
-            <i class="bi bi-credit-card me-1"></i>{{ __('settings.subscriptions') }}
+            <i class="bi bi-credit-cardms-1"></i>{{ __('settings.subscriptions') }}
         </a>
 
         @if(auth()->user()->isWorkspaceOwner($workspace) && !$subscription->plan->isFree() && $subscription->isActive() && !$subscription->canceled_at)
             <button type="button" class="btn btn-sm btn-outline-danger btn-custom w-100" @click="confirmCancelSubscription()">
-                <i class="bi bi-x-circle me-1"></i>{{ __('settings.cancel_subscription') }}
+                <i class="bi bi-x-circlems-1"></i>{{ __('settings.cancel_subscription') }}
             </button>
         @elseif($subscription->canceled_at)
             <span class="text-muted-sm" style="font-size:13px;display:block;text-align:center;padding:8px 0">
-                <i class="bi bi-info-circle me-1"></i>{{ __('settings.cancel_scheduled') }}
+                <i class="bi bi-info-circlems-1"></i>{{ __('settings.cancel_scheduled') }}
             </span>
         @endif
     @else
         <p class="text-muted mb-3" style="font-size:13px">{{ __('settings.no_subscription') }}</p>
         <a href="{{ route('account.subscriptions') }}" class="btn btn-accent btn-custom btn-sm w-100">
-            <i class="bi bi-credit-card me-1"></i>{{ __('settings.subscriptions') }}
+            <i class="bi bi-credit-cardms-1"></i>{{ __('settings.subscriptions') }}
         </a>
     @endif
 </div>

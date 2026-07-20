@@ -2,7 +2,7 @@
     <x-slot:title>{{ __('admin.notifications') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>
         <a href="{{ route('super.admin.notifications.index') }}" class="text-decoration-none text-reset">
-            <i class="bi bi-arrow-left me-1"></i>{{ __('admin.notifications') }}
+            <i class="bi bi-arrow-leftms-1"></i>{{ __('admin.notifications') }}
         </a>
     </x-slot>
     <x-slot:page-description>{{ locale_name($notification, 'title') ?: $notification->title_en }}</x-slot>
@@ -24,13 +24,13 @@
                         <div>
                             <h4 class="mb-1">{{ $title ?: $notification->title_en }}</h4>
                             <div class="d-flex gap-3 text-muted small">
-                                <span><i class="bi bi-clock me-1"></i>{{ $notification->created_at->format('Y/m/d H:i') }}</span>
-                                <span><i class="bi bi-tag me-1"></i>{{ $notification->type }}</span>
+                                <span><i class="bi bi-clockms-1"></i>{{ $notification->created_at->format('Y/m/d H:i') }}</span>
+                                <span><i class="bi bi-tagms-1"></i>{{ $notification->type }}</span>
                                 <span>
                                     @if ($notification->is_read)
-                                        <i class="bi bi-check-circle text-success me-1"></i>{{ __('admin.mark_read') }}
+                                        <i class="bi bi-check-circle text-successms-1"></i>{{ __('admin.mark_read') }}
                                     @else
-                                        <i class="bi bi-circle text-warning me-1"></i>{{ __('admin.new') }}
+                                        <i class="bi bi-circle text-warningms-1"></i>{{ __('admin.new') }}
                                     @endif
                                 </span>
                             </div>
@@ -43,7 +43,7 @@
 
                     @if ($notification->data)
                         <div class="mb-4">
-                            <h6 class="fw-bold mb-2"><i class="bi bi-info-circle me-1"></i>{{ __('general.details') }}</h6>
+                            <h6 class="fw-bold mb-2"><i class="bi bi-info-circlems-1"></i>{{ __('general.details') }}</h6>
                             <div class="table-responsive">
                                 <table class="table table-sm table-bordered mb-0" style="font-size:13px">
                                     <tbody>
@@ -61,13 +61,13 @@
 
                     <div class="d-flex gap-2">
                         <a href="{{ route('super.admin.notifications.index') }}" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-arrow-left me-1"></i>{{ __('general.back') }}
+                            <i class="bi bi-arrow-leftms-1"></i>{{ __('general.back') }}
                         </a>
                         @if (!$notification->is_read)
                             <form action="{{ route('super.admin.notifications.read', $notification) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-check me-1"></i>{{ __('admin.mark_read') }}
+                                    <i class="bi bi-checkms-1"></i>{{ __('admin.mark_read') }}
                                 </button>
                             </form>
                         @endif
@@ -75,7 +75,7 @@
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-outline-danger btn-sm"
                                 onclick="return confirm('{{ __('admin.confirm_delete_notification') }}')">
-                                <i class="bi bi-trash me-1"></i>{{ __('admin.delete') }}
+                                <i class="bi bi-trashms-1"></i>{{ __('admin.delete') }}
                             </button>
                         </form>
                     </div>

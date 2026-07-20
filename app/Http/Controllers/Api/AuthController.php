@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\WorkspaceService;
 use Illuminate\Http\JsonResponse;
@@ -29,7 +30,7 @@ class AuthController extends Controller
         $token = $user->createToken($request->device_name ?? 'api-token', $abilities)->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token,
             'abilities' => $abilities,
         ]);
@@ -53,7 +54,7 @@ class AuthController extends Controller
         $token = $user->createToken('api-token', $abilities)->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token,
             'abilities' => $abilities,
         ], 201);
@@ -140,7 +141,7 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResponse
     {
-        return response()->json($request->user()->load('workspaces'));
+        return response()->json(new UserResource($request->user()->load('workspaces')));
     }
 
     public function logout(Request $request): JsonResponse

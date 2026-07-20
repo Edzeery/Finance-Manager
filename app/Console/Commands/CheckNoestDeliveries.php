@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\PaymentStatus;
 use App\Models\Payment;
 use App\Services\Payments\Noest\NoestService;
+use App\Services\Payments\PaymentTransitionValidator;
 use App\Services\PaymentService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +16,7 @@ class CheckNoestDeliveries extends Command
 
     protected $description = 'Check Noest delivery status for pending payments';
 
-    public function handle(PaymentService $paymentService): int
+    public function handle(PaymentService $paymentService, PaymentTransitionValidator $transitionValidator): int
     {
         $noestService = app(NoestService::class);
 
@@ -38,7 +39,7 @@ class CheckNoestDeliveries extends Command
                                 'tracking' => $payment->transaction_id,
                             ]);
                         } elseif (in_array($normalized, ['retour', 'returned', 'annulé'])) {
-                            $payment->update(['status' => PaymentStatus::CheckoutFailed, 'failed_at' => now()]);
+                            $transitionValidator->transition($payment, PaymentStatus::CheckoutFailed);
                             $this->warn("Noest delivery returned: payment {$payment->id}");
                             Log::info('Noest delivery returned', [
                                 'payment_id' => $payment->id,

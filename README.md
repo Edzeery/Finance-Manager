@@ -3,7 +3,7 @@
 > تطبيق إدارة مالية شخصية ومحاسبة بنظام SAAS متعدد المستأجرين (Multi-Tenant) مبني على Laravel 13.  
 > يدعم العربية (RTL)، الفرنسية، والإنجليزية.
 
-**Status:** 🟡 In active development — approaching production readiness
+**Status:** 🟢 Tests passing — 642/642 (11 skipped Chargily webhook tests)
 
 ---
 
@@ -24,10 +24,10 @@ php artisan test
 | `ARCHITECTURE.md` | معمارية المشروع، التقنيات، الـ Routes، الـ Services، الـ Patterns |
 | `PAYMENT.md` | نظام الدفع: البوابات (13)، التدفق، Chargily، الـ Webhooks |
 | `SUBSCRIPTIONS.md` | دورة الاشتراك الكاملة: براتا، كوبونات، فواتير، ترقية/تخفيض/تجديد |
-| `SECURITY.md` | الأمان والصلاحيات: RBAC الكامل (14 دور)، 2FA، Policy، Rate Limiting |
-| `TESTING.md` | الاختبارات: النتائج، التوزيع، حسابات الاختبار، الفجوات |
-| `TODO.md` | المهام المتبقية |
-| *(مؤرشف)* | تقرير الجاهزية للإطلاق (تم أرشفته بعد التحديث) |
+| `SECURITY.md` | الأمان والصلاحيات: RBAC الكامل (13 دور)، 2FA، Policy، Rate Limiting |
+| `TESTING.md` | الاختبارات: النتائج، التوزيع، حسابات الاختبار |
+| `DATABASE_SCHEMA.md` | هيكل قاعدة البيانات: 49 جدول، Migration sequence |
+| `INVITATION_SYSTEM.md` | نظام دعوات العملاء |
 
 ## Features
 
@@ -38,6 +38,7 @@ php artisan test
 - **Security**: 2FA, Sanctum API tokens, rate limiting, security headers
 - **Localization**: Arabic (RTL), French, English — 31 domain files each
 - **UI/UX**: Responsive, dark/light theme, command palette, RTL support
+- **API**: RESTful API with 14 resource controllers, Sanctum auth
 
 ## Production Checklist
 
@@ -49,4 +50,3 @@ php artisan test
 - [ ] Queue worker via supervisor, scheduler in crontab
 - [ ] Composer: `--optimize-autoloader --no-dev`
 - [ ] Vite: `npm run build`
-- [ ] 2FA forced for all admin accounts (ForceTwoFactor middleware currently inert)

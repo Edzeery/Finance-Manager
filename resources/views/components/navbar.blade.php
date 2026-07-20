@@ -29,7 +29,7 @@
 
                     <a href="{{ route('dashboard') }}"
                         class="btn btn-accent btn-custom mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-grid-1x2-fill me-1"></i>{{ __('general.dashboard') }}
+                        <i class="bi bi-grid-1x2-fillms-1"></i>{{ __('general.dashboard') }}
                     </a>
                 @endauth
             </div>

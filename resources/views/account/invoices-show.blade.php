@@ -108,14 +108,14 @@
 
         <div class="d-flex gap-2 mt-4 no-print">
             <a href="{{ route('account.invoices.index') }}" class="btn btn-outline-secondary btn-custom">
-                <i class="bi bi-arrow-left me-1"></i>{{ __('general.back') }}
+                <i class="bi bi-arrow-leftms-1"></i>{{ __('general.back') }}
             </a>
             @if($invoice->isPaid())
             <a href="{{ route('account.invoices.pdf', $invoice) }}" class="btn btn-accent btn-custom">
-                <i class="bi bi-file-earmark-pdf me-1"></i>{{ __('general.download_pdf') ?? 'PDF' }}
+                <i class="bi bi-file-earmark-pdfms-1"></i>{{ __('general.download_pdf') ?? 'PDF' }}
             </a>
             <button type="button" class="btn btn-accent btn-custom" onclick="window.print()">
-                <i class="bi bi-printer me-1"></i>{{ __('general.print') ?? 'طباعة' }}
+                <i class="bi bi-printerms-1"></i>{{ __('general.print') ?? 'طباعة' }}
             </button>
             @endif
         </div>

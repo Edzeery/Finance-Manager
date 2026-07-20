@@ -30,6 +30,9 @@
                         <button @click="switchTab('currencies')" :class="{ active: tab === 'currencies' }" class="settings-nav-link">
                             <i class="bi bi-currency-exchange me-2"></i>{{ __('super-admin.tab_currencies') }}
                         </button>
+                        <button @click="switchTab('zakatPrices')" :class="{ active: tab === 'zakatPrices' }" class="settings-nav-link">
+                            <i class="bi bi-gem me-2"></i>{{ __('super-admin.tab_zakat_prices') }}
+                        </button>
                     </nav>
                 </div>
             </div>
@@ -264,7 +267,7 @@
                                 <i class="bi bi-credit-card-2-front" style="font-size:2.5rem;color:var(--text-muted);"></i>
                                 <p class="text-muted mt-2 mb-3">{{ __('super-admin.credentials_managed_in_methods') }}</p>
                                 <a href="{{ route('super.admin.payment-methods.index') }}" class="btn btn-accent btn-custom">
-                                    <i class="bi bi-gear me-1"></i>{{ __('super-admin.manage_payment_methods') }}
+                                    <i class="bi bi-gearms-1"></i>{{ __('super-admin.manage_payment_methods') }}
                                 </a>
                             </div>
                         </div>
@@ -275,7 +278,7 @@
                 <div x-show="tab === 'exchangeRates'" x-cloak x-transition:enter.duration.200ms>
                     @php
                         $exchangeRates = json_decode(\App\Models\Setting::get('exchange_rates', '{}'), true) + ['USD' => 1, 'DZD' => 250, 'EUR' => 0.877, 'GBP' => 0.75, 'USDT' => 1];
-                        $baseCurrency = config('finance.base_currency', 'USD');
+                        $exchangeBase = 'USD';
                     @endphp
                     <div class="section-card mb-4">
                         <div class="section-card-header">
@@ -286,13 +289,13 @@
                             <form method="POST" action="{{ route('super.admin.settings.exchange-rates.update') }}">
                                 @csrf @method('PUT')
                                 <div class="row g-3">
-                                    @php $rateCurrencies = array_diff(\App\Helpers\CurrencyHelper::availableCurrencyCodes() ?: ['DZD', 'EUR', 'GBP', 'USDT'], [$baseCurrency]); @endphp
+                                    @php $rateCurrencies = array_diff(\App\Helpers\CurrencyHelper::availableCurrencyCodes() ?: ['DZD', 'EUR', 'GBP', 'USDT', 'BTC', 'ETH'], [$exchangeBase]); @endphp
                                     @foreach ($rateCurrencies as $cur)
                                         <div class="col-md-4">
                                             <div class="form-floating-group">
-                                                <input type="number" name="rates[{{ $cur }}]" class="form-control" placeholder=" " value="{{ $exchangeRates[$cur] ?? '' }}" step="0.001" min="0" lang="en">
-                                                <label>{{ $cur }} / {{ $baseCurrency }}</label>
-                                                <div class="form-hint">1 {{ $baseCurrency }} = ? {{ $cur }}</div>
+                                                <input type="number" name="rates[{{ $cur }}]" class="form-control" placeholder=" " value="{{ $exchangeRates[$cur] ?? '' }}" step="0.000001" min="0" lang="en">
+                                                <label>{{ $cur }} / {{ $exchangeBase }}</label>
+                                                <div class="form-hint">1 {{ $exchangeBase }} = {{ number_format($exchangeRates[$cur] ?? 0, 6, '.', '') }} {{ $cur }}</div>
                                             </div>
                                         </div>
                                     @endforeach
@@ -362,7 +365,7 @@
                             <h5><i class="bi bi-currency-exchange"></i>{{ __('super-admin.currencies') }}</h5>
                             <div class="section-card-actions">
                                 <button @click="resetDefault()" class="btn btn-sm" style="padding:4px 10px;font-size:12px;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted)">
-                                    <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('super-admin.currencies_reset_default') }}
+                                    <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('super-admin.currencies_reset_default') }}
                                 </button>
                             </div>
                         </div>
@@ -410,7 +413,7 @@
                                 </div>
 
                                 <button type="button" class="btn btn-accent btn-custom mt-3" @click="addCurrency()">
-                                    <i class="bi bi-plus-lg me-1"></i>{{ __('super-admin.add_currency') }}
+                                    <i class="bi bi-plus-lgms-1"></i>{{ __('super-admin.add_currency') }}
                                 </button>
 
                                 <div class="text-end mt-3">
@@ -451,6 +454,66 @@
                                     {{ __('general.confirm') }}
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- === ZAKAT PRICES TAB === --}}
+                <div x-show="tab === 'zakatPrices'" x-cloak x-transition:enter.duration.200ms>
+                    @php
+                        $zakatManualOverride = \App\Models\Setting::get('zakat.manual_override', '0') === '1';
+                        $zakatGoldPerGram = (float) \App\Models\Setting::get('zakat.gold_per_gram', config('zakat.prices.gold_per_gram', 0));
+                        $zakatSilverPerGram = (float) \App\Models\Setting::get('zakat.silver_per_gram', config('zakat.prices.silver_per_gram', 0));
+                        $zakatDefaultKarat = (int) \App\Models\Setting::get('zakat.default_karat', config('zakat.prices.default_karat', 24));
+                    @endphp
+                    <div class="section-card mb-4">
+                        <div class="section-card-header">
+                            <h5><i class="bi bi-gem"></i>{{ __('super-admin.zakat_prices') }}</h5>
+                        </div>
+                        <div class="section-card-body">
+                            <div class="settings-section-desc">{{ __('super-admin.zakat_prices_desc') }}</div>
+                            <form method="POST" action="{{ route('super.admin.settings.zakat-prices.update') }}">
+                                @csrf @method('PUT')
+                                <x-toggle-switch
+                                    class="mb-3"
+                                    name="zakat_manual_override"
+                                    value="1"
+                                    :checked="$zakatManualOverride"
+                                    label="{{ __('super-admin.zakat_manual_override') }}"
+                                    hint="{{ __('super-admin.zakat_manual_override_hint') }}"
+                                />
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="form-floating-group">
+                                            <input type="number" name="zakat_gold_per_gram" class="form-control" placeholder=" " value="{{ $zakatGoldPerGram }}" step="0.01" min="0" lang="en">
+                                            <label>{{ __('super-admin.zakat_gold_per_gram') }} (USD)</label>
+                                            <div class="form-hint">{{ __('super-admin.zakat_gold_per_gram_hint') }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating-group">
+                                            <input type="number" name="zakat_silver_per_gram" class="form-control" placeholder=" " value="{{ $zakatSilverPerGram }}" step="0.01" min="0" lang="en">
+                                            <label>{{ __('super-admin.zakat_silver_per_gram') }} (USD)</label>
+                                            <div class="form-hint">{{ __('super-admin.zakat_silver_per_gram_hint') }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating-group">
+                                            <select name="zakat_gold_karat" class="form-control">
+                                                @foreach([24, 22, 21, 18, 14, 10] as $k)
+                                                    <option value="{{ $k }}" {{ $zakatDefaultKarat === $k ? 'selected' : '' }}>{{ $k }} {{ __('zakat.gold_karat') }}</option>
+                                                @endforeach
+                                            </select>
+                                            <label>{{ __('super-admin.zakat_default_karat') }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <button type="submit" class="btn btn-accent btn-custom">
+                                        <i class="bi bi-check2"></i>{{ __('general.save') }}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

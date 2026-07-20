@@ -191,9 +191,9 @@ new #[Layout('layouts.guest')] class extends Component {
                     <div class="text-center">
                         <button type="button" wire:click="resendEmailCode" class="btn-text-link">
                             <div wire:loading wire:target="resendEmailCode"
-                                class="spinner-border spinner-border-sm me-1" role="status"
+                                class="spinner-border spinner-border-smms-1" role="status"
                                 style="width:12px;height:12px;"></div>
-                            <i class="bi bi-arrow-clockwise me-1" wire:loading.remove wire:target="resendEmailCode"></i>
+                            <i class="bi bi-arrow-clockwisems-1" wire:loading.remove wire:target="resendEmailCode"></i>
                             {{ __('general.resend_code') }}
                         </button>
                     </div>
@@ -235,7 +235,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
                 <div class="text-center">
                     <button type="button" wire:click="switchMode" class="btn-text-link">
-                        <i class="bi bi-key me-1"></i>{{ __('general.use_recovery_code') }}
+                        <i class="bi bi-keyms-1"></i>{{ __('general.use_recovery_code') }}
                     </button>
                 </div>
             </form>
@@ -267,7 +267,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
                 <div class="text-center">
                     <button type="button" wire:click="switchMode" class="btn-text-link">
-                        <i class="bi bi-phone me-1"></i>{{ __('general.use_auth_code') }}
+                        <i class="bi bi-phonems-1"></i>{{ __('general.use_auth_code') }}
                     </button>
                 </div>
             </form>
@@ -279,7 +279,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
     <div class="auth-footer">
         <a href="{{ route('login') }}" wire:navigate class="link-muted">
-            <i class="bi bi-arrow-left me-1"></i>{{ __('general.back_to_login') }}
+            <i class="bi bi-arrow-leftms-1"></i>{{ __('general.back_to_login') }}
         </a>
     </div>
 

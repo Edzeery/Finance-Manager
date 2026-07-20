@@ -134,7 +134,7 @@ return [
 
     'debt_type' => [
         'owed'  => 'Dû',
-        'owing' => 'Créancier',
+        'owing' => 'Débiteur',
     ],
 
     'asset' => [

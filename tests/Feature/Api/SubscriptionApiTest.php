@@ -47,7 +47,7 @@ class SubscriptionApiTest extends TestCase
             ->getJson('/api/plans');
 
         $response->assertOk()
-            ->assertJsonCount(3);
+            ->assertJsonCount(4, 'data');
     }
 
     public function test_list_plans_excludes_inactive(): void
@@ -59,7 +59,7 @@ class SubscriptionApiTest extends TestCase
             ->getJson('/api/plans');
 
         $response->assertOk()
-            ->assertJsonCount(1);
+            ->assertJsonCount(2, 'data');
     }
 
     public function test_show_current_subscription(): void
@@ -111,7 +111,7 @@ class SubscriptionApiTest extends TestCase
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonPath('status', 'past_due');
+            ->assertJsonPath('data.status', 'past_due');
     }
 
     public function test_change_plan_validates_required_fields(): void

@@ -37,7 +37,7 @@
                 <form action="{{ route('super.admin.notifications.mark-all-read') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-outline-primary btn-sm">
-                        <i class="bi bi-check-all me-1"></i>{{ __('admin.mark_all_read') }}
+                        <i class="bi bi-check-allms-1"></i>{{ __('admin.mark_all_read') }}
                     </button>
                 </form>
             @endif
@@ -82,13 +82,13 @@
                                     <form action="{{ route('super.admin.notifications.read', $notification) }}" method="POST" class="d-inline">
                                         @csrf
                                         <button type="submit" class="btn btn-sm btn-link p-0 text-decoration-none" style="font-size:12px">
-                                            <i class="bi bi-check me-1"></i>{{ __('admin.mark_read') }}
+                                            <i class="bi bi-checkms-1"></i>{{ __('admin.mark_read') }}
                                         </button>
                                     </form>
                                 @endif
                                 @if ($notification->data)
                                     <span class="text-muted small" style="font-size:12px">
-                                        <i class="bi bi-info-circle me-1"></i>
+                                        <i class="bi bi-info-circlems-1"></i>
                                         @switch($notification->type)
                                             @case('new_user')
                                                 {{ $notification->data['email'] ?? '' }}

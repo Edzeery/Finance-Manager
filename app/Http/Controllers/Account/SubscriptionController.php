@@ -126,6 +126,7 @@ class SubscriptionController extends Controller
         }
 
         $subscription->update([
+            'status' => SubscriptionStatus::Active->value,
             'canceled_at' => null,
         ]);
 

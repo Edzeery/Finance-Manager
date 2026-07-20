@@ -55,7 +55,7 @@ new class extends Component
 <div>
     @if (session('status') === 'verification-link-sent')
         <div class="alert mb-3 animate-fade-in" style="background:rgba(34,197,94,0.12); color:var(--success); border:none; border-radius:8px; font-size:13px; padding:10px 14px">
-            <i class="bi bi-check-circle me-1"></i>{{ __('messages.verification_sent') }}
+            <i class="bi bi-check-circlems-1"></i>{{ __('messages.verification_sent') }}
         </div>
     @endif
 
@@ -82,13 +82,13 @@ new class extends Component
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <button type="submit" class="btn btn-accent btn-custom"><i class="bi bi-check-lg me-1"></i>{{ __('general.save') }}</button>
+            <button type="submit" class="btn btn-accent btn-custom"><i class="bi bi-check-lgms-1"></i>{{ __('general.save') }}</button>
             <div wire:loading wire:target="updateProfileInformation" class="spinner-border spinner-border-sm" role="status" style="color:var(--accent)"></div>
             <span wire:loading.remove wire:target="updateProfileInformation" wire:transition
                   x-data="{ show: false }"
                   x-on:profile-updated.window="show = true; setTimeout(() => show = false, 2000)"
                   x-show="show" style="display:none; font-size:13px; color:var(--success)">
-                <i class="bi bi-check-circle me-1"></i>{{ __('general.saved') }}
+                <i class="bi bi-check-circlems-1"></i>{{ __('general.saved') }}
             </span>
         </div>
     </form>

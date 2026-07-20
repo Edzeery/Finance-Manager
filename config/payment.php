@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'default' => env('PAYMENT_GATEWAY', 'chargily'),
+    'default' => env('PAYMENT_GATEWAY', 'cash'),
 
     'gateways' => [
         'chargily' => [

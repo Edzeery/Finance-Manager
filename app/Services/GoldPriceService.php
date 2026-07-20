@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -25,15 +26,23 @@ class GoldPriceService
 
     public function getGold24kGramUsd(): ?float
     {
-        $cacheKey = 'gold_24k_gram_usd';
+        if (Setting::get('zakat.manual_override', '0') === '1') {
+            $manual = (float) Setting::get('zakat.gold_per_gram', '0');
+            if ($manual > 0) {
+                $karat = (int) Setting::get('zakat.default_karat', '24');
+                $purity = config("zakat.karat_purity.{$karat}", 1.0);
 
+                return round($manual / $purity, 4);
+            }
+        }
+
+        $cacheKey = 'gold_24k_gram_usd';
         $cached = Cache::get($cacheKey);
         if ($cached !== null) {
             return (float) $cached;
         }
 
         $pricePerOz = $this->getMetalPricePerOz('XAU');
-
         if ($pricePerOz === null) {
             return null;
         }
@@ -64,15 +73,20 @@ class GoldPriceService
 
     public function getSilverGramUsd(): ?float
     {
-        $cacheKey = 'silver_gram_usd';
+        if (Setting::get('zakat.manual_override', '0') === '1') {
+            $manual = (float) Setting::get('zakat.silver_per_gram', '0');
+            if ($manual > 0) {
+                return $manual;
+            }
+        }
 
+        $cacheKey = 'silver_gram_usd';
         $cached = Cache::get($cacheKey);
         if ($cached !== null) {
             return (float) $cached;
         }
 
         $pricePerOz = $this->getMetalPricePerOz('XAG');
-
         if ($pricePerOz === null) {
             return null;
         }

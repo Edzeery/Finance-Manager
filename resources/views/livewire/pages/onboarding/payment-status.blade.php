@@ -4,6 +4,7 @@ use App\Enums\SubscriptionStatus;
 use App\Models\Payment;
 use App\Services\CurrencyHelper;
 use App\Services\OnboardingService;
+use App\Services\PaymentStatusService;
 use App\Services\Payments\GatewayManager;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -90,10 +91,7 @@ new #[Layout('layouts.guest')] class extends Component
         if (!$this->payment) return;
 
         if ($this->payment->isPending()) {
-            $this->payment->update(['status' => PaymentStatus::CheckoutCanceled, 'canceled_at' => now()]);
-            if ($this->payment->subscription && $this->payment->subscription->status === SubscriptionStatus::PastDue) {
-                $this->payment->subscription->update(['status' => SubscriptionStatus::Canceled->value, 'canceled_at' => now()]);
-            }
+            app(PaymentStatusService::class)->cancelWithSubscriptionCleanup($this->payment);
         }
 
         $this->payment->refresh();
@@ -109,16 +107,12 @@ new #[Layout('layouts.guest')] class extends Component
             ]);
 
             if ($result->success) {
-                $this->payment->update([
+                app(PaymentStatusService::class)->resetToPending($this->payment, [
                     'transaction_id' => $result->transactionId,
                     'gateway_reference' => $result->reference,
                     'gateway_payload' => $result->metadata,
-                    'status' => PaymentStatus::CheckoutPending,
-                    'canceled_at' => null,
-                    'metadata' => array_merge($this->payment->metadata ?? [], [
-                        'redirect_url' => $result->redirectUrl,
-                        'gateway_response' => $result->metadata ?? [],
-                    ]),
+                    'redirect_url' => $result->redirectUrl,
+                    'gateway_response' => $result->metadata ?? [],
                 ]);
 
                 if (OnboardingService::isOnline($this->payment->method) && $result->redirectUrl) {
@@ -187,7 +181,9 @@ new #[Layout('layouts.guest')] class extends Component
     {
         if (!$this->payment) return;
 
-        $this->payment->update(['status' => PaymentStatus::CheckoutCanceled, 'canceled_at' => now()]);
+        if (!$this->payment->status->isFailure()) {
+            app(PaymentStatusService::class)->cancel($this->payment);
+        }
 
         $this->redirect(route('onboarding.plan', absolute: false), navigate: true);
     }
@@ -265,13 +261,13 @@ new #[Layout('layouts.guest')] class extends Component
 
             <div class="d-grid gap-2 mt-3">
                 <button wire:click="continueWithGateway" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-right me-1"></i>{{ __('onboarding.continue_payment') ?? __('onboarding.resume_payment') }}
+                    <i class="bi bi-arrow-rightms-1"></i>{{ __('onboarding.continue_payment') ?? __('onboarding.resume_payment') }}
                 </button>
                 <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-right me-1"></i>{{ __('onboarding.switch_gateway') ?? __('onboarding.cancel_change_method') }}
+                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') ?? __('onboarding.cancel_change_method') }}
                 </button>
                 <button wire:click="cancelPaymentAndChangePlan" class="btn btn-outline-secondary btn-custom">
-                    <i class="bi bi-x-lg me-1"></i>{{ __('onboarding.cancel_payment') }}
+                    <i class="bi bi-x-lgms-1"></i>{{ __('onboarding.cancel_payment') }}
                 </button>
             </div>
 
@@ -302,15 +298,15 @@ new #[Layout('layouts.guest')] class extends Component
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
             <div class="d-grid gap-2 mt-3">
                 <button wire:click="retry" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-repeat me-1"></i>{{ __('onboarding.retry_payment') }}
+                    <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
                 </button>
                 @if ($payment && OnboardingService::isManual($payment->method))
                 <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-upload me-1"></i>{{ __('onboarding.upload_manual_proof') }}
+                    <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
                 </button>
                 @endif
                 <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-right me-1"></i>{{ __('onboarding.switch_gateway') }}
+                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
                 </button>
             </div>
 
@@ -328,7 +324,7 @@ new #[Layout('layouts.guest')] class extends Component
             {{-- Timeline --}}
             <div class="info-section mb-3">
                 <div class="info-section-header">
-                    <i class="bi bi-clock-history me-1"></i>
+                    <i class="bi bi-clock-historyms-1"></i>
                     {{ __('onboarding.timeline') ?? 'Timeline' }}
                 </div>
                 <div class="info-grid">
@@ -350,15 +346,15 @@ new #[Layout('layouts.guest')] class extends Component
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
             <div class="d-grid gap-2 mt-3">
                 <button wire:click="retry" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-repeat me-1"></i>{{ __('onboarding.retry_payment') }}
+                    <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
                 </button>
                 @if ($payment && OnboardingService::isManual($payment->method))
                 <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-upload me-1"></i>{{ __('onboarding.upload_manual_proof') }}
+                    <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
                 </button>
                 @endif
                 <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-right me-1"></i>{{ __('onboarding.switch_gateway') }}
+                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
                 </button>
             </div>
 
@@ -391,7 +387,7 @@ new #[Layout('layouts.guest')] class extends Component
             <div class="d-grid gap-2 mt-3">
                 @if ($payment)
                 <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-right me-1"></i>{{ __('onboarding.switch_gateway') }}
+                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
                 </button>
                 @endif
             </div>

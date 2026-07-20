@@ -67,11 +67,11 @@ class WorkspaceApiTest extends TestCase
     {
         $response = $this->withToken($this->token)
             ->postJson('/api/workspaces', [
-                'name_en' => 'New Workspace',
+                'name' => 'New Workspace',
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonFragment(['name_en' => 'New Workspace']);
+            ->assertJsonFragment(['name' => 'New Workspace']);
     }
 
     public function test_income_crud(): void
@@ -86,7 +86,7 @@ class WorkspaceApiTest extends TestCase
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonFragment(['amount' => '500.00']);
+            ->assertJsonFragment(['amount' => 500]);
     }
 
     public function test_workspace_switch(): void
@@ -117,6 +117,6 @@ class WorkspaceApiTest extends TestCase
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonFragment(['amount' => '300.00']);
+            ->assertJsonFragment(['amount' => 300]);
     }
 }

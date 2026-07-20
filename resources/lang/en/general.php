@@ -288,5 +288,15 @@ return [
     'next' => 'Next',
     'suspended' => 'Suspended',
     'banned' => 'Banned',
-    'pc' => 'Desktop'
+    'pc' => 'Desktop',
+    'device' => 'Device',
+    'os' => 'OS',
+    'failed' => 'Failed',
+    'suspicious' => 'Suspicious',
+    'online' => 'Online',
+    'offline' => 'Offline',
+    'optional' => 'Optional',
+    'reason' => 'Reason',
+    'saving' => 'Saving',
+    'unsaved' => 'Unsaved'
 ];

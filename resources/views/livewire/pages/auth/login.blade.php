@@ -102,7 +102,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
     <div class="text-center mt-3 pt-2" style="border-top:1px solid var(--border);">
         <a href="{{ route('super.admin.login') }}" wire:navigate class="link-muted" style="opacity:.7">
-            <i class="bi bi-shield me-1"></i>{{ __('super-admin.enter_panel') }}
+            <i class="bi bi-shieldms-1"></i>{{ __('super-admin.enter_panel') }}
         </a>
     </div>
 

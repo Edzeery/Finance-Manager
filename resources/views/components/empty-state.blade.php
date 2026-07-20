@@ -4,7 +4,7 @@
     <p>{{ $message ?? '' }}</p>
     @if(isset($action) && isset($actionText))
         <a href="{{ $action }}" class="btn btn-accent btn-custom">
-            <i class="bi bi-plus-lg me-1"></i>{{ $actionText }}
+            <i class="bi bi-plus-lgms-1"></i>{{ $actionText }}
         </a>
     @endif
 </div>

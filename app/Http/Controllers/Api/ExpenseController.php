@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Expense\StoreExpenseRequest;
 use App\Http\Requests\Api\Expense\UpdateExpenseRequest;
+use App\Http\Resources\ExpenseResource;
 use App\Repositories\ExpenseRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class ExpenseController extends Controller
 {
     public function __construct(private ExpenseRepository $expenseRepo) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
     {
         $filters = array_merge(
             $request->only(['category', 'date_from', 'date_to', 'search', 'per_page']),
@@ -21,35 +22,35 @@ class ExpenseController extends Controller
         );
         $expenses = $this->expenseRepo->forUser(filters: $filters);
 
-        return response()->json($expenses);
+        return ExpenseResource::collection($expenses);
     }
 
-    public function store(StoreExpenseRequest $request): JsonResponse
+    public function store(StoreExpenseRequest $request): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
     {
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
         $data['workspace_id'] = $request->user()->current_workspace_id;
         $expense = $this->expenseRepo->create($data);
 
-        return response()->json($expense, 201);
+        return response()->json(new ExpenseResource($expense), 201);
     }
 
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
     {
         $expense = $this->expenseRepo->findOrFail($id);
         $this->authorize('view', $expense);
 
-        return response()->json($expense);
+        return response()->json(new ExpenseResource($expense));
     }
 
-    public function update(UpdateExpenseRequest $request, int $id): JsonResponse
+    public function update(UpdateExpenseRequest $request, int $id): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
     {
         $expense = $this->expenseRepo->findOrFail($id);
         $this->authorize('update', $expense);
 
         $this->expenseRepo->update($expense, $request->validated());
 
-        return response()->json($expense->fresh());
+        return response()->json(new ExpenseResource($expense->fresh()));
     }
 
     public function destroy(Request $request, int $id): JsonResponse

@@ -26,7 +26,7 @@
             <x-per-page :current="request('per_page', 15)" :route="route('goal.index')" :preserve="['search','tab']" />
             @if($tab !== 'trashed' && $canCreate)
                 <a href="{{ route('goal.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lg me-1"></i>{{ __('goal.add') }}
+                    <i class="bi bi-plus-lgms-1"></i>{{ __('goal.add') }}
                 </a>
             @endif
         </div>
@@ -54,18 +54,18 @@
             @if($tab === 'trashed')
                 @if($canRestore)
                     <button type="button" class="btn btn-sm btn-outline-success btn-custom" @click="submitBulk('{{ route('goal.bulk-restore') }}')">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('general.restore') }}
+                        <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('general.restore') }}
                     </button>
                 @endif
                 @if($canForceDelete)
                     <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkForceDelete()">
-                        <i class="bi bi-trash3 me-1"></i>{{ __('general.force_delete') }}
+                        <i class="bi bi-trash3ms-1"></i>{{ __('general.force_delete') }}
                     </button>
                 @endif
             @else
                 @if($canDelete)
                     <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkDelete('goal')">
-                        <i class="bi bi-trash me-1"></i>{{ __('general.delete') }}
+                        <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
                     </button>
                 @endif
             @endif
@@ -100,7 +100,7 @@
 
                             <div style="flex:1">
                                 <h5 class="mb-1" style="font-size:15px; font-weight:600">
-                                    <i class="{{ $icon }} me-1" style="color:{{ $color }}"></i>
+                                    <i class="{{ $icon }}ms-1" style="color:{{ $color }}"></i>
                                     {{ locale_name($goal) }}
                                 </h5>
                                 <div style="font-size:13px; color:var(--text-muted)">
@@ -125,7 +125,7 @@
 
                                 @if(!$isCompleted && $goal->status !== \App\Enums\GoalStatus::Cancelled)
                                     <div style="font-size:12px; color:var(--text-muted); margin-top:4px">
-                                        <i class="bi bi-calendar me-1"></i>{{ __('goal.monthly_target') }}: <strong>{{ number_format($goal->monthly_target, 0) }}</strong>
+                                        <i class="bi bi-calendarms-1"></i>{{ __('goal.monthly_target') }}: <strong>{{ number_format($goal->monthly_target, 0) }}</strong>
                                     </div>
                                 @endif
                             </div>

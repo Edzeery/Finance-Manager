@@ -13,6 +13,7 @@ use App\Models\Subscription;
 use App\Services\Payments\Chargily\Exceptions\ChargilyException;
 use App\Services\SubscriptionActivationService;
 use App\Services\SubscriptionService;
+use App\Services\Payments\PaymentTransitionValidator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -22,6 +23,7 @@ class ChargilyWebhookService
         private readonly ChargilySignatureValidator $signatureValidator,
         private readonly SubscriptionService $subscriptionService,
         private readonly SubscriptionActivationService $activationService,
+        private readonly PaymentTransitionValidator $transitionValidator,
     ) {}
 
     public function process(): void
@@ -104,20 +106,18 @@ class ChargilyWebhookService
             $checkoutId = $checkoutElement->getId();
             $paymentMethod = $checkoutElement->getPaymentMethod();
 
-            $updateData = [
-                'status' => PaymentStatus::CheckoutPaid,
+            $extra = [
                 'transaction_id' => $checkoutId,
                 'gateway_reference' => $checkoutId,
                 'webhook_payload' => $payload,
-                'paid_at' => now(),
                 'webhook_processed_at' => now(),
             ];
 
             if ($paymentMethod) {
-                $updateData['payment_method_type'] = strtolower($paymentMethod);
+                $extra['payment_method_type'] = strtolower($paymentMethod);
             }
 
-            $payment->update($updateData);
+            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid, $extra);
 
             if ($payment->subscription_id) {
                 $sub = Subscription::withoutWorkspace()->find($payment->subscription_id);
@@ -145,10 +145,8 @@ class ChargilyWebhookService
                 return;
             }
 
-            $payment->update([
-                'status' => PaymentStatus::CheckoutFailed,
+            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutFailed, [
                 'webhook_payload' => $payload,
-                'failed_at' => now(),
                 'webhook_processed_at' => now(),
             ]);
 
@@ -169,10 +167,8 @@ class ChargilyWebhookService
                 return;
             }
 
-            $payment->update([
-                'status' => PaymentStatus::CheckoutCanceled,
+            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutCanceled, [
                 'webhook_payload' => $payload,
-                'canceled_at' => now(),
                 'webhook_processed_at' => now(),
             ]);
 
@@ -193,10 +189,8 @@ class ChargilyWebhookService
                 return;
             }
 
-            $payment->update([
-                'status' => PaymentStatus::CheckoutExpired,
+            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutExpired, [
                 'webhook_payload' => $payload,
-                'failed_at' => now(),
                 'webhook_processed_at' => now(),
             ]);
 

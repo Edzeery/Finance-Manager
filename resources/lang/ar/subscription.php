@@ -15,6 +15,8 @@ return [
     'downgrade_min_days' => 'لا يمكن تخفيض الخطة إلا بعد :days أيام من بدء الاشتراك.',
     'downgrade_min_discount' => 'الفرق السعري بين الخطتين صغير جداً (:current% فقط). يجب أن يكون الخصم على الأقل :min%.',
     'personal_new_users_only' => 'خطة Personal متاحة للحسابات الجديدة فقط.',
+    'personal_existing_users' => 'الخطة الشخصية غير متاحة للحسابات الحالية.',
+    'personal_existing_users_desc' => 'أنت حالياً على خطة مدفوعة. الخطة الشخصية متاحة للحسابات الجديدة فقط. يرجى الاتصال بالدعم إذا كنت ترغب في التخفيض.',
     'expiry_alert_title' => 'اشتراكك على وشك الانتهاء',
     'expiry_alert_message' => 'سينتهي اشتراكك خلال :days أيام في :date. جدد الآن لتجنب انقطاع الخدمة.',
     'expiry_alert_snoozed' => 'سنذكرك مرة أخرى غداً.',

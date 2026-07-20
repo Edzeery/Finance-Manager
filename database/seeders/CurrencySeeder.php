@@ -28,8 +28,14 @@ class CurrencySeeder extends Seeder
         if (! Setting::where('key', 'registration_enabled')->exists()) {
             Setting::set('registration_enabled', '1');
         }
-        if (! Setting::where('key', 'exchange_rates')->exists()) {
-            Setting::set('exchange_rates', json_encode(['DZD' => 250, 'EUR' => 0.877, 'GBP' => 0.75, 'USDT' => 1]));
-        }
+        Setting::set('exchange_rates', json_encode([
+            'USD' => 1,
+            'DZD' => 250,
+            'EUR' => 0.877,
+            'GBP' => 0.75,
+            'USDT' => 1,
+            'BTC' => 0.0000147,
+            'ETH' => 0.00041,
+        ]));
     }
 }

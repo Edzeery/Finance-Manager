@@ -20,7 +20,7 @@
                 <span class="profile-joined">{{ __('profile.member_since') }} {{ $user->created_at->translatedFormat('F Y') }}</span>
                 <div class="mt-3 text-center">
                     <span class="badge" style="background:var(--accent);color:#0F172A;font-size:12px;padding:4px 12px;border-radius:20px">
-                        <i class="bi bi-shield-fill-check me-1"></i>{{ __('super-admin.super_admin') }}
+                        <i class="bi bi-shield-fill-checkms-1"></i>{{ __('super-admin.super_admin') }}
                     </span>
                 </div>
             </div>

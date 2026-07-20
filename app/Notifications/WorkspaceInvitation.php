@@ -46,9 +46,9 @@ class WorkspaceInvitation extends Notification implements HasLocalePreference
             ->line(__('workspace.invitation_email_footer'));
     }
 
-    public function preferredLocale(object $notifiable): string
+    public function preferredLocale($notifiable = null): ?string
     {
-        return $notifiable->locale ?? config('app.fallback_locale', 'en');
+        return $notifiable?->locale ?? config('app.fallback_locale', 'en');
     }
 
     public function toArray(object $notifiable): array

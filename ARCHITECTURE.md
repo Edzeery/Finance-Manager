@@ -1,6 +1,6 @@
 # Architecture — Finance Manager (Multi-Tenant SaaS)
 
-> آخر تحديث: 2026-07-11
+> آخر تحديث: 2026-07-20
 
 ---
 
@@ -8,17 +8,15 @@
 
 | Layer | Technology | Version |
 |-------|-----------|---------|
-| **Framework** | Laravel | ^13.8 |
+| **Framework** | Laravel | 13.15 |
 | **Language** | PHP | ^8.3 |
 | **Database** | MySQL (prod) / SQLite (dev/test) | 8.0+ |
 | **Frontend** | Bootstrap + Livewire + Alpine.js + Chart.js + Vite | 5.3 / 3.6 / - / 4.5 / 8 |
 | **Auth** | Laravel Auth + Sanctum + Google2FA | 4.3 |
 | **Payments** | Chargily Pay SDK + custom gateways (13 total) | 2.0 |
 | **Backup** | Spatie Laravel Backup | 10.3 |
-| **QR Code** | Bacon QR Code | 3.1 |
 | **Testing** | PHPUnit (via Pest) | 11.5.55 |
 | **Dev Tools** | Debugbar, Laravel Pint, Laravel Pail, Collision | — |
-| **Excel** | Maatwebsite/Laravel-Excel (dev only) | 3.1 |
 
 ## Architecture Overview
 
@@ -228,8 +226,8 @@ Register → Create User → Provision Personal Workspace
 | `finance:send-debt-reminders` | daily | Overdue/due debt notifications |
 | `finance:send-zakat-reminders` | weekly | Zakat reminders |
 | `subscriptions:expire` | daily | Expire past-due subscriptions |
-| `subscriptions:remind-expiry` | daily | Remind nearing expiry |
 | `subscriptions:remind-expiry` | daily | Remind expiring subscriptions |
+| `subscriptions:renew` | daily | Auto-renew subscriptions with ends_at extension |
 | `noest:check-deliveries` | hourly | Poll Noest delivery status |
 | `backup:run --only-db` | daily | Database backup |
 | `backup:clean` | daily | Backup rotation cleanup |

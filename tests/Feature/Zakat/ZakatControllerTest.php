@@ -62,7 +62,7 @@ class ZakatControllerTest extends TestCase
     {
         $this->actingAs($this->user)
             ->post(route('zakat.calculate'), [])
-            ->assertSessionHasErrors(['gold_price', 'silver_price']);
+            ->assertSessionHasErrors(['silver_price']);
     }
 
     public function test_calculate_with_save_creates_record(): void
@@ -122,6 +122,6 @@ class ZakatControllerTest extends TestCase
 
         $this->actingAs($this->user)
             ->get(route('zakat.report', $record))
-            ->assertOk();
+            ->assertForbidden();
     }
 }

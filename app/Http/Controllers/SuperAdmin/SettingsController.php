@@ -193,7 +193,7 @@ class SettingsController extends Controller
     {
         $validated = $request->validate([
             'rates' => ['required', 'array'],
-            'rates.*' => ['nullable', 'numeric', 'min:0.001'],
+            'rates.*' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $rates = array_filter($validated['rates'], fn ($v) => $v !== null && $v !== '');
@@ -244,6 +244,27 @@ class SettingsController extends Controller
                 Setting::set("rate_limit.{$key}", (string) $value);
             }
         }
+
+        return redirect()->route('super.admin.settings.index')
+            ->with('success', __('messages.settings_saved'));
+    }
+
+    public function updateZakatPrices(Request $request)
+    {
+        $validated = $request->validate([
+            'zakat_manual_override' => ['nullable', 'boolean'],
+            'zakat_gold_per_gram' => ['nullable', 'numeric', 'min:0'],
+            'zakat_silver_per_gram' => ['nullable', 'numeric', 'min:0'],
+            'zakat_gold_karat' => ['nullable', 'integer', 'in:24,22,21,18,14,10'],
+        ]);
+
+        Setting::set('zakat.manual_override', ($validated['zakat_manual_override'] ?? false) ? '1' : '0');
+        Setting::set('zakat.gold_per_gram', (string) ($validated['zakat_gold_per_gram'] ?? 0));
+        Setting::set('zakat.silver_per_gram', (string) ($validated['zakat_silver_per_gram'] ?? 0));
+        Setting::set('zakat.default_karat', (string) ($validated['zakat_gold_karat'] ?? 24));
+
+        \Illuminate\Support\Facades\Cache::forget('gold_24k_gram_usd');
+        \Illuminate\Support\Facades\Cache::forget('silver_gram_usd');
 
         return redirect()->route('super.admin.settings.index')
             ->with('success', __('messages.settings_saved'));

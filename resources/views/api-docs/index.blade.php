@@ -293,7 +293,7 @@ res = Net::HTTP.start(uri.hostname, uri.port, use_ssl:true) {|h| h.request(req)}
                         <p class="small text-muted">{{ __('api-docs.with_abilities') }} <span class="ability-tag">*</span></p>
 
                         @foreach($grouped as $groupKey => $endpoints)
-                            <h3 class="mt-4"><i class="{{ $groupIcons[$groupKey] ?? 'bi-chevron-right' }} me-1"></i> {{ __("api-docs.{$groupKey}") }}</h3>
+                            <h3 class="mt-4"><i class="{{ $groupIcons[$groupKey] ?? 'bi-chevron-right' }}ms-1"></i> {{ __("api-docs.{$groupKey}") }}</h3>
                             @foreach($endpoints as $ep)
                                 <x-api-endpoint method="{{ $ep['method'] }}" endpoint="{{ $ep['endpoint'] }}" desc="{{ __($ep['desc_key']) }}" ability="{{ $ep['ability'] }}">
                                     @if(isset($ep['params']))

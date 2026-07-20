@@ -59,7 +59,7 @@
                                 <td>
                                     @if($continueUrl)
                                         <a href="{{ $continueUrl }}" target="_blank" class="btn btn-sm btn-warning">
-                                            <i class="bi bi-credit-card me-1"></i>{{ __('settings.complete_payment') }}
+                                            <i class="bi bi-credit-cardms-1"></i>{{ __('settings.complete_payment') }}
                                         </a>
                                     @endif
                                 </td>
@@ -87,7 +87,7 @@
 
     <div class="mt-3">
         <a href="{{ route('account.subscriptions') }}" class="btn btn-outline-secondary btn-custom">
-            <i class="bi bi-arrow-left me-1"></i>{{ __('general.back') }}
+            <i class="bi bi-arrow-leftms-1"></i>{{ __('general.back') }}
         </a>
     </div>
 </x-app-layout>

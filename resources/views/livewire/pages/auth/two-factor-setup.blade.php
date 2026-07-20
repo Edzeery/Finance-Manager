@@ -421,7 +421,7 @@ new #[Layout('layouts.app')] class extends Component
                     </button>
                     <div class="text-center">
                         <button wire:click="sendEmailCode" class="btn-text-link">
-                            <i class="bi bi-arrow-clockwise me-1"></i>{{ __('general.resend_code') }}
+                            <i class="bi bi-arrow-clockwisems-1"></i>{{ __('general.resend_code') }}
                         </button>
                     </div>
                 @endif
@@ -430,7 +430,7 @@ new #[Layout('layouts.app')] class extends Component
 
             <div class="text-center mt-3">
                 <button wire:click="cancelSetup" class="btn-text-link">
-                    <i class="bi bi-arrow-left me-1"></i>{{ __('general.back') }}
+                    <i class="bi bi-arrow-leftms-1"></i>{{ __('general.back') }}
                 </button>
             </div>
 
@@ -456,12 +456,12 @@ new #[Layout('layouts.app')] class extends Component
                                 @if ($enabled)
                                     <button wire:click="confirmDisableMethod('{{ $methodKey }}')"
                                             class="btn btn-sm btn-outline-danger mt-2 px-3">
-                                        <i class="bi bi-shield-slash me-1"></i>{{ __('general.disable') }}
+                                        <i class="bi bi-shield-slashms-1"></i>{{ __('general.disable') }}
                                     </button>
                                 @endif
                             @else
                                 <button wire:click="startSetup('{{ $methodKey }}')" class="btn btn-sm btn-accent mt-2 px-3">
-                                    <i class="bi bi-plus-circle me-1"></i>{{ __('general.enable') }}
+                                    <i class="bi bi-plus-circlems-1"></i>{{ __('general.enable') }}
                                 </button>
                             @endif
                         </div>
@@ -500,7 +500,7 @@ new #[Layout('layouts.app')] class extends Component
                         @endforeach
                     </div>
                     <button wire:click="regenerateRecoveryCodes" class="btn btn-sm btn-outline-secondary mt-2">
-                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        <i class="bi bi-arrow-clockwisems-1"></i>
                         {{ __('general.regenerate_recovery_codes') }}
                     </button>
                 </div>

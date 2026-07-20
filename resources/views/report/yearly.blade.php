@@ -13,51 +13,50 @@
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-accent btn-custom">
-                <i class="bi bi-search me-1"></i>{{ __('general.filter') }}
+                <i class="bi bi-searchms-1"></i>{{ __('general.filter') }}
             </button>
         </div>
     </form>
 
     <div class="row g-4 mb-4">
         <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:rgba(34,197,94,0.12); color:var(--success)">
-                    <i class="bi bi-cash-stack"></i>
-                </div>
-                <div class="kpi-label">{{ __('report.total_income') }}</div>
-                <div class="kpi-value">{{ Number::currency($report['totalIncome'], config('finance.currency_symbol')) }}</div>
-                <div class="kpi-sub">{{ $report['incomeCount'] }} {{ __('report.transactions') }}</div>
-            </div>
+            <x-kpi-card
+                icon="bi-cash-stack"
+                iconBg="rgba(34,197,94,0.12)"
+                iconColor="var(--success)"
+                :label="__('report.total_income')"
+                :value="Number::currency($report['totalIncome'], config('finance.currency_symbol'))"
+                :subtitle="$report['incomeCount'].' '.__('report.transactions')"
+            />
         </div>
         <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:rgba(239,68,68,0.12); color:var(--danger)">
-                    <i class="bi bi-cart"></i>
-                </div>
-                <div class="kpi-label">{{ __('report.total_expense') }}</div>
-                <div class="kpi-value">{{ Number::currency($report['totalExpense'], config('finance.currency_symbol')) }}</div>
-                <div class="kpi-sub">{{ $report['expenseCount'] }} {{ __('report.transactions') }}</div>
-            </div>
+            <x-kpi-card
+                icon="bi-cart"
+                iconBg="rgba(239,68,68,0.12)"
+                iconColor="var(--danger)"
+                :label="__('report.total_expense')"
+                :value="Number::currency($report['totalExpense'], config('finance.currency_symbol'))"
+                :subtitle="$report['expenseCount'].' '.__('report.transactions')"
+            />
         </div>
         <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:rgba(59,130,246,0.12); color:var(--info)">
-                    <i class="bi bi-piggy-bank"></i>
-                </div>
-                <div class="kpi-label">{{ __('report.net_savings') }}</div>
-                <div class="kpi-value {{ $report['netSavings'] >= 0 ? 'text-success' : 'text-danger' }}">
-                    {{ Number::currency($report['netSavings'], config('finance.currency_symbol')) }}
-                </div>
-            </div>
+            <x-kpi-card
+                icon="bi-piggy-bank"
+                iconBg="rgba(59,130,246,0.12)"
+                iconColor="var(--info)"
+                :label="__('report.net_savings')"
+                :value="Number::currency($report['netSavings'], config('finance.currency_symbol'))"
+                :valueClass="$report['netSavings'] >= 0 ? 'text-success' : 'text-danger'"
+            />
         </div>
         <div class="col-md-3">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:rgba(139,92,246,0.12); color:#8B5CF6">
-                    <i class="bi bi-calendar-event"></i>
-                </div>
-                <div class="kpi-label">{{ __('report.monthly_trend') }}</div>
-                <div class="kpi-value">{{ $report['monthlyIncome']->count() }}/12</div>
-            </div>
+            <x-kpi-card
+                icon="bi-calendar-event"
+                iconBg="rgba(139,92,246,0.12)"
+                iconColor="#8B5CF6"
+                :label="__('report.monthly_trend')"
+                :value="$report['monthlyIncome']->count().'/12'"
+            />
         </div>
     </div>
 

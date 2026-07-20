@@ -44,17 +44,17 @@
             <div class="d-flex gap-2 flex-shrink-0">
                 @if($continueUrl)
                     <a href="{{ $continueUrl }}" target="_blank" class="btn btn-warning btn-custom btn-sm">
-                        <i class="bi bi-credit-card me-1"></i>{{ __('settings.complete_payment') }}
+                        <i class="bi bi-credit-card ms-1"></i>{{ __('settings.complete_payment') }}
                     </a>
                 @else
                     <a href="{{ route('payment.status', $pendingPayment) }}" class="btn btn-warning btn-custom btn-sm">
-                        <i class="bi bi-credit-card me-1"></i>{{ __('settings.complete_payment') }}
+                        <i class="bi bi-credit-card ms-1"></i>{{ __('settings.complete_payment') }}
                     </a>
                 @endif
                 <form method="POST" action="{{ route('account.subscriptions.cancel-payment', $pendingPayment) }}" onsubmit="return confirm('{{ __('settings.cancel_payment_confirm') }}')">
                     @csrf
                     <button type="submit" class="btn btn-outline-secondary btn-custom btn-sm">
-                        <i class="bi bi-x-lg me-1"></i>{{ __('settings.cancel_payment') }}
+                        <i class="bi bi-x-lg ms-1"></i>{{ __('settings.cancel_payment') }}
                     </button>
                 </form>
             </div>
@@ -91,7 +91,7 @@
                                 </div>
                                 <div class="text-end flex-shrink-0">
 
-                                    <x-status-badge domain="subscription" status="{{$subscription->status}}" set="bi" /> 
+                                    <x-status-badge domain="subscription" status="{{$subscription->status}}" set="bi" />
                                 </div>
                             </div>
                         </div>
@@ -176,28 +176,28 @@
                             <div class="d-flex gap-2 flex-wrap">
                                 @if($subscription && $subscription->isActive())
                                     <a href="#available-plans" class="btn btn-accent btn-custom">
-                                        <i class="bi bi-arrow-repeat me-1"></i>{{ __('settings.change_plan') }}
+                                        <i class="bi bi-arrow-repeat ms-1"></i>{{ __('settings.change_plan') }}
                                     </a>
                                     @if(!$plan->isFree() && !$subscription->canceled_at)
                                         <button type="button" class="btn btn-outline-danger btn-custom" @click="confirmCancelSubscription()">
-                                            <i class="bi bi-x-circle me-1"></i>{{ __('settings.cancel_subscription') }}
+                                            <i class="bi bi-x-circle ms-1"></i>{{ __('settings.cancel_subscription') }}
                                         </button>
                                     @elseif($subscription->canceled_at && $subscription->isOnGrace())
                                         <form method="POST" action="{{ route('account.subscriptions.resume') }}" style="display:inline">
                                             @csrf
                                             <button type="submit" class="btn btn-outline-accent btn-custom"
                                                 onclick="return confirm('{{ __('settings.resume_confirm') }}')">
-                                                <i class="bi bi-arrow-repeat me-1"></i>{{ __('settings.resume_subscription') }}
+                                                <i class="bi bi-arrow-repeat ms-1"></i>{{ __('settings.resume_subscription') }}
                                             </button>
                                         </form>
                                     @elseif($subscription->canceled_at)
                                         <span class="text-muted-sm" style="font-size:13px;padding:8px 0">
-                                            <i class="bi bi-info-circle me-1"></i>{{ __('settings.cancel_scheduled') }}
+                                            <i class="bi bi-info-circle ms-1"></i>{{ __('settings.cancel_scheduled') }}
                                         </span>
                                     @endif
                                 @else
                                     <a href="#available-plans" class="btn btn-accent btn-custom">
-                                        <i class="bi bi-rocket-takeoff me-1"></i>{{ __('settings.renew_subscription') }}
+                                        <i class="bi bi-rocket-takeoff ms-1"></i>{{ __('settings.renew_subscription') }}
                                     </a>
                                 @endif
                             </div>
@@ -208,7 +208,7 @@
                             <p class="text-muted mt-3 mb-3">{{ __('settings.no_subscription') }}</p>
                             @if($isOwner)
                                 <a href="#available-plans" class="btn btn-accent btn-custom">
-                                    <i class="bi bi-rocket-takeoff me-1"></i>{{ __('settings.choose_plan') }}
+                                    <i class="bi bi-rocket-takeoff ms-1"></i>{{ __('settings.choose_plan') }}
                                 </a>
                             @endif
                         </div>
@@ -256,7 +256,7 @@
                                 <td>
                                     @if($continueUrl)
                                         <a href="{{ $continueUrl }}" target="_blank" class="btn btn-sm btn-warning">
-                                            <i class="bi bi-credit-card me-1"></i>{{ __('settings.complete_payment') }}
+                                            <i class="bi bi-credit-card ms-1"></i>{{ __('settings.complete_payment') }}
                                         </a>
                                     @endif
                                 </td>
@@ -267,7 +267,7 @@
                         </div>
                         <div class="mt-3 text-end">
                             <a href="{{ route('account.payments') }}" class="btn btn-outline-accent btn-custom btn-sm">
-                                <i class="bi bi-eye me-1"></i>{{ __('settings.view_all_payments') }}
+                                <i class="bi bi-eye ms-1"></i>{{ __('settings.view_all_payments') }}
                             </a>
                         </div>
                     @else
@@ -332,7 +332,7 @@
                             <p class="section-desc mb-0">{{ __('settings.invoices_desc') }}</p>
                         </div>
                         <a href="{{ route('account.invoices.index') }}" class="btn btn-accent btn-custom">
-                            <i class="bi bi-receipt me-1"></i>{{ __('settings.view_all_invoices') }}
+                            <i class="bi bi-receipt ms-1"></i>{{ __('settings.view_all_invoices') }}
                         </a>
                     </div>
                 </div>
@@ -412,7 +412,7 @@
                                         @if(!$plan->is_free)
                                             <div class="mb-2">
                                                 <label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">
-                                                    <i class="bi bi-calendar-check me-1"></i>{{ __('settings.billing_period') }}
+                                                    <i class="bi bi-calendar-check ms-1"></i>{{ __('settings.billing_period') }}
                                                 </label>
                                                 <select name="billing" class="form-select billing-select" style="font-size:12px;padding:5px 8px;width:100%">
                                                     <option value="monthly">{{ $displayPrice($plan->monthly_price) }} / {{ __('general.month') }}</option>
@@ -423,7 +423,7 @@
                                             </div>
                                             <div class="mb-2">
                                                 <label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">
-                                                    <i class="bi bi-credit-card me-1"></i>{{ __('settings.payment_method') }}
+                                                    <i class="bi bi-credit-card ms-1"></i>{{ __('settings.payment_method') }}
                                                 </label>
                                                 <select name="payment_method" class="form-select" required style="font-size:12px;padding:5px 8px;width:100%">
                                                     <option value="">{{ __('payment.select_method') }}</option>
@@ -446,20 +446,20 @@
                                          <div class="d-grid gap-2">
                                             @if(!$hasActive)
                                                 <button type="submit" class="btn btn-accent btn-custom btn-sm renew-btn">
-                                                    <span class="btn-text"><i class="bi bi-rocket-takeoff me-1"></i>{{ __('settings.renew_subscription') }}</span>
-                                                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span><span class="btn-redirect-text">{{ __('settings.redirecting_to_payment') }}</span></span>
+                                                    <span class="btn-text"><i class="bi bi-rocket-takeoff ms-1"></i>{{ __('settings.renew_subscription') }}</span>
+                                                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm ms-1"></span><span class="btn-redirect-text">{{ __('settings.redirecting_to_payment') }}</span></span>
                                                 </button>
                                             @elseif($plan->sort_order > ($currentPlan->sort_order ?? -1))
                                                 <button type="submit" class="btn btn-accent btn-custom btn-sm">
-                                                    <span class="btn-text"><i class="bi bi-arrow-up-circle me-1"></i>{{ __('settings.upgrade') }}</span>
-                                                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>{{ __('general.processing') }}</span>
+                                                    <span class="btn-text"><i class="bi bi-arrow-up-circle ms-1"></i>{{ __('settings.upgrade') }}</span>
+                                                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm ms-1"></span>{{ __('general.processing') }}</span>
                                                 </button>
                                             @else
                                                 <button type="submit" class="btn btn-outline-secondary btn-custom btn-sm"
                                                     data-confirm-message="{{ __('settings.downgrade_confirm') }}"
                                                     @click="return confirmDowngrade(this, $el.dataset.confirmMessage)">
-                                                    <span class="btn-text"><i class="bi bi-arrow-down-circle me-1"></i>{{ __('settings.downgrade') }}</span>
-                                                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>{{ __('general.processing') }}</span>
+                                                    <span class="btn-text"><i class="bi bi-arrow-down-circle ms-1"></i>{{ __('settings.downgrade') }}</span>
+                                                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm ms-1"></span>{{ __('general.processing') }}</span>
                                                 </button>
                                             @endif
                                         </div>
@@ -467,7 +467,7 @@
                                 @else
                                     <div class="d-grid">
                                         <button type="button" class="btn btn-outline-accent btn-custom btn-sm" disabled>
-                                            <i class="bi bi-check-lg me-1"></i>{{ __('settings.current_plan_label') }}
+                                            <i class="bi bi-check-lg ms-1"></i>{{ __('settings.current_plan_label') }}
                                         </button>
                                     </div>
                                 @endif

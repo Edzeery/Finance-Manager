@@ -20,6 +20,8 @@ return [
     'prices' => [
         'gold_per_gram' => env('ZAKAT_GOLD_PRICE', 0),
         'silver_per_gram' => env('ZAKAT_SILVER_PRICE', 0),
+        'manual_override' => false,
+        'default_karat' => 24,
     ],
 
     'haul_days' => 354, // Islamic lunar year

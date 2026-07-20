@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Subscription\ChangePlanRequest;
 use App\Http\Requests\Api\Subscription\ValidateCouponRequest;
+use App\Http\Resources\SubscriptionPlanResource;
+use App\Http\Resources\SubscriptionResource;
 use App\Models\SubscriptionPlan;
 use App\Services\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class SubscriptionController extends Controller
 {
@@ -16,14 +19,14 @@ class SubscriptionController extends Controller
         private SubscriptionService $subscriptionService,
     ) {}
 
-    public function plans(): JsonResponse
+    public function plans(): JsonResource
     {
         $plans = SubscriptionPlan::active()->public()->with('planFeatures')->orderBy('sort_order')->get();
 
-        return response()->json($plans);
+        return SubscriptionPlanResource::collection($plans);
     }
 
-    public function current(Request $request): JsonResponse
+    public function current(Request $request): JsonResponse|JsonResource
     {
         $workspace = $request->user()->currentWorkspace;
 
@@ -37,10 +40,10 @@ class SubscriptionController extends Controller
             return response()->json(['message' => __('messages.no_active_subscription')], 404);
         }
 
-        return response()->json($subscription);
+        return new SubscriptionResource($subscription);
     }
 
-    public function changePlan(ChangePlanRequest $request): JsonResponse
+    public function changePlan(ChangePlanRequest $request): JsonResponse|JsonResource
     {
         $workspace = $request->user()->currentWorkspace;
 
@@ -74,10 +77,7 @@ class SubscriptionController extends Controller
             return response()->json(['message' => $result['message']], 422);
         }
 
-        return response()->json(
-            $result['subscription']->load('plan'),
-            201,
-        );
+        return new SubscriptionResource($result['subscription']->load('plan'));
     }
 
     public function cancel(Request $request): JsonResponse

@@ -40,6 +40,6 @@ class TransactionController extends Controller
             ->sortByDesc('date')
             ->values();
 
-        return response()->json($transactions);
+        return response()->json(['data' => $transactions->values()]);
     }
 }

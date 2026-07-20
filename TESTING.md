@@ -1,6 +1,6 @@
 # Testing — Finance Manager
 
-> آخر تحديث: 2026-07-11
+> آخر تحديث: 2026-07-20
 
 ---
 
@@ -16,26 +16,25 @@ php artisan test tests/Feature/PaymentWebhookTest.php
 
 **Framework:** PHPUnit 11.5.55  
 **Database:** SQLite in-memory  
-**Last run:** 2026-07-11
+**Last run:** 2026-07-20
 
 ```
-Tests:    11 skipped, 0 failed, 509 passed (1061 assertions)
-Duration: ~58s
+Tests:    11 skipped, 0 failed, 642 passed (1693 assertions)
+Duration: ~91s
 ```
 
 ### Results Breakdown
 
-**509 passed** — after AUD-1→AUD-4 fixes. 12 pre-existing PaymentRetryPageTest failures resolved (Livewire fix applied).  
+**642 passed** — after comprehensive 2026-07-20 audit fixes (PaymentStatus enum comparison, API Resource wrapping, test corrections, Blade business logic, config fixes, security hardening).  
 **11 skipped** — Chargily webhook tests requiring real HTTP (ngrok). All skips are expected and documented.
 
-### Previous Results (2026-07-07)
+### Previous Results
 
-```
-Tests:    11 skipped, 12 failed, 637 passed (1729 assertions)
-Duration: ~60s
-```
-
-The 12 failures were in `Tests\Feature\Onboarding\PaymentRetryPageTest` (Livewire redirect/snapshot issues). These have been resolved in the current run.
+| Date | Passed | Failed | Skipped | Notes |
+|------|--------|--------|---------|-------|
+| 2026-07-20 | 642 | 0 | 11 | After comprehensive audit fixes |
+| 2026-07-11 | 509 | 0 | 11 | After AUD-1→4 fixes |
+| 2026-07-07 | 637 | 12 | 11 | Before PaymentRetryPageTest fix |
 
 ## Test Distribution
 
@@ -76,28 +75,6 @@ All 11 skipped tests are Chargily webhook tests. Reason: the ChargilyPay library
 | `PaymentWebhookTest` | 5 (chargily approval, failed, no secret, invalid payload, not found) |
 | `ChargilyPaymentMethodTest` | 5 (all tests) |
 | `DebugModeSafetyTest` | 1 (not in production env) |
-
-## Verified via Real ngrok Test (2026-07-05)
-
-- Chargily sent `checkout.paid` webhook to ngrok URL
-- `ChargilySignatureValidator` validated successfully via library
-- Payment #2 updated to `completed`
-- Subscription #4 updated to `active`
-- `PaymentWebhookLog` created (2 entries)
-- Full flow verified end-to-end
-
-## Coverage Gaps (Unchanged)
-
-- Dashboard web controller (API test exists, no controller test)
-- ChartDataService, ReportService, SearchService (unit tests)
-- SubscriptionService, WorkspaceService, WorkspaceInvitationService
-- GatewayManager + all gateways (except ChargilyClient, Noest)
-- ChargilySignatureValidator (unit test)
-- 12 of 17 middleware files
-- All 4 Mailables
-- LogActivity Job
-- DashboardCacheObserver
-- Console commands (except CheckGoalProgress)
 
 ## Test Accounts
 

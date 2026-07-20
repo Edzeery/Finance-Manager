@@ -25,7 +25,7 @@
                 <p class="profile-email">{{ $user->email }}</p>
                 <span class="profile-joined">{{ __('profile.member_since') }} {{ $user->created_at->translatedFormat('F Y') }}</span>
                 <a href="{{ route('account.settings') }}" class="profile-settings-btn">
-                    <i class="bi bi-gear me-1"></i>{{ __('general.settings') }}
+                    <i class="bi bi-gearms-1"></i>{{ __('general.settings') }}
                 </a>
             </div>
 
@@ -103,46 +103,22 @@
         <div class="profile-main">
             <div class="profile-stats mb-4" role="list">
                 <div class="stat-card stat-income" role="listitem">
-                    <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-label">{{ __('profile.stats_income') }}</span>
-                        <span class="stat-value">{{ $incomeCount }}</span>
-                    </div>
+                    <x-kpi-card icon="bi-cash-stack" iconBg="rgba(34,197,94,0.12)" iconColor="var(--success)" :label="__('profile.stats_income')" :value="$incomeCount" />
                 </div>
                 <div class="stat-card stat-expense" role="listitem">
-                    <div class="stat-icon"><i class="bi bi-cart"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-label">{{ __('profile.stats_expense') }}</span>
-                        <span class="stat-value">{{ $expenseCount }}</span>
-                    </div>
+                    <x-kpi-card icon="bi-cart" iconBg="rgba(239,68,68,0.12)" iconColor="var(--danger)" :label="__('profile.stats_expense')" :value="$expenseCount" />
                 </div>
                 <div class="stat-card stat-goal" role="listitem">
-                    <div class="stat-icon"><i class="bi bi-flag"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-label">{{ __('profile.stats_goals') }}</span>
-                        <span class="stat-value">{{ $goalCount }}</span>
-                    </div>
+                    <x-kpi-card icon="bi-flag" iconBg="rgba(139,92,246,0.12)" iconColor="#8B5CF6" :label="__('profile.stats_goals')" :value="$goalCount" />
                 </div>
                 <div class="stat-card stat-debt" role="listitem">
-                    <div class="stat-icon"><i class="bi bi-credit-card-2-front"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-label">{{ __('profile.stats_debts') }}</span>
-                        <span class="stat-value">{{ $debtCount }}</span>
-                    </div>
+                    <x-kpi-card icon="bi-credit-card-2-front" iconBg="rgba(245,158,11,0.12)" iconColor="var(--warning)" :label="__('profile.stats_debts')" :value="$debtCount" />
                 </div>
                 <div class="stat-card stat-asset" role="listitem">
-                    <div class="stat-icon"><i class="bi bi-pie-chart"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-label">{{ __('profile.stats_assets') }}</span>
-                        <span class="stat-value">{{ $assetCount }}</span>
-                    </div>
+                    <x-kpi-card icon="bi-pie-chart" iconBg="rgba(59,130,246,0.12)" iconColor="var(--info)" :label="__('profile.stats_assets')" :value="$assetCount" />
                 </div>
                 <div class="stat-card stat-budget" role="listitem">
-                    <div class="stat-icon"><i class="bi bi-calculator"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-label">{{ __('profile.stats_budgets') }}</span>
-                        <span class="stat-value">{{ $budgetCount }}</span>
-                    </div>
+                    <x-kpi-card icon="bi-calculator" iconBg="rgba(21,183,108,0.12)" iconColor="var(--accent)" :label="__('profile.stats_budgets')" :value="$budgetCount" />
                 </div>
             </div>
 
@@ -161,7 +137,7 @@
 
             <div class="text-center mt-4">
                 <a href="{{ route('account.settings') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-gear me-1"></i>{{ __('settings.preferences') }}
+                    <i class="bi bi-gearms-1"></i>{{ __('settings.preferences') }}
                 </a>
             </div>
         </div>

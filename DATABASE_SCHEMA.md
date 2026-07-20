@@ -1,12 +1,12 @@
 # Database Schema
 
-> **آخر تحديث:** 2026-07-09
+> **آخر تحديث:** 2026-07-20
 
 ---
 
 ## Overview
 
-14 migration files, 49 tables. SQLite for testing, MySQL for production.
+14+ migration files, 49 tables. SQLite for testing, MySQL for production.
 
 ## Migrations
 
@@ -45,9 +45,9 @@
 - **permission_role**, **role_user**, **workspace_role_user** — Pivot tables (custom, not Spatie)
 
 ### Subscriptions & Billing
-- **subscription_plans** — id, name, slug, monthly_price, yearly_discount_percent, currency, is_free, is_active, is_public, max_users, max_workspaces, limits (JSON), sort_order, button_text, button_link
+- **subscription_plans** — id, name_en, name_ar, name_fr, slug, is_free, is_active, is_public, yearly_discount_percent, sort_order, button_text, button_link
 - **plan_features** — Dictionary table of feature definitions (slug, name_en, name_ar, name_fr, type, icon, sort_order, is_core)
-- **plan_plan_feature** — Pivot linking plans to features
+- **plan_plan_feature** — Pivot linking plans to features with value column
 - **plan_prices** — plan_id, billing_period, currency, price, is_active
 - **subscriptions** — user_id, workspace_id, subscription_plan_id, status, starts_at, ends_at, trial_ends_at, canceled_at, grace_ends_at, payment_method, auto_renew, plan_price_amount, billing_period — SoftDeletes
 - **coupons** — code, type (percentage/fixed), value, max_uses, used_count, min_amount, starts_at, expires_at, is_active

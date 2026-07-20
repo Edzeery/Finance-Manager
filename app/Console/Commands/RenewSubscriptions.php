@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Models\Subscription;
 use App\Services\OnboardingService;
 use App\Services\Payments\GatewayManager;
+use App\Services\Payments\PaymentTransitionValidator;
 use App\Services\PaymentService;
 use App\Services\SubscriptionActivationService;
 use Illuminate\Console\Command;
@@ -18,6 +19,12 @@ class RenewSubscriptions extends Command
     protected $signature = 'subscriptions:renew';
 
     protected $description = 'Process auto-renewals for subscriptions with auto_renew enabled';
+
+    public function __construct(
+        private readonly PaymentTransitionValidator $transitionValidator,
+    ) {
+        parent::__construct();
+    }
 
     public function handle(
         PaymentService $paymentService,
@@ -96,9 +103,15 @@ class RenewSubscriptions extends Command
 
                 $payment->update(['subscription_id' => $subscription->id]);
 
+                $originalEndsAt = $subscription->ends_at;
+                $newEndsAt = $billingPeriod === 'yearly'
+                    ? $subscription->ends_at->copy()->addYear()
+                    : $subscription->ends_at->copy()->addMonth();
+                $subscription->update(['ends_at' => $newEndsAt]);
+
                 if ($payment->amount <= 0) {
-                    $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
-                    $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService);
+                    $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
+                    $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService, $originalEndsAt);
 
                     return 'renewed';
                 }
@@ -114,13 +127,14 @@ class RenewSubscriptions extends Command
                     ]);
 
                     if ($result->success && $payment->transaction_id) {
-                        $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
-                        $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService);
+                        $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
+                        $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService, $originalEndsAt);
 
                         return 'renewed';
                     }
 
-                    $payment->update(['status' => PaymentStatus::CheckoutFailed, 'failed_at' => now()]);
+                    $this->transitionValidator->transition($payment, PaymentStatus::CheckoutFailed);
+                    $subscription->update(['ends_at' => $originalEndsAt]);
 
                     return 'failed';
                 }
@@ -145,12 +159,13 @@ class RenewSubscriptions extends Command
                         return 'renewed';
                     }
 
-                    $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService);
+                    $this->applyRenewalActivation($subscription, $workspace, $plan, $payment, $billingPeriod, $activationService, $originalEndsAt);
 
                     return 'renewed';
                 }
 
-                $payment->update(['status' => PaymentStatus::CheckoutFailed, 'failed_at' => now()]);
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutFailed);
+                $subscription->update(['ends_at' => $originalEndsAt]);
 
                 return 'failed';
             });
@@ -171,14 +186,12 @@ class RenewSubscriptions extends Command
         Payment $payment,
         string $billingPeriod,
         SubscriptionActivationService $activationService,
+        \Carbon\Carbon $originalEndsAt,
     ): void {
-        $oldEndsAt = $subscription->ends_at;
-        $newStartsAt = $oldEndsAt ?? now();
-        $newEndsAt = $billingPeriod === 'yearly' ? $newStartsAt->copy()->addYear() : $newStartsAt->copy()->addMonth();
+        $newStartsAt = $originalEndsAt ?? now();
 
         $subscription->update([
             'starts_at' => $newStartsAt,
-            'ends_at' => $newEndsAt,
             'status' => SubscriptionStatus::Active->value,
         ]);
 

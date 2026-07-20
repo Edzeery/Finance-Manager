@@ -16,7 +16,7 @@ class DebtResource extends JsonResource
             'total_amount' => (float) $this->total_amount,
             'paid_amount' => (float) $this->paid_amount,
             'remaining_amount' => (float) ($this->total_amount - $this->paid_amount),
-            'due_date' => $this->due_date->format('Y-m-d'),
+            'due_date' => $this->due_date?->format('Y-m-d'),
             'status' => $this->status,
             'description' => $this->description,
             'reminder_date' => $this->reminder_date?->format('Y-m-d'),

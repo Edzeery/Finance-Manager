@@ -17,9 +17,10 @@ Route::get('/', function () {
 Route::post('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 Route::post('/theme/switch', [ThemeController::class, 'switch'])
-    ->middleware('web')->name('theme.switch');
+    ->middleware(['auth', 'web'])->name('theme.switch');
 
-Route::post('/currency/{currency}', [CurrencyController::class, 'switch'])->name('currency.switch');
+Route::post('/currency/{currency}', [CurrencyController::class, 'switch'])
+    ->middleware('auth')->name('currency.switch');
 
 Route::post('/logout', LogoutController::class)->middleware('auth')->name('logout');
 

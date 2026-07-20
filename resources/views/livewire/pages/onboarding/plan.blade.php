@@ -794,7 +794,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
             @if ($paymentMethod && App\Services\OnboardingService::isManual($paymentMethod))
                 <div class="alert alert-info py-2 small mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-info-circle me-1"></i>{{ __('onboarding.manual_confirm_hint') }}
+                    <i class="bi bi-info-circlems-1"></i>{{ __('onboarding.manual_confirm_hint') }}
                 </div>
             @endif
 
@@ -1040,7 +1040,7 @@ new #[Layout('layouts.guest')] class extends Component {
     @elseif ($isTrialPlan)
         <button type="button" class="btn btn-accent btn-custom w-100 proceed-btn" wire:click="proceedTrial"
             wire:loading.attr="disabled" wire:target="proceedTrial">
-            <i class="bi bi-rocket-takeoff me-1"></i>{{ __('onboarding.start_free_trial') }}
+            <i class="bi bi-rocket-takeoffms-1"></i>{{ __('onboarding.start_free_trial') }}
         </button>
     @endif
 
@@ -1064,7 +1064,7 @@ new #[Layout('layouts.guest')] class extends Component {
     <div class="onboarding-footer">
         <a href="{{ route('logout') }}"
             @click="$event.preventDefault(); document.getElementById('logout-form').submit();">
-            <i class="bi bi-box-arrow-right me-1"></i>{{ __('onboarding.sign_out') }}
+            <i class="bi bi-box-arrow-rightms-1"></i>{{ __('onboarding.sign_out') }}
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
 

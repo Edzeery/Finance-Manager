@@ -55,7 +55,7 @@
                         class="mx-3 mx-md-4 mt-2 mb-0 px-3 py-2 rounded-2 d-flex align-items-center justify-content-between"
                         style="background:#fff3cd;color:#856404;border:1px solid #ffc107;font-size:13px">
                         <div>
-                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            <i class="bi bi-exclamation-triangle-fillms-1"></i>
                             {{ __('enums.subscription_status.expired') ?? 'اشتراكك منتهي. يرجى تجديد الاشتراك.' }}
                             <a href="{{ route('account.subscriptions') }}" class="ms-2 fw-bold text-decoration-underline"
                                 style="color:#856404">

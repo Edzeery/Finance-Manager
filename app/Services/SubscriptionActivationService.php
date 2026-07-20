@@ -14,12 +14,14 @@ use App\Models\Payment;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\Workspace;
+use App\Services\Payments\PaymentTransitionValidator;
 use Illuminate\Support\Facades\DB;
 
 class SubscriptionActivationService
 {
     public function __construct(
         private readonly InvoiceNumberGenerator $invoiceNumberGenerator,
+        private readonly PaymentTransitionValidator $transitionValidator,
     ) {}
 
     public function activateFromPayment(Payment $payment, SubscriptionPlan $plan, ?string $billingPeriod = null): Subscription
@@ -84,7 +86,7 @@ class SubscriptionActivationService
                         'auto_renew' => ! OnboardingService::isManual($payment->method),
                         'plan_price_amount' => $period === 'yearly' ? $plan->yearly_price : $plan->monthly_price,
                     ]);
-                    $payment->update(['status' => PaymentStatus::CheckoutPaid, 'paid_at' => now()]);
+                    $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
                     if ($payment->coupon_id && $payment->coupon) {
                         $payment->coupon->markUsed();
                     }
@@ -126,10 +128,8 @@ class SubscriptionActivationService
                 'plan_price_amount' => $period === 'yearly' ? $plan->yearly_price : $plan->monthly_price,
             ]);
 
-            $payment->update([
+            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid, [
                 'subscription_id' => $subscription->id,
-                'status' => PaymentStatus::CheckoutPaid,
-                'paid_at' => now(),
             ]);
 
             if ($payment->coupon_id && $payment->coupon) {

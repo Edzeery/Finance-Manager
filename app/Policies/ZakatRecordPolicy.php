@@ -9,7 +9,7 @@ class ZakatRecordPolicy
 {
     public function view(User $user, ZakatRecord $record): bool
     {
-        return $record->user_id === $user->id || $user->hasPermission('zakat.view');
+        return $record->user_id === $user->id;
     }
 
     public function create(User $user): bool
@@ -19,12 +19,12 @@ class ZakatRecordPolicy
 
     public function update(User $user, ZakatRecord $record): bool
     {
-        return $record->user_id === $user->id || $user->hasPermission('zakat.update');
+        return $record->user_id === $user->id;
     }
 
     public function delete(User $user, ZakatRecord $record): bool
     {
-        return $record->user_id === $user->id || $user->hasPermission('zakat.delete');
+        return $record->user_id === $user->id;
     }
 
     public function restore(User $user, ZakatRecord $record): bool

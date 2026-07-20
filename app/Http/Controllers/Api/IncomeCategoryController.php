@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\IncomeCategory\StoreIncomeCategoryRequest;
 use App\Http\Requests\Api\IncomeCategory\UpdateIncomeCategoryRequest;
+use App\Http\Resources\IncomeCategoryResource;
 use App\Models\IncomeCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class IncomeCategoryController extends Controller
     {
         $categories = IncomeCategory::orderBy('sort_order')->get();
 
-        return response()->json($categories);
+        return response()->json(IncomeCategoryResource::collection($categories));
     }
 
     public function store(StoreIncomeCategoryRequest $request): JsonResponse
@@ -26,7 +27,7 @@ class IncomeCategoryController extends Controller
             'workspace_id' => $request->user()->current_workspace_id,
         ]);
 
-        return response()->json($category, 201);
+        return response()->json(new IncomeCategoryResource($category), 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -37,7 +38,7 @@ class IncomeCategoryController extends Controller
             return response()->json(['message' => __('messages.not_found')], 404);
         }
 
-        return response()->json($category);
+        return response()->json(new IncomeCategoryResource($category));
     }
 
     public function update(UpdateIncomeCategoryRequest $request, int $id): JsonResponse
@@ -50,7 +51,7 @@ class IncomeCategoryController extends Controller
 
         $category->update($request->validated());
 
-        return response()->json($category);
+        return response()->json(new IncomeCategoryResource($category));
     }
 
     public function destroy(Request $request, int $id): JsonResponse

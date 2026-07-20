@@ -60,7 +60,7 @@ class AssetApiTest extends TestCase
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonFragment(['name' => 'Test Asset', 'total_value' => '10000.00']);
+            ->assertJsonFragment(['name' => 'Test Asset', 'total_value' => 10000]);
     }
 
     public function test_show(): void
@@ -91,7 +91,7 @@ class AssetApiTest extends TestCase
             ]);
 
         $response->assertOk()
-            ->assertJsonFragment(['name' => 'Updated Asset', 'total_value' => '20000.00']);
+            ->assertJsonFragment(['name' => 'Updated Asset', 'total_value' => 20000]);
     }
 
     public function test_destroy(): void

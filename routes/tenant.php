@@ -106,7 +106,18 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
             ->middleware('permission:income.archive')->name('archive');
         Route::patch('/{income}/restore', [IncomeController::class, 'restore'])
             ->middleware('permission:income.restore')->name('restore');
-        Route::resource('categories', IncomeCategoryController::class)->except(['show']);
+        Route::get('/categories', [IncomeCategoryController::class, 'index'])
+            ->name('categories.index');
+        Route::get('/categories/create', [IncomeCategoryController::class, 'create'])
+            ->middleware('permission:income-category.create')->name('categories.create');
+        Route::post('/categories', [IncomeCategoryController::class, 'store'])
+            ->middleware(['permission:income-category.create', 'throttle:web-crud'])->name('categories.store');
+        Route::get('/categories/{incomeCategory}/edit', [IncomeCategoryController::class, 'edit'])
+            ->middleware('permission:income-category.update')->name('categories.edit');
+        Route::put('/categories/{incomeCategory}', [IncomeCategoryController::class, 'update'])
+            ->middleware(['permission:income-category.update', 'throttle:web-crud'])->name('categories.update');
+        Route::delete('/categories/{incomeCategory}', [IncomeCategoryController::class, 'destroy'])
+            ->middleware(['permission:income-category.delete', 'throttle:web-crud'])->name('categories.destroy');
     });
 
     Route::prefix('expense')->name('expense.')->middleware(['permission:expense.view', 'plan.feature:income_expense', 'throttle:web-list'])->group(function () {
@@ -133,7 +144,18 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
             ->middleware('permission:expense.archive')->name('archive');
         Route::patch('/{expense}/restore', [ExpenseController::class, 'restore'])
             ->middleware('permission:expense.restore')->name('restore');
-        Route::resource('categories', ExpenseCategoryController::class)->except(['show']);
+        Route::get('/categories', [ExpenseCategoryController::class, 'index'])
+            ->name('categories.index');
+        Route::get('/categories/create', [ExpenseCategoryController::class, 'create'])
+            ->middleware('permission:expense-category.create')->name('categories.create');
+        Route::post('/categories', [ExpenseCategoryController::class, 'store'])
+            ->middleware(['permission:expense-category.create', 'throttle:web-crud'])->name('categories.store');
+        Route::get('/categories/{expenseCategory}/edit', [ExpenseCategoryController::class, 'edit'])
+            ->middleware('permission:expense-category.update')->name('categories.edit');
+        Route::put('/categories/{expenseCategory}', [ExpenseCategoryController::class, 'update'])
+            ->middleware(['permission:expense-category.update', 'throttle:web-crud'])->name('categories.update');
+        Route::delete('/categories/{expenseCategory}', [ExpenseCategoryController::class, 'destroy'])
+            ->middleware(['permission:expense-category.delete', 'throttle:web-crud'])->name('categories.destroy');
     });
 
     Route::prefix('debt')->name('debt.')->middleware(['permission:debt.view', 'plan.feature:debt', 'throttle:web-list'])->group(function () {

@@ -59,7 +59,7 @@ class GoalApiTest extends TestCase
             ]);
 
         $response->assertStatus(201)
-            ->assertJsonFragment(['name_en' => 'Save for House', 'target_amount' => '500000.00']);
+            ->assertJsonFragment(['name' => 'Save for House', 'target_amount' => 500000]);
     }
 
     public function test_show(): void
@@ -90,7 +90,7 @@ class GoalApiTest extends TestCase
             ]);
 
         $response->assertOk()
-            ->assertJsonFragment(['name_en' => 'Updated Goal', 'target_amount' => '600000.00']);
+            ->assertJsonFragment(['name' => 'Updated Goal', 'target_amount' => 600000]);
     }
 
     public function test_destroy(): void

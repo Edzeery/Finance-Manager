@@ -17,7 +17,7 @@ class FinancialGoalResource extends JsonResource
             'progress_percentage' => $this->target_amount > 0
                 ? round(($this->current_amount / $this->target_amount) * 100, 2)
                 : 0,
-            'target_date' => $this->target_date->format('Y-m-d'),
+            'target_date' => $this->target_date?->format('Y-m-d'),
             'status' => $this->status,
             'icon' => $this->icon,
             'color' => $this->color,

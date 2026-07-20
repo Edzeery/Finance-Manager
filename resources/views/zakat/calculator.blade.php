@@ -36,14 +36,14 @@
                                 <div class="col-md-5">
                                     <label class="form-label-custom">{{ __('zakat.silver_price') }} <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <input type="number" step="0.01" min="0" name="silver_price" id="silver_price" value="{{ old('silver_price', $input['silver_price'] ?? config('zakat.prices.silver_per_gram', 0)) }}" class="form-custom" required placeholder="0.00">
+                                        <input type="number" step="0.01" min="0" name="silver_price" id="silver_price" value="{{ old('silver_price', $input['silver_price'] ?? $defaultSilverPrice ?? 0) }}" class="form-custom" required placeholder="0.00">
                                         <span class="input-group-text" style="background:var(--bg); border:1px solid var(--border); border-radius:0 8px 8px 0; color:var(--text-muted); font-size:13px">{{ config('finance.currency_symbol') }}/g</span>
                                     </div>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="d-flex align-items-center gap-2" style="margin-top:22px">
                                         <button type="button" onclick="fetchPrices()" id="fetchBtn" class="btn btn-outline-accent btn-custom" style="white-space:nowrap">
-                                            <i class="bi bi-arrow-clockwise me-1" id="fetchIcon"></i>{{ __('zakat.fetch_prices') }}
+                                            <i class="bi bi-arrow-clockwisems-1" id="fetchIcon"></i>{{ __('zakat.fetch_prices') }}
                                         </button>
                                         <small id="fetchStatus" class="text-muted d-none"></small>
                                     </div>
@@ -104,13 +104,13 @@
                             </div>
 
                             <button type="button" onclick="addGoldRow()" class="btn btn-outline-secondary btn-sm mt-2" style="font-size:12px">
-                                <i class="bi bi-plus-lg me-1"></i>{{ __('zakat.add_gold_row') }}
+                                <i class="bi bi-plus-lgms-1"></i>{{ __('zakat.add_gold_row') }}
                             </button>
 
                             <div class="mt-3 p-3" style="border-radius:8px; background:rgba(255,193,7,0.06); border:1px solid rgba(255,193,7,0.15)">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span style="font-size:13px; font-weight:600; color:#FFC107">
-                                        <i class="bi bi-gem me-1"></i>{{ __('zakat.gold_total') }}
+                                        <i class="bi bi-gemms-1"></i>{{ __('zakat.gold_total') }}
                                     </span>
                                     <span id="goldTotalDisplay" style="font-size:15px; font-weight:700; color:#FFC107">0 {{ config('finance.currency_symbol') }}</span>
                                 </div>
@@ -269,10 +269,10 @@
                         {{-- Action Buttons --}}
                         <div class="d-flex gap-3 mt-4">
                             <button type="submit" class="btn btn-accent btn-custom">
-                                <i class="bi bi-calculator me-1"></i>{{ __('zakat.calculate') }}
+                                <i class="bi bi-calculatorms-1"></i>{{ __('zakat.calculate') }}
                             </button>
                             <button type="submit" name="save" value="1" class="btn btn-outline-accent btn-custom">
-                                <i class="bi bi-save me-1"></i>{{ __('zakat.save_record') }}
+                                <i class="bi bi-savems-1"></i>{{ __('zakat.save_record') }}
                             </button>
                         </div>
                     </form>
@@ -291,12 +291,12 @@
                         </h2>
                         @if($result['exceedsNisab'])
                             <p style="color:var(--success); font-size:14px" class="mb-0">
-                                <i class="bi bi-check-circle-fill me-1"></i>
+                                <i class="bi bi-check-circle-fillms-1"></i>
                                 {{ __('zakat.exceeds_nisab') }}: <x-status-badge domain="general" status="yes" set="bi" />
                             </p>
                         @else
                             <p style="color:var(--text-muted); font-size:14px" class="mb-0">
-                                <i class="bi bi-info-circle me-1"></i>
+                                <i class="bi bi-info-circlems-1"></i>
                                 {{ __('zakat.exceeds_nisab') }}: <x-status-badge domain="general" status="no" set="bi" />
                             </p>
                         @endif
@@ -456,11 +456,37 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        @include('components.empty-state', [
-                            'icon' => 'bi-heart',
-                            'title' => __('zakat.no_records'),
-                            'message' => __('zakat.calculate_first'),
-                        ])
+                        @if($recentRecords->isEmpty())
+                            @include('components.empty-state', [
+                                'icon' => 'bi-heart',
+                                'title' => __('zakat.no_records'),
+                                'message' => __('zakat.calculate_first'),
+                            ])
+                        @else
+                            <div class="d-flex flex-column gap-2">
+                                @foreach($recentRecords as $record)
+                                    <a href="{{ route('zakat.report', $record) }}" class="d-flex justify-content-between align-items-center p-2 text-decoration-none" style="border-radius:8px; background:var(--bg-secondary); transition:background 0.15s" onmouseover="this.style.background='var(--bg-muted)'" onmouseout="this.style.background='var(--bg-secondary)'">
+                                        <div>
+                                            <div style="font-size:13px; font-weight:600; color:var(--text)">{{ $record->calculation_date?->format('d M Y') ?? '-' }}</div>
+                                            <div style="font-size:11px; color:var(--text-muted)">{{ $record->hijri_year ? 'Hijri ' . $record->hijri_year : '' }}</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div style="font-size:13px; font-weight:700; color:var(--accent)">{{ number_format($record->zakat_amount, 2) }} {{ config('finance.currency_symbol') }}</div>
+                                            <div>
+                                                @if($record->exceeds_nisab)
+                                                    <x-status-badge domain="general" status="yes" set="bi" />
+                                                @else
+                                                    <x-status-badge domain="general" status="no" set="bi" />
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                            <a href="{{ route('zakat.history') }}" class="btn btn-outline-accent btn-custom w-100 mt-3" style="font-size:13px">
+                                <i class="bi bi-clock-historyms-1"></i>{{ __('zakat.view_all_history') }}
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endif

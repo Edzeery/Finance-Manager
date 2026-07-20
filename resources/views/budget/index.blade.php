@@ -26,7 +26,7 @@
             <x-per-page :current="request('per_page', 15)" :route="route('budget.index')" :preserve="['search','tab']" />
             @if($tab !== 'trashed' && $canCreate)
                 <a href="{{ route('budget.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lg me-1"></i>{{ __('budget.add') }}
+                    <i class="bi bi-plus-lgms-1"></i>{{ __('budget.add') }}
                 </a>
             @endif
         </div>
@@ -54,18 +54,18 @@
             @if($tab === 'trashed')
                 @if($canRestore)
                     <button type="button" class="btn btn-sm btn-outline-success btn-custom" @click="submitBulk('{{ route('budget.bulk-restore') }}')">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('general.restore') }}
+                        <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('general.restore') }}
                     </button>
                 @endif
                 @if($canForceDelete)
                     <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkForceDelete()">
-                        <i class="bi bi-trash3 me-1"></i>{{ __('general.force_delete') }}
+                        <i class="bi bi-trash3ms-1"></i>{{ __('general.force_delete') }}
                     </button>
                 @endif
             @else
                 @if($canDelete)
                     <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkDelete('budget')">
-                        <i class="bi bi-trash me-1"></i>{{ __('general.delete') }}
+                        <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
                     </button>
                 @endif
             @endif
@@ -135,7 +135,7 @@
                                         <form action="{{ route('budget.restore', $budget) }}" method="POST" style="display:inline; flex:1">
                                             @csrf @method('PATCH')
                                             <button type="submit" class="btn btn-sm btn-outline-success btn-custom" style="flex:1">
-                                                <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('general.restore') }}
+                                                <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('general.restore') }}
                                             </button>
                                         </form>
                                     @endif
@@ -146,7 +146,7 @@
                                     @endif
                                 @else
                                     <a href="{{ route('budget.show', $budget) }}" class="btn btn-sm btn-outline-secondary btn-custom" style="flex:1">
-                                        <i class="bi bi-eye me-1"></i>{{ __('general.details') }}
+                                        <i class="bi bi-eyems-1"></i>{{ __('general.details') }}
                                     </a>
                                     @if($canUpdate)
                                         <a href="{{ route('budget.edit', $budget) }}" class="action-btn" title="{{ __('general.edit') }}">

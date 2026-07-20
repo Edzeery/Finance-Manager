@@ -43,7 +43,7 @@
                             <x-toggle-switch name="is_active" :checked="old('is_active', '1')" label="{{ __('general.active') }}" />
                         </div>
                         <button type="submit" class="btn btn-accent btn-custom w-100">
-                            <i class="bi bi-plus-lg me-1"></i>{{ __('general.add') }}
+                            <i class="bi bi-plus-lgms-1"></i>{{ __('general.add') }}
                         </button>
                     </form>
                 </div>
@@ -157,7 +157,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary btn-custom" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i>{{ __('general.cancel') }}</button>
+                        <button type="button" class="btn btn-outline-secondary btn-custom" data-bs-dismiss="modal"><i class="bi bi-x-lgms-1"></i>{{ __('general.cancel') }}</button>
                         <button type="submit" class="btn btn-accent btn-custom">{{ __('general.save') }}</button>
                     </div>
                 </form>
