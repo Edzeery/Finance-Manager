@@ -49,17 +49,15 @@ class ChargilyWebhookService
         $eventType = $webhookElement->getType();
         $checkoutId = $checkoutElement->getId();
 
-        if ($this->alreadyProcessed($checkoutId, $eventType)) {
-            return;
-        }
-
         $payment = Payment::withoutWorkspace()->find($paymentId);
 
         if (! $payment) {
             throw ChargilyException::unhandledEvent("Payment not found: {$paymentId}");
         }
 
-        $this->logWebhook($webhookElement, $paymentId, $payload);
+        if (! $this->claimWebhookLog($checkoutId, $eventType, $paymentId, $webhookElement, $payload)) {
+            return;
+        }
 
         match ($eventType) {
             'checkout.paid' => $this->handlePaid($payment, $checkoutElement, $payload),
@@ -70,11 +68,26 @@ class ChargilyWebhookService
         };
     }
 
-    private function alreadyProcessed(string $checkoutId, string $eventType): bool
+    private function claimWebhookLog(string $checkoutId, string $eventType, int $paymentId, $webhookElement, array $payload): bool
     {
-        return PaymentWebhookLog::where('checkout_id', $checkoutId)
-            ->where('event_type', $eventType)
-            ->exists();
+        try {
+            PaymentWebhookLog::create([
+                'gateway' => 'chargily',
+                'event_type' => $eventType,
+                'checkout_id' => $checkoutId,
+                'payment_id' => $paymentId,
+                'payload' => $payload,
+                'status' => PaymentWebhookLogStatus::Received->value,
+            ]);
+
+            return true;
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (str_contains($e->getMessage(), 'Duplicate entry') || str_contains($e->getMessage(), 'UNIQUE constraint')) {
+                return false;
+            }
+
+            throw $e;
+        }
     }
 
     private function handlePaid(Payment $payment, $checkoutElement, array $payload): void
@@ -87,7 +100,6 @@ class ChargilyWebhookService
             return;
         }
 
-        // التحقق من صحة المبلغ المستلم مقابل المبلغ المخزّن
         $checkoutAmount = (float) ($checkoutElement->getAmount() ?? 0);
         $expectedAmount = (float) $payment->amount;
         $tolerance = 0.01;
@@ -100,109 +112,141 @@ class ChargilyWebhookService
             ));
         }
 
-        DB::transaction(function () use ($payment, $checkoutElement, $payload) {
-            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
-            if (! $payment || $payment->isCompleted()) {
+        try {
+            DB::transaction(function () use ($payment, $checkoutElement, $payload) {
+                $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+                if (! $payment || $payment->isCompleted()) {
+                    return;
+                }
+
+                $checkoutId = $checkoutElement->getId();
+                $paymentMethod = $checkoutElement->getPaymentMethod();
+
+                $extra = [
+                    'transaction_id' => $checkoutId,
+                    'gateway_reference' => $checkoutId,
+                    'webhook_payload' => $payload,
+                    'webhook_processed_at' => now(),
+                ];
+
+                if ($paymentMethod) {
+                    $extra['payment_method_type'] = strtolower($paymentMethod);
+                }
+
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid, $extra);
+
+                if ($payment->subscription_id) {
+                    $sub = Subscription::withoutWorkspace()->find($payment->subscription_id);
+                    if ($sub && $sub->status === SubscriptionStatus::PastDue && $sub->plan) {
+                        $this->activationService->activateFromPayment(
+                            $payment,
+                            $sub->plan,
+                            $sub->billing_period ?? 'monthly',
+                        );
+                    }
+                }
+
+                $this->updateWebhookLogStatus($payment, 'checkout.paid');
+
+                Event::dispatch(new PaymentCompleted($payment, $payload));
+            });
+        } catch (\RuntimeException $e) {
+            if (str_contains($e->getMessage(), 'Illegal payment status transition')) {
                 return;
             }
 
-            $checkoutId = $checkoutElement->getId();
-            $paymentMethod = $checkoutElement->getPaymentMethod();
-
-            $extra = [
-                'transaction_id' => $checkoutId,
-                'gateway_reference' => $checkoutId,
-                'webhook_payload' => $payload,
-                'webhook_processed_at' => now(),
-            ];
-
-            if ($paymentMethod) {
-                $extra['payment_method_type'] = strtolower($paymentMethod);
-            }
-
-            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid, $extra);
-
-            if ($payment->subscription_id) {
-                $sub = Subscription::withoutWorkspace()->find($payment->subscription_id);
-                if ($sub && $sub->status === SubscriptionStatus::PastDue && $sub->plan) {
-                    $this->activationService->activateFromPayment(
-                        $payment,
-                        $sub->plan,
-                        $sub->billing_period ?? 'monthly',
-                    );
-                }
-            }
-
-            $this->updateWebhookLogStatus($payment, 'checkout.paid');
-
-            Event::dispatch(new PaymentCompleted($payment, $payload));
-        });
+            throw $e;
+        }
     }
 
     private function handleFailed(Payment $payment, array $payload): void
     {
-        DB::transaction(function () use ($payment, $payload) {
-            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+        try {
+            DB::transaction(function () use ($payment, $payload) {
+                $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
 
-            if (! $payment || $payment->isCompleted()) {
+                if (! $payment || $payment->isCompleted()) {
+                    return;
+                }
+
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutFailed, [
+                    'webhook_payload' => $payload,
+                    'webhook_processed_at' => now(),
+                ]);
+
+                $this->cancelPastDueSubscription($payment);
+
+                $this->updateWebhookLogStatus($payment, 'checkout.failed');
+
+                Event::dispatch(new PaymentFailed($payment, $payload));
+            });
+        } catch (\RuntimeException $e) {
+            if (str_contains($e->getMessage(), 'Illegal payment status transition')) {
                 return;
             }
 
-            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutFailed, [
-                'webhook_payload' => $payload,
-                'webhook_processed_at' => now(),
-            ]);
-
-            $this->cancelPastDueSubscription($payment);
-
-            $this->updateWebhookLogStatus($payment, 'checkout.failed');
-
-            Event::dispatch(new PaymentFailed($payment, $payload));
-        });
+            throw $e;
+        }
     }
 
     private function handleCanceled(Payment $payment, array $payload): void
     {
-        DB::transaction(function () use ($payment, $payload) {
-            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+        try {
+            DB::transaction(function () use ($payment, $payload) {
+                $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
 
-            if (! $payment || $payment->isCompleted()) {
+                if (! $payment || $payment->isCompleted()) {
+                    return;
+                }
+
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutCanceled, [
+                    'webhook_payload' => $payload,
+                    'webhook_processed_at' => now(),
+                ]);
+
+                $this->cancelPastDueSubscription($payment);
+
+                $this->updateWebhookLogStatus($payment, 'checkout.canceled');
+
+                Event::dispatch(new PaymentFailed($payment, $payload));
+            });
+        } catch (\RuntimeException $e) {
+            if (str_contains($e->getMessage(), 'Illegal payment status transition')) {
                 return;
             }
 
-            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutCanceled, [
-                'webhook_payload' => $payload,
-                'webhook_processed_at' => now(),
-            ]);
-
-            $this->cancelPastDueSubscription($payment);
-
-            $this->updateWebhookLogStatus($payment, 'checkout.canceled');
-
-            Event::dispatch(new PaymentFailed($payment, $payload));
-        });
+            throw $e;
+        }
     }
 
     private function handleExpired(Payment $payment, array $payload): void
     {
-        DB::transaction(function () use ($payment, $payload) {
-            $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
+        try {
+            DB::transaction(function () use ($payment, $payload) {
+                $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
 
-            if (! $payment || $payment->isCompleted()) {
+                if (! $payment || $payment->isCompleted()) {
+                    return;
+                }
+
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutExpired, [
+                    'webhook_payload' => $payload,
+                    'webhook_processed_at' => now(),
+                ]);
+
+                $this->cancelPastDueSubscription($payment);
+
+                $this->updateWebhookLogStatus($payment, 'checkout.expired');
+
+                Event::dispatch(new PaymentFailed($payment, $payload));
+            });
+        } catch (\RuntimeException $e) {
+            if (str_contains($e->getMessage(), 'Illegal payment status transition')) {
                 return;
             }
 
-            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutExpired, [
-                'webhook_payload' => $payload,
-                'webhook_processed_at' => now(),
-            ]);
-
-            $this->cancelPastDueSubscription($payment);
-
-            $this->updateWebhookLogStatus($payment, 'checkout.expired');
-
-            Event::dispatch(new PaymentFailed($payment, $payload));
-        });
+            throw $e;
+        }
     }
 
     private function cancelPastDueSubscription(Payment $payment): void
@@ -213,20 +257,6 @@ class ChargilyWebhookService
                 $sub->update(['status' => SubscriptionStatus::Canceled->value, 'canceled_at' => now()]);
             }
         }
-    }
-
-    private function logWebhook($webhookElement, int $paymentId, array $payload): void
-    {
-        $checkoutElement = $webhookElement->getData();
-
-        PaymentWebhookLog::create([
-            'gateway' => 'chargily',
-            'event_type' => $webhookElement->getType(),
-            'checkout_id' => $checkoutElement ? $checkoutElement->getId() : null,
-            'payment_id' => $paymentId,
-            'payload' => $payload,
-            'status' => PaymentWebhookLogStatus::Received->value,
-        ]);
     }
 
     private function updateWebhookLogStatus(Payment $payment, string $eventType): void
