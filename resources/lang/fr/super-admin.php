@@ -326,6 +326,7 @@ return [
     'tax_disclosed' => 'Taxe divulguée (non ajoutée au total)',
     'webhook_received' => 'Reçu via Webhook',
     'webhook_processed' => 'Traité automatiquement via Webhook',
+    'webhook_failed' => 'Échec du traitement du Webhook',
     'refund' => 'Rembourser',
     'refund_payment' => 'Rembourser le paiement',
     'refund_amount' => 'Montant du remboursement',

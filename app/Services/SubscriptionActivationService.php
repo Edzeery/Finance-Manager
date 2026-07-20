@@ -86,7 +86,9 @@ class SubscriptionActivationService
                         'auto_renew' => ! OnboardingService::isManual($payment->method),
                         'plan_price_amount' => $period === 'yearly' ? $plan->yearly_price : $plan->monthly_price,
                     ]);
-                    $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
+                    if (! $payment->isCompleted()) {
+                        $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
+                    }
                     if ($payment->coupon_id && $payment->coupon) {
                         $payment->coupon->markUsed();
                     }
@@ -128,9 +130,13 @@ class SubscriptionActivationService
                 'plan_price_amount' => $period === 'yearly' ? $plan->yearly_price : $plan->monthly_price,
             ]);
 
-            $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid, [
-                'subscription_id' => $subscription->id,
-            ]);
+            if (! $payment->isCompleted()) {
+                $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid, [
+                    'subscription_id' => $subscription->id,
+                ]);
+            } else {
+                $payment->update(['subscription_id' => $subscription->id]);
+            }
 
             if ($payment->coupon_id && $payment->coupon) {
                 $payment->coupon->markUsed();

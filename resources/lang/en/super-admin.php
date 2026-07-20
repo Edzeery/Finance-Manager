@@ -329,6 +329,7 @@ return [
     'tax_added' => 'Added Tax',
     'webhook_received' => 'Received via Webhook',
     'webhook_processed' => 'Processed automatically via Webhook',
+    'webhook_failed' => 'Webhook processing failed',
     'refund' => 'Refund',
     'refund_payment' => 'Refund Payment',
     'refund_amount' => 'Refund Amount',

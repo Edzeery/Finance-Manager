@@ -338,6 +338,7 @@ return [
     'proration_credit' => 'رصيد التسوية',
     'webhook_received' => 'تم الاستلام عبر Webhook',
     'webhook_processed' => 'تمت المعالجة تلقائياً عبر Webhook',
+    'webhook_failed' => 'فشلت معالجة Webhook',
     'refund' => 'استرجاع',
     'refund_payment' => 'استرجاع الدفع',
     'refund_amount' => 'مبلغ الاسترجاع',
