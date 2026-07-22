@@ -8,11 +8,13 @@ return [
         'failed'    => 'Failed',
         'refunded'  => 'Refunded',
         'canceled'  => 'Canceled',
-        'checkout_paid'     => 'Paid (Checkout)',
-        'checkout_pending'  => 'Pending (Checkout)',
-        'checkout_failed'   => 'Failed (Checkout)',
-        'checkout_canceled' => 'Canceled (Checkout)',
-        'checkout_expired'  => 'Expired (Checkout)',
+        'checkout' => [
+            'paid'     => 'Paid (Checkout)',
+            'pending'  => 'Pending (Checkout)',
+            'failed'   => 'Failed (Checkout)',
+            'canceled' => 'Canceled (Checkout)',
+            'expired'  => 'Expired (Checkout)',
+        ],
     ],
 
     'subscription' => [

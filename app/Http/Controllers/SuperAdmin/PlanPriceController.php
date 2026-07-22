@@ -114,4 +114,15 @@ class PlanPriceController extends Controller
         return $this->redirectBack(request(), $plan, 'super.admin.plans.prices.index')
             ->with('success', __('super-admin.price_deleted'));
     }
+
+    public function toggleStatus(SubscriptionPlan $plan, PlanPrice $price)
+    {
+        if ($price->plan_id !== $plan->id) {
+            abort(404);
+        }
+
+        $price->update(['is_active' => ! $price->is_active]);
+
+        return back()->with('success', __('messages.subscription_updated'));
+    }
 }

@@ -9,15 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['status', 'online_status']);
+            $table->date('zakat_start_date')->nullable()->after('onboarding_completed_at');
+            $table->string('calendar_type', 10)->default('hijri')->after('zakat_start_date');
+            $table->date('last_zakat_date')->nullable()->after('calendar_type');
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('status')->default('active')->after('email');
-            $table->string('online_status')->default('offline')->after('status');
+            $table->dropColumn(['zakat_start_date', 'calendar_type', 'last_zakat_date']);
         });
     }
 };

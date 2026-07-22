@@ -1,6 +1,6 @@
 @props([
     'icon' => null,
-    'iconBg' => 'rgba(21,183,108,0.1)',
+    'iconBg' => 'var(--accent-light)',
     'iconColor' => 'var(--accent)',
     'borderColor' => null,
     'label' => null,
@@ -17,12 +17,11 @@
 ])
 
 @php
-    $tag = $href ? 'a' : 'div';
-    $attrs = $href ? "href=\"{$href}\" class=\"text-decoration-none\"" : '';
     $border = $borderColor ?? $iconColor;
+    $clickAttrs = $href ? "x-data @click=\"window.location.href = '" . addslashes($href) . "'\" role=\"link\"" : '';
 @endphp
 
-<{{ $tag }} {!! $attrs !!} class="kpi-card {{ $center ? 'text-center' : '' }} {{ $attributes->get('class', '') }}" style="border-top: 3px solid {{ $border }};">
+<div {!! $clickAttrs !!} class="kpi-card {{ $center ? 'text-center' : '' }} {{ $attributes->get('class', '') }}" style="border-top: 3px solid {{ $border }};{{ $href ? 'cursor:pointer' : '' }}">
     @if($icon)
         <div class="kpi-icon {{ $center ? 'mx-auto' : '' }}" style="background:{{ $iconBg }}; color:{{ $iconColor }}">
             <i class="bi {{ $icon }}"></i>
@@ -56,4 +55,4 @@
     @endif
 
     {{ $slot }}
-</{{ $tag }}>
+</div>

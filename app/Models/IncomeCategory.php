@@ -3,15 +3,15 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToWorkspace;
+use App\Models\Concerns\HasCategories;
 use App\Models\Scopes\WorkspaceScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class IncomeCategory extends Model
 {
-    use BelongsToWorkspace, HasFactory;
+    use BelongsToWorkspace, HasFactory, HasCategories;
 
     protected bool $allowsNullWorkspace = true;
 
@@ -27,11 +27,6 @@ class IncomeCategory extends Model
         return [
             'is_active' => 'boolean',
         ];
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 
     public function incomes(): HasMany

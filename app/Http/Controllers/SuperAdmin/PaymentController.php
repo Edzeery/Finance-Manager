@@ -9,10 +9,12 @@ use App\Http\Controllers\Concerns\HasBreadcrumbs;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\User;
+use App\Mail\PaymentRefunded;
 use App\Services\OnboardingService;
 use App\Services\Payments\PaymentGatewayRegistry;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -38,7 +40,7 @@ class PaymentController extends Controller
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded')
             ->addBreadcrumb(__('super-admin.payments'));
 
-        $query = Payment::withoutWorkspace()->with('workspace', 'subscription.plan', 'user', 'verification');
+        $query = Payment::withoutWorkspace()->with('workspace', 'subscription.plan', 'user', 'verification', 'paymentMethod', 'refundedBy');
 
         $status = $request->input('status', 'all');
         if ($status !== 'all') {
@@ -65,7 +67,7 @@ class PaymentController extends Controller
         }
 
         if ($request->filled('method')) {
-            $query->where('method', $request->method);
+            $query->whereHas('paymentMethod', fn ($q) => $q->where('key', $request->method));
         }
 
         if ($request->filled('date_from')) {
@@ -116,9 +118,10 @@ class PaymentController extends Controller
     public function approve(int $id, Request $request)
     {
         $payment = Payment::withoutWorkspace()->findOrFail($id);
-        if (in_array($payment->method, $this->webhookMethods())) {
+        $methodKey = $payment->paymentMethod?->key;
+        if (in_array($methodKey, $this->webhookMethods())) {
             return redirect()->back()->withErrors([
-                'error' => __('super-admin.webhook_payment_verify', ['method' => $payment->method]),
+                'error' => __('super-admin.webhook_payment_verify', ['method' => $methodKey]),
             ]);
         }
 
@@ -138,7 +141,7 @@ class PaymentController extends Controller
         app(ActivityLogServiceInterface::class)->log(
             auth()->id(), 'payment_approved', $payment,
             "Payment approved: {$payment->amount} {$payment->currency}",
-            ['gateway' => $payment->method, 'workspace_id' => $payment->workspace_id]
+            ['gateway' => $methodKey, 'workspace_id' => $payment->workspace_id]
         );
 
         $payment->refresh();
@@ -181,15 +184,25 @@ class PaymentController extends Controller
             ['reason' => $request->refund_reason]
         );
 
+        if ($payment->user && $payment->user->email) {
+            try {
+                Mail::to($payment->user->email)
+                    ->queue(new PaymentRefunded($payment));
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
         return redirect()->back()->with('success', __('super-admin.payment_refunded'));
     }
 
     public function reject(int $id, Request $request)
     {
         $payment = Payment::withoutWorkspace()->findOrFail($id);
-        if (in_array($payment->method, $this->webhookMethods())) {
+        $methodKey = $payment->paymentMethod?->key;
+        if (in_array($methodKey, $this->webhookMethods())) {
             return redirect()->back()->withErrors([
-                'error' => __('super-admin.webhook_payment_verify', ['method' => $payment->method]),
+                'error' => __('super-admin.webhook_payment_verify', ['method' => $methodKey]),
             ]);
         }
 
@@ -207,7 +220,7 @@ class PaymentController extends Controller
         app(ActivityLogServiceInterface::class)->log(
             auth()->id(), 'payment_rejected', $payment,
             "Payment rejected: {$payment->amount} {$payment->currency}",
-            ['gateway' => $payment->method, 'reason' => $request->input('notes')]
+            ['gateway' => $methodKey, 'reason' => $request->input('notes')]
         );
 
         return redirect()->back()->with('success', __('super-admin.payment_rejected'));

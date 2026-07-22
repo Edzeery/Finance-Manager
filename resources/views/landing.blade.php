@@ -390,7 +390,7 @@
                                 <li x-show="showAll || {{ $index < 3 ? 'true' : 'false' }}"
                                     x-transition:enter.duration.200ms>
                                     <i
-                                        class="bi bi-check-lgms-1"></i>{{ $landingFeatureName($feature) }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
+                                        class="bi bi-check-lg ms-1"></i>{{ $landingFeatureName($feature) }}{{ $feature->pivot->value ? ': ' . $feature->pivot->value : '' }}
                                 </li>
                             @endforeach
                         @endif

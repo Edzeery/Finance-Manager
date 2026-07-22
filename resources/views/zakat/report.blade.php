@@ -8,6 +8,24 @@
 
     @include('zakat._nav')
 
+    {{-- Haul Info --}}
+    <div class="mb-4 p-3" style="border-radius:8px; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15)">
+        <div class="d-flex flex-wrap gap-3" style="font-size:13px">
+            <div>
+                <span style="color:var(--text-muted)">{{ __('zakat.calendar_type') }}:</span>
+                <span class="fw-bold">{{ __('zakat.' . ($r->calendar_type ?? 'hijri')) }}</span>
+            </div>
+            <div>
+                <span style="color:var(--text-muted)">{{ __('zakat.hijri_year') }}:</span>
+                <span class="fw-bold">{{ $r->hijri_year ?? '-' }}</span>
+            </div>
+            <div>
+                <span style="color:var(--text-muted)">{{ __('zakat.calculation_date') }}:</span>
+                <span class="fw-bold">{{ $r->calculation_date?->format('Y/m/d') ?? '-' }}</span>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-4">
         <div class="col-lg-8">
             {{-- Gold & Silver Details --}}

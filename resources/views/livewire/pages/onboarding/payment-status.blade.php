@@ -97,7 +97,7 @@ new #[Layout('layouts.guest')] class extends Component
         $this->payment->refresh();
 
         try {
-            $gateway = app(GatewayManager::class)->driver($this->payment->method);
+            $gateway = app(GatewayManager::class)->driver($this->payment->paymentMethod?->key);
             $result = $gateway->charge([
                 'amount' => $this->payment->amount,
                 'currency' => $this->payment->currency,
@@ -115,7 +115,7 @@ new #[Layout('layouts.guest')] class extends Component
                     'gateway_response' => $result->metadata ?? [],
                 ]);
 
-                if (OnboardingService::isOnline($this->payment->method) && $result->redirectUrl) {
+                if (OnboardingService::isOnline($this->payment->paymentMethod?->key) && $result->redirectUrl) {
                     $this->js("window.location.href = '" . addslashes($result->redirectUrl) . "'");
                     return;
                 }
@@ -142,7 +142,7 @@ new #[Layout('layouts.guest')] class extends Component
         }
 
         try {
-            $gateway = app(GatewayManager::class)->driver($this->payment->method);
+            $gateway = app(GatewayManager::class)->driver($this->payment->paymentMethod?->key);
             $result = $gateway->charge([
                 'amount' => $this->payment->amount,
                 'currency' => $this->payment->currency,
@@ -162,7 +162,7 @@ new #[Layout('layouts.guest')] class extends Component
                     ]),
                 ]);
 
-                if (OnboardingService::isOnline($this->payment->method) && $result->redirectUrl) {
+                if (OnboardingService::isOnline($this->payment->paymentMethod?->key) && $result->redirectUrl) {
                     $this->js("window.location.href = '" . addslashes($result->redirectUrl) . "'");
                     return;
                 }
@@ -267,7 +267,7 @@ new #[Layout('layouts.guest')] class extends Component
                     <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') ?? __('onboarding.cancel_change_method') }}
                 </button>
                 <button wire:click="cancelPaymentAndChangePlan" class="btn btn-outline-secondary btn-custom">
-                    <i class="bi bi-x-lgms-1"></i>{{ __('onboarding.cancel_payment') }}
+                    <i class="bi bi-x-lg"></i>{{ __('onboarding.cancel_payment') }}
                 </button>
             </div>
 
@@ -300,7 +300,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <button wire:click="retry" class="btn btn-accent btn-custom">
                     <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
                 </button>
-                @if ($payment && OnboardingService::isManual($payment->method))
+                @if ($payment && OnboardingService::isManual($payment->paymentMethod?->key))
                 <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
                     <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
                 </button>
@@ -348,7 +348,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <button wire:click="retry" class="btn btn-accent btn-custom">
                     <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
                 </button>
-                @if ($payment && OnboardingService::isManual($payment->method))
+                @if ($payment && OnboardingService::isManual($payment->paymentMethod?->key))
                 <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
                     <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
                 </button>

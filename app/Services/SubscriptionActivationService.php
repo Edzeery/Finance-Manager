@@ -81,9 +81,10 @@ class SubscriptionActivationService
                         'status' => SubscriptionStatus::Active->value,
                         'starts_at' => now(),
                         'ends_at' => $oldEndsAt ?: $endsAt,
-                        'payment_method' => $payment->method,
+                        'payment_method_id' => $payment->method_id,
+                        'payment_method' => $payment->paymentMethod?->key,
                         'payment_reference' => $payment->reference,
-                        'auto_renew' => ! OnboardingService::isManual($payment->method),
+                        'auto_renew' => ! OnboardingService::isManual($payment->paymentMethod?->key),
                         'plan_price_amount' => $period === 'yearly' ? $plan->yearly_price : $plan->monthly_price,
                     ]);
                     if (! $payment->isCompleted()) {
@@ -123,9 +124,10 @@ class SubscriptionActivationService
                 'status' => SubscriptionStatus::Active->value,
                 'starts_at' => now(),
                 'ends_at' => $endsAt,
-                'payment_method' => $payment->method,
+                'payment_method_id' => $payment->method_id,
+                'payment_method' => $payment->paymentMethod?->key,
                 'payment_reference' => $payment->reference,
-                'auto_renew' => ! OnboardingService::isManual($payment->method),
+                'auto_renew' => ! OnboardingService::isManual($payment->paymentMethod?->key),
                 'billing_period' => $period,
                 'plan_price_amount' => $period === 'yearly' ? $plan->yearly_price : $plan->monthly_price,
             ]);

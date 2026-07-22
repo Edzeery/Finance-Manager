@@ -30,4 +30,10 @@ return [
     'create_first_category' => 'Créer une première catégorie',
     'receipt' => 'Reçu',
     'notes' => 'Notes',
+    'budget_found' => 'Un budget est alloué pour cette catégorie',
+    'no_budget_warning' => 'Cette catégorie n\'a pas de budget. Vous pouvez créer un budget ou enregistrer la dépense comme dette.',
+    'create_budget_now' => 'Créer un Budget',
+    'register_as_debt' => 'Enregistrer comme Dette',
+    'debt_info_message' => 'Cette dépense sera enregistrée comme dette. Entrez le nom du créancier et la date d\'échéance.',
+    'continue_without_budget' => 'Continuer sans budget',
 ];

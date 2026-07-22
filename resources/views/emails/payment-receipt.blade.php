@@ -7,7 +7,7 @@
 
 <x-mail::panel>
 - **{{ __('emails.amount') }}:** {{ number_format($payment->amount, 2) }} {{ $payment->currency }}
-- **{{ __('emails.method') }}:** {{ __('onboarding.method_' . $payment->method) }}
+- **{{ __('emails.method') }}:** {{ __('onboarding.method_' . ($payment->paymentMethod?->key)) }}
 - **{{ __('emails.reference') }}:** {{ $payment->reference ?? __('emails.na') }}
 - **{{ __('super-admin.payment_id') }}:** {{ $payment->uuid ?? __('emails.na') }}
 - **{{ __('emails.date') }}:** {{ $payment->paid_at?->format('Y-m-d H:i') ?? $payment->created_at->format('Y-m-d H:i') }}

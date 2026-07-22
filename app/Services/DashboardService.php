@@ -87,19 +87,29 @@ class DashboardService implements DashboardServiceInterface
             $owed = $debtStats['owed'] ?? null;
             $owing = $debtStats['owing'] ?? null;
 
+            $totalDebtsOwed = $owed ? (float) $owed->total_amount - (float) $owed->paid_amount : 0;
+            $totalDebtsOwing = $owing ? (float) $owing->total_amount - (float) $owing->paid_amount : 0;
+            $totalDebtsPaid = (float) ($owed?->paid_amount ?? 0) + (float) ($owing?->paid_amount ?? 0);
+            $activeDebtsCount = Debt::active()->count();
+            $totalAllDebts = (float) ($owed?->total_amount ?? 0) + (float) ($owing?->total_amount ?? 0);
+            $collectionRate = $totalAllDebts > 0 ? round($totalDebtsPaid / $totalAllDebts * 100, 1) : 0;
+
             return [
                 'totalIncome' => $totalIncomeForPeriod,
                 'totalExpense' => $totalExpenseForPeriod,
                 'netBalance' => $totalIncomeForPeriod - $totalExpenseForPeriod,
                 'incomeChange' => $incomeChange,
                 'expenseChange' => $expenseChange,
-                'totalDebts' => ($owed ? (float) $owed->total_amount - (float) $owed->paid_amount : 0),
+                'totalDebts' => $totalDebtsOwed,
                 'overdueDebts' => $overdueDebts,
                 'totalAssets' => $totalAssets,
                 'totalSavings' => $totalIncomeAllTime - $totalExpenseAllTime,
                 'totalIncomeAllTime' => $totalIncomeAllTime,
                 'totalExpenseAllTime' => $totalExpenseAllTime,
-                'totalDebtsOwing' => ($owing ? (float) $owing->total_amount - (float) $owing->paid_amount : 0),
+                'totalDebtsOwing' => $totalDebtsOwing,
+                'totalDebtsPaid' => $totalDebtsPaid,
+                'activeDebtsCount' => $activeDebtsCount,
+                'collectionRate' => $collectionRate,
             ];
         });
 

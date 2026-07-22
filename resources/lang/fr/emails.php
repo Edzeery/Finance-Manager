@@ -77,4 +77,7 @@ return [
 
     'subscription_downgraded_subject' => 'Abonnement rétrogradé — :app',
     'subscription_downgraded_line' => 'Votre abonnement sera rétrogradé de :old_plan à :new_plan à la fin de votre période de facturation.',
+
+    'payment_refunded_subject' => 'Paiement remboursé — :app',
+    'payment_refunded_line' => 'Votre paiement a été remboursé. Le montant sera crédité sur votre moyen de paiement d\'origine.',
 ];

@@ -31,4 +31,7 @@ return [
     'no_budgets' => 'Aucun budget',
     'create_first_budget' => 'Créer un premier budget',
     'notes' => 'Notes',
+    'with_budget' => ':count catégories avec budget',
+    'without_budget' => ':count catégories sans budget',
+    'total_categories' => ':count catégories au total',
 ];

@@ -28,6 +28,7 @@ return new class extends Migration
             $table->timestamp('two_factor_email_code_at')->nullable();
             $table->timestamp('onboarding_completed_at')->nullable();
             $table->timestamp('plan_confirmed_at')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
 

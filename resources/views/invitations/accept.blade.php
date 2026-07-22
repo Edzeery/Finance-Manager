@@ -44,7 +44,7 @@
                 <form action="{{ route('invitations.do-accept', $invitation) }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-accent btn-custom w-100" style="padding:12px;font-size:15px;">
-                        <i class="bi bi-check-lgms-1"></i>{{ __('workspace.accept_invitation') }}
+                        <i class="bi bi-check-lg ms-1"></i>{{ __('workspace.accept_invitation') }}
                     </button>
                 </form>
                 <form action="{{ route('invitations.do-decline', $invitation) }}" method="POST">

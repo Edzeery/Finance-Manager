@@ -51,7 +51,7 @@
             <x-per-page :current="request('per_page', 15)" :route="route('income.index')" :preserve="['category','type','date_from','date_to','search','tab']" />
             @if($tab !== 'trashed' && $canCreate)
                 <a href="{{ route('income.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lgms-1"></i>{{ __('income.add') }}
+                    <i class="bi bi-plus-lg"></i>{{ __('income.add') }}
                 </a>
             @endif
         </div>

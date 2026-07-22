@@ -45,6 +45,8 @@ class ZakatControllerTest extends TestCase
 
     public function test_calculate_returns_results(): void
     {
+        $this->user->update(['zakat_start_date' => now()->subYear()]);
+
         $data = [
             'gold_price' => 100,
             'silver_price' => 5,
@@ -67,6 +69,8 @@ class ZakatControllerTest extends TestCase
 
     public function test_calculate_with_save_creates_record(): void
     {
+        $this->user->update(['zakat_start_date' => now()->subYear()]);
+
         $data = [
             'gold_price' => 100,
             'silver_price' => 5,

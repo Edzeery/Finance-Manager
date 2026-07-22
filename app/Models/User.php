@@ -20,11 +20,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Services\HijriDateService;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'locale', 'theme', 'currency', 'timezone', 'current_workspace_id', 'onboarding_completed_at', 'plan_confirmed_at', 'pending_plan_id'])]
+#[Fillable(['name', 'email', 'password', 'locale', 'theme', 'currency', 'timezone', 'current_workspace_id', 'onboarding_completed_at', 'plan_confirmed_at', 'pending_plan_id', 'zakat_start_date', 'calendar_type', 'last_zakat_date'])]
 #[Hidden(['password', 'remember_token', 'google2fa_secret', 'two_factor_recovery_codes', 'two_factor_email_code'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -38,6 +39,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'onboarding_completed_at' => 'datetime',
             'plan_confirmed_at' => 'datetime',
+            'zakat_start_date' => 'date',
+            'last_zakat_date' => 'date',
             'google2fa_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:array',
             'two_factor_confirmed_at' => 'datetime',
@@ -264,7 +267,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return Payment::where('user_id', $this->id)
             ->where('status', PaymentStatus::CheckoutPending->value)
-            ->whereIn('method', OnboardingService::manualMethods())
+            ->whereHas('paymentMethod', fn ($q) => $q->whereIn('key', OnboardingService::manualMethods()))
             ->whereHas('verification', fn ($q) => $q->where('status', PaymentVerificationStatus::Pending->value))
             ->exists();
     }
@@ -538,5 +541,85 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification(): void
     {
         $this->notify((new CustomVerifyEmail)->locale($this->locale));
+    }
+
+    // ---- Zakat Haul ----
+
+    public function zakatHaulDays(): int
+    {
+        return $this->calendar_type === 'hijri' ? 354 : 365;
+    }
+
+    public function nextZakatDate(): ?\Illuminate\Support\Carbon
+    {
+        $baseDate = $this->last_zakat_date ?? $this->zakat_start_date;
+
+        if (! $baseDate) {
+            return null;
+        }
+
+        return $baseDate->copy()->addDays($this->zakatHaulDays());
+    }
+
+    public function isZakatDue(): bool
+    {
+        $nextDate = $this->nextZakatDate();
+
+        if (! $nextDate) {
+            return false;
+        }
+
+        return $nextDate->isPast();
+    }
+
+    public function daysUntilNextZakat(): ?int
+    {
+        $nextDate = $this->nextZakatDate();
+
+        if (! $nextDate) {
+            return null;
+        }
+
+        $days = (int) now()->diffInDays($nextDate, absolute: false);
+
+        return max($days, 0);
+    }
+
+    public function hasZakatHaulStarted(): bool
+    {
+        return $this->zakat_start_date !== null;
+    }
+
+    public function getZakatStartDateHijri(): ?array
+    {
+        if (! $this->zakat_start_date) {
+            return null;
+        }
+
+        return HijriDateService::gregorianToHijri($this->zakat_start_date);
+    }
+
+    public function getZakatStartDateDisplay(?string $locale = null): ?string
+    {
+        if (! $this->zakat_start_date) {
+            return null;
+        }
+
+        $locale = $locale ?? app()->getLocale();
+
+        if ($this->calendar_type === 'hijri') {
+            $hijri = $this->getZakatStartDateHijri();
+
+            return HijriDateService::formatHijriDate($hijri, $locale);
+        }
+
+        return $this->zakat_start_date->format('Y/m/d');
+    }
+
+    public function getZakatStartHijriYear(): ?int
+    {
+        $hijri = $this->getZakatStartDateHijri();
+
+        return $hijri ? $hijri['year'] : null;
     }
 }

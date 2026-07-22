@@ -121,7 +121,6 @@
 @endpush
 @endonce
 
-@once
 @push('scripts')
 <script>
 if (typeof iconPicker_{{ $id }} !== 'function') {
@@ -266,4 +265,3 @@ if (typeof iconPicker_{{ $id }} !== 'function') {
 }
 </script>
 @endpush
-@endonce

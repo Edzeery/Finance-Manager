@@ -130,7 +130,7 @@ class GatewayTest extends TestCase
 
     public function test_baridimob_charge_success(): void
     {
-        PaymentMethod::create([
+        PaymentMethod::updateOrCreate(['key' => 'baridimob'], [
             'key' => 'baridimob',
             'name' => 'BaridiMob',
             'type' => 'manual',
@@ -263,7 +263,7 @@ class GatewayTest extends TestCase
 
     public function test_wise_manual_charge_success(): void
     {
-        PaymentMethod::create([
+        PaymentMethod::updateOrCreate(['key' => 'wise_manual'], [
             'key' => 'wise_manual',
             'name' => 'Wise (Manual)',
             'type' => 'manual',

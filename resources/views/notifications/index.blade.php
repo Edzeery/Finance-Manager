@@ -23,6 +23,7 @@
                             'goal_achieved', 'goal_milestone' => ['bg' => 'rgba(34,197,94,0.1)', 'color' => 'var(--success)', 'icon' => 'bi-flag'],
                             'goal_deadline' => ['bg' => 'rgba(59,130,246,0.1)', 'color' => 'var(--info)', 'icon' => 'bi-clock'],
                             'zakat_reminder' => ['bg' => 'rgba(139,92,246,0.1)', 'color' => 'var(--sa-indigo)', 'icon' => 'bi-heart'],
+                            'zakat_approaching' => ['bg' => 'rgba(99,102,241,0.1)', 'color' => '#6366F1', 'icon' => 'bi-hourglass-split'],
                             'role_changed' => ['bg' => 'rgba(245,158,11,0.1)', 'color' => 'var(--warning)', 'icon' => 'bi-shield-check'],
                             default => ['bg' => 'rgba(59,130,246,0.1)', 'color' => 'var(--info)', 'icon' => 'bi-info-circle'],
                         };

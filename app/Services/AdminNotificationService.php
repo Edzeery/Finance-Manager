@@ -42,6 +42,8 @@ class AdminNotificationService
 
     public function newPaymentReceived(Payment $payment, User $user): AdminNotification
     {
+        $methodKey = $payment->paymentMethod?->key;
+
         return $this->create(
             'new_payment',
             [
@@ -50,11 +52,11 @@ class AdminNotificationService
                 'fr' => 'Nouveau paiement reçu',
             ],
             [
-                'en' => "Payment of \${$payment->amount} from {$user->name} via {$payment->method}.",
-                'ar' => "دفعة بقيمة \${$payment->amount} من {$user->name} عبر {$payment->method}.",
-                'fr' => "Paiement de \${$payment->amount} de {$user->name} via {$payment->method}.",
+                'en' => "Payment of \${$payment->amount} from {$user->name} via {$methodKey}.",
+                'ar' => "دفعة بقيمة \${$payment->amount} من {$user->name} عبر {$methodKey}.",
+                'fr' => "Paiement de \${$payment->amount} de {$user->name} via {$methodKey}.",
             ],
-            ['payment_id' => $payment->id, 'amount' => $payment->amount, 'method' => $payment->method, 'user_id' => $user->id]
+            ['payment_id' => $payment->id, 'amount' => $payment->amount, 'method' => $methodKey, 'user_id' => $user->id]
         );
     }
 

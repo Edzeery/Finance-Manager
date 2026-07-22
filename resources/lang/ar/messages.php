@@ -9,6 +9,7 @@ return [
     'income_deleted' => 'تم حذف الدخل بنجاح',
     'income_archived' => 'تم تغيير حالة الأرشفة بنجاح',
     'expense_created' => 'تم إضافة المصروف بنجاح',
+    'expense_created_as_debt' => 'تم إضافة المصروف كدين بنجاح',
     'expense_updated' => 'تم تحديث المصروف بنجاح',
     'expense_deleted' => 'تم حذف المصروف بنجاح',
     'debt_created' => 'تم إضافة الدين بنجاح',

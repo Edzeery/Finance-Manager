@@ -71,10 +71,9 @@ class NoestPaymentMethodTest extends TestCase
 
         $gateway = app(NoestGateway::class);
 
-        $payment = Payment::factory()->create([
+        $payment = Payment::factory()->forMethod('noest')->create([
             'workspace_id' => $this->workspace->id,
             'user_id' => $this->user->id,
-            'method' => 'noest',
             'reference' => 'NST-ABC123',
             'amount' => 5000,
             'currency' => 'DZD',
@@ -121,10 +120,9 @@ class NoestPaymentMethodTest extends TestCase
 
         $gateway = app(NoestGateway::class);
 
-        $payment = Payment::factory()->create([
+        $payment = Payment::factory()->forMethod('noest')->create([
             'workspace_id' => $this->workspace->id,
             'user_id' => $this->user->id,
-            'method' => 'noest',
             'status' => PaymentStatus::CheckoutPending,
         ]);
 
@@ -203,7 +201,7 @@ class NoestPaymentMethodTest extends TestCase
         $this->assertNotNull($payment);
         $payment->refresh();
 
-        $this->assertEquals('noest', $payment->method);
+        $this->assertEquals('noest', $payment->paymentMethod?->key);
         $this->assertEquals(PaymentStatus::CheckoutPending, $payment->status);
         $this->assertNotNull($payment->transaction_id);
         $this->assertEquals('NST-FLOW-001', $payment->transaction_id);

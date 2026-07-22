@@ -68,6 +68,12 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
         ->middleware('permission:subscription.update')->name('subscriptions.toggle-renew');
     Route::post('/subscriptions/{id}/change-plan', [SubscriptionController::class, 'changePlan'])
         ->middleware('permission:subscription.update')->name('subscriptions.change-plan');
+    Route::post('/subscriptions/{id}/update-status', [SubscriptionController::class, 'updateStatus'])
+        ->middleware('permission:subscription.update')->name('subscriptions.update-status');
+    Route::post('/subscriptions/{id}/toggle-renew-ajax', [SubscriptionController::class, 'updateAutoRenew'])
+        ->middleware('permission:subscription.update')->name('subscriptions.toggle-renew-ajax');
+    Route::post('/subscriptions/{id}/update-plan', [SubscriptionController::class, 'updatePlan'])
+        ->middleware('permission:subscription.update')->name('subscriptions.update-plan');
     Route::get('/payments', [PaymentController::class, 'index'])
         ->middleware('permission:payment.view')->name('payments.index');
     Route::post('/payments/{id}/approve', [PaymentController::class, 'approve'])
@@ -93,6 +99,8 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
             ->middleware('permission:plan.update')->name('update');
         Route::delete('/{plan}', [SubscriptionPlanController::class, 'destroy'])
             ->middleware('permission:plan.delete')->name('destroy');
+        Route::post('/{plan}/toggle-status', [SubscriptionPlanController::class, 'toggleStatus'])
+            ->middleware('permission:plan.update')->name('toggle-status');
 
         // Plan Prices (nested under plans)
         Route::prefix('{plan}/prices')->name('prices.')->group(function () {
@@ -108,6 +116,8 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
                 ->middleware('permission:price.update')->name('update');
             Route::delete('/{price}', [PlanPriceController::class, 'destroy'])
                 ->middleware('permission:price.delete')->name('destroy');
+            Route::post('/{price}/toggle-status', [PlanPriceController::class, 'toggleStatus'])
+                ->middleware('permission:price.update')->name('toggle-status');
         });
     });
 
@@ -124,6 +134,8 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
             ->middleware('permission:feature.update')->name('update');
         Route::delete('/{feature}', [PlanFeatureController::class, 'destroy'])
             ->middleware('permission:feature.delete')->name('destroy');
+        Route::post('/{feature}/toggle-core', [PlanFeatureController::class, 'toggleCore'])
+            ->middleware('permission:feature.update')->name('toggle-core');
     });
     Route::prefix('coupons')->name('coupons.')->group(function () {
         Route::get('/', [CouponController::class, 'index'])
@@ -185,6 +197,8 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
             ->middleware('permission:tax-rate.update|platform-setting.general')->name('update');
         Route::delete('/{taxRate}', [TaxRateController::class, 'destroy'])
             ->middleware('permission:tax-rate.delete|platform-setting.general')->name('destroy');
+        Route::post('/{taxRate}/toggle-status', [TaxRateController::class, 'toggleStatus'])
+            ->middleware('permission:tax-rate.update|platform-setting.general')->name('toggle-status');
     });
 
     Route::get('/roles', [RoleController::class, 'index'])

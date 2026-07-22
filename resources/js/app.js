@@ -1,11 +1,13 @@
-import './bootstrap';
+﻿import './bootstrap';
 import * as bootstrap from 'bootstrap';
 import Chart from 'chart.js/auto';
 import ApexCharts from 'apexcharts';
+import { toHijri, toGregorian, HIJRI_MONTHS_AR, HIJRI_MONTHS_EN, hijriMonthDays } from 'hijri-utils';
 
 window.bootstrap = bootstrap;
 window.Chart = Chart;
 window.ApexCharts = ApexCharts;
+window.HijriUtils = { toHijri, toGregorian, HIJRI_MONTHS_AR, HIJRI_MONTHS_EN, hijriMonthDays };
 
 // ===== Alpine Components & Stores =====
 document.addEventListener('alpine:init', () => {
@@ -155,6 +157,91 @@ document.addEventListener('alpine:init', () => {
                 localStorage.setItem('sa_sidebar_collapsed', this.sidebarCollapsed);
             }
         }
+    });
+
+    Alpine.data('hijriDatePicker', function (options) {
+        return {
+            calendarType: options.calendarType || 'hijri',
+            hijriYear: options.hijriYear || '',
+            hijriMonth: options.hijriMonth || '',
+            hijriDay: options.hijriDay || '',
+            gregorianDate: options.gregorianDate || '',
+            locale: options.locale || 'ar',
+
+            init() {
+                if (this.calendarType === 'hijri' && this.hijriYear && this.hijriMonth && this.hijriDay) {
+                    this.updateGregorian();
+                }
+            },
+
+            getMonthName(monthNum) {
+                if (!monthNum) return '';
+                var months = this.locale === 'ar' ? window.HijriUtils.HIJRI_MONTHS_AR : window.HijriUtils.HIJRI_MONTHS_EN;
+                return months[parseInt(monthNum) - 1] || '';
+            },
+
+            get displayMonth() {
+                return this.getMonthName(this.hijriMonth);
+            },
+
+            onYearInput(val) {
+                var cleaned = val.replace(/[^\d]/g, '');
+                if (cleaned.length > 4) cleaned = cleaned.slice(0, 4);
+                this.hijriYear = cleaned;
+                if (cleaned.length === 4 && this.hijriMonth && this.hijriDay) {
+                    this.updateGregorian();
+                }
+            },
+
+            onMonthSelect(val) {
+                this.hijriMonth = val;
+                if (this.hijriYear && this.hijriDay) {
+                    this.updateGregorian();
+                }
+            },
+
+            onDayInput(val) {
+                var cleaned = val.replace(/[^\d]/g, '');
+                if (cleaned.length > 2) cleaned = cleaned.slice(0, 2);
+                var num = parseInt(cleaned);
+                if (num > 30) cleaned = '30';
+                this.hijriDay = cleaned;
+                if (cleaned && parseInt(cleaned) >= 1 && this.hijriYear && this.hijriMonth) {
+                    this.updateGregorian();
+                }
+            },
+
+            updateGregorian() {
+                if (this.calendarType !== 'hijri') return;
+                var y = parseInt(this.hijriYear);
+                var m = parseInt(this.hijriMonth);
+                var d = parseInt(this.hijriDay);
+                if (!y || !m || !d) { this.gregorianDate = ''; return; }
+                var maxDay = window.HijriUtils.hijriMonthDays(y, m);
+                if (d > maxDay) { this.hijriDay = String(maxDay); d = maxDay; }
+                var greg = window.HijriUtils.toGregorian(y, m, d);
+                var gy = greg.getFullYear();
+                var gm = String(greg.getMonth() + 1).padStart(2, '0');
+                var gd = String(greg.getDate()).padStart(2, '0');
+                this.gregorianDate = gy + '-' + gm + '-' + gd;
+            },
+
+            onGregorianChange() {
+                if (this.calendarType !== 'gregorian') return;
+                this.updateHijriFromGregorian();
+            },
+
+            updateHijriFromGregorian() {
+                if (!this.gregorianDate) return;
+                var parts = this.gregorianDate.split('-');
+                if (parts.length !== 3) return;
+                var greg = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                var hijri = window.HijriUtils.toHijri(greg);
+                this.hijriYear = String(hijri.year);
+                this.hijriMonth = String(hijri.month);
+                this.hijriDay = String(hijri.day);
+            }
+        };
     });
 
     Alpine.store('theme', {
@@ -598,7 +685,7 @@ window.addEventListener('unhandledrejection', (event) => {
     }
 });
 
-// ===== FAQ Accordion (event delegation — no Alpine dependency) =====
+// ===== FAQ Accordion (event delegation ظ¤ no Alpine dependency) =====
 document.addEventListener('click', function(e) {
     var btn = e.target.closest('.faq-question');
     if (btn) {

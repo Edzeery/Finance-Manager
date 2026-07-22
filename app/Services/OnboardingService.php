@@ -6,6 +6,7 @@ use App\Enums\PaymentMethodType;
 use App\Enums\PaymentStatus;
 use App\Enums\PaymentVerificationStatus;
 use App\Enums\SubscriptionStatus;
+use App\Events\PaymentCompleted;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Subscription;
@@ -88,6 +89,7 @@ class OnboardingService
                 'status' => SubscriptionStatus::Active->value,
                 'starts_at' => now(),
                 'ends_at' => now()->addYears(10),
+                'payment_method_id' => null,
                 'payment_method' => 'free',
                 'billing_period' => 'monthly',
                 'plan_price_amount' => 0,
@@ -131,6 +133,7 @@ class OnboardingService
                 'starts_at' => now(),
                 'ends_at' => $trialEndsAt,
                 'trial_ends_at' => $trialEndsAt,
+                'payment_method_id' => null,
                 'payment_method' => 'free',
                 'billing_period' => 'monthly',
                 'plan_price_amount' => 0,
@@ -246,6 +249,7 @@ class OnboardingService
                     $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
                     $user->markPlanConfirmed();
                     session()->put('pending_payment_id', $payment->id);
+                    PaymentCompleted::dispatch($payment->fresh());
 
                     return $payment;
                 }
@@ -281,6 +285,7 @@ class OnboardingService
                     $this->transitionValidator->transition($payment, PaymentStatus::CheckoutPaid);
                     $this->subscriptionService->activateFromPayment($payment, $plan, $billingPeriod);
                     $user->markPlanConfirmed();
+                    PaymentCompleted::dispatch($payment->fresh());
                 }
 
                 session()->put('pending_payment_id', $payment->id);

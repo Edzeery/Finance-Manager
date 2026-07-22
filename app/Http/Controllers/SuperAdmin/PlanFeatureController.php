@@ -121,4 +121,11 @@ class PlanFeatureController extends Controller
         return redirect()->route('super.admin.features.index')
             ->with('success', __('super-admin.feature_deleted'));
     }
+
+    public function toggleCore(PlanFeature $feature)
+    {
+        $feature->update(['is_core' => ! $feature->is_core]);
+
+        return back()->with('success', __('messages.subscription_updated'));
+    }
 }

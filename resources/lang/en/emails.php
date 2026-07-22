@@ -77,4 +77,7 @@ return [
 
     'subscription_downgraded_subject' => 'Subscription Downgraded — :app',
     'subscription_downgraded_line' => 'Your subscription will be downgraded from :old_plan to :new_plan at the end of your billing period.',
+
+    'payment_refunded_subject' => 'Payment Refunded — :app',
+    'payment_refunded_line' => 'Your payment has been refunded. The refund amount will be credited to your original payment method.',
 ];

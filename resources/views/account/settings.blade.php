@@ -149,7 +149,119 @@
                         </div>
 
                         <button type="submit" class="btn btn-accent btn-custom">
-                            <i class="bi bi-check-lgms-1 ms-1 "></i>{{ __('general.save') }}
+                            <i class="bi bi-check-lg ms-1 ms-1 "></i>{{ __('general.save') }}
+                        </button>
+                    </form>
+                </div>
+
+                {{-- Zakat Haul Settings --}}
+                <div class="settings-card mt-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle"
+                            style="width:36px;height:36px;background:rgba(99,102,241,0.1);flex-shrink:0;">
+                            <i class="bi bi-calendar-event" style="color:#6366F1;font-size:16px; ms-1 "></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0" style="font-weight:600;font-size:15px;">{{ __('zakat.haul_settings') }}</h5>
+                            <p class="mb-0" style="font-size:13px;color:var(--text-muted);">{{ __('zakat.zakat_haul') }}</p>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ route('zakat.haul-settings') }}"
+                        x-data="hijriDatePicker({
+                            calendarType: '{{ ($user->calendar_type ?? 'hijri') }}',
+                            gregorianDate: '{{ $user->zakat_start_date?->format('Y-m-d') ?? '' }}',
+                            hijriYear: '{{ $user->getZakatStartDateHijri()['year'] ?? '' }}',
+                            hijriMonth: '{{ $user->getZakatStartDateHijri()['month'] ?? '' }}',
+                            hijriDay: '{{ $user->getZakatStartDateHijri()['day'] ?? '' }}',
+                            locale: '{{ app()->getLocale() }}'
+                        })">
+                        @csrf
+                        @method('PUT')
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label-custom">{{ __('zakat.calendar_type') }} <span class="text-danger">*</span></label>
+                                <select name="calendar_type" class="form-custom" required x-model="calendarType" @change="$dispatch('calendar-type-changed', calendarType)">
+                                    <option value="hijri">{{ __('zakat.hijri') }} (354 {{ __('zakat.days_per_year') }})</option>
+                                    <option value="gregorian">{{ __('zakat.gregorian') }} (365 {{ __('zakat.days_per_year') }})</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Hijri Date Input --}}
+                        <div class="mb-3" x-show="calendarType === 'hijri'" x-transition>
+                            <label class="form-label-custom">{{ __('zakat.zakat_start_date') }} <span class="text-danger">*</span></label>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <label class="form-label-custom" style="font-size:11px">{{ __('zakat.hijri_year') }}</label>
+                                    <input type="text" inputmode="numeric" pattern="\d{4}" class="form-custom" placeholder="1446"
+                                        :value="hijriYear" @input="onYearInput($event.target.value)" list="hijri-years-list-settings"
+                                        maxlength="4" required>
+                                    <datalist id="hijri-years-list-settings">
+                                        @for($y = 1500; $y >= 1300; $y--)
+                                            <option value="{{ $y }}">{{ $y }}</option>
+                                        @endfor
+                                    </datalist>
+                                    <input type="hidden" name="zakat_start_date_hijri_year" :value="hijriYear">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label-custom" style="font-size:11px">{{ __('zakat.hijri_month') }}</label>
+                                    <select class="form-custom" x-model="hijriMonth" @change="updateGregorian()" required>
+                                        <option value="">{{ __('zakat.hijri_month') }}</option>
+                                        @php
+                                            $arMonths = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+                                            $frMonths = ['Mouharram','Safar','Rabia al-Aoual','Rabia al-Thani','Joumada al-Oula','Joumada al-Thani','Rajab','Cha\'ban','Ramadan','Chawwal','Dhou al-Qa\'da','Dhou al-Hijja'];
+                                            $enMonths = ['Muharram','Safar','Rabi al-Awwal','Rabi al-Thani','Jumada al-Ula','Jumada al-Thani','Rajab','Shaban','Ramadan','Shawwal','Dhul Qadah','Dhul Hijjah'];
+                                            $displayMonths = app()->getLocale() === 'ar' ? $arMonths : (app()->getLocale() === 'fr' ? $frMonths : $enMonths);
+                                        @endphp
+                                        @foreach($displayMonths as $i => $name)
+                                            <option value="{{ $i + 1 }}">{{ $name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <input type="hidden" name="zakat_start_date_hijri_month" :value="hijriMonth">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label-custom" style="font-size:11px">{{ __('zakat.hijri_day') }}</label>
+                                    <input type="text" inputmode="numeric" pattern="\d{1,2}" class="form-custom" placeholder="15"
+                                        :value="hijriDay" @input="onDayInput($event.target.value)" list="hijri-days-list-settings"
+                                        maxlength="2" required>
+                                    <datalist id="hijri-days-list-settings">
+                                        @for($d = 1; $d <= 30; $d++)
+                                            <option value="{{ $d }}">{{ $d }}</option>
+                                        @endfor
+                                    </datalist>
+                                    <input type="hidden" name="zakat_start_date_hijri_day" :value="hijriDay">
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-1" style="font-size:11px" x-show="gregorianDate">
+                                <i class="bi bi-arrow-left-right"></i>
+                                {{ __('zakat.gregorian_equivalent') }}: <span x-text="gregorianDate"></span>
+                            </small>
+                        </div>
+
+                        {{-- Gregorian Date Input --}}
+                        <div class="mb-3" x-show="calendarType === 'gregorian'" x-transition>
+                            <label class="form-label-custom">{{ __('zakat.zakat_start_date') }} <span class="text-danger">*</span></label>
+                            <input type="date" name="zakat_start_date" class="form-custom"
+                                x-model="gregorianDate"
+                                @change="onGregorianChange()"
+                                max="{{ date('Y-m-d') }}" required>
+                        </div>
+
+                        @if($user->hasZakatHaulStarted())
+                            <div class="mb-3 p-2" style="border-radius:6px; background:rgba(99,102,241,0.06); font-size:12px">
+                                <span style="color:var(--text-muted)">{{ __('zakat.next_zakat_date') }}:</span>
+                                <span class="fw-bold">{{ $user->nextZakatDate()?->format('Y/m/d') ?? '-' }}</span>
+                                @if(! $user->isZakatDue())
+                                    <span style="color:var(--text-muted)"> — {{ __('zakat.days_left', ['days' => $user->daysUntilNextZakat()]) }}</span>
+                                @else
+                                    <span style="color:var(--success)"> — {{ __('zakat.haul_complete') }}</span>
+                                @endif
+                            </div>
+                        @endif
+
+                        <button type="submit" class="btn btn-accent btn-custom">
+                            <i class="bi bi-check-lg ms-1 ms-1 "></i>{{ __('general.save') }}
                         </button>
                     </form>
                 </div>
@@ -395,6 +507,7 @@
                                         'goal_achieved', 'goal_milestone' => 'bi-flag text-success',
                                         'goal_deadline' => 'bi-clock text-info',
                                         'zakat_reminder' => 'bi-heart text-primary',
+                                        'zakat_approaching' => 'bi-hourglass-split text-primary',
                                         'role_changed' => 'bi-shield-check text-warning',
                                         default => 'bi-info-circle text-info',
                                     };

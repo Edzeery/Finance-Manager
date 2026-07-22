@@ -94,7 +94,7 @@ class EnsureOnboardingCompleted
                 return redirect()->route('onboarding.manual-proof', $pendingPayment);
             }
 
-            if ($pendingPayment && OnboardingService::isManual($pendingPayment->method)) {
+            if ($pendingPayment && OnboardingService::isManual($pendingPayment->paymentMethod?->key)) {
                 return redirect()->route('onboarding.manual-proof', $pendingPayment);
             }
 

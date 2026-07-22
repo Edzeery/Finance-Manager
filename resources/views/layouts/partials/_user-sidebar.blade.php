@@ -102,10 +102,19 @@
                 </a>
                 @endif
                 @if($cInc)
-                <a href="{{ route('income.index') }}" class="sidebar-nav-item {{ request()->routeIs('income.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.income') }}">
-                    <i class="bi bi-cash-stack"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.income') }}@if(!$feat('income_expense'))<x-status-badge domain="general" status="premium" set="bi" /> @endif</span>
-                </a>
+                <div x-data="{ incOpen: {{ request()->routeIs('income.index') || request()->routeIs('income.categories.*') ? 'true' : 'false' }} }">
+                    <a href="{{ route('income.index') }}" class="sidebar-nav-item sidebar-nav-parent {{ request()->routeIs('income.index') && !request()->routeIs('income.categories.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.income') }}">
+                        <i class="bi bi-cash-stack"></i>
+                        <span x-show="!collapsed" x-cloak>{{ __('general.income') }}@if(!$feat('income_expense'))<x-status-badge domain="general" status="premium" set="bi" /> @endif</span>
+                        <i class="bi bi-chevron-down nav-parent-chevron" :class="incOpen ? '' : 'collapsed'" x-show="!collapsed" x-cloak @click.prevent.stop="incOpen = !incOpen"></i>
+                    </a>
+                    <div x-show="incOpen" x-collapse style="display: none;">
+                        <a href="{{ route('income.categories.index') }}" class="sidebar-nav-item {{ request()->routeIs('income.categories.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('income.categories') }}">
+                            <i class="bi bi-tags"></i>
+                            <span x-show="!collapsed" x-cloak>{{ __('income.categories') }}</span>
+                        </a>
+                    </div>
+                </div>
                 @endif
                 @if($cExp)
                 <div x-data="{ expOpen: {{ request()->routeIs('expense.index') || request()->routeIs('expense.categories.*') ? 'true' : 'false' }} }">
@@ -140,10 +149,19 @@
             </button>
             <div x-show="open" style="display:none">
                 @if($cBud)
-                <a href="{{ route('budget.index') }}" class="sidebar-nav-item {{ request()->routeIs('budget.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.budget') }}">
-                    <i class="bi bi-calculator-fill"></i>
-                    <span x-show="!collapsed" x-cloak>{{ __('general.budget') }}@if(!$feat('budget')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
-                </a>
+                <div x-data="{ budOpen: {{ request()->routeIs('budget.*') ? 'true' : 'false' }} }">
+                    <a href="{{ route('budget.index') }}" class="sidebar-nav-item sidebar-nav-parent {{ request()->routeIs('budget.index') && !request()->routeIs('budget.categories') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.budget') }}">
+                        <i class="bi bi-calculator-fill"></i>
+                        <span x-show="!collapsed" x-cloak>{{ __('general.budget') }}@if(!$feat('budget')) <x-status-badge domain="general" status="premium" set="bi" />@endif</span>
+                        <i class="bi bi-chevron-down nav-parent-chevron" :class="budOpen ? '' : 'collapsed'" x-show="!collapsed" x-cloak @click.prevent.stop="budOpen = !budOpen"></i>
+                    </a>
+                    <div x-show="budOpen" x-collapse style="display: none;">
+                        <a href="{{ route('budget.categories') }}" class="sidebar-nav-item {{ request()->routeIs('budget.categories') ? 'active' : '' }}" wire:navigate data-label="{{ __('budget.categories') }}">
+                            <i class="bi bi-tags"></i>
+                            <span x-show="!collapsed" x-cloak>{{ __('budget.categories') }}</span>
+                        </a>
+                    </div>
+                </div>
                 @endif
                 @if($cGoal)
                 <a href="{{ route('goal.index') }}" class="sidebar-nav-item {{ request()->routeIs('goal.*') ? 'active' : '' }}" wire:navigate data-label="{{ __('general.goal') }}">

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Debt;
+use App\Services\HijriDateService;
 use Illuminate\Support\Collection;
 
 class ZakatCalculationService
@@ -207,5 +208,50 @@ class ZakatCalculationService
             ->owing()
             ->active()
             ->sum(\DB::raw('GREATEST(total_amount - paid_amount, 0)'));
+    }
+
+    public function getHaulStatus(): array
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return [
+                'is_due' => false,
+                'days_remaining' => null,
+                'next_date' => null,
+                'next_date_hijri' => null,
+                'haul_days' => null,
+                'has_start_date' => false,
+                'calendar_type' => 'hijri',
+                'start_date' => null,
+                'start_date_hijri' => null,
+                'start_date_gregorian' => null,
+                'last_zakat_date' => null,
+            ];
+        }
+
+        $startHijri = $user->getZakatStartDateHijri();
+        $nextDate = $user->nextZakatDate();
+
+        $nextHijri = null;
+        if ($nextDate) {
+            $nextHijri = HijriDateService::formatHijriDate(
+                HijriDateService::gregorianToHijri($nextDate),
+                app()->getLocale()
+            );
+        }
+
+        return [
+            'is_due' => $user->isZakatDue(),
+            'days_remaining' => $user->daysUntilNextZakat(),
+            'next_date' => $nextDate?->format('Y/m/d'),
+            'next_date_hijri' => $nextHijri,
+            'haul_days' => $user->zakatHaulDays(),
+            'has_start_date' => $user->hasZakatHaulStarted(),
+            'calendar_type' => $user->calendar_type,
+            'start_date' => $user->getZakatStartDateDisplay(),
+            'start_date_hijri' => $startHijri ? HijriDateService::formatHijriShort($startHijri) : null,
+            'start_date_gregorian' => $user->zakat_start_date?->format('Y-m-d'),
+            'last_zakat_date' => $user->last_zakat_date?->format('Y/m/d'),
+        ];
     }
 }

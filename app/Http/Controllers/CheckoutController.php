@@ -23,7 +23,7 @@ class CheckoutController extends Controller
                 ->with('info', __('payment.already_processed'));
         }
 
-        $gateway = $this->gatewayManager->driver($payment->method);
+        $gateway = $this->gatewayManager->driver($payment->paymentMethod?->key);
 
         if (! $gateway->isOnline()) {
             return redirect()->route('onboarding.manual-proof', ['payment' => $payment->id]);

@@ -30,4 +30,10 @@ return [
     'create_first_category' => 'Create first category',
     'receipt' => 'Receipt',
     'notes' => 'Notes',
+    'budget_found' => 'A budget is allocated for this category',
+    'no_budget_warning' => 'This category has no budget. You can create a budget or register the expense as a debt.',
+    'create_budget_now' => 'Create Budget Now',
+    'register_as_debt' => 'Register as Debt',
+    'debt_info_message' => 'This expense will be recorded as a debt. Enter the counterparty name and due date.',
+    'continue_without_budget' => 'Continue without budget',
 ];

@@ -220,10 +220,10 @@
                         {{-- ═══ Actions ═══ --}}
                         <div class="d-flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border)">
                             <button type="submit" class="btn btn-accent btn-custom">
-                                <i class="bi bi-check-lgms-1"></i>{{ __('general.save') }}
+                                <i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}
                             </button>
                             <a href="{{ route('asset.index') }}" class="btn btn-outline-secondary btn-custom">
-                                <i class="bi bi-x-lgms-1"></i>{{ __('general.cancel') }}
+                                <i class="bi bi-x-lg"></i>{{ __('general.cancel') }}
                             </a>
                         </div>
                     </form>
@@ -234,9 +234,14 @@
 
     @push('scripts')
     <script>
+        (function() {
         const karatPurity = @json($karatPurity);
         const currencySymbol = @json(config('finance.currency_symbol'));
         const assetTypes = @json($assetTypeMap);
+
+        window.toggleAssetFields = toggleAssetFields;
+        window.updateKaratBadge = updateKaratBadge;
+        window.calculateTotal = calculateTotal;
 
         function toggleAssetFields() {
             var type = document.getElementById('assetType')?.value;
@@ -315,6 +320,7 @@
         }
 
         toggleAssetFields();
+        })();
     </script>
     @endpush
 </x-app-layout>

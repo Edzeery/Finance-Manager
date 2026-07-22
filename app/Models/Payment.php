@@ -17,8 +17,9 @@ class Payment extends Model
     use BelongsToWorkspace, HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'uuid', 'workspace_id', 'subscription_id', 'user_id', 'coupon_id',
-        'method', 'amount', 'currency', 'status',
+        'uuid', 'workspace_id', 'subscription_id', 'user_id', 'coupon_id','method_id',
+        'refunded_by', 'refunded_at', 'refund_reason', 'refund_amount',
+        'amount', 'currency', 'status',
         'original_amount', 'discount_amount',
         'gateway_fee', 'tax_added', 'tax_disclosed',
         'reference', 'transaction_id', 'chargily_checkout_id',
@@ -41,6 +42,8 @@ class Payment extends Model
             'paid_at' => 'datetime',
             'failed_at' => 'datetime',
             'canceled_at' => 'datetime',
+            'refunded_at' => 'datetime',
+            'refund_amount' => 'decimal:2',
             'webhook_processed_at' => 'datetime',
             'metadata' => 'json',
             'gateway_payload' => 'json',
@@ -51,6 +54,11 @@ class Payment extends Model
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class);
+    }
+
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'method_id');
     }
 
     protected static function booted(): void
@@ -120,8 +128,8 @@ class Payment extends Model
 
         $checkoutId = $this->transaction_id ?? $this->chargily_checkout_id ?? null;
 
-        if ($this->method === 'chargily' && $checkoutId) {
-            $method = PaymentMethod::where('key', 'chargily')->first();
+        if (($this->paymentMethod?->key ?? null) === 'chargily' && $checkoutId) {
+            $method = $this->paymentMethod ?? PaymentMethod::where('key', 'chargily')->first();
             $mode = $method?->credential('mode', 'test') ?? 'test';
             $prefix = $mode === 'live' ? '' : 'test/';
 
@@ -131,6 +139,7 @@ class Payment extends Model
         return null;
     }
 
+
     public function scopePending($query)
     {
         return $query->where('status', PaymentStatus::CheckoutPending->value);
@@ -138,7 +147,7 @@ class Payment extends Model
 
     public function scopeByMethod($query, string $method)
     {
-        return $query->where('method', $method);
+        return $query->whereHas('paymentMethod', fn ($q) => $q->where('key', $method));
     }
 
     public function scopeByStatus($query, PaymentStatus $status)

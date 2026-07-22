@@ -11,6 +11,7 @@ return [
     'owed' => 'لك على الآخرين',
     'owing' => 'عليك للغير',
     'counterparty' => 'الطرف المقابل',
+    'counterparty_name' => 'اسم الشخص',
     'total_amount' => 'المبلغ الإجمالي',
     'paid_amount' => 'المبلغ المدفوع',
     'remaining_amount' => 'المبلغ المتبقي',

@@ -20,8 +20,6 @@ body {
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
-    scrollbar-width: thin;
-    scrollbar-color: #15b76c6e #00000000;
     border-radius: var(--radius) 0 0;
 }
 

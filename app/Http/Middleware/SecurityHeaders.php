@@ -11,8 +11,8 @@ class SecurityHeaders
 {
     private const DEFAULT_CSP = [
         'default-src' => ["'self'"],
-        'script-src' => ["'self'", "'unsafe-eval'"],
-        'script-src-elem' => ["'self'", "'unsafe-inline'"],
+        'script-src' => ["'self'", "'unsafe-eval'", 'esm.sh'],
+        'script-src-elem' => ["'self'", "'unsafe-inline'", 'esm.sh'],
         'script-src-attr' => ["'unsafe-inline'"],
         'style-src' => ["'self'", 'fonts.googleapis.com', 'cdn.jsdelivr.net'],
         'style-src-elem' => ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
@@ -20,7 +20,7 @@ class SecurityHeaders
         'font-src' => ["'self'", 'fonts.gstatic.com'],
         'img-src' => ["'self'", 'data:', 'blob:'],
         'media-src' => ["'self'", 'data:'],
-        'connect-src' => ["'self'"],
+        'connect-src' => ["'self'", 'esm.sh'],
         'frame-ancestors' => ["'none'"],
         'base-uri' => ["'self'"],
         'object-src' => ["'none'"],

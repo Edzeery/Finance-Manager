@@ -31,4 +31,7 @@ return [
     'no_budgets' => 'No budgets',
     'create_first_budget' => 'Create first budget',
     'notes' => 'Notes',
+    'with_budget' => ':count categories with budget',
+    'without_budget' => ':count categories without budget',
+    'total_categories' => ':count total categories',
 ];

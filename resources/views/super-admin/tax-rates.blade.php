@@ -50,7 +50,10 @@
                                 <td class="cell-muted">{{ $taxRate->country ? strtoupper($taxRate->country) : '—' }}</td>
                                 <td class="cell-muted">{{ $taxRate->region ?? '—' }}</td>
                                 <td>
-                                    <x-status-badge domain="general" :status="$taxRate->is_active ? 'active' : 'inactive'" set="bi" />
+                                    <form method="POST" action="{{ route('super.admin.tax-rates.toggle-status', $taxRate) }}" style="display:inline">
+                                        @csrf
+                                        <x-toggle-switch name="is_active" :checked="$taxRate->is_active" standalone="true" />
+                                    </form>
                                 </td>
                                 <td class="col-actions">
                                     <div class="cell-actions">

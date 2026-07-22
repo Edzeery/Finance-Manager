@@ -8,12 +8,14 @@ return [
         'failed'    => 'فشلت العملية',
         'refunded'  => 'مسترجع',
         'canceled'  => 'ملغى',
-        'checkout_paid'     => 'مدفوع (الدفع)',
-        'checkout_pending'  => 'قيد الانتظار (الدفع)',
-        'checkout_failed'   => 'فشل (الدفع)',
-        'checkout_canceled' => 'ملغى (الدفع)',
-        'checkout_expired'  => 'منتهي الصلاحية (الدفع)',
-        'checkout_completed'  => 'مكتمل (الدفع)',
+        'checkout' => [
+            'paid'     => 'مدفوع (الدفع)',
+            'pending'  => 'قيد الانتظار (الدفع)',
+            'failed'   => 'فشلت العملية (الدفع)',
+            'canceled' => 'ملغى (الدفع)',
+            'expired'  => 'منتهي الصلاحية (الدفع)',
+        ],
+
     ],
 
     'subscription' => [

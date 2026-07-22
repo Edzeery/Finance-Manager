@@ -745,7 +745,7 @@
 }
 
 [dir="rtl"] .noest-form .noest-search-group select.form-select {
-  background-position: right 14px center;
+  background-position: left 14px center;
   padding-inline-start: 14px;
   padding-inline-end: 32px;
 }

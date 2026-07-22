@@ -20,7 +20,7 @@ class ZakatRecord extends Model
     }
 
     protected $fillable = [
-        'user_id', 'workspace_id', 'calculation_date', 'hijri_year',
+        'user_id', 'workspace_id', 'calculation_date', 'hijri_year', 'calendar_type',
         'nisab_gold', 'nisab_silver',
         'gold_price_per_gram', 'silver_price_per_gram',
         'gold_weight', 'silver_weight',

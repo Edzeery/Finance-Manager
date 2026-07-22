@@ -11,6 +11,7 @@ return [
     'owed' => 'Due',
     'owing' => 'Dû',
     'counterparty' => 'Contrepartie',
+    'counterparty_name' => 'Nom du Créancier',
     'total_amount' => 'Montant Total',
     'paid_amount' => 'Montant Payé',
     'remaining_amount' => 'Restant',

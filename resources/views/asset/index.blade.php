@@ -79,7 +79,7 @@
             <x-per-page :current="request('per_page', 15)" :route="route('asset.index')" :preserve="['type', 'search', 'tab']" />
             @if ($tab !== 'trashed' && $canCreate)
                 <a href="{{ route('asset.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lgms-1"></i>{{ __('asset.add') }}
+                    <i class="bi bi-plus-lg"></i>{{ __('asset.add') }}
                 </a>
             @endif
         </div>

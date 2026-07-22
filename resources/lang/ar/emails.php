@@ -77,4 +77,7 @@ return [
 
     'subscription_downgraded_subject' => 'تم تخفيض الاشتراك — :app',
     'subscription_downgraded_line' => 'سيتم تخفيض اشتراكك من :old_plan إلى :new_plan في نهاية فترة الفوترة.',
+
+    'payment_refunded_subject' => 'تم استرجاع الدفع — :app',
+    'payment_refunded_line' => 'تم استرجاع دفعتك. سيتم إرجاع المبلغ إلى طريقة الدفع الأصلية.',
 ];

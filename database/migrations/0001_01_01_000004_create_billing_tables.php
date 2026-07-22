@@ -72,6 +72,22 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // 11. Payment Methods (created before payments for FK reference)
+        Schema::create('payment_methods', function (Blueprint $table) {
+            $table->id();
+            $table->string('key')->unique();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('icon')->nullable();
+            $table->enum('type', ['online', 'manual', 'auto_complete'])->default('online');
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_public')->default(true);
+            $table->integer('sort_order')->default(0);
+            $table->json('supported_currencies')->nullable();
+            $table->json('credentials')->nullable();
+            $table->timestamps();
+        });
+
         // 5. Payments
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
@@ -101,6 +117,7 @@ return new class extends Migration
             $table->timestamp('failed_at')->nullable();
             $table->timestamp('canceled_at')->nullable();
             $table->timestamp('webhook_processed_at')->nullable();
+            $table->foreignId('method_id')->nullable()->constrained('payment_methods')->nullOnDelete();
             $table->softDeletes();
             $table->timestamps();
             $table->index('status');
@@ -187,21 +204,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // 11. Payment Methods
-        Schema::create('payment_methods', function (Blueprint $table) {
-            $table->id();
-            $table->string('key')->unique();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('icon')->nullable();
-            $table->enum('type', ['online', 'manual', 'auto_complete'])->default('online');
-            $table->boolean('is_active')->default(true);
-            $table->boolean('is_public')->default(true);
-            $table->integer('sort_order')->default(0);
-            $table->json('supported_currencies')->nullable();
-            $table->json('credentials')->nullable();
-            $table->timestamps();
-        });
     }
 
     public function down(): void

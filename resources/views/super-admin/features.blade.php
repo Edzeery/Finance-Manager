@@ -70,7 +70,10 @@
                                 <td><code style="font-size:12px;background:var(--bg-subtle);padding:2px 8px;border-radius:4px">{{ $feature->slug }}</code></td>
                                 <td><span style="font-size:12px;color:var(--text-secondary)">{{ $feature->type }}</span></td>
                                 <td>
-                                    <x-status-badge domain="general" :status="$feature->is_core ? 'yes' : 'no'" set="bi" />
+                                    <form method="POST" action="{{ route('super.admin.features.toggle-core', $feature) }}" style="display:inline">
+                                        @csrf
+                                        <x-toggle-switch name="is_core" :checked="$feature->is_core" standalone="true" />
+                                    </form>
                                 </td>
                                 <td class="col-actions">
                                     <div class="cell-actions">

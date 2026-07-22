@@ -64,7 +64,7 @@ class RenewSubscriptions extends Command
         GatewayManager $gatewayManager,
         SubscriptionActivationService $activationService,
     ): string {
-        $paymentMethod = $subscription->payment_method;
+        $paymentMethod = $subscription->paymentMethod?->key ?? $subscription->payment_method;
         if (! $paymentMethod || OnboardingService::isManual($paymentMethod)) {
             return 'skipped';
         }

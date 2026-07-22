@@ -44,7 +44,10 @@
                                 <td><strong>{{ $price->currency }}</strong></td>
                                 <td><strong>{{ number_format($price->price, 2) }}</strong></td>
                                 <td>
-                                    <x-status-badge domain="general" :status="$price->is_active ? 'active' : 'inactive'" set="bi" />
+                                    <form method="POST" action="{{ route('super.admin.plans.prices.toggle-status', [$plan, $price]) }}" style="display:inline">
+                                        @csrf
+                                        <x-toggle-switch name="is_active" :checked="$price->is_active" standalone="true" />
+                                    </form>
                                 </td>
                                 <td class="cell-muted">{{ $price->created_at->format('Y/m/d') }}</td>
                                 <td class="col-actions">

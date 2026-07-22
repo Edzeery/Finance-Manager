@@ -394,7 +394,7 @@ new #[Layout('layouts.guest')] class extends Component
             </button>
         </div>
     @else
-        <p class="text-muted small mb-3">{{ __('onboarding.manual_payment_instructions', ['method' => __('onboarding.method_' . $payment->method)]) }}</p>
+        <p class="text-muted small mb-3">{{ __('onboarding.manual_payment_instructions', ['method' => __('onboarding.method_' . ($payment->paymentMethod?->key))]) }}</p>
 
         @if (count($this->paymentDetails) > 0)
             <div class="payment-details-box mb-3">

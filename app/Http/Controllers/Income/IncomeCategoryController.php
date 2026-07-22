@@ -2,55 +2,46 @@
 
 namespace App\Http\Controllers\Income;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Income\StoreIncomeCategoryRequest;
+use App\Http\Controllers\Category\CategoryController;
 use App\Models\IncomeCategory;
-use Illuminate\Http\Request;
 
-class IncomeCategoryController extends Controller
+class IncomeCategoryController extends CategoryController
 {
-    public function index(Request $request)
+    protected function getModelClass(): string
     {
-        $query = IncomeCategory::query();
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name_ar', 'like', "%{$search}%")
-                    ->orWhere('name_fr', 'like', "%{$search}%")
-                    ->orWhere('name_en', 'like', "%{$search}%");
-            });
-        }
-
-        $perPage = min((int) $request->input('per_page', 15), config('finance.per_page_max', 100));
-        $categories = $query->orderBy('sort_order')->paginate($perPage);
-
-        return view('income.categories', compact('categories'));
+        return IncomeCategory::class;
     }
 
-    public function store(StoreIncomeCategoryRequest $request)
+    protected function getValidationRules(): array
     {
-        IncomeCategory::create(array_merge($request->validated(), [
-            'user_id' => auth()->id(),
-            'sort_order' => IncomeCategory::max('sort_order') + 1,
-        ]));
-
-        return redirect()->back()->with('success', __('messages.created'));
+        return [
+            'name_ar' => ['required', 'string', 'max:255'],
+            'name_fr' => ['required', 'string', 'max:255'],
+            'name_en' => ['required', 'string', 'max:255'],
+            'icon' => ['nullable', 'string', 'max:50'],
+            'color' => ['nullable', 'string', 'max:7'],
+            'type' => ['required', 'in:fixed,variable,recurring'],
+            'is_active' => ['boolean'],
+        ];
     }
 
-    public function update(StoreIncomeCategoryRequest $request, IncomeCategory $category)
+    protected function getStoreView(): string
     {
-        $this->authorize('update', $category);
-        $category->update($request->validated());
-
-        return redirect()->back()->with('success', __('messages.updated'));
+        return 'income.categories';
     }
 
-    public function destroy(IncomeCategory $category)
+    protected function getIndexRoute(): string
     {
-        $this->authorize('delete', $category);
-        $category->delete();
+        return 'income.categories.index';
+    }
 
-        return redirect()->back()->with('success', __('messages.deleted'));
+    protected function getUpdateRoute(): string
+    {
+        return 'income.categories.update';
+    }
+
+    protected function getDestroyRoute(): string
+    {
+        return 'income.categories.destroy';
     }
 }

@@ -21,7 +21,7 @@
   border-color: var(--danger);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23EF4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23EF4444' stroke='none'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: left 12px center;
   background-size: 16px 16px;
 }
 
@@ -29,7 +29,7 @@
   border-color: var(--success);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='16' height='16' fill='%2322C55E'%3e%3cpath d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 2.5-3.2c.4-.6 1.1-.2 1.1.7 0 .4-.1.8-.3 1.1l-2.8 3.5c-.4.6-1.1.2-1.1-.7z'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: left 12px center;
   background-size: 16px 16px;
 }
 
@@ -50,6 +50,10 @@ select.form-custom {
   background-position: left 10px center;
   background-size: 14px;
   padding-inline-end: 36px;
+}
+
+[data-theme="dark"] select.form-custom {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748B' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 }
 
 .form-label-custom {

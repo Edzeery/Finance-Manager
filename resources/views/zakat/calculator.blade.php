@@ -18,6 +18,57 @@
                     <form action="{{ route('zakat.calculate') }}" method="POST" id="zakatForm">
                         @csrf
 
+                        {{-- Zakat Haul Section --}}
+                        <div class="mb-4 p-3" style="border-radius:8px; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15)">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0 d-flex align-items-center gap-2" style="font-size:14px; color:#6366F1">
+                                    <i class="bi bi-calendar-event"></i>
+                                    {{ __('zakat.zakat_haul') }}
+                                </h6>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" style="font-size:11px" onclick="openHaulModal()">
+                                    <i class="bi bi-gear"></i> {{ __('zakat.update_haul') }}
+                                </button>
+                            </div>
+
+                            @if(! $haulStatus['has_start_date'])
+                                <div class="d-flex align-items-center gap-2" style="font-size:13px; color:var(--warning)">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    <span>{{ __('zakat.set_start_date') }}</span>
+                                </div>
+                            @else
+                                <div class="row g-2" style="font-size:13px">
+                                    <div class="col-auto">
+                                        <span style="color:var(--text-muted)">{{ __('zakat.calendar_type') }}:</span>
+                                        <span class="fw-bold">{{ __('zakat.' . $haulStatus['calendar_type']) }}</span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <span style="color:var(--text-muted)">{{ __('zakat.zakat_start_date') }}:</span>
+                                        <span class="fw-bold">{{ $haulStatus['start_date'] }}</span>
+                                    </div>
+                                    @if($haulStatus['last_zakat_date'])
+                                    <div class="col-auto">
+                                        <span style="color:var(--text-muted)">{{ __('zakat.calculation_date') }}:</span>
+                                        <span class="fw-bold">{{ $haulStatus['last_zakat_date'] }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="mt-2">
+                                    @if($haulStatus['is_due'])
+                                        <span class="fw-bold d-flex align-items-center gap-1" style="font-size:13px; color:var(--success)">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            {{ __('zakat.haul_complete') }}
+                                        </span>
+                                    @else
+                                        <span class="d-flex align-items-center gap-1" style="font-size:13px; color:#6366F1">
+                                            <i class="bi bi-hourglass-split"></i>
+                                            {{ __('zakat.days_left', ['days' => $haulStatus['days_remaining']]) }}
+                                            <span style="color:var(--text-muted)"> — {{ __('zakat.next_zakat_date') }}: {{ $haulStatus['next_date_hijri'] ?? $haulStatus['next_date'] }}</span>
+                                        </span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+
                         <div class="alert alert-info d-flex align-items-center gap-2 mb-4" style="border-radius:8px; font-size:13px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); color:var(--text)">
                             <i class="bi bi-currency-exchange"></i>
                             <span>
@@ -104,7 +155,7 @@
                             </div>
 
                             <button type="button" onclick="addGoldRow()" class="btn btn-outline-secondary btn-sm mt-2" style="font-size:12px">
-                                <i class="bi bi-plus-lgms-1"></i>{{ __('zakat.add_gold_row') }}
+                                <i class="bi bi-plus-lg"></i>{{ __('zakat.add_gold_row') }}
                             </button>
 
                             <div class="mt-3 p-3" style="border-radius:8px; background:rgba(255,193,7,0.06); border:1px solid rgba(255,193,7,0.15)">
@@ -267,14 +318,30 @@
                         </div>
 
                         {{-- Action Buttons --}}
+                        @php
+                            $haulStarted = auth()->user()->hasZakatHaulStarted();
+                            $haulDue = auth()->user()->isZakatDue();
+                            $canCalculate = $haulStarted && $haulDue;
+                        @endphp
                         <div class="d-flex gap-3 mt-4">
-                            <button type="submit" class="btn btn-accent btn-custom">
+                            <button type="submit" class="btn btn-accent btn-custom" {{ $canCalculate ? '' : 'disabled' }}>
                                 <i class="bi bi-calculatorms-1"></i>{{ __('zakat.calculate') }}
                             </button>
-                            <button type="submit" name="save" value="1" class="btn btn-outline-accent btn-custom">
+                            <button type="submit" name="save" value="1" class="btn btn-outline-accent btn-custom" {{ $canCalculate ? '' : 'disabled' }}>
                                 <i class="bi bi-savems-1"></i>{{ __('zakat.save_record') }}
                             </button>
                         </div>
+                        @if(! $haulStarted)
+                            <div class="mt-2" style="font-size:12px; color:var(--warning); display:flex; align-items:center; gap:6px">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                {{ __('zakat.set_start_date') }}
+                            </div>
+                        @elseif(! $haulDue)
+                            <div class="mt-2" style="font-size:12px; color:#6366F1; display:flex; align-items:center; gap:6px">
+                                <i class="bi bi-hourglass-split"></i>
+                                {{ __('zakat.haul_not_complete') }} — {{ __('zakat.days_left', ['days' => auth()->user()->daysUntilNextZakat()]) }}
+                            </div>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -493,11 +560,142 @@
         </div>
     </div>
 
+    {{-- Haul Settings Modal --}}
+    @php
+        $userHijri = auth()->user()->getZakatStartDateHijri();
+        $initialCalendarType = auth()->user()->calendar_type ?? 'hijri';
+        $initialGregorian = auth()->user()->zakat_start_date?->format('Y-m-d') ?? '';
+        $initialHijriYear = $userHijri ? $userHijri['year'] : '';
+        $initialHijriMonth = $userHijri ? $userHijri['month'] : '';
+        $initialHijriDay = $userHijri ? $userHijri['day'] : '';
+    @endphp
+    <div id="haulModal" class="modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); align-items:center; justify-content:center" onclick="if(event.target===this) closeHaulModal()">
+        <div class="card-custom" style="max-width:520px; width:90%; margin:auto">
+            <div class="card-header-custom">
+                <h5 class="mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>{{ __('zakat.haul_settings') }}</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('zakat.haul-settings') }}" method="POST" id="haulForm"
+                    x-data="hijriDatePicker({
+                        calendarType: '{{ $initialCalendarType }}',
+                        gregorianDate: '{{ $initialGregorian }}',
+                        hijriYear: '{{ $initialHijriYear }}',
+                        hijriMonth: '{{ $initialHijriMonth }}',
+                        hijriDay: '{{ $initialHijriDay }}',
+                        locale: '{{ app()->getLocale() }}'
+                    })">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-3">
+                        <label class="form-label-custom">{{ __('zakat.calendar_type') }} <span class="text-danger">*</span></label>
+                        <select name="calendar_type" class="form-custom" required x-model="calendarType" @change="$dispatch('calendar-type-changed', calendarType)">
+                            <option value="hijri">{{ __('zakat.hijri') }} (354 {{ __('zakat.days_per_year') }})</option>
+                            <option value="gregorian">{{ __('zakat.gregorian') }} (365 {{ __('zakat.days_per_year') }})</option>
+                        </select>
+                    </div>
+
+                    {{-- Hijri Date Input --}}
+                    <div class="mb-3" x-show="calendarType === 'hijri'" x-transition>
+                        <label class="form-label-custom">{{ __('zakat.zakat_start_date') }} <span class="text-danger">*</span></label>
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <label class="form-label-custom" style="font-size:11px">{{ __('zakat.hijri_year') }}</label>
+                                <input type="text" inputmode="numeric" pattern="\d{4}" class="form-custom" placeholder="1446"
+                                    :value="hijriYear" @input="onYearInput($event.target.value)" list="hijri-years-list"
+                                    maxlength="4" required>
+                                <datalist id="hijri-years-list">
+                                    @for($y = 1500; $y >= 1300; $y--)
+                                        <option value="{{ $y }}">{{ $y }}</option>
+                                    @endfor
+                                </datalist>
+                                <input type="hidden" name="zakat_start_date_hijri_year" :value="hijriYear">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label-custom" style="font-size:11px">{{ __('zakat.hijri_month') }}</label>
+                                <select class="form-custom" x-model="hijriMonth" @change="updateGregorian()" required>
+                                    <option value="">{{ __('zakat.hijri_month') }}</option>
+                                    @php
+                                        $monthNames = app()->getLocale() === 'ar'
+                                            ? \App\Services\HijriDateService::getHijriMonthName(1, 'ar') ? range(1,12) : range(1,12)
+                                            : range(1,12);
+                                        $arMonths = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+                                        $frMonths = ['Mouharram','Safar','Rabia al-Aoual','Rabia al-Thani','Joumada al-Oula','Joumada al-Thani','Rajab','Cha\'ban','Ramadan','Chawwal','Dhou al-Qa\'da','Dhou al-Hijja'];
+                                        $enMonths = ['Muharram','Safar','Rabi al-Awwal','Rabi al-Thani','Jumada al-Ula','Jumada al-Thani','Rajab','Shaban','Ramadan','Shawwal','Dhul Qadah','Dhul Hijjah'];
+                                        $displayMonths = app()->getLocale() === 'ar' ? $arMonths : (app()->getLocale() === 'fr' ? $frMonths : $enMonths);
+                                    @endphp
+                                    @foreach($displayMonths as $i => $name)
+                                        <option value="{{ $i + 1 }}">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                <input type="hidden" name="zakat_start_date_hijri_month" :value="hijriMonth">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label-custom" style="font-size:11px">{{ __('zakat.hijri_day') }}</label>
+                                <input type="text" inputmode="numeric" pattern="\d{1,2}" class="form-custom" placeholder="15"
+                                    :value="hijriDay" @input="onDayInput($event.target.value)" list="hijri-days-list"
+                                    maxlength="2" required>
+                                <datalist id="hijri-days-list">
+                                    @for($d = 1; $d <= 30; $d++)
+                                        <option value="{{ $d }}">{{ $d }}</option>
+                                    @endfor
+                                </datalist>
+                                <input type="hidden" name="zakat_start_date_hijri_day" :value="hijriDay">
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-1" style="font-size:11px" x-show="gregorianDate">
+                            <i class="bi bi-arrow-left-right"></i>
+                            {{ __('zakat.gregorian_equivalent') }}: <span x-text="gregorianDate"></span>
+                        </small>
+                    </div>
+
+                    {{-- Gregorian Date Input --}}
+                    <div class="mb-3" x-show="calendarType === 'gregorian'" x-transition>
+                        <label class="form-label-custom">{{ __('zakat.zakat_start_date') }} <span class="text-danger">*</span></label>
+                        <input type="date" name="zakat_start_date" class="form-custom"
+                            x-model="gregorianDate"
+                            @change="onGregorianChange()"
+                            max="{{ date('Y-m-d') }}" required>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-accent btn-custom">
+                            <i class="bi bi-check-lg"></i> {{ __('general.save') }}
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-custom" onclick="closeHaulModal()">
+                            {{ __('general.cancel') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
     <script>
+        (function() {
         const karatPurity = @json($karatPurity);
         const currencySymbol = @json(config('finance.currency_symbol'));
         let goldRowIndex = {{ count($goldItems) }};
+
+        window.addGoldRow = addGoldRow;
+        window.removeGoldRow = removeGoldRow;
+        window.onGoldKaratChange = onGoldKaratChange;
+        window.calcGoldTotal = calcGoldTotal;
+        window.fetchPrices = fetchPrices;
+        window.openHaulModal = openHaulModal;
+        window.closeHaulModal = closeHaulModal;
+
+        function openHaulModal() {
+            document.getElementById('haulModal').style.display = 'flex';
+        }
+
+        function closeHaulModal() {
+            document.getElementById('haulModal').style.display = 'none';
+        }
 
         function addGoldRow() {
             const container = document.getElementById('goldRows');
@@ -594,10 +792,18 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        var zakatInitialized = false;
+        function initZakatCalc() {
+            if (zakatInitialized) return;
+            zakatInitialized = true;
             calcGoldTotal();
             fetchPrices();
+        }
+        document.addEventListener('DOMContentLoaded', initZakatCalc);
+        document.addEventListener('livewire:navigated', function() {
+            if (!zakatInitialized) initZakatCalc();
         });
+        })();
     </script>
     @endpush
 </x-app-layout>

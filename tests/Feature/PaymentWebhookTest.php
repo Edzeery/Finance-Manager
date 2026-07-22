@@ -49,8 +49,7 @@ class PaymentWebhookTest extends TestCase
     {
         $this->markTestSkipped('Chargily webhook requires real HTTP (ngrok) — library reads php://input which is empty in CLI');
 
-        $payment = Payment::factory()->create([
-            'method' => 'chargily',
+        $payment = Payment::factory()->forMethod('chargily')->create([
             'transaction_id' => 'ch_12345',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -83,8 +82,7 @@ class PaymentWebhookTest extends TestCase
     {
         $this->markTestSkipped('Chargily webhook requires real HTTP (ngrok) — library reads php://input which is empty in CLI');
 
-        $payment = Payment::factory()->create([
-            'method' => 'chargily',
+        $payment = Payment::factory()->forMethod('chargily')->create([
             'transaction_id' => 'ch_67890',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -215,8 +213,7 @@ class PaymentWebhookTest extends TestCase
 
     public function test_paypal_webhook_approves_payment(): void
     {
-        $payment = Payment::factory()->create([
-            'method' => 'paypal',
+        $payment = Payment::factory()->forMethod('paypal')->create([
             'transaction_id' => 'PAY-TEST123',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -233,8 +230,7 @@ class PaymentWebhookTest extends TestCase
 
     public function test_paypal_webhook_rejects_denied_payment(): void
     {
-        $payment = Payment::factory()->create([
-            'method' => 'paypal',
+        $payment = Payment::factory()->forMethod('paypal')->create([
             'transaction_id' => 'PAY-TEST456',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -268,8 +264,7 @@ class PaymentWebhookTest extends TestCase
 
     public function test_stripe_webhook_approves_payment(): void
     {
-        $payment = Payment::factory()->create([
-            'method' => 'stripe',
+        $payment = Payment::factory()->forMethod('stripe')->create([
             'transaction_id' => 'pi_test123',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -286,8 +281,7 @@ class PaymentWebhookTest extends TestCase
 
     public function test_stripe_webhook_rejects_failed_payment(): void
     {
-        $payment = Payment::factory()->create([
-            'method' => 'stripe',
+        $payment = Payment::factory()->forMethod('stripe')->create([
             'transaction_id' => 'pi_test456',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -321,8 +315,7 @@ class PaymentWebhookTest extends TestCase
 
     public function test_wise_webhook_approves_payment(): void
     {
-        $payment = Payment::factory()->create([
-            'method' => 'wise',
+        $payment = Payment::factory()->forMethod('wise')->create([
             'transaction_id' => '12345',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -338,8 +331,7 @@ class PaymentWebhookTest extends TestCase
 
     public function test_wise_webhook_rejects_failed_payment(): void
     {
-        $payment = Payment::factory()->create([
-            'method' => 'wise',
+        $payment = Payment::factory()->forMethod('wise')->create([
             'transaction_id' => '67890',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -371,8 +363,7 @@ class PaymentWebhookTest extends TestCase
 
     public function test_payoneer_webhook_approves_payment(): void
     {
-        $payment = Payment::factory()->create([
-            'method' => 'payoneer',
+        $payment = Payment::factory()->forMethod('payoneer')->create([
             'transaction_id' => 'payout_test123',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -389,8 +380,7 @@ class PaymentWebhookTest extends TestCase
 
     public function test_payoneer_webhook_rejects_failed_payment(): void
     {
-        $payment = Payment::factory()->create([
-            'method' => 'payoneer',
+        $payment = Payment::factory()->forMethod('payoneer')->create([
             'transaction_id' => 'payout_test456',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -429,8 +419,7 @@ class PaymentWebhookTest extends TestCase
             'status' => SubscriptionStatus::PastDue,
         ]);
 
-        $payment = Payment::factory()->create([
-            'method' => 'stripe',
+        $payment = Payment::factory()->forMethod('stripe')->create([
             'transaction_id' => 'pi_sub123',
             'status' => PaymentStatus::CheckoutPending,
             'subscription_id' => $subscription->id,

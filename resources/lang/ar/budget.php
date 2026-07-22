@@ -31,4 +31,7 @@ return [
     'no_budgets' => 'لا توجد ميزانيات',
     'create_first_budget' => 'أنشئ أول ميزانية',
     'notes' => 'ملاحظات',
+    'with_budget' => ':count صنف له ميزانية',
+    'without_budget' => ':count صنف بدون ميزانية',
+    'total_categories' => ':count إجمالي الأصناف',
 ];

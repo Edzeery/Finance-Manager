@@ -26,7 +26,7 @@
             <x-per-page :current="request('per_page', 15)" :route="route('goal.index')" :preserve="['search','tab']" />
             @if($tab !== 'trashed' && $canCreate)
                 <a href="{{ route('goal.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lgms-1"></i>{{ __('goal.add') }}
+                    <i class="bi bi-plus-lg"></i>{{ __('goal.add') }}
                 </a>
             @endif
         </div>

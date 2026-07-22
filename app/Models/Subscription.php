@@ -18,7 +18,7 @@ class Subscription extends Model
     protected $fillable = [
         'workspace_id', 'user_id', 'subscription_plan_id', 'status',
         'starts_at', 'ends_at', 'trial_ends_at', 'grace_ends_at', 'canceled_at',
-        'payment_method', 'payment_reference', 'auto_renew', 'billing_period',
+        'payment_method', 'payment_method_id', 'payment_reference', 'auto_renew', 'billing_period',
         'plan_price_amount',
     ];
 
@@ -43,6 +43,11 @@ class Subscription extends Model
     public function plan(): BelongsTo
     {
         return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
+    }
+
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 
     public function user(): BelongsTo

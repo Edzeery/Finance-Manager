@@ -12,6 +12,7 @@ use App\Http\Controllers\CouponValidationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Debt\DebtController;
+use App\Http\Controllers\Api\BudgetStatusController;
 use App\Http\Controllers\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Expense\ExpenseController;
 use App\Http\Controllers\Goal\FinancialGoalController;
@@ -158,6 +159,10 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
             ->middleware(['permission:expense-category.delete', 'throttle:web-crud'])->name('categories.destroy');
     });
 
+    Route::get('/expense-categories/{expenseCategory}/budget-status', [BudgetStatusController::class, 'getBudgetStatus'])
+        ->middleware(['permission:expense.view', 'throttle:web-list'])
+        ->name('expense.categories.budget-status');
+
     Route::prefix('debt')->name('debt.')->middleware(['permission:debt.view', 'plan.feature:debt', 'throttle:web-list'])->group(function () {
         Route::post('/bulk-delete', [DebtController::class, 'bulkDelete'])
             ->middleware('permission:debt.delete')->name('bulk-delete');
@@ -210,6 +215,8 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
     });
 
     Route::prefix('budget')->name('budget.')->middleware(['permission:budget.view', 'plan.feature:budget', 'throttle:web-list'])->group(function () {
+        Route::get('/categories', [BudgetController::class, 'categories'])
+            ->name('categories');
         Route::post('/bulk-delete', [BudgetController::class, 'bulkDelete'])
             ->middleware('permission:budget.delete')->name('bulk-delete');
         Route::post('/bulk-restore', [BudgetController::class, 'bulkRestore'])
@@ -270,6 +277,8 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
         Route::get('/report/{zakatRecord}', [ZakatController::class, 'report'])->name('report');
         Route::get('/fetch-prices', [ZakatController::class, 'fetchPrices'])
             ->middleware('permission:zakat.create')->name('fetch-prices');
+        Route::put('/haul-settings', [ZakatController::class, 'updateHaulSettings'])
+            ->middleware('permission:zakat.create')->name('haul-settings');
     });
 
     Route::prefix('report')->name('report.')->middleware(['throttle:web-search', 'permission:report.view', 'plan.feature:reports'])->group(function () {

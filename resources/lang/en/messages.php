@@ -9,6 +9,7 @@ return [
     'income_deleted' => 'Income deleted successfully',
     'income_archived' => 'Archive status changed successfully',
     'expense_created' => 'Expense added successfully',
+    'expense_created_as_debt' => 'Expense added successfully as debt',
     'expense_updated' => 'Expense updated successfully',
     'expense_deleted' => 'Expense deleted successfully',
     'debt_created' => 'Debt added successfully',

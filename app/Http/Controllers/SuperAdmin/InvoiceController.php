@@ -26,7 +26,9 @@ class InvoiceController extends Controller
         $countDraft = (clone $base)->where('status', InvoiceStatus::Draft)->count();
         $countCancelled = (clone $base)->where('status', InvoiceStatus::Cancelled)->count();
 
-        $query = Invoice::withoutWorkspace()->with('workspace', 'subscription.plan');
+        $query = Invoice::withoutWorkspace()->with(['workspace', 'subscription' => function ($q) {
+            $q->withoutWorkspace()->with('plan');
+        }]);
 
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
@@ -54,7 +56,9 @@ class InvoiceController extends Controller
 
     public function show(int $id)
     {
-        $invoice = Invoice::withoutWorkspace()->with('workspace', 'subscription.plan', 'user')->findOrFail($id);
+        $invoice = Invoice::withoutWorkspace()->with(['workspace', 'subscription' => function ($q) {
+            $q->withoutWorkspace()->with('plan');
+        }, 'user'])->findOrFail($id);
 
         $this->resetBreadcrumbs()
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded')

@@ -132,7 +132,7 @@ class PaymentFlowTest extends TestCase
 
         $this->assertNotNull($payment);
         $this->assertEquals($workspace->id, $payment->workspace_id);
-        $this->assertEquals('chargily', $payment->method);
+        $this->assertEquals('chargily', $payment->paymentMethod?->key);
         $this->assertEquals(4997.5, (float) $payment->amount);
         $this->assertEquals('DZD', $payment->currency);
         $this->assertEquals(PaymentStatus::CheckoutPending, $payment->status);

@@ -7,6 +7,8 @@ use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\Budget\StoreBudgetRequest;
 use App\Http\Requests\Budget\UpdateBudgetRequest;
 use App\Models\Budget;
+use App\Models\BudgetCategory;
+use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
 
@@ -164,5 +166,43 @@ class BudgetController extends BaseCrudController
 
         return redirect()->route('budget.index')
             ->with('success', __('messages.budget_updated'));
+    }
+
+    public function categories()
+    {
+        $this->resetBreadcrumbs();
+        $this->breadcrumb('general.budget', 'budget.index', 'bi-calculator-fill');
+        $this->breadcrumb(__('budget.categories'), null, 'bi-tags');
+
+        $categories = ExpenseCategory::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($category) {
+                $bc = BudgetCategory::whereHas('budget', fn ($q) => $q->active()->current())
+                    ->where('expense_category_id', $category->id)
+                    ->where('allocated_amount', '>', 0)
+                    ->with('budget')
+                    ->first();
+
+                $category->budgetInfo = null;
+
+                if ($bc) {
+                    $totalSpent = Expense::where('category_id', $category->id)
+                        ->whereBetween('date', [$bc->budget->start_date, $bc->budget->end_date ?? now()])
+                        ->sum('amount');
+
+                    $category->budgetInfo = [
+                        'budget_id' => $bc->budget->id,
+                        'budget_name' => locale_name($bc->budget),
+                        'allocated' => (float) $bc->allocated_amount,
+                        'spent' => (float) $totalSpent,
+                        'remaining' => max(0, $bc->allocated_amount - $totalSpent),
+                    ];
+                }
+
+                return $category;
+            });
+
+        return view('budget.categories', compact('categories'));
     }
 }

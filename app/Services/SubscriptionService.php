@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
+use App\Events\PaymentCompleted;
 use App\Mail\SubscriptionDowngraded;
 use App\Mail\SubscriptionUpgraded;
 use App\Models\Coupon;
@@ -208,13 +209,20 @@ class SubscriptionService
             $currentSub = $workspace->owner()?->first()?->activeSubscription();
             $oldPlanName = $currentSub?->plan?->name;
 
-            $proration = null;
+            // Trial upgrade fix: if user is on a trial, end it immediately and require full payment.
+            // Trial users never paid for the current plan, so they get no proration credit.
+            $isTrialUpgrade = $currentSub
+                && $currentSub->status === SubscriptionStatus::Trialing
+                && ! $currentSub->isTrialExpired()
+                && ! $plan->is_free;
+
+            $proration = ['amount_due' => 0, 'remaining_value' => 0, 'remaining_days' => 0, 'total_days' => 0];
             $price = $billingPeriod === 'yearly' ? $plan->yearly_price : $plan->monthly_price;
 
             $isPlanChange = $currentSub && $currentSub->isActive() && ! $currentSub->plan->isFree()
                 && $plan->slug !== $currentSub->plan->slug;
 
-            if ($isPlanChange) {
+            if ($isPlanChange && ! $isTrialUpgrade) {
                 $proration = $this->calculateProration($workspace, $plan, $billingPeriod);
                 if ($proration['remaining_days'] > 0) {
                     $price = $proration['amount_due'];
@@ -223,12 +231,17 @@ class SubscriptionService
 
             $endsAt = $billingPeriod === 'yearly' ? now()->addYear() : now()->addMonth();
 
+            $paymentMethodModel = $paymentMethod
+                ? PaymentMethod::where('key', $paymentMethod)->first()
+                : null;
+
             $subscription = $workspace->allSubscriptions()->create([
                 'user_id' => $workspace->owner()?->first()?->id,
                 'subscription_plan_id' => $plan->id,
                 'status' => $plan->is_free ? SubscriptionStatus::Active->value : SubscriptionStatus::PastDue->value,
                 'starts_at' => now(),
                 'ends_at' => null, // past_due: actual ends_at set after payment success
+                'payment_method_id' => $paymentMethodModel?->id,
                 'payment_method' => $paymentMethod,
                 'auto_renew' => $price > 0 && ! OnboardingService::isManual($paymentMethod),
                 'billing_period' => $billingPeriod,
@@ -299,6 +312,7 @@ class SubscriptionService
                         prorationCredit: $isPlanChange ? max($proration['remaining_value'] ?? 0, 0) : 0
                     );
                     $this->sendPlanChangeEmail($subscription, $currentSub, $plan, $isPlanChange, $oldPlanName);
+                    PaymentCompleted::dispatch($payment);
                 }
 
                 $gateway = $this->gatewayManager->driver($paymentMethod);
@@ -339,6 +353,7 @@ class SubscriptionService
                             prorationCredit: $isPlanChange ? max($proration['remaining_value'] ?? 0, 0) : 0
                         );
                         $this->sendPlanChangeEmail($subscription, $currentSub, $plan, $isPlanChange, $oldPlanName);
+                        PaymentCompleted::dispatch($payment);
                     }
 
                     return [
@@ -376,6 +391,124 @@ class SubscriptionService
                 'payment' => null,
                 'redirect_url' => null,
                 'message' => __('general.error'),
+            ];
+        });
+    }
+
+    public function adminForceChangePlan(Workspace $workspace, string $planSlug, string $billingPeriod = 'monthly'): array
+    {
+        $plan = $this->getPlan($planSlug);
+
+        if (! $plan) {
+            return [
+                'subscription' => null,
+                'payment' => null,
+                'invoice' => null,
+                'message' => 'Plan not found.',
+            ];
+        }
+
+        return DB::transaction(function () use ($workspace, $plan, $billingPeriod) {
+            $this->cancelStalePendingSubscriptions($workspace);
+
+            $currentSub = $workspace->owner()?->first()?->activeSubscription();
+            $oldPlanName = $currentSub?->plan?->name;
+
+            $isPlanChange = $currentSub && $currentSub->isActive() && ! $currentSub->plan->isFree()
+                && $plan->slug !== $currentSub->plan->slug;
+
+            $proration = null;
+            $price = $billingPeriod === 'yearly' ? $plan->yearly_price : $plan->monthly_price;
+
+            if ($isPlanChange) {
+                $proration = $this->prorationService->calculateProration($workspace, $plan, $billingPeriod);
+                if ($proration['remaining_days'] > 0) {
+                    $price = $proration['amount_due'];
+                }
+            }
+
+            $endsAt = $billingPeriod === 'yearly' ? now()->addYear() : now()->addMonth();
+            $oldEndsAt = $currentSub?->ends_at;
+
+            $cashMethod = PaymentMethod::where('key', 'cash')->first();
+            $planPrice = $plan->activePrices()->forPeriod($billingPeriod)->first();
+            $planCurrency = $planPrice?->currency ?? 'USD';
+            $originalPrice = $billingPeriod === 'yearly' ? $plan->yearly_price : $plan->monthly_price;
+
+            $subscription = $workspace->allSubscriptions()->create([
+                'user_id' => $workspace->owner()?->first()?->id,
+                'subscription_plan_id' => $plan->id,
+                'status' => SubscriptionStatus::Active->value,
+                'starts_at' => now(),
+                'ends_at' => $isPlanChange && $oldEndsAt ? $oldEndsAt : $endsAt,
+                'payment_method_id' => $cashMethod?->id,
+                'payment_method' => 'cash',
+                'auto_renew' => false,
+                'billing_period' => $billingPeriod,
+                'plan_price_amount' => $originalPrice,
+            ]);
+
+            $this->cancellationService->cancelCurrentSubscription($currentSub, $subscription);
+
+            $payment = null;
+            $invoice = null;
+
+            if ($plan->is_free) {
+                $this->sendPlanChangeEmail($subscription, $currentSub, $plan, $isPlanChange, $oldPlanName);
+
+                return [
+                    'subscription' => $subscription,
+                    'payment' => null,
+                    'invoice' => null,
+                    'message' => __('settings.plan_activated'),
+                ];
+            }
+
+            $finalPrice = max($price, 0);
+
+            if ($finalPrice > 0) {
+                $workspaceId = $workspace->id;
+                $userId = $workspace->owner()?->first()?->id;
+
+                $payment = Payment::withoutWorkspace()->create([
+                    'workspace_id' => $workspaceId,
+                    'user_id' => $userId,
+                    'subscription_id' => $subscription->id,
+                    'method_id' => $cashMethod?->id,
+                    'amount' => $finalPrice,
+                    'currency' => $planCurrency,
+                    'original_amount' => $originalPrice,
+                    'discount_amount' => max($originalPrice - $finalPrice, 0),
+                    'gateway_fee' => 0,
+                    'tax_added' => 0,
+                    'tax_disclosed' => 0,
+                    'status' => PaymentStatus::CheckoutPaid->value,
+                    'paid_at' => now(),
+                    'notes' => 'Admin forced plan change — cash payment',
+                ]);
+
+                $invoice = $this->activationService->generateInvoice(
+                    $subscription, $workspace, $plan, $payment, $billingPeriod,
+                    overrideGatewayFee: 0,
+                    overrideTaxAdded: 0,
+                    overrideTaxDisclosed: 0,
+                    prorationCredit: $isPlanChange ? max($proration['remaining_value'] ?? 0, 0) : 0
+                );
+            } else {
+                $creditAmount = $price < 0 ? abs($price) : ($proration['remaining_value'] ?? 0);
+                $invoice = $this->activationService->generateInvoice(
+                    $subscription, $workspace, $plan, null, $billingPeriod, 0, 0, 0,
+                    prorationCredit: $creditAmount
+                );
+            }
+
+            $this->sendPlanChangeEmail($subscription, $currentSub, $plan, $isPlanChange, $oldPlanName);
+
+            return [
+                'subscription' => $subscription,
+                'payment' => $payment,
+                'invoice' => $invoice,
+                'message' => __('settings.plan_changed'),
             ];
         });
     }

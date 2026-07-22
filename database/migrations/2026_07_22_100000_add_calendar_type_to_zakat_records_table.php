@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->softDeletes();
+        Schema::table('zakat_records', function (Blueprint $table) {
+            $table->string('calendar_type', 10)->default('hijri')->after('hijri_year');
         });
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+        Schema::table('zakat_records', function (Blueprint $table) {
+            $table->dropColumn('calendar_type');
         });
     }
 };

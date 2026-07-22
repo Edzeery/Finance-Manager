@@ -73,10 +73,10 @@
 
                         <div class="d-flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border)">
                             <button type="submit" class="btn btn-accent btn-custom">
-                                <i class="bi bi-check-lgms-1"></i>{{ __('general.save') }}
+                                <i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}
                             </button>
                             <a href="{{ route('expense.index') }}" class="btn btn-outline-secondary btn-custom">
-                                <i class="bi bi-x-lgms-1"></i>{{ __('general.cancel') }}
+                                <i class="bi bi-x-lg"></i>{{ __('general.cancel') }}
                             </a>
                         </div>
                     </form>

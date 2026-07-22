@@ -222,6 +222,13 @@ class SubscriptionPlanController extends Controller
             ->with('success', __('super-admin.plan_deleted'));
     }
 
+    public function toggleStatus(SubscriptionPlan $plan)
+    {
+        $plan->update(['is_active' => ! $plan->is_active]);
+
+        return back()->with('success', __('messages.subscription_updated'));
+    }
+
     private function syncPlanFeatures(SubscriptionPlan $plan, array $features): void
     {
         $syncData = [];

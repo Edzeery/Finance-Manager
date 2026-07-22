@@ -88,10 +88,13 @@
                         <template x-if="n.type === 'zakat_reminder'">
                             <div class="notif-icon" style="background:rgba(139,92,246,0.1);color:var(--sa-indigo)"><i class="bi bi-heart"></i></div>
                         </template>
+                        <template x-if="n.type === 'zakat_approaching'">
+                            <div class="notif-icon" style="background:rgba(99,102,241,0.1);color:#6366F1"><i class="bi bi-hourglass-split"></i></div>
+                        </template>
                         <template x-if="n.type === 'role_changed'">
                             <div class="notif-icon" style="background:var(--warning-light);color:var(--warning)"><i class="bi bi-shield-check"></i></div>
                         </template>
-                        <template x-if="!['budget_exceeded','budget_nearing_limit','debt_reminder','goal_achieved','goal_milestone','goal_deadline','zakat_reminder','role_changed'].includes(n.type)">
+                        <template x-if="!['budget_exceeded','budget_nearing_limit','debt_reminder','goal_achieved','goal_milestone','goal_deadline','zakat_reminder','zakat_approaching','role_changed'].includes(n.type)">
                             <div class="notif-icon" style="background:var(--info-light);color:var(--info)"><i class="bi bi-info-circle"></i></div>
                         </template>
                         <div class="notif-content">

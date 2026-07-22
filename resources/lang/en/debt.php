@@ -11,6 +11,7 @@ return [
     'owed' => 'Owed',
     'owing' => 'Owing',
     'counterparty' => 'Counterparty',
+    'counterparty_name' => 'Counterparty Name',
     'total_amount' => 'Total Amount',
     'paid_amount' => 'Paid Amount',
     'remaining_amount' => 'Remaining',

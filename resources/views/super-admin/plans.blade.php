@@ -83,7 +83,10 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <x-status-badge domain="general" :status="$plan->is_active ? 'active' : 'inactive'" set="bi" />
+                                    <form method="POST" action="{{ route('super.admin.plans.toggle-status', $plan) }}" style="display:inline">
+                                        @csrf
+                                        <x-toggle-switch name="is_active" :checked="$plan->is_active" standalone="true" />
+                                    </form>
                                 </td>
                                 <td style="font-size:13px;color:var(--text-muted)">{{ $plan->sort_order }}</td>
                                 <td class="col-actions">
@@ -175,7 +178,10 @@
                                 <td><code style="font-size:12px;background:var(--bg-subtle);padding:2px 8px;border-radius:4px">{{ $feature->slug }}</code></td>
                                 <td><span style="font-size:12px;color:var(--text-secondary)">{{ $feature->type }}</span></td>
                                 <td>
-                                    <x-status-badge domain="general" :status="$feature->is_core ? 'yes' : 'no'" set="bi" />
+                                    <form method="POST" action="{{ route('super.admin.features.toggle-core', $feature) }}" style="display:inline">
+                                        @csrf
+                                        <x-toggle-switch name="is_core" :checked="$feature->is_core" standalone="true" />
+                                    </form>
                                 </td>
                                 <td class="col-actions">
                                     <div class="cell-actions">
@@ -253,7 +259,10 @@
                                 <td><strong>{{ $price->currency }}</strong></td>
                                 <td><strong>{{ number_format($price->price, 2) }}</strong></td>
                                 <td>
-                                    <x-status-badge domain="general" :status="$price->is_active ? 'active' : 'inactive'" set="bi" />
+                                    <form method="POST" action="{{ route('super.admin.plans.prices.toggle-status', [$selectedPlan, $price]) }}" style="display:inline">
+                                        @csrf
+                                        <x-toggle-switch name="is_active" :checked="$price->is_active" standalone="true" />
+                                    </form>
                                 </td>
                                 <td class="cell-muted">{{ $price->created_at->format('Y/m/d') }}</td>
                                 <td class="col-actions">

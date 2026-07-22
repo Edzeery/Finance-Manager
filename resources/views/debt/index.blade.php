@@ -55,7 +55,7 @@
             <x-per-page :current="request('per_page', 15)" :route="route('debt.index')" :preserve="['type','status','search','tab']" />
             @if($tab !== 'trashed' && $canCreate)
                 <a href="{{ route('debt.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lgms-1"></i>{{ __('debt.add') }}
+                    <i class="bi bi-plus-lg"></i>{{ __('debt.add') }}
                 </a>
             @endif
         </div>
@@ -128,7 +128,7 @@
                                         {{ $debt->counterparty_name }}
                                     </a>
                                 </td>
-                                <td class="text-end">{{ number_format($debt->total_amount, 2) }}</td>
+                                <td class="text-start">{{ number_format($debt->total_amount, 2) }}</td>
                                 <td class="class="text-start fw-bold" {{ $debt->remaining_amount > 0 ? 'text-danger' : 'text-success' }}">
                                     {{ number_format($debt->remaining_amount, 2) }}
                                 </td>

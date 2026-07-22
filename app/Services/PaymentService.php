@@ -122,7 +122,7 @@ class PaymentService
                 'workspace_id' => $workspace->id,
                 'user_id' => $userId,
                 'coupon_id' => $coupon?->id,
-                'method' => $paymentMethod,
+                'method_id' => $pmModel?->id,
                 'amount' => $totalAmount,
                 'original_amount' => $originalAmount,
                 'discount_amount' => $discountAmount,

@@ -4,7 +4,9 @@
             return number_format($amount, 2) . ' ' . \App\Services\CurrencyHelper::symbol($currency);
         };
         $getMethodLabel = function (?string $method) use ($gateways) {
-            if (!$method) return '—';
+            if (!$method) {
+                return '—';
+            }
             if (isset($gateways[$method])) {
                 return $gateways[$method]->name;
             }
@@ -23,7 +25,7 @@
     </div>
 
     <div class="settings-card">
-        @if($payments && $payments->isNotEmpty())
+        @if ($payments && $payments->isNotEmpty())
             <div class="table-responsive">
                 <table class="table table-custom mb-0">
                     <thead>
@@ -37,29 +39,55 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($payments as $payment)
+                        @foreach ($payments as $payment)
                             @php $continueUrl = $payment->isPending() ? $payment->getContinueUrl() : null; @endphp
                             <tr>
                                 <td style="font-size:13px">{{ $payment->created_at->format('Y/m/d H:i') }}</td>
                                 <td>
                                     <span style="font-weight:600">
                                         {{ $formatAmount($payment->amount, $payment->currency ?? 'USD') }}
-                                        @if($payment->original_amount > $payment->amount)
-                                            <span style="text-decoration:line-through;color:var(--text-muted);font-weight:400;font-size:12px">
+                                        @if ($payment->original_amount > $payment->amount)
+                                            <span
+                                                style="text-decoration:line-through;color:var(--text-muted);font-weight:400;font-size:12px">
                                                 {{ $formatAmount($payment->original_amount, $payment->currency ?? 'USD') }}
                                             </span>
                                         @endif
                                     </span>
                                 </td>
-                                <td style="font-size:13px">{{ $getMethodLabel($payment->method) }}</td>
-                                <td><code style="font-size:11px;font-family:monospace">{{ $payment->uuid ?? '—' }}</code></td>
-                                <td>
-                                    <x-status-badge domain="payment" :status="$payment->status->value" set="bi" />
+                                <td style="font-size:13px">
+                                    @php
+                                        $paymentMethodGetway = $payment->paymentMethod?->key;
+                                    @endphp
+                                    <div class=""
+                                        style="font-size:12px;color:var(--text-secondary);text-transform:capitalize">
+                                        {{ __("super-admin.{$paymentMethodGetway}") }}
+                                    </div>
+                                    @if ($payment->payment_method_type)
+                                        <div style="font-size:11px;color:var(--text-muted)">
+                                            {{ $payment->payment_method_type }}</div>
+                                    @endif
+                                </td>
+                                <td><code
+                                        style="font-size:11px;font-family:monospace">{{ $payment->uuid ?? '—' }}</code>
                                 </td>
                                 <td>
-                                    @if($continueUrl)
+                                    <x-status-badge domain="payment" :status="$payment->status->value" set="bi" />
+                                    @if($payment->isRefunded())
+                                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+                                            <i class="bi bi-arrow-counterclockwise" style="margin-inline-end:2px"></i>{{ __('general.refunded') }}
+                                            @if($payment->refund_amount > 0)
+                                                — {{ $formatAmount($payment->refund_amount, $payment->currency ?? 'USD') }}
+                                            @endif
+                                            @if($payment->refunded_at)
+                                                <span style="display:block;font-size:10px">{{ $payment->refunded_at->format('Y/m/d H:i') }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($continueUrl)
                                         <a href="{{ $continueUrl }}" target="_blank" class="btn btn-sm btn-warning">
-                                            <i class="bi bi-credit-cardms-1"></i>{{ __('settings.complete_payment') }}
+                                            <i class="bi bi-credit-card ms-1"></i>{{ __('settings.complete_payment') }}
                                         </a>
                                     @endif
                                 </td>
@@ -69,7 +97,7 @@
                 </table>
             </div>
 
-            @if($payments->hasPages())
+            @if ($payments->hasPages())
                 <div class="p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
                     <x-pagination-info :items="$payments" />
                     <div>

@@ -97,10 +97,10 @@
 
                         <div class="d-flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border)">
                             <button type="submit" class="btn btn-accent btn-custom">
-                                <i class="bi bi-check-lgms-1"></i>{{ __('general.save') }}
+                                <i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}
                             </button>
                             <a href="{{ route('budget.index') }}" class="btn btn-outline-secondary btn-custom">
-                                <i class="bi bi-x-lgms-1"></i>{{ __('general.cancel') }}
+                                <i class="bi bi-x-lg"></i>{{ __('general.cancel') }}
                             </a>
                         </div>
                     </form>
@@ -148,6 +148,26 @@
         if (typeSelect) typeSelect.addEventListener('change', autoCalcEndDate);
         if (startInput) startInput.addEventListener('change', autoCalcEndDate);
         autoCalcEndDate();
+
+        var params = new URLSearchParams(window.location.search);
+        var preselectCategoryId = params.get('category_id');
+        if (preselectCategoryId) {
+            var categoryInputs = document.querySelectorAll('input[name*="[category_id]"]');
+            categoryInputs.forEach(function(input) {
+                if (input.value === preselectCategoryId) {
+                    var row = input.closest('.category-row');
+                    if (row) {
+                        var amountInput = row.querySelector('.category-amount');
+                        if (amountInput) {
+                            amountInput.focus();
+                            row.style.outline = '2px solid var(--accent)';
+                            row.style.outlineOffset = '-2px';
+                            setTimeout(function() { row.style.outline = ''; }, 2000);
+                        }
+                    }
+                }
+            });
+        }
     }
     initBudgetForm();
     </script>

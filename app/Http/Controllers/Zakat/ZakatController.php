@@ -6,6 +6,7 @@ use App\Contracts\Repositories\ZakatRepositoryInterface;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Zakat\StoreZakatRequest;
+use App\Http\Requests\Zakat\UpdateHaulSettingsRequest;
 use App\Models\ZakatRecord;
 use App\Services\GoldPriceService;
 use App\Services\CurrencyHelper;
@@ -46,6 +47,8 @@ class ZakatController extends Controller
             config('finance.currency', 'USD')
         );
 
+        $haulStatus = $service->getHaulStatus();
+
         return view('zakat.calculator', $this->withBreadcrumbs([
             'assets' => $assets,
             'goldItems' => $goldItems,
@@ -56,11 +59,27 @@ class ZakatController extends Controller
             'owingDebtsTotal' => $owingDebtsTotal,
             'recentRecords' => $recentRecords,
             'defaultSilverPrice' => $defaultSilverPrice,
+            'haulStatus' => $haulStatus,
         ]));
     }
 
     public function calculate(StoreZakatRequest $request, ZakatCalculationService $service)
     {
+        $user = auth()->user();
+
+        if (! $user->hasZakatHaulStarted()) {
+            return redirect()->route('zakat.calculator')
+                ->withErrors(['zakat_start_date' => __('zakat.set_start_date')]);
+        }
+
+        if (! $user->isZakatDue()) {
+            $daysLeft = $user->daysUntilNextZakat();
+            $nextDate = $user->nextZakatDate()?->format('Y/m/d');
+
+            return redirect()->route('zakat.calculator')
+                ->withErrors(['haul' => __('zakat.haul_not_complete') . ' — ' . __('zakat.days_left', ['days' => $daysLeft]) . ' (' . $nextDate . ')']);
+        }
+
         $data = $request->validated();
         $userCurrency = config('finance.currency', 'USD');
         $karatPurity = config('zakat.karat_purity', []);
@@ -92,6 +111,7 @@ class ZakatController extends Controller
         $owingDebtsTotal = $owingDebts->sum('remaining_amount');
 
         $goldItems = $data['gold_items'] ?? [['karat' => 21, 'weight' => 0, 'price' => 0]];
+        $haulStatus = $service->getHaulStatus();
 
         if (! empty($data['save'])) {
             $dbData = $this->mapResultToDb($result);
@@ -99,10 +119,13 @@ class ZakatController extends Controller
                 'user_id' => auth()->id(),
                 'calculation_date' => now(),
                 'hijri_year' => $this->getHijriYear(),
+                'calendar_type' => auth()->user()->calendar_type,
                 'notes' => $data['notes'] ?? null,
             ]));
 
             $this->createZakatAssets($record, $result);
+
+            auth()->user()->update(['last_zakat_date' => now()]);
 
             return redirect()->route('zakat.report', $record)
                 ->with('success', __('messages.zakat_saved'));
@@ -124,6 +147,7 @@ class ZakatController extends Controller
                 'USD',
                 $userCurrency
             ),
+            'haulStatus' => $haulStatus,
         ]);
     }
 
@@ -179,6 +203,19 @@ class ZakatController extends Controller
                 'message' => __('zakat.fetch_prices_error'),
             ], 500);
         }
+    }
+
+    public function updateHaulSettings(UpdateHaulSettingsRequest $request)
+    {
+        $data = $request->validated();
+
+        auth()->user()->update([
+            'zakat_start_date' => $request->getResolvedStartDate(),
+            'calendar_type' => $data['calendar_type'],
+        ]);
+
+        return redirect()->route('zakat.calculator')
+            ->with('success', __('zakat.haul_settings_updated'));
     }
 
     public function history(Request $request)

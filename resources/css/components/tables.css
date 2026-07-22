@@ -1,6 +1,8 @@
 .table-custom {
+  --bs-table-bg: transparent;
   width: 100%;
   border-collapse: collapse;
+  color: var(--text);
 }
 
 .table-custom thead {

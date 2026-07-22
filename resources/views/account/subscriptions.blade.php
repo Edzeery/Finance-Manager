@@ -143,9 +143,10 @@
                         {{-- Plan Meta Table --}}
                         <div class="row g-0" style="border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1rem">
                             @php
-                                $_pm = $getMethodType($subscription->payment_method);
+                                $_subMethodKey = $subscription->paymentMethod?->key ?? $subscription->payment_method;
+                                $_pm = $getMethodType($_subMethodKey);
                                 $_methodTypeLabel = $_pm?->type?->label();
-                                $_gatewayName = $_pm?->gateway?->name ?? $getMethodLabel($subscription->payment_method);
+                                $_gatewayName = $_pm?->gateway?->name ?? $getMethodLabel($_subMethodKey);
                             @endphp
                             <div class="col-4" style="border-inline-end:1px solid var(--border);background:var(--bg-subtle)">
                                 <div style="padding:12px 16px;text-align:center">
@@ -249,9 +250,20 @@
                                         @endif
                                     </span>
                                 </td>
-                                <td style="font-size:13px">{{ $getMethodLabel($payment->method) }}</td>
+                                <td style="font-size:13px">{{ $getMethodLabel($payment->paymentMethod?->key) }}</td>
                                 <td>
                                     <x-status-badge domain="payment" :status="$payment->status->value" set="bi" />
+                                    @if($payment->isRefunded())
+                                        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+                                            <i class="bi bi-arrow-counterclockwise" style="margin-inline-end:2px"></i>{{ __('general.refunded') }}
+                                            @if($payment->refund_amount > 0)
+                                                — {{ $formatAmount($payment->refund_amount, $payment->currency ?? 'USD') }}
+                                            @endif
+                                            @if($payment->refunded_at)
+                                                <span style="display:block;font-size:10px">{{ $payment->refunded_at->format('Y/m/d H:i') }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($continueUrl)

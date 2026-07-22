@@ -63,11 +63,10 @@ class PaymentStatusPageTest extends TestCase
             'payment_method' => 'chargily',
         ]);
 
-        $this->payment = Payment::factory()->create([
+        $this->payment = Payment::factory()->forMethod('chargily')->create([
             'workspace_id' => $this->workspace->id,
             'user_id' => $this->user->id,
             'subscription_id' => $subscription->id,
-            'method' => 'chargily',
             'transaction_id' => 'ch_retry_1',
             'status' => PaymentStatus::CheckoutCanceled,
             'amount' => 19.99,

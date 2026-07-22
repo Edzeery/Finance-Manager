@@ -3,15 +3,15 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToWorkspace;
+use App\Models\Concerns\HasCategories;
 use App\Models\Scopes\WorkspaceScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ExpenseCategory extends Model
 {
-    use BelongsToWorkspace, HasFactory;
+    use BelongsToWorkspace, HasFactory, HasCategories;
 
     protected bool $allowsNullWorkspace = true;
 
@@ -27,11 +27,6 @@ class ExpenseCategory extends Model
         return ['is_active' => 'boolean'];
     }
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class, 'category_id');
@@ -40,5 +35,29 @@ class ExpenseCategory extends Model
     public function budgetCategories(): HasMany
     {
         return $this->hasMany(BudgetCategory::class, 'expense_category_id');
+    }
+
+    public function getActiveBudgetInfo(): ?array
+    {
+        $bc = BudgetCategory::whereHas('budget', fn ($q) => $q->active()->current())
+            ->where('expense_category_id', $this->id)
+            ->where('allocated_amount', '>', 0)
+            ->with('budget')
+            ->first();
+
+        if (! $bc) {
+            return null;
+        }
+
+        $totalSpent = Expense::where('category_id', $this->id)
+            ->whereBetween('date', [$bc->budget->start_date, $bc->budget->end_date ?? now()])
+            ->sum('amount');
+
+        return [
+            'budget_name' => locale_name($bc->budget),
+            'allocated' => (float) $bc->allocated_amount,
+            'spent' => (float) $totalSpent,
+            'remaining' => max(0, $bc->allocated_amount - $totalSpent),
+        ];
     }
 }

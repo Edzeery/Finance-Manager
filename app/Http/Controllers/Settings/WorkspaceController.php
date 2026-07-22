@@ -78,7 +78,7 @@ class WorkspaceController extends Controller
             $payment = $result['payment'];
 
             $onlineMethods = ['chargily', 'paypal', 'stripe', 'wise', 'payoneer'];
-            if (in_array($payment->method, $onlineMethods)) {
+            if (in_array($payment->paymentMethod?->key, $onlineMethods)) {
                 return redirect()->route('payment.checkout', $payment);
             }
 

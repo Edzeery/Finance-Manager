@@ -9,6 +9,7 @@ return [
     'income_deleted' => 'Revenu supprimé avec succès',
     'income_archived' => "Statut d'archivage modifié avec succès",
     'expense_created' => 'Dépense ajoutée avec succès',
+    'expense_created_as_debt' => 'Dépense ajoutée avec succès en tant que dette',
     'expense_updated' => 'Dépense mise à jour avec succès',
     'expense_deleted' => 'Dépense supprimée avec succès',
     'debt_created' => 'Dette ajoutée avec succès',

@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
+use App\Services\DateFilterService;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 
 class DashboardCacheObserver
 {
@@ -33,10 +33,7 @@ class DashboardCacheObserver
         $workspaceId = $model->getAttribute('workspace_id');
 
         if ($userId && $workspaceId) {
-            Cache::forget("dashboard:kpi:{$userId}:{$workspaceId}");
-            Cache::forget("chart:monthly:{$userId}:{$workspaceId}:6");
-            Cache::forget("chart:category:{$userId}:{$workspaceId}:1");
-            Cache::forget("chart:balance:{$userId}:{$workspaceId}:6");
+            app(DateFilterService::class)->bumpCacheVersion($userId, (int) $workspaceId);
         }
     }
 }

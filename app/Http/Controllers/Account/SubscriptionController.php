@@ -154,7 +154,12 @@ class SubscriptionController extends Controller
                 ->with('error', __('messages.no_active_subscription'));
         }
 
-        $subscription->update(['payment_method' => $validated['payment_method']]);
+        $paymentMethodModel = PaymentMethod::where('key', $validated['payment_method'])->first();
+
+        $subscription->update([
+            'payment_method_id' => $paymentMethodModel?->id,
+            'payment_method' => $validated['payment_method'],
+        ]);
 
         return redirect()->route('account.subscriptions')
             ->with('success', __('messages.payment_method_updated'));

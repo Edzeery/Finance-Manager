@@ -93,13 +93,45 @@ class NotificationService
     public function zakatReminder(int $userId): Notification
     {
         return $this->create($userId, 'zakat_reminder', [
-            'ar' => 'تذكير بحساب الزكاة',
-            'fr' => 'Rappel de calcul de Zakat',
-            'en' => 'Zakat calculation reminder',
+            'ar' => 'حساب الزكاة واجب الآن',
+            'fr' => 'Zakat calculation due',
+            'en' => 'Zakat calculation due',
         ], [
-            'ar' => 'لم تقم بحساب الزكاة منذ أكثر من عام. يرجى تحديث أصولك وحساب الزكاة.',
-            'fr' => "Vous n'avez pas calculé la Zakat depuis plus d'un an. Veuillez mettre à jour vos actifs.",
-            'en' => 'You have not calculated Zakat for over a year. Please update your assets.',
+            'ar' => 'اكتمل حَوْل الزكاة — الزكاة واجبة الآن. يرجى حساب أصولك وحفظ السجل.',
+            'fr' => "Le Haul de la Zakat est terminé. La Zakat est due. Veuillez calculer vos actifs.",
+            'en' => 'Your Zakat haul is complete — Zakat is now due. Please calculate your assets.',
+        ]);
+    }
+
+    public function zakatApproachingReminder(int $userId, int $daysLeft): Notification
+    {
+        $title = match (true) {
+            $daysLeft <= 1 => [
+                'ar' => 'الزكاة واجبة غداً!',
+                'fr' => 'Zakat due demain !',
+                'en' => 'Zakat due tomorrow!',
+            ],
+            $daysLeft <= 7 => [
+                'ar' => 'تذكير: موعد الزكاة قريب',
+                'fr' => 'Rappel : Zakat proche',
+                'en' => 'Reminder: Zakat approaching',
+            ],
+            default => [
+                'ar' => 'تذكير: اقتراب موعد الزكاة',
+                'fr' => 'Rappel : Échéance de Zakat',
+                'en' => 'Reminder: Zakat due date ahead',
+            ],
+        };
+
+        $message = [
+            'ar' => "باقي $daysLeft يوماً على اكتمال حَوْل الزكاة. يرجى التحضير لحساب الأصول.",
+            'fr' => "Il reste $daysLeft jours avant l'achèvement du Haul. Veuillez préparer le calcul.",
+            'en' => "$daysLeft days until your Zakat haul completes. Please prepare to calculate.",
+        ];
+
+        return $this->create($userId, 'zakat_approaching', $title, $message, [
+            'days_left' => $daysLeft,
+            'route' => 'zakat.calculator',
         ]);
     }
 

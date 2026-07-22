@@ -106,6 +106,7 @@ class ExpenseController extends BaseCrudController
         $data = $request->validated();
         $data['user_id'] = auth()->id();
 
+        $debtCreated = false;
         if ($request->boolean('is_new_debt') && $request->filled('debt_counterparty')) {
             $debt = Debt::create([
                 'user_id' => auth()->id(),
@@ -119,12 +120,16 @@ class ExpenseController extends BaseCrudController
                 'notes' => 'تم إنشاؤه تلقائياً من مصروف: ' . ($request->input('description') ?? ''),
             ]);
             $data['debt_id'] = $debt->id;
+            $debtCreated = true;
         }
 
         $this->expenseRepo->create($data);
 
-        return redirect()->route('expense.index')
-            ->with('success', __('messages.expense_created'));
+        $message = $debtCreated
+            ? __('messages.expense_created_as_debt')
+            : __('messages.expense_created');
+
+        return redirect()->route('expense.index')->with('success', $message);
     }
 
     public function edit(Expense $expense)

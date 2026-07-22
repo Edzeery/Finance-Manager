@@ -17,6 +17,9 @@ class KpiData
         public readonly float $totalIncomeAllTime,
         public readonly float $totalExpenseAllTime,
         public readonly float $totalDebtsOwing,
+        public readonly float $totalDebtsPaid = 0,
+        public readonly int $activeDebtsCount = 0,
+        public readonly float $collectionRate = 0,
     ) {}
 
     public static function fromArray(array $data): self
@@ -34,6 +37,9 @@ class KpiData
             totalIncomeAllTime: (float) ($data['totalIncomeAllTime'] ?? 0),
             totalExpenseAllTime: (float) ($data['totalExpenseAllTime'] ?? 0),
             totalDebtsOwing: (float) ($data['totalDebtsOwing'] ?? 0),
+            totalDebtsPaid: (float) ($data['totalDebtsPaid'] ?? 0),
+            activeDebtsCount: (int) ($data['activeDebtsCount'] ?? 0),
+            collectionRate: (float) ($data['collectionRate'] ?? 0),
         );
     }
 

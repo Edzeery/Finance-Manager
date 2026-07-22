@@ -40,7 +40,7 @@
             <div class="col-md-4">
                 <div style="background:var(--bg-subtle);border-radius:8px;padding:16px">
                     <div class="text-muted-sm mb-1" style="font-size:12px">{{ __('settings.payment_method') }}</div>
-                    <div style="font-weight:600">{{ $invoice->subscription?->payment_method ?? '—' }}</div>
+                    <div style="font-weight:600">{{ $invoice->subscription?->paymentMethod?->key ?? $invoice->subscription?->payment_method ?? '—' }}</div>
                 </div>
             </div>
         </div>

@@ -30,7 +30,7 @@
         <div class="col-md-3">
             <x-kpi-card
                 icon="bi-cash-stack"
-                iconBg="rgba(34,197,94,0.12)"
+                iconBg="var(--success-light)"
                 iconColor="var(--success)"
                 :label="__('report.total_income')"
                 :value="Number::currency($report['totalIncome'], config('finance.currency_symbol'))"
@@ -40,7 +40,7 @@
         <div class="col-md-3">
             <x-kpi-card
                 icon="bi-cart"
-                iconBg="rgba(239,68,68,0.12)"
+                iconBg="var(--danger-light)"
                 iconColor="var(--danger)"
                 :label="__('report.total_expense')"
                 :value="Number::currency($report['totalExpense'], config('finance.currency_symbol'))"
@@ -50,7 +50,7 @@
         <div class="col-md-3">
             <x-kpi-card
                 icon="bi-piggy-bank"
-                iconBg="rgba(59,130,246,0.12)"
+                iconBg="var(--info-light)"
                 iconColor="var(--info)"
                 :label="__('report.net_savings')"
                 :value="Number::currency($report['netSavings'], config('finance.currency_symbol'))"
@@ -60,7 +60,7 @@
         <div class="col-md-3">
             <x-kpi-card
                 icon="bi-credit-card-2-front"
-                iconBg="rgba(245,158,11,0.12)"
+                iconBg="var(--warning-light)"
                 iconColor="var(--warning)"
                 :label="__('report.active_debts')"
                 :value="$report['activeDebts']->count()"

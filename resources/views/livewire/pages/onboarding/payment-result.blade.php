@@ -183,7 +183,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         // Verify with gateway for ALL methods (including manual) before canceling
         try {
-            $gateway = app(GatewayManager::class)->driver($payment->method);
+            $gateway = app(GatewayManager::class)->driver($payment->paymentMethod?->key);
             $result = $gateway->verify($payment);
 
             if ($result->success && ($result->metadata['status'] ?? '') === 'paid') {
@@ -194,7 +194,7 @@ new #[Layout('layouts.guest')] class extends Component
         } catch (\Throwable $e) {
             Log::warning('Cancel verify failed', [
                 'payment_id' => $payment->id,
-                'method' => $payment->method,
+                'method' => $payment->paymentMethod?->key,
                 'error' => $e->getMessage(),
             ]);
             // Continue with cancellation even if verify fails
@@ -484,7 +484,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <button wire:click="retry" class="btn btn-accent btn-custom">
                     <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
                 </button>
-                @if ($payment && OnboardingService::isManual($payment->method))
+                @if ($payment && OnboardingService::isManual($payment->paymentMethod?->key))
                 <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
                     <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
                 </button>
@@ -513,7 +513,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <button wire:click="retry" class="btn btn-accent btn-custom">
                     <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
                 </button>
-                @if ($payment && OnboardingService::isManual($payment->method))
+                @if ($payment && OnboardingService::isManual($payment->paymentMethod?->key))
                 <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
                     <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
                 </button>

@@ -12,7 +12,7 @@
         </div>
         <div class="info-row">
             <span class="info-label">{{ __('onboarding.payment_method_label') }}</span>
-            <span class="info-value">{{ $this->methodLabel($payment->method) }}</span>
+            <span class="info-value">{{ $this->methodLabel($payment->paymentMethod?->key) }}</span>
         </div>
         @if ($payment->payment_method_type)
         <div class="info-row">

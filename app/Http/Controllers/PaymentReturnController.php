@@ -44,7 +44,7 @@ class PaymentReturnController extends Controller
         // For pending online payments with a transaction ID, try verifying with gateway API
         if ($payment->transaction_id) {
             try {
-                $gateway = $this->gatewayManager->driver($payment->method);
+                $gateway = $this->gatewayManager->driver($payment->paymentMethod?->key);
                 $result = $gateway->verify($payment);
 
                 if ($result->success && ($result->metadata['status'] ?? '') === 'paid') {

@@ -39,8 +39,10 @@ class DashboardController extends Controller
                 $planId = $request->input('plan_id');
                 $data = $dashboard->getRevenueStats($period, $startDate, $endDate, $gateway, $planId);
                 $data['gateway_keys'] = Payment::withoutWorkspace()
-                    ->where('status', 'checkout.paid')->whereNotNull('method')
-                    ->distinct()->pluck('method')->toArray();
+                    ->where('status', 'checkout.paid')
+                    ->whereNotNull('method_id')
+                    ->join('payment_methods', 'payments.method_id', '=', 'payment_methods.id')
+                    ->distinct()->pluck('payment_methods.key')->toArray();
                 $data['plan_options'] = SubscriptionPlan::pluck('name', 'id')->toArray();
                 break;
 

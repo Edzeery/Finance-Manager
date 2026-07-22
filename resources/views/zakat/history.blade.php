@@ -31,6 +31,8 @@
                     <thead>
                         <tr>
                             <th>{{ __('zakat.calculation_date') }}</th>
+                            <th>{{ __('zakat.hijri_year') }}</th>
+                            <th>{{ __('zakat.calendar_type') }}</th>
                             <th class="text-end">{{ __('zakat.total_wealth') }}</th>
                             <th class="text-end">{{ __('zakat.total_zakatable') }}</th>
                             <th>{{ __('zakat.exceeds_nisab') }}</th>
@@ -42,6 +44,8 @@
                         @foreach($records as $record)
                             <tr>
                                 <td>{{ $record->calculation_date->format('Y/m/d') }}</td>
+                                <td>{{ $record->hijri_year ?? '-' }}</td>
+                                <td>{{ __('zakat.' . ($record->calendar_type ?? 'hijri')) }}</td>
                                 <td class="text-end">{{ number_format($record->total_wealth, 2) }}</td>
                                 <td class="text-end">{{ number_format($record->total_zakatable, 2) }}</td>
                                 <td>

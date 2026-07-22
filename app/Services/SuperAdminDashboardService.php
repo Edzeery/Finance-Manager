@@ -69,10 +69,12 @@ class SuperAdminDashboardService
             }])->get()->pluck('subscriptions_count', 'slug');
 
             $gatewayData = Payment::withoutWorkspace()->where('status', PaymentStatus::CheckoutPaid->value)->whereNull('refunded_at')
-                ->selectRaw('method, currency, SUM(amount) as total')->groupBy('method', 'currency')->get();
+                ->join('payment_methods', 'payments.method_id', '=', 'payment_methods.id')
+                ->selectRaw('payment_methods.key as gateway_key, payments.currency, SUM(payments.amount) as total')
+                ->groupBy('payment_methods.key', 'payments.currency')->get();
             $byGateway = [];
             foreach ($gatewayData as $row) {
-                $byGateway[$row->method] = ($byGateway[$row->method] ?? 0) + $this->currencyHelper->convert((float) $row->total, $row->currency, $this->currencyHelper->baseCurrency());
+                $byGateway[$row->gateway_key] = ($byGateway[$row->gateway_key] ?? 0) + $this->currencyHelper->convert((float) $row->total, $row->currency, $this->currencyHelper->baseCurrency());
             }
 
             $superAdminCount = User::whereHas('roles', fn ($q) => $q->whereIn('slug', ['super_admin', 'deputy_super_admin']))->count();
@@ -137,9 +139,9 @@ class SuperAdminDashboardService
                 $refundedQuery->whereBetween('refunded_at', [$start, $end]);
             }
             if ($gateway) {
-                $paidQuery->where('method', $gateway);
-                $pendingQuery->where('method', $gateway);
-                $refundedQuery->where('method', $gateway);
+                $paidQuery->whereHas('paymentMethod', fn ($q) => $q->where('key', $gateway));
+                $pendingQuery->whereHas('paymentMethod', fn ($q) => $q->where('key', $gateway));
+                $refundedQuery->whereHas('paymentMethod', fn ($q) => $q->where('key', $gateway));
             }
             if ($planId) {
                 $paidQuery->whereHas('subscription', fn ($q) => $q->where('plan_id', $planId));
@@ -189,11 +191,12 @@ class SuperAdminDashboardService
             $refundRate = $gross > 0 ? round($refunded / $gross * 100, 2) : 0;
 
             $gatewayData = (clone $paidQuery)
-                ->selectRaw('method, currency, SUM(amount) as total')
-                ->groupBy('method', 'currency')->get();
+                ->join('payment_methods', 'payments.method_id', '=', 'payment_methods.id')
+                ->selectRaw('payment_methods.key as gateway_key, payments.currency, SUM(payments.amount) as total')
+                ->groupBy('payment_methods.key', 'payments.currency')->get();
             $byGateway = [];
             foreach ($gatewayData as $row) {
-                $byGateway[$row->method] = ($byGateway[$row->method] ?? 0) + $converter($row->total, $row->currency);
+                $byGateway[$row->gateway_key] = ($byGateway[$row->gateway_key] ?? 0) + $converter($row->total, $row->currency);
             }
 
             $planBase = Payment::withoutWorkspace()->where('payments.status', PaymentStatus::CheckoutPaid->value)
@@ -202,7 +205,7 @@ class SuperAdminDashboardService
                 $planBase->whereBetween('paid_at', [$start, $end]);
             }
             if ($gateway) {
-                $planBase->where('payments.method', $gateway);
+                $planBase->whereHas('paymentMethod', fn ($q) => $q->where('key', $gateway));
             }
             if ($planId) {
                 $planBase->whereHas('subscription', fn ($q) => $q->where('plan_id', $planId));
@@ -435,7 +438,7 @@ class SuperAdminDashboardService
             $q = Payment::withoutWorkspace()->where('status', PaymentStatus::CheckoutPaid->value)->whereNull('refunded_at')
                 ->whereBetween('paid_at', [$mStart, $mEnd]);
             if ($gateway) {
-                $q->where('method', $gateway);
+                $q->whereHas('paymentMethod', fn ($sq) => $sq->where('key', $gateway));
             }
             if ($planId) {
                 $q->whereHas('subscription', fn ($sq) => $sq->where('plan_id', $planId));

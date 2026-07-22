@@ -8,11 +8,14 @@ return [
         'failed'    => 'Échoué',
         'refunded'  => 'Remboursé',
         'canceled'  => 'Annulé',
-        'checkout_paid'     => 'Payé (Paiement)',
-        'checkout_pending'  => 'En attente (Paiement)',
-        'checkout_failed'   => 'Échoué (Paiement)',
-        'checkout_canceled' => 'Annulé (Paiement)',
-        'checkout_expired'  => 'Expiré (Paiement)',
+        'checkout' => [
+            'paid'     => 'Payé (Paiement)',
+            'pending'  => 'En attente (Paiement)',
+            'failed'   => 'Échoué (Paiement)',
+            'canceled' => 'Annulé (Paiement)',
+            'expired'  => 'Expiré (Paiement)',
+        ],
+
     ],
 
     'subscription' => [

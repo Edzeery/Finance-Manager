@@ -12,11 +12,11 @@
 
     <x-filter-tabs :tabs="[
         'all' => ['label' => __('general.all'), 'count' => $countAll, 'icon' => 'bi-cash-coin'],
-        'checkout.pending' => ['label' => __('general.pending'), 'count' => $countPending, 'icon' => 'bi-clock'],
-        'checkout.paid' => ['label' => __('general.paid'), 'count' => $countPaid, 'icon' => 'bi-check-circle'],
-        'checkout.failed' => ['label' => __('general.failed'), 'count' => $countFailed, 'icon' => 'bi-x-circle'],
-        'checkout.canceled' => ['label' => __('general.canceled'), 'count' => $countCanceled, 'icon' => 'bi-slash-circle'],
-        'checkout.expired' => ['label' => __('super-admin.expired'), 'count' => $countExpired, 'icon' => 'bi-hourglass-split'],
+        'checkout_pending' => ['label' => __('general.pending'), 'count' => $countPending, 'icon' => 'bi-clock'],
+        'checkout_paid' => ['label' => __('general.paid'), 'count' => $countPaid, 'icon' => 'bi-check-circle'],
+        'checkout_failed' => ['label' => __('general.failed'), 'count' => $countFailed, 'icon' => 'bi-x-circle'],
+        'checkout_canceled' => ['label' => __('general.canceled'), 'count' => $countCanceled, 'icon' => 'bi-slash-circle'],
+        'checkout_expired' => ['label' => __('super-admin.expired'), 'count' => $countExpired, 'icon' => 'bi-hourglass-split'],
     ]" current="{{ request('status', 'all') }}" keyParam="status" defaultKey="all"
         :preserve="['search', 'per_page', 'refunded', 'date_from', 'date_to']"
         subParam="method"
@@ -73,7 +73,7 @@
                     <tbody>
                         @foreach ($payments as $payment)
                             @php
-                                $isWebhook = in_array($payment->method, $webhookMethods);
+                                $isWebhook = in_array($payment->paymentMethod?->key, $webhookMethods);
                                 $hasFeeOrTax = ($payment->gateway_fee ?? 0) > 0 || ($payment->tax_added ?? 0) > 0 || ($payment->discount_amount ?? 0) > 0;
                             @endphp
                             <tr>
@@ -103,13 +103,18 @@
                                     @if ($hasFeeOrTax)
                                         <i class="bi bi-info-circle" style="font-size:12px;color:var(--text-muted);cursor:help"
                                             title="{{ __('super-admin.original') }}: {{ number_format($payment->original_amount ?? $payment->amount, 2) }} {{ $payment->currency }}
-{{ __('super-admin.discount_amount') }}: -{{ number_format($payment->discount_amount ?? 0, 2) }}
-{{ __('super-admin.gateway_fee') }}: {{ number_format($payment->gateway_fee ?? 0, 2) }}
-{{ __('super-admin.tax_added') }}: {{ number_format($payment->tax_added ?? 0, 2) }} + {{ __('super-admin.tax_disclosed') }}: {{ number_format($payment->tax_disclosed ?? 0, 2) }}"></i>
+                                            {{ __('super-admin.discount_amount') }}: -{{ number_format($payment->discount_amount ?? 0, 2) }}
+                                            {{ __('super-admin.gateway_fee') }}: {{ number_format($payment->gateway_fee ?? 0, 2) }}
+                                            {{ __('super-admin.tax_added') }}: {{ number_format($payment->tax_added ?? 0, 2) }} + {{ __('super-admin.tax_disclosed') }}: {{ number_format($payment->tax_disclosed ?? 0, 2) }}"></i>
                                     @endif
                                 </td>
                                 <td>
-                                    <div style="font-size:12px;color:var(--text-secondary);text-transform:capitalize">{{ __("super-admin.{$payment->method}") }}</div>
+                                     @php
+                                        $paymentMethodGetway = $payment->paymentMethod?->key;
+                                    @endphp
+                                    <div style="font-size:12px;color:var(--text-secondary);text-transform:capitalize">
+                                        {{ __("super-admin.{$paymentMethodGetway}") }}
+                                    </div>
                                     @if ($payment->payment_method_type)
                                         <div style="font-size:11px;color:var(--text-muted)">{{ $payment->payment_method_type }}</div>
                                     @endif
@@ -148,6 +153,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-1 flex-wrap">
+
                                         <x-status-badge domain="payment" :status="$payment->status->value" set="bi" />
                                         @if ($payment->isRefunded())
                                             <span class="badge" style="font-size:9px;background:var(--info-light);color:var(--info);padding:2px 8px;border-radius:6px;font-weight:600">{{ __('super-admin.refunded') }}</span>

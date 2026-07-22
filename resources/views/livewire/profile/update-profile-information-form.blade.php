@@ -82,7 +82,7 @@ new class extends Component
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <button type="submit" class="btn btn-accent btn-custom"><i class="bi bi-check-lgms-1"></i>{{ __('general.save') }}</button>
+            <button type="submit" class="btn btn-accent btn-custom"><i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}</button>
             <div wire:loading wire:target="updateProfileInformation" class="spinner-border spinner-border-sm" role="status" style="color:var(--accent)"></div>
             <span wire:loading.remove wire:target="updateProfileInformation" wire:transition
                   x-data="{ show: false }"

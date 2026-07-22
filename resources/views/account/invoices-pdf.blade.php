@@ -51,7 +51,7 @@
         </div>
         <div class="info-card">
             <div class="info-label">{{ __('settings.payment_method') }}</div>
-            <div class="info-value">{{ $invoice->subscription?->payment_method ?? '—' }}</div>
+            <div class="info-value">{{ $invoice->subscription?->paymentMethod?->key ?? $invoice->subscription?->payment_method ?? '—' }}</div>
         </div>
     </div>
 

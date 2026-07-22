@@ -42,8 +42,7 @@ class ChargilyPaymentMethodTest extends TestCase
     {
         $this->markTestSkipped('Chargily webhook requires real HTTP (ngrok) — library reads php://input which is empty in CLI');
 
-        $payment = Payment::factory()->create([
-            'method' => 'chargily',
+        $payment = Payment::factory()->forMethod('chargily')->create([
             'transaction_id' => 'ch_edahabia_1',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -78,8 +77,7 @@ class ChargilyPaymentMethodTest extends TestCase
     {
         $this->markTestSkipped('Chargily webhook requires real HTTP (ngrok) — library reads php://input which is empty in CLI');
 
-        $payment = Payment::factory()->create([
-            'method' => 'chargily',
+        $payment = Payment::factory()->forMethod('chargily')->create([
             'transaction_id' => 'ch_cib_1',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -114,8 +112,7 @@ class ChargilyPaymentMethodTest extends TestCase
     {
         $this->markTestSkipped('Chargily webhook requires real HTTP (ngrok) — library reads php://input which is empty in CLI');
 
-        $payment = Payment::factory()->create([
-            'method' => 'chargily',
+        $payment = Payment::factory()->forMethod('chargily')->create([
             'transaction_id' => 'ch_no_method',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,
@@ -150,8 +147,7 @@ class ChargilyPaymentMethodTest extends TestCase
     {
         $this->markTestSkipped('Chargily webhook requires real HTTP (ngrok) — library reads php://input which is empty in CLI');
 
-        $payment = Payment::factory()->create([
-            'method' => 'chargily',
+        $payment = Payment::factory()->forMethod('chargily')->create([
             'transaction_id' => 'ch_existing',
             'status' => PaymentStatus::CheckoutPaid,
             'workspace_id' => $this->workspace->id,
@@ -186,8 +182,7 @@ class ChargilyPaymentMethodTest extends TestCase
     {
         $this->markTestSkipped('Chargily webhook requires real HTTP (ngrok) — library reads php://input which is empty in CLI');
 
-        $payment = Payment::factory()->create([
-            'method' => 'chargily',
+        $payment = Payment::factory()->forMethod('chargily')->create([
             'transaction_id' => 'ch_fail_1',
             'status' => PaymentStatus::CheckoutPending,
             'workspace_id' => $this->workspace->id,

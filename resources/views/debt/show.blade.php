@@ -112,7 +112,7 @@
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-accent btn-custom">
-                                    <i class="bi bi-check-lgms-1"></i>{{ __('debt.add_payment') }}
+                                    <i class="bi bi-check-lg ms-1"></i>{{ __('debt.add_payment') }}
                                 </button>
                             </div>
                         </form>

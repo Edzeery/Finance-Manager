@@ -105,6 +105,13 @@ class TaxRateController extends Controller
             ->with('success', __('super-admin.tax_rate_deleted'));
     }
 
+    public function toggleStatus(TaxRate $taxRate)
+    {
+        $taxRate->update(['is_active' => ! $taxRate->is_active]);
+
+        return back()->with('success', __('messages.subscription_updated'));
+    }
+
     private function syncPaymentMethodLinks(TaxRate $taxRate, array $links): void
     {
         DB::table('payment_method_tax_rate')
