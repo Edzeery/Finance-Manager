@@ -255,7 +255,11 @@ class PaymentService
                         }
 
                         $wasPastDue = $newSub->status === SubscriptionStatus::PastDue;
-                        $newSub->update(['status' => SubscriptionStatus::Active->value]);
+                        $endsAt = $newSub->billing_period === 'yearly' ? now()->addYear() : now()->addMonth();
+                        $newSub->update([
+                            'status' => SubscriptionStatus::Active->value,
+                            'ends_at' => $newSub->ends_at ?? $endsAt,
+                        ]);
 
                         SubscriptionActivated::dispatch($newSub, $payment);
 

@@ -192,7 +192,7 @@ class DashboardController extends Controller
             'type' => 'expense',
         ]) : collect();
 
-        $allTransactions = $incomes->merge($expenses)->sortByDesc('date')->values();
+        $allTransactions = collect()->merge($incomes)->merge($expenses)->sortByDesc('date')->values();
 
         $totalIncome = (float) $incomes->sum('amount');
         $totalExpense = (float) $expenses->sum('amount');
