@@ -229,6 +229,23 @@ class SubscriptionService
                 }
             }
 
+            // [LOGGING] مؤقت — حذف بعد اكتمال الإصلاح
+            logger()->channel('subscriptions')->info('changePlan.debug', [
+                'workspace_id' => $workspace->id,
+                'current_plan' => $currentSub?->plan?->name,
+                'current_ends_at' => $currentSub?->ends_at?->toIso8601String(),
+                'current_status' => $currentSub?->status?->value,
+                'current_plan_price' => $currentSub?->plan_price_amount,
+                'current_billing_period' => $currentSub?->billing_period,
+                'target_plan' => $plan->name,
+                'target_billing' => $billingPeriod,
+                'is_plan_change' => $isPlanChange,
+                'is_trial_upgrade' => $isTrialUpgrade,
+                'proration' => $proration,
+                'final_price' => $price,
+                'payment_method' => $paymentMethod,
+            ]);
+
             $endsAt = $billingPeriod === 'yearly' ? now()->addYear() : now()->addMonth();
 
             $paymentMethodModel = $paymentMethod

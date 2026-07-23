@@ -32,6 +32,7 @@ class SubscriptionProrationService
             return [
                 'amount_due' => 0,
                 'remaining_value' => 0,
+                'cost_at_new_rate' => 0,
                 'remaining_days' => 0,
                 'total_days' => 0,
                 'is_upgrade' => false,
@@ -42,8 +43,8 @@ class SubscriptionProrationService
         $currentPrice = $subscription->plan_price_amount
             ?? ($billingPeriod === 'yearly' ? $subscription->plan->yearly_price : $subscription->plan->monthly_price);
 
-        $totalDays = $subscription->ends_at->diffInDays($subscription->starts_at) ?: self::MID_MONTH_DAYS;
-        $remainingDays = max(0, now()->diffInDays($subscription->ends_at, false));
+        $totalDays = abs($subscription->ends_at->diffInDays($subscription->starts_at)) ?: self::MID_MONTH_DAYS;
+        $remainingDays = max(0, abs(now()->diffInDays($subscription->ends_at, false)));
 
         $targetPrice = $billingPeriod === 'yearly'
             ? $targetPlan->yearly_price
@@ -53,6 +54,7 @@ class SubscriptionProrationService
             return [
                 'amount_due' => 0,
                 'remaining_value' => 0,
+                'cost_at_new_rate' => 0,
                 'remaining_days' => $remainingDays,
                 'total_days' => $totalDays,
                 'is_upgrade' => false,

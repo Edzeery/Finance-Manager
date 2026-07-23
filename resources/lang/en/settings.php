@@ -133,4 +133,19 @@ return [
     'login_history_help' => 'Recent login attempts on your account.',
     'no_login_history' => 'No login history found.',
     'suspicious_activity' => 'Suspicious Activity',
+
+    // Upgrade Confirmation Modal
+    'new_plan' => 'New Plan',
+    'proration_breakdown' => 'Proration Breakdown',
+    'remaining_value' => 'Remaining Value',
+    'cost_at_new_rate' => 'Cost at New Rate',
+    'amount_due' => 'Amount Due',
+    'credit' => 'Credit',
+    'new_end_date' => 'New End Date',
+    'confirm_upgrade' => 'Confirm Upgrade',
+    'upgrade_period_starts_now' => 'The new period starts from the upgrade date.',
+    'days_remaining' => 'Days Remaining',
+    'subscription_period' => 'Subscription Period',
+    'plan_price' => 'Plan Price',
+    'coupon_discount' => 'Coupon Discount',
 ];

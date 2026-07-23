@@ -132,4 +132,19 @@ return [
     'login_history_help' => 'محاولات تسجيل الدخول الأخيرة على حسابك.',
     'no_login_history' => 'لا يوجد سجل تسجيل دخول.',
     'suspicious_activity' => 'نشاط مشبوه',
+
+    // Upgrade Confirmation Modal
+    'new_plan' => 'الخطة الجديدة',
+    'proration_breakdown' => 'تفاصيل التسوية',
+    'remaining_value' => 'القيمة المتبقية',
+    'cost_at_new_rate' => 'تكلفة الفترة بالخطة الجديدة',
+    'amount_due' => 'المبلغ المستحق',
+    'credit' => 'الرصيد',
+    'new_end_date' => 'تاريخ الانتهاء الجديد',
+    'confirm_upgrade' => 'تأكيد الترقية',
+    'upgrade_period_starts_now' => 'الفترة الجديدة تبدأ من تاريخ الترقية.',
+    'days_remaining' => 'الأيام المتبقية',
+    'subscription_period' => 'فترة الاشتراك',
+    'plan_price' => 'سعر الباقة',
+    'coupon_discount' => 'خصم الكوبون',
 ];

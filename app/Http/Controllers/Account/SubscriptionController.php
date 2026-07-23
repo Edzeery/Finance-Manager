@@ -174,11 +174,30 @@ class SubscriptionController extends Controller
             'coupon' => 'nullable|string|max:50',
         ]);
 
+        $user = auth()->user();
+        $workspace = $user->currentWorkspace;
         $plan = SubscriptionPlan::where('slug', $data['plan_slug'])->firstOrFail();
 
         $priceUsd = $data['billing'] === 'yearly'
             ? (float) $plan->yearly_price
             : (float) $plan->monthly_price;
+
+        $proration = null;
+        $isPlanChange = false;
+        if ($workspace) {
+            $currentSub = $workspace->owner()?->first()?->activeSubscription();
+            $isPlanChange = $currentSub
+                && $currentSub->isActive()
+                && ! $currentSub->plan->isFree()
+                && $plan->slug !== $currentSub->plan?->slug;
+
+            if ($isPlanChange) {
+                $proration = $subscriptionService->calculateProration($workspace, $plan, $data['billing']);
+                if ($proration['remaining_days'] > 0) {
+                    $priceUsd = max($proration['amount_due'], 0);
+                }
+            }
+        }
 
         $discountUsd = 0;
         if (! empty($data['coupon'])) {
@@ -207,7 +226,7 @@ class SubscriptionController extends Controller
             }
         }
 
-        $userCurrency = auth()->user()->currency ?? config('finance.currency', 'USD');
+        $userCurrency = $user->currency ?? config('finance.currency', 'USD');
 
         return response()->json([
             'original_usd' => $priceUsd,
@@ -224,6 +243,19 @@ class SubscriptionController extends Controller
             'total_usd' => $finalUsd + $gatewayFeeUsd + $taxAddedUsd,
             'total' => CurrencyHelper::fromUsd($finalUsd + $gatewayFeeUsd + $taxAddedUsd, $userCurrency),
             'currency' => $userCurrency,
+            'is_plan_change' => $isPlanChange,
+            'proration' => $proration ? [
+                'remaining_days' => $proration['remaining_days'],
+                'total_days' => $proration['total_days'],
+                'remaining_value_usd' => $proration['remaining_value'],
+                'remaining_value' => CurrencyHelper::fromUsd($proration['remaining_value'], $userCurrency),
+                'cost_at_new_rate_usd' => $proration['cost_at_new_rate'] ?? 0,
+                'cost_at_new_rate' => CurrencyHelper::fromUsd($proration['cost_at_new_rate'] ?? 0, $userCurrency),
+                'amount_due_usd' => $proration['amount_due'],
+                'amount_due' => CurrencyHelper::fromUsd($proration['amount_due'], $userCurrency),
+                'is_upgrade' => $proration['is_upgrade'],
+                'is_downgrade' => $proration['is_downgrade'],
+            ] : null,
         ]);
     }
 }
