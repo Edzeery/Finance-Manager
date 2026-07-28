@@ -82,6 +82,14 @@ class Budget extends Model
         return $query->where('is_active', false);
     }
 
+    public function getNameAttribute(): string
+    {
+        $locale = app()->getLocale();
+        $column = "name_{$locale}";
+
+        return $this->attributes[$column] ?? $this->name_en ?? $this->name_ar ?? __('budgets.untitled');
+    }
+
     public function scopeCurrent($query)
     {
         return $query->where('start_date', '<=', now())

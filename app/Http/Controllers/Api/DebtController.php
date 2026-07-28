@@ -9,12 +9,14 @@ use App\Http\Resources\DebtResource;
 use App\Repositories\DebtRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class DebtController extends Controller
 {
     public function __construct(private DebtRepository $debtRepo) {}
 
-    public function index(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
+    public function index(Request $request): ResourceCollection
     {
         $filters = array_merge(
             $request->only(['status', 'type', 'search', 'per_page']),
@@ -25,7 +27,7 @@ class DebtController extends Controller
         return DebtResource::collection($debts);
     }
 
-    public function store(StoreDebtRequest $request): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function store(StoreDebtRequest $request): JsonResponse|JsonResource
     {
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
@@ -35,7 +37,7 @@ class DebtController extends Controller
         return response()->json(new DebtResource($debt), 201);
     }
 
-    public function show(Request $request, int $id): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function show(Request $request, int $id): JsonResponse|JsonResource
     {
         $debt = $this->debtRepo->findOrFail($id);
         $this->authorize('view', $debt);
@@ -43,7 +45,7 @@ class DebtController extends Controller
         return response()->json(new DebtResource($debt));
     }
 
-    public function update(UpdateDebtRequest $request, int $id): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function update(UpdateDebtRequest $request, int $id): JsonResponse|JsonResource
     {
         $debt = $this->debtRepo->findOrFail($id);
         $this->authorize('update', $debt);

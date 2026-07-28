@@ -1,6 +1,7 @@
 .super-admin-layout {
     display: flex;
     min-height: 100vh;
+    overflow-y: auto;
 }
 
 .super-admin-layout .main-content {

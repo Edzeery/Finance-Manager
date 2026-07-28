@@ -1,4 +1,4 @@
-{{-- resources\views\super-admin\payments.blade.php --}}
+﻿{{-- resources\views\super-admin\payments.blade.php --}}
 <x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.payments') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.payments') }}</x-slot>
@@ -41,7 +41,7 @@
                     @if (request('method'))
                         <input type="hidden" name="method" value="{{ request('method') }}">
                     @endif
-                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <x-button variant="accent" submit>{{ __('general.filter') }}</x-button>
                     <x-clear-filters :filters="['search','status','refunded','method','date_from','date_to']" :route="route('super.admin.payments.index')" />
                 </form>
             </div>
@@ -81,7 +81,7 @@
                                 <td>
                                     @if ($payment->user)
                                         <div class="d-flex align-items-center gap-2">
-                                            <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:#0F172A;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">
+                                            <div style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">
                                                 {{ strtoupper(substr($payment->user->name, 0, 1)) }}
                                             </div>
                                             <span style="font-size:13px">{{ $payment->user->name }}</span>
@@ -169,27 +169,16 @@
                                         <div class="d-flex gap-1">
                                             @if ($canVerify && $payment->isPending() && !$isWebhook)
                                                 @if ($payment->verification && $payment->verification->receipt_path)
-                                                    <a href="{{ route('receipts.show', $payment->verification) }}" target="_blank" class="btn"
-                                                        style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--info);text-decoration:none" title="{{ __('super-admin.view_receipt') }}">
-                                                        <i class="bi bi-eye"></i>
-                                                    </a>
+                                                    <x-button href="{{ route('receipts.show', $payment->verification) }}" icon="bi bi-eye" target="_blank" title="{{ __('super-admin.view_receipt') }}" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--info);text-decoration:none" />
                                                 @endif
-                                                <button type="button" class="btn" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:none;background:var(--success-light);color:var(--success);font-weight:600;cursor:pointer" @click="approvePayment({{ $payment->id }})">
-                                                    <x-status-icon domain="general" status="success" set="bi" /> {{ __('super-admin.approve') }}
-                                                </button>
-                                                <button type="button" class="btn" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:none;background:var(--danger-light);color:var(--danger);font-weight:600;cursor:pointer" @click="rejectPayment({{ $payment->id }})">
-                                                    <x-status-icon domain="general" status="failed" set="bi" /> {{ __('super-admin.reject') }}
-                                                </button>
+                                                <x-button variant="success" icon="bi bi-check-circle" @click="approvePayment({{ $payment->id }})" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:none;background:var(--success-light);color:var(--success);font-weight:600;cursor:pointer">{{ __('super-admin.approve') }}</x-button>
+                                                <x-button variant="danger" icon="bi bi-x-circle" @click="rejectPayment({{ $payment->id }})" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:none;background:var(--danger-light);color:var(--danger);font-weight:600;cursor:pointer">{{ __('super-admin.reject') }}</x-button>
                                             @endif
                                             @if ($canRefund && $payment->isRefundable())
-                                                <button type="button" class="btn" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--info);cursor:pointer" @click="refundPayment({{ $payment->id }}, {{ $payment->amount }}, '{{ $payment->currency }}')" title="{{ __('super-admin.refund') }}">
-                                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                                </button>
+                                                <x-button icon="bi bi-arrow-counterclockwise" @click="refundPayment({{ $payment->id }}, {{ $payment->amount }}, '{{ $payment->currency }}')" title="{{ __('super-admin.refund') }}" style="padding:5px 10px;font-size:11px;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--info);cursor:pointer" />
                                             @endif
                                             @if ($canViewRaw)
-                                                <button type="button" class="btn" style="padding:5px 8px;font-size:11px;border-radius:var(--radius-xs);border:none;background:transparent;color:var(--text-muted);cursor:pointer" @click="showDetails({{ $payment->id }})" title="{{ __('super-admin.view_details') }}">
-                                                    <i class="bi bi-three-dots-vertical"></i>
-                                                </button>
+                                                <x-button icon="bi bi-three-dots-vertical" @click="showDetails({{ $payment->id }})" title="{{ __('super-admin.view_details') }}" style="padding:5px 8px;font-size:11px;border-radius:var(--radius-xs);border:none;background:transparent;color:var(--text-muted);cursor:pointer" />
                                             @endif
                                         </div>
                                     </td>
@@ -246,8 +235,8 @@
                         <input type="hidden" name="notes" value="Approved by admin">
                     </div>
                     <div class="modal-footer" style="border-top:1px solid var(--border);padding:14px 20px">
-                        <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)" data-bs-dismiss="modal">{{ __('general.cancel') }}</button>
-                        <button type="submit" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--success);color:white;font-weight:600;border:none">{{ __('super-admin.approve') }}</button>
+                        <x-button variant="outline" data-bs-dismiss="modal" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)">{{ __('general.cancel') }}</x-button>
+                        <x-button variant="success" submit style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--success);color:white;font-weight:600;border:none">{{ __('super-admin.approve') }}</x-button>
                     </div>
                 </form>
             </div>
@@ -273,8 +262,8 @@
                         </div>
                     </div>
                     <div class="modal-footer" style="border-top:1px solid var(--border);padding:14px 20px">
-                        <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)" data-bs-dismiss="modal">{{ __('general.cancel') }}</button>
-                        <button type="submit" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--danger);color:white;font-weight:600;border:none">{{ __('super-admin.reject') }}</button>
+                        <x-button variant="outline" data-bs-dismiss="modal" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)">{{ __('general.cancel') }}</x-button>
+                        <x-button variant="danger" submit style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--danger);color:white;font-weight:600;border:none">{{ __('super-admin.reject') }}</x-button>
                     </div>
                 </form>
             </div>
@@ -307,8 +296,8 @@
                         </div>
                     </div>
                     <div class="modal-footer" style="border-top:1px solid var(--border);padding:14px 20px">
-                        <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)" data-bs-dismiss="modal">{{ __('general.cancel') }}</button>
-                        <button type="submit" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--info);color:white;font-weight:600;border:none">{{ __('super-admin.refund') }}</button>
+                        <x-button variant="outline" data-bs-dismiss="modal" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)">{{ __('general.cancel') }}</x-button>
+                        <x-button variant="info" submit style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--info);color:white;font-weight:600;border:none">{{ __('super-admin.refund') }}</x-button>
                     </div>
                 </form>
             </div>
@@ -329,7 +318,7 @@
                     </div>
                 </div>
                 <div class="modal-footer" style="border-top:1px solid var(--border);padding:14px 20px">
-                    <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)" data-bs-dismiss="modal">{{ __('general.close') }}</button>
+                    <x-button variant="outline" data-bs-dismiss="modal" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)">{{ __('general.close') }}</x-button>
                 </div>
             </div>
         </div>

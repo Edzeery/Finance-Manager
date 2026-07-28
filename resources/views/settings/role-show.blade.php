@@ -26,7 +26,7 @@
                         <span style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">{{ __('general.users') }}</span>
                         <span style="font-size:14px;font-weight:500">{{ $role->users_count }}</span>
                     </div>
-                    <a href="{{ route('settings.workspace.roles.index') }}" class="btn" style="width:100%;padding:9px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer">
+                    <a href="{{ route('settings.workspace.index', ['tab' => 'roles']) }}" class="btn" style="width:100%;padding:9px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer">
                         <i class="bi bi-arrow-left"></i>{{ __('general.back') }}
                     </a>
                 </div>

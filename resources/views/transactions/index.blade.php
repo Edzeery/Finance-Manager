@@ -130,14 +130,11 @@
                                     @php $canAddIncome = auth()->user()->hasPermission('income.create'); $canAddExpense = auth()->user()->hasPermission('expense.create'); @endphp
                                     <div class="d-flex gap-2 justify-content-center mt-3">
                                         @if($canAddIncome)
-                                        <a href="{{ route('income.create') }}" class="btn btn-accent btn-custom btn-sm">
-                                            <i class="bi bi-plus-circle"></i> {{ __('general.add') }} {{ __('transactions.income') }}
-                                        </a>
+                                        <x-button href="{{ route('income.create') }}" variant="accent" size="sm" icon="bi bi-plus-circle">{{ __('general.add') }} {{ __('transactions.income') }}</x-button>
                                         @endif
                                         @if($canAddExpense)
-                                        <a href="{{ route('expense.create') }}" class="btn btn-custom btn-sm" style="background:var(--danger); color:#fff; border:none">
-                                            <i class="bi bi-plus-circle"></i> {{ __('general.add') }} {{ __('transactions.expense') }}
-                                        </a>
+                                        <x-button href="{{ route('expense.create') }}" size="sm" icon="bi bi-plus-circle"
+                                            style="background:var(--danger); color:#fff; border:none">{{ __('general.add') }} {{ __('transactions.expense') }}</x-button>
                                         @endif
                                     </div>
                                 </td>

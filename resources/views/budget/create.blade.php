@@ -76,7 +76,7 @@
                                     @foreach($categories as $cat)
                                         <div class="category-row d-flex align-items-center gap-3 mb-2 p-2" style="background:var(--bg); border-radius:8px">
                                             <span style="flex:1; font-size:14px">
-                                                <i class="{{ $cat->icon ?? 'bi-tag' }}" style="color:{{ $cat->color ?? '#64748B' }}"></i>
+                                                <i class="{{ $cat->icon ?? 'bi-tag' }}" style="color:{{ $cat->color ?? 'var(--text-muted)' }}"></i>
                                                 {{ locale_name($cat) }}
                                             </span>
                                             <div class="input-group" style="width:200px">
@@ -96,12 +96,8 @@
                         </div>
 
                         <div class="d-flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border)">
-                            <button type="submit" class="btn btn-accent btn-custom">
-                                <i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}
-                            </button>
-                            <a href="{{ route('budget.index') }}" class="btn btn-outline-secondary btn-custom">
-                                <i class="bi bi-x-lg"></i>{{ __('general.cancel') }}
-                            </a>
+                            <x-button submit icon="bi bi-check-lg">{{ __('general.save') }}</x-button>
+                            <x-button href="{{ route('budget.index') }}" icon="bi bi-x-lg" variant="outline">{{ __('general.cancel') }}</x-button>
                         </div>
                     </form>
                 </div>

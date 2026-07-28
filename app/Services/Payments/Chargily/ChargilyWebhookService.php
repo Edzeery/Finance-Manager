@@ -11,9 +11,10 @@ use App\Models\Payment;
 use App\Models\PaymentWebhookLog;
 use App\Models\Subscription;
 use App\Services\Payments\Chargily\Exceptions\ChargilyException;
+use App\Services\Payments\PaymentTransitionValidator;
 use App\Services\SubscriptionActivationService;
 use App\Services\SubscriptionService;
-use App\Services\Payments\PaymentTransitionValidator;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -91,7 +92,7 @@ class ChargilyWebhookService
             ]);
 
             return $log->id;
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if (str_contains($e->getMessage(), 'Duplicate entry') || str_contains($e->getMessage(), 'UNIQUE constraint')) {
                 return null;
             }

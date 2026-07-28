@@ -9,12 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckPlanFeature
 {
     protected array $except = [
-        'account.subscriptions*',
-        'account.profile',
-        'account.invoices.*',
-        'account.payments.*',
-        'account.settings',
-        'account.settings.update',
+        'billing.subscriptions*',
+        'settings.account*',
+        'settings.workspace*',
+        'billing.invoices.*',
+        'billing.payments.*',
         'two-factor.*',
         'locale.switch',
         'theme.switch',
@@ -72,7 +71,7 @@ class CheckPlanFeature
             ], 402);
         }
 
-        return redirect()->route('account.subscriptions')
+        return redirect()->route('billing.subscriptions')
             ->with('warning', __('messages.plan_upgrade_required'));
     }
 

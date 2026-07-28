@@ -18,4 +18,7 @@ return [
     'suspended_expires' => 'Suspension expires on',
 
     'reason' => 'Reason',
+
+    'subscription_history' => 'Subscription History',
+    'subscription_history_desc' => 'A record of all your past subscriptions.',
 ];

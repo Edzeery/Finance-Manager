@@ -13,8 +13,7 @@ use Livewire\Volt\Component;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-new #[Layout('layouts.guest')] class extends Component
-{
+new #[Layout('layouts.guest')] class extends Component {
     public ?Payment $payment = null;
     public ?string $error = null;
     public bool $isPending = true;
@@ -66,14 +65,20 @@ new #[Layout('layouts.guest')] class extends Component
 
     private function loadPaymentRelations(): void
     {
-        if (!$this->payment) return;
+        if (!$this->payment) {
+            return;
+        }
 
         $this->payment->loadMissing('subscription.plan', 'verification');
 
         $sub = $this->payment->subscription;
         if ($sub && $sub->relationLoaded('plan') && $sub->plan) {
             $this->plan = $sub->plan->toArray();
-            $invoiceModel = $sub->invoices()->where('user_id', auth()->id())->latest()->first();
+            $invoiceModel = $sub
+                ->invoices()
+                ->where('user_id', auth()->id())
+                ->latest()
+                ->first();
             if ($invoiceModel) {
                 $this->invoice = $invoiceModel->toArray();
             }
@@ -88,7 +93,10 @@ new #[Layout('layouts.guest')] class extends Component
     private function evaluateStatus(): void
     {
         $p = $this->payment;
-        if (!$p) { $this->view = 'error'; return; }
+        if (!$p) {
+            $this->view = 'error';
+            return;
+        }
 
         if ($p->isCompleted()) {
             $this->view = 'completed';
@@ -128,10 +136,7 @@ new #[Layout('layouts.guest')] class extends Component
 
     private function resolveFromCheckout(string $checkoutId): void
     {
-        $paymentId = Payment::withoutWorkspace()
-            ->where('transaction_id', $checkoutId)
-            ->orWhere('chargily_checkout_id', $checkoutId)
-            ->value('id');
+        $paymentId = Payment::withoutWorkspace()->where('transaction_id', $checkoutId)->orWhere('chargily_checkout_id', $checkoutId)->value('id');
 
         if ($paymentId) {
             $this->payment = Payment::withoutWorkspace()->find($paymentId);
@@ -227,7 +232,9 @@ new #[Layout('layouts.guest')] class extends Component
 
     public function checkStatus(): void
     {
-        if (!$this->payment) return;
+        if (!$this->payment) {
+            return;
+        }
         $this->pollCount++;
 
         $this->payment->refresh();
@@ -247,7 +254,9 @@ new #[Layout('layouts.guest')] class extends Component
 
     private function scheduleAutoRedirect(): void
     {
-        if ($this->autoRedirecting) return;
+        if ($this->autoRedirecting) {
+            return;
+        }
 
         $url = match ($this->view) {
             'completed' => route('onboarding.setup', absolute: false),
@@ -256,7 +265,9 @@ new #[Layout('layouts.guest')] class extends Component
             default => null,
         };
 
-        if (!$url) return;
+        if (!$url) {
+            return;
+        }
 
         $this->autoRedirecting = true;
         $this->autoRedirectUrl = $url;
@@ -271,7 +282,9 @@ new #[Layout('layouts.guest')] class extends Component
 
     public function retry(): void
     {
-        if (!$this->payment) return;
+        if (!$this->payment) {
+            return;
+        }
         $this->loadPaymentRelations();
 
         if ($this->payment->isPending()) {
@@ -343,7 +356,9 @@ new #[Layout('layouts.guest')] class extends Component
 
     public function methodLabel(?string $method): string
     {
-        if (!$method) return '-';
+        if (!$method) {
+            return '-';
+        }
         $key = 'onboarding.method_' . $method;
         $trans = __($key);
         return $trans !== $key ? $trans : ucfirst($method);
@@ -351,19 +366,25 @@ new #[Layout('layouts.guest')] class extends Component
 
     public function formatAmount(float $amount, ?string $currency = null): string
     {
-        $currency = $currency ?? $this->payment?->currency ?? 'USD';
+        $currency = $currency ?? ($this->payment?->currency ?? 'USD');
         return number_format($amount, 2) . ' ' . CurrencyHelper::symbol($currency);
     }
 
     public function getReceiptDataUrlProperty(): ?string
     {
-        if (!$this->payment) return null;
+        if (!$this->payment) {
+            return null;
+        }
         $this->payment->loadMissing('verification');
         $verification = $this->payment->verification;
-        if (!$verification || !$verification->receipt_path) return null;
+        if (!$verification || !$verification->receipt_path) {
+            return null;
+        }
 
         $path = $verification->receipt_path;
-        if (!Storage::disk('local')->exists($path)) return null;
+        if (!Storage::disk('local')->exists($path)) {
+            return null;
+        }
 
         return 'data:' . Storage::disk('local')->mimeType($path) . ';base64,' . base64_encode(Storage::disk('local')->get($path));
     }
@@ -374,21 +395,124 @@ new #[Layout('layouts.guest')] class extends Component
         {{-- WAITING — animated payment processing --}}
         @if ($view === 'waiting')
             <style>
-                .payment-ring { width:80px;height:80px;position:relative;margin:0 auto; }
-                .payment-ring .ring { position:absolute;inset:0;border-radius:50%;border:3px solid transparent;animation:ring-spin 1.5s cubic-bezier(0.5,0,0.5,1) infinite; }
-                .payment-ring .ring:nth-child(1) { border-top-color:var(--accent);animation-delay:0s; }
-                .payment-ring .ring:nth-child(2) { border-right-color:var(--info);animation-delay:0.2s; }
-                .payment-ring .ring:nth-child(3) { border-bottom-color:var(--success);animation-delay:0.4s; }
-                .payment-ring .ring:nth-child(4) { border-left-color:var(--warning);animation-delay:0.6s; }
-                @keyframes ring-spin { 0%{transform:rotate(0deg)}100%{transform:rotate(360deg)} }
-                .payment-ring .check-icon { position:absolute;inset:12px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--accent);opacity:0.7; }
-                .pulse-dot { display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin:0 3px;animation:pulse-dot 1.4s ease-in-out infinite; }
-                .pulse-dot:nth-child(2) { animation-delay:0.2s; }
-                .pulse-dot:nth-child(3) { animation-delay:0.4s; }
-                @keyframes pulse-dot { 0%,80%,100%{opacity:0.3;transform:scale(0.8)}40%{opacity:1;transform:scale(1.2)} }
-                .progress-glow { height:4px;border-radius:4px;background:var(--border);overflow:hidden;max-width:240px;margin:0 auto;position:relative; }
-                .progress-glow .bar { height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--info),var(--accent));background-size:200% 100%;animation:glow-move 2s linear infinite;width:{{ min(100, (($maxPolls - $this->remainingSeconds()/5) / $maxPolls) * 100) }}%;transition:width 1s ease; }
-                @keyframes glow-move { 0%{background-position:200% 0}100%{background-position:-200% 0} }
+                .payment-ring {
+                    width: 80px;
+                    height: 80px;
+                    position: relative;
+                    margin: 0 auto;
+                }
+
+                .payment-ring .ring {
+                    position: absolute;
+                    inset: 0;
+                    border-radius: 50%;
+                    border: 3px solid transparent;
+                    animation: ring-spin 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                }
+
+                .payment-ring .ring:nth-child(1) {
+                    border-top-color: var(--accent);
+                    animation-delay: 0s;
+                }
+
+                .payment-ring .ring:nth-child(2) {
+                    border-right-color: var(--info);
+                    animation-delay: 0.2s;
+                }
+
+                .payment-ring .ring:nth-child(3) {
+                    border-bottom-color: var(--success);
+                    animation-delay: 0.4s;
+                }
+
+                .payment-ring .ring:nth-child(4) {
+                    border-left-color: var(--warning);
+                    animation-delay: 0.6s;
+                }
+
+                @keyframes ring-spin {
+                    0% {
+                        transform: rotate(0deg)
+                    }
+
+                    100% {
+                        transform: rotate(360deg)
+                    }
+                }
+
+                .payment-ring .check-icon {
+                    position: absolute;
+                    inset: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.8rem;
+                    color: var(--accent);
+                    opacity: 0.7;
+                }
+
+                .pulse-dot {
+                    display: inline-block;
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: var(--accent);
+                    margin: 0 3px;
+                    animation: pulse-dot 1.4s ease-in-out infinite;
+                }
+
+                .pulse-dot:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .pulse-dot:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+                @keyframes pulse-dot {
+
+                    0%,
+                    80%,
+                    100% {
+                        opacity: 0.3;
+                        transform: scale(0.8)
+                    }
+
+                    40% {
+                        opacity: 1;
+                        transform: scale(1.2)
+                    }
+                }
+
+                .progress-glow {
+                    height: 4px;
+                    border-radius: 4px;
+                    background: var(--border);
+                    overflow: hidden;
+                    max-width: 240px;
+                    margin: 0 auto;
+                    position: relative;
+                }
+
+                .progress-glow .bar {
+                    height: 100%;
+                    border-radius: 4px;
+                    background: linear-gradient(90deg, var(--accent), var(--info), var(--accent));
+                    background-size: 200% 100%;
+                    animation: glow-move 2s linear infinite;
+                    width: {{ min(100, (($maxPolls - $this->remainingSeconds() / 5) / $maxPolls) * 100) }}%;
+                    transition: width 1s ease;
+                }
+
+                @keyframes glow-move {
+                    0% {
+                        background-position: 200% 0
+                    }
+
+                    100% {
+                        background-position: -200% 0
+                    }
+                }
             </style>
             <div class="text-center">
                 <div class="auth-logo">
@@ -410,7 +534,8 @@ new #[Layout('layouts.guest')] class extends Component
                     <div class="progress-glow">
                         <div class="bar"></div>
                     </div>
-                    <p class="small text-muted mt-2"><span class="fw-medium">{{ $this->remainingSeconds() }}s</span> {{ __('onboarding.remaining') }}</p>
+                    <p class="small text-muted mt-2"><span class="fw-medium">{{ $this->remainingSeconds() }}s</span>
+                        {{ __('onboarding.remaining') }}</p>
                 </div>
                 <div class="mt-3">
                     <span class="pulse-dot"></span>
@@ -418,23 +543,77 @@ new #[Layout('layouts.guest')] class extends Component
                     <span class="pulse-dot"></span>
                 </div>
                 <div class="mt-3">
-                    <button wire:click="checkStatus" class="btn btn-outline-accent btn-custom btn-sm">
-                        <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.check_status') }}
-                    </button>
+                    <x-button wire-click="checkStatus" variant="outline-accent" size="sm" icon="bi bi-arrow-repeat">{{ __('onboarding.check_status') }}</x-button>
                 </div>
                 <div wire:poll.5s="checkStatus" class="d-none"></div>
             </div>
 
-        {{-- COMPLETED / REDIRECTING --}}
+            {{-- COMPLETED / REDIRECTING --}}
         @elseif ($view === 'completed')
             <style>
-                .success-anim { width:80px;height:80px;margin:0 auto;position:relative; }
-                .success-anim .circle { width:80px;height:80px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;animation:success-pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
-                .success-anim .circle i { font-size:2.5rem;color:#fff;animation:success-check 0.4s 0.2s both; }
-                @keyframes success-pop { 0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1} }
-                @keyframes success-check { 0%{transform:scale(0) rotate(-45deg)}100%{transform:scale(1) rotate(0deg)} }
-                .redirect-timer { display:inline-block;width:12px;height:12px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:6px; }
-                @keyframes spin { to{transform:rotate(360deg)} }
+                .success-anim {
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto;
+                    position: relative;
+                }
+
+                .success-anim .circle {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background: var(--success);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    animation: success-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+
+                .success-anim .circle i {
+                    font-size: 2.5rem;
+                    color: #fff;
+                    animation: success-check 0.4s 0.2s both;
+                }
+
+                @keyframes success-pop {
+                    0% {
+                        transform: scale(0);
+                        opacity: 0
+                    }
+
+                    100% {
+                        transform: scale(1);
+                        opacity: 1
+                    }
+                }
+
+                @keyframes success-check {
+                    0% {
+                        transform: scale(0) rotate(-45deg)
+                    }
+
+                    100% {
+                        transform: scale(1) rotate(0deg)
+                    }
+                }
+
+                .redirect-timer {
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    border: 2px solid var(--accent);
+                    border-top-color: transparent;
+                    border-radius: 50%;
+                    animation: spin 0.8s linear infinite;
+                    vertical-align: middle;
+                    margin-right: 6px;
+                }
+
+                @keyframes spin {
+                    to {
+                        transform: rotate(360deg)
+                    }
+                }
             </style>
             <div class="text-center">
                 <div class="auth-logo">
@@ -449,22 +628,69 @@ new #[Layout('layouts.guest')] class extends Component
                 <p class="fw-bold">{{ __('onboarding.payment_success') }}</p>
                 <p class="small text-muted">{{ __('onboarding.proof_approved_desc') }}</p>
                 @if ($autoRedirecting)
-                <p class="small text-accent mt-2"><span class="redirect-timer"></span>{{ __('onboarding.redirecting') }}</p>
+                    <p class="small text-accent mt-2"><span
+                            class="redirect-timer"></span>{{ __('onboarding.redirecting') }}</p>
                 @endif
                 <div class="mt-2">
-                    <button wire:click="proceed" class="btn btn-accent btn-custom">
-                        <i class="bi bi-arrow-rightms-1"></i>{{ __('onboarding.continue') }}
-                    </button>
+                    <x-button wire-click="proceed" variant="accent" icon="bi bi-arrow-right">{{ __('onboarding.continue') }}</x-button>
                 </div>
             </div>
 
-        {{-- FAILED --}}
+            {{-- FAILED --}}
         @elseif ($view === 'failed')
             <style>
-                .fail-anim { width:80px;height:80px;margin:0 auto;position:relative; }
-                .fail-anim .circle { width:80px;height:80px;border-radius:50%;background:var(--danger);display:flex;align-items:center;justify-content:center;animation:fail-shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97); }
-                .fail-anim .circle i { font-size:2.5rem;color:#fff; }
-                @keyframes fail-shake { 0%{transform:translateX(0)}15%{transform:translateX(-8px)}30%{transform:translateX(8px)}45%{transform:translateX(-5px)}60%{transform:translateX(5px)}80%{transform:translateX(-2px)}100%{transform:translateX(0)} }
+                .fail-anim {
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto;
+                    position: relative;
+                }
+
+                .fail-anim .circle {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background: var(--danger);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    animation: fail-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+                }
+
+                .fail-anim .circle i {
+                    font-size: 2.5rem;
+                    color: #fff;
+                }
+
+                @keyframes fail-shake {
+                    0% {
+                        transform: translateX(0)
+                    }
+
+                    15% {
+                        transform: translateX(-8px)
+                    }
+
+                    30% {
+                        transform: translateX(8px)
+                    }
+
+                    45% {
+                        transform: translateX(-5px)
+                    }
+
+                    60% {
+                        transform: translateX(5px)
+                    }
+
+                    80% {
+                        transform: translateX(-2px)
+                    }
+
+                    100% {
+                        transform: translateX(0)
+                    }
+                }
             </style>
             <div class="auth-logo">
                 <div class="logo-icon">FM</div>
@@ -478,53 +704,44 @@ new #[Layout('layouts.guest')] class extends Component
             <div class="alert alert-danger py-2 small">{{ $error }}</div>
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
             @if ($autoRedirecting)
-            <p class="small text-accent text-center mt-2"><span class="redirect-timer"></span>{{ __('onboarding.redirecting') }}</p>
+                <p class="small text-accent text-center mt-2"><span
+                        class="redirect-timer"></span>{{ __('onboarding.redirecting') }}</p>
             @endif
             <div class="d-grid gap-2 mt-3">
-                <button wire:click="retry" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
-                </button>
+                <x-button wire-click="retry" variant="accent" icon="bi bi-arrow-repeat">{{ __('onboarding.retry_payment') }}</x-button>
                 @if ($payment && OnboardingService::isManual($payment->paymentMethod?->key))
-                <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
-                </button>
+                    <x-button wire-click="manualProof" variant="outline-accent" icon="bi bi-upload">{{ __('onboarding.upload_manual_proof') }}</x-button>
                 @endif
-                <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
-                </button>
+                <x-button wire-click="switchGateway" variant="outline-accent" icon="bi bi-arrow-left-right">{{ __('onboarding.switch_gateway') }}</x-button>
             </div>
             @include('livewire.pages.onboarding.partials.auth-footer')
 
-        {{-- CANCELED --}}
+            {{-- CANCELED --}}
         @elseif ($view === 'canceled')
             <div class="auth-logo">
                 <div class="logo-icon">FM</div>
                 <span class="logo-text">{{ __('general.app_name') }}</span>
             </div>
             <div class="text-center mb-3">
-                <div class="text-warning" style="font-size:3rem"><x-status-icon domain="general" status="cancelled" set="bi" /></div>
+                <div class="text-warning" style="font-size:3rem"><x-status-icon domain="general" status="cancelled"
+                        set="bi" /></div>
             </div>
             <div class="alert alert-warning py-2 small">{{ $error }}</div>
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
             @if ($autoRedirecting)
-            <p class="small text-accent text-center mt-2"><span class="redirect-timer"></span>{{ __('onboarding.redirecting') }}</p>
+                <p class="small text-accent text-center mt-2"><span
+                        class="redirect-timer"></span>{{ __('onboarding.redirecting') }}</p>
             @endif
             <div class="d-grid gap-2 mt-3">
-                <button wire:click="retry" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
-                </button>
+                <x-button wire-click="retry" variant="accent" icon="bi bi-arrow-repeat">{{ __('onboarding.retry_payment') }}</x-button>
                 @if ($payment && OnboardingService::isManual($payment->paymentMethod?->key))
-                <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
-                </button>
+                    <x-button wire-click="manualProof" variant="outline-accent" icon="bi bi-upload">{{ __('onboarding.upload_manual_proof') }}</x-button>
                 @endif
-                <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
-                </button>
+                <x-button wire-click="switchGateway" variant="outline-accent" icon="bi bi-arrow-left-right">{{ __('onboarding.switch_gateway') }}</x-button>
             </div>
             @include('livewire.pages.onboarding.partials.auth-footer')
 
-        {{-- PENDING MANUAL VERIFICATION --}}
+            {{-- PENDING MANUAL VERIFICATION --}}
         @elseif ($view === 'pending_manual')
             <div class="auth-logo">
                 <div class="logo-icon">FM</div>
@@ -546,17 +763,30 @@ new #[Layout('layouts.guest')] class extends Component
                     <div class="info-grid">
                         <div class="info-row">
                             <span class="info-label">{{ __('onboarding.transaction_reference') }}</span>
-                            <span class="info-value" style="direction:ltr;font-family:monospace;font-size:12px">{{ $v->transaction_reference ?? '—' }}</span>
+                            <span class="info-value"
+                                style="direction:ltr;font-family:monospace;font-size:12px">{{ $v->transaction_reference ?? '—' }}</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">{{ __('onboarding.verification_status') }}</span>
                             <span class="info-value">
                                 @php
-                                    $vBadge = match($v->status->value) {
-                                        'pending' => ['bg' => 'bg-warning text-dark', 'label' => __('onboarding.status_pending')],
-                                        'approved' => ['bg' => 'bg-success text-white', 'label' => __('onboarding.status_approved')],
-                                        'rejected' => ['bg' => 'bg-danger text-white', 'label' => __('onboarding.status_rejected')],
-                                        default => ['bg' => 'bg-secondary text-white', 'label' => ucfirst($v->status->value)]
+                                    $vBadge = match ($v->status->value) {
+                                        'pending' => [
+                                            'bg' => 'bg-warning text-dark',
+                                            'label' => __('onboarding.status_pending'),
+                                        ],
+                                        'approved' => [
+                                            'bg' => 'bg-success text-white',
+                                            'label' => __('onboarding.status_approved'),
+                                        ],
+                                        'rejected' => [
+                                            'bg' => 'bg-danger text-white',
+                                            'label' => __('onboarding.status_rejected'),
+                                        ],
+                                        default => [
+                                            'bg' => 'bg-secondary text-white',
+                                            'label' => ucfirst($v->status->value),
+                                        ],
                                     };
                                 @endphp
                                 <span class="badge rounded-pill {{ $vBadge['bg'] }}">{{ $vBadge['label'] }}</span>
@@ -567,27 +797,29 @@ new #[Layout('layouts.guest')] class extends Component
                             <span class="info-value">{{ $v->created_at->format('d M Y, H:i') }}</span>
                         </div>
                         @if ($v->receipt_path)
-                        <div class="info-row">
-                            <span class="info-label">{{ __('onboarding.receipt_preview') }}</span>
-                            <span class="info-value">
-                                <button type="button" @click="Livewire.dispatch('openReceiptModal')" style="color:var(--info);font-size:12px;text-decoration:none;border:none;background:none;padding:0;cursor:pointer">
-                                    <i class="bi bi-eyems-1"></i>{{ __('onboarding.receipt_preview') }}
-                                </button>
-                            </span>
-                        </div>
+                            <div class="info-row">
+                                <span class="info-label">{{ __('onboarding.receipt_preview') }}</span>
+                                <span class="info-value">
+                                    <button type="button" @click="Livewire.dispatch('openReceiptModal')"
+                                        style="color:var(--info);font-size:12px;text-decoration:none;border:none;background:none;padding:0;cursor:pointer">
+                                        <i class="bi bi-eyems-1"></i>{{ __('onboarding.receipt_preview') }}
+                                    </button>
+                                </span>
+                            </div>
                         @endif
                         @if ($v->admin_notes)
-                        <div class="info-row">
-                            <span class="info-label">{{ __('super-admin.reject_reason') ?? 'Admin Notes' }}</span>
-                            <span class="info-value" style="font-size:12px;max-width:180px;text-align:right">{{ $v->admin_notes }}</span>
-                        </div>
+                            <div class="info-row">
+                                <span class="info-label">{{ __('super-admin.reject_reason') ?? 'Admin Notes' }}</span>
+                                <span class="info-value"
+                                    style="font-size:12px;max-width:180px;text-align:right">{{ $v->admin_notes }}</span>
+                            </div>
                         @endif
                     </div>
                 </div>
             @endif
             @include('livewire.pages.onboarding.partials.auth-footer')
 
-        {{-- ERROR / TIMEOUT --}}
+            {{-- ERROR / TIMEOUT --}}
         @elseif ($view === 'error')
             <div class="auth-logo">
                 <div class="logo-icon">FM</div>
@@ -600,12 +832,8 @@ new #[Layout('layouts.guest')] class extends Component
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
             <div class="d-grid gap-2 mt-3">
                 @if ($payment)
-                <button wire:click="retry" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
-                </button>
-                <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
-                </button>
+                    <x-button wire-click="retry" variant="accent" icon="bi bi-arrow-repeat">{{ __('onboarding.retry_payment') }}</x-button>
+                    <x-button wire-click="switchGateway" variant="outline-accent" icon="bi bi-arrow-left-right">{{ __('onboarding.switch_gateway') }}</x-button>
                 @endif
             </div>
             @include('livewire.pages.onboarding.partials.auth-footer')
@@ -613,35 +841,35 @@ new #[Layout('layouts.guest')] class extends Component
     </div>
 
     @if ($this->receiptDataUrl)
-    <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true" wire:ignore>
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content" style="background:var(--card-bg);border:1px solid var(--border)">
-                <div class="modal-header border-0 pb-0">
-                    <h6 class="modal-title">{{ __('onboarding.receipt_preview') }}</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center p-4">
-                    <img src="{{ $this->receiptDataUrl }}"
-                         alt="{{ __('onboarding.receipt_preview') }}"
-                         style="max-width:100%;max-height:70vh;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.1)">
+        <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true" wire:ignore>
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content" style="background:var(--card-bg);border:1px solid var(--border)">
+                    <div class="modal-header border-0 pb-0">
+                        <h6 class="modal-title">{{ __('onboarding.receipt_preview') }}</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center p-4">
+                        <img src="{{ $this->receiptDataUrl }}" alt="{{ __('onboarding.receipt_preview') }}"
+                            style="max-width:100%;max-height:70vh;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.1)">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    @push('scripts')
-    <script>
-        function initPaymentResult() {
-            if (!window._paymentReceiptListener) {
-                Livewire.on('openReceiptModal', function () {
-                    var modal = new bootstrap.Modal(document.getElementById('receiptModal'));
-                    modal.show();
-                });
-                window._paymentReceiptListener = true;
-            }
-        }
-        initPaymentResult();
-    </script>
-    @endpush
+        @push('scripts')
+            <script>
+                function initPaymentResult() {
+                    if (!window._paymentReceiptListener) {
+                        Livewire.on('openReceiptModal', function() {
+                            var modal = new bootstrap.Modal(document.getElementById('receiptModal'));
+                            modal.show();
+                        });
+                        window._paymentReceiptListener = true;
+                    }
+                }
+                initPaymentResult();
+            </script>
+        @endpush
     @endif
 </div>

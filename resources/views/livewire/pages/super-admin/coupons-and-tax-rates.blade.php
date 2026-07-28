@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\Coupon;
 use App\Models\TaxRate;
@@ -219,7 +219,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component {
                             @foreach (['' => __('general.all'), 'active' => __('general.active'), 'inactive' => __('general.inactive')] as $val => $label)
                                 <button type="button" wire:click="$set('couponStatusFilter', '{{ $val }}')"
                                     style="padding:5px 12px;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--text-muted);cursor:pointer;transition:all 0.15s"
-                                    @style(['background:var(--accent) !important;color:#0F172A !important' => $couponStatusFilter === $val])>
+                                    @style(['background:var(--accent) !important;color:var(--primary) !important' => $couponStatusFilter === $val])>
                                     {{ $label }}
                                 </button>
                             @endforeach
@@ -246,7 +246,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component {
                         </select>
                         @if ($this->canCreateCoupon())
                             <a href="{{ route('super.admin.coupons.create') }}" class="btn"
-                                style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer"
+                                style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer"
                                 wire:navigate>
                                 <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_coupon') }}
                             </a>
@@ -360,7 +360,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component {
                             @foreach (['' => __('general.all'), 'active' => __('general.active'), 'inactive' => __('general.inactive')] as $val => $label)
                                 <button type="button" wire:click="$set('taxStatusFilter', '{{ $val }}')"
                                     style="padding:5px 12px;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--text-muted);cursor:pointer;transition:all 0.15s"
-                                    @style(['background:var(--accent) !important;color:#0F172A !important' => $taxStatusFilter === $val])>
+                                    @style(['background:var(--accent) !important;color:var(--primary) !important' => $taxStatusFilter === $val])>
                                     {{ $label }}
                                 </button>
                             @endforeach
@@ -387,7 +387,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component {
                         </select>
                         @if ($this->canCreateTaxRate())
                             <a href="{{ route('super.admin.tax-rates.create') }}" class="btn"
-                                style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer"
+                                style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer"
                                 wire:navigate>
                                 <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_tax_rate') }}
                             </a>

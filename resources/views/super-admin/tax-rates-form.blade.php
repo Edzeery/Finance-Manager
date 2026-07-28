@@ -96,12 +96,8 @@
         </div>
 
         <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-accent btn-custom">
-                {{ $taxRate ? __('general.update') : __('general.create') }}
-            </button>
-            <a href="{{ route('super.admin.tax-rates.index') }}" class="btn btn-outline-secondary btn-custom">
-                {{ __('general.cancel') }}
-            </a>
+            <x-button variant="accent" submit>{{ $taxRate ? __('general.update') : __('general.create') }}</x-button>
+            <x-button href="{{ route('super.admin.tax-rates.index') }}" variant="outline">{{ __('general.cancel') }}</x-button>
         </div>
     </form>
 </x-super-admin-layout>

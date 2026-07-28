@@ -41,6 +41,7 @@
 
 [data-theme="dark"] .table-custom tbody tr:hover {
   background: rgba(255,255,255,0.03);
+  color: var(--text) !important;
 }
 
 .table-responsive {

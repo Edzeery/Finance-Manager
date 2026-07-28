@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.platform_roles') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.platform_roles') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.platform_roles_desc') }}</x-slot>
@@ -28,7 +28,7 @@
                             <span class="badge" style="font-size:10px;background:var(--border);color:var(--text-muted);padding:2px 8px;border-radius:4px">+{{ $role->permissions->count() - 5 }}</span>
                         @endif
                     </div>
-                    <a href="{{ route('super.admin.roles.edit', $role) }}" class="btn" style="width:100%;padding:9px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:16px">
+                    <a href="{{ route('super.admin.roles.edit', $role) }}" class="btn" style="width:100%;padding:9px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:16px">
                         <i class="bi bi-pencil"></i>{{ __('general.edit') }}
                     </a>
                 </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SuperAdmin\AccountController;
 use App\Http\Controllers\SuperAdmin\AdminNotificationController;
+use App\Http\Controllers\SuperAdmin\AdminNotificationSettingsController;
 use App\Http\Controllers\SuperAdmin\BackupController;
 use App\Http\Controllers\SuperAdmin\CouponController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
@@ -48,6 +49,8 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
         ->middleware('permission:platform-user.update')->name('users.toggle-status');
     Route::post('/users/{user}/status', [UserController::class, 'setStatus'])
         ->middleware('permission:platform-user.update')->name('users.set-status');
+    Route::post('/users/{user}/force-logout', [UserController::class, 'forceLogoutAllSessions'])
+        ->middleware('permission:platform-user.update')->name('users.force-logout');
     Route::post('/users/{id}/restore', [UserController::class, 'restore'])
         ->middleware('permission:platform-user.update')->name('users.restore');
     Route::delete('/users/{id}/force', [UserController::class, 'forceDestroy'])
@@ -258,7 +261,7 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
     Volt::route('/noest-orders', 'pages.super-admin.noest-orders')
         ->middleware('permission:platform-setting.general')->name('noest-orders.index');
 
-    Route::prefix('notifications')->name('notifications.')->group(function () {
+    Route::prefix('notifications')->name('notifications.')->middleware('permission:platform-notification.view')->group(function () {
         Route::get('/', [AdminNotificationController::class, 'index'])
             ->name('index');
         Route::get('/{notification}', [AdminNotificationController::class, 'show'])
@@ -268,7 +271,12 @@ Route::prefix('super-admin')->name('super.admin.')->middleware(['super.admin', '
         Route::post('/mark-all-read', [AdminNotificationController::class, 'markAllRead'])
             ->name('mark-all-read');
         Route::delete('/{notification}', [AdminNotificationController::class, 'destroy'])
+            ->middleware('permission:platform-notification.manage')
             ->name('destroy');
+        Route::get('/settings', [AdminNotificationSettingsController::class, 'index'])
+            ->name('settings');
+        Route::put('/settings', [AdminNotificationSettingsController::class, 'update'])
+            ->name('settings.update');
     });
 
     Route::prefix('backups')->name('backups.')->group(function () {

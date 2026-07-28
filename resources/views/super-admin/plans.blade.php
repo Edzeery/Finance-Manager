@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.plans') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.plans') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.plans_desc') }}</x-slot>
@@ -21,14 +21,14 @@
                         'active' => __('general.active'),
                         'inactive' => __('general.inactive'),
                     ]" placeholder="{{ __('general.all_status') }}" min-width="110px" />
-                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
                     <x-clear-filters :filters="['search','status']" :route="route('super.admin.plans.index', ['tab' => 'plans'])" />
                 </form>
             </div>
             <div class="data-grid-toolbar-right">
                 <div class="d-flex align-items-center gap-2">
                     <x-per-page :current="(int) request('per_page', 20)" :route="route('super.admin.plans.index')" :preserve="['search','status','tab']" :options="[10, 20, 30, 50]" />
-                    <a href="{{ route('super.admin.plans.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+                    <a href="{{ route('super.admin.plans.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
                         <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_plan') }}
                     </a>
                 </div>
@@ -136,14 +136,14 @@
                         'true' => __('super-admin.core'),
                         'false' => __('super-admin.addon'),
                     ]" placeholder="{{ __('super-admin.all_features') }}" min-width="90px" />
-                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
                     <x-clear-filters :filters="['features_search','features_type','features_core']" :route="route('super.admin.plans.index', ['tab' => 'features'])" />
                 </form>
             </div>
             <div class="data-grid-toolbar-right">
                 <div class="d-flex align-items-center gap-2">
                     <x-per-page :current="(int) request('features_per_page', 20)" :route="route('super.admin.plans.index')" :preserve="['tab','features_search','features_type','features_core']" name="features_per_page" page-name="features_page" :options="[10, 20, 30, 50]" />
-                    <a href="{{ route('super.admin.features.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+                    <a href="{{ route('super.admin.features.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
                         <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_feature') }}
                     </a>
                 </div>
@@ -228,7 +228,7 @@
             </div>
             <div class="data-grid-toolbar-right">
                 @if($selectedPlan)
-                    <a href="{{ route('super.admin.plans.prices.create', $selectedPlan) }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+                    <a href="{{ route('super.admin.plans.prices.create', $selectedPlan) }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
                         <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_price') }}
                     </a>
                 @endif

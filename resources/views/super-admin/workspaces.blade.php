@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.workspaces') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.workspaces') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.workspaces_desc') }}</x-slot>
@@ -27,7 +27,7 @@
                     @if ($showTypeSubTabs && request('type'))
                         <input type="hidden" name="type" value="{{ request('type') }}">
                     @endif
-                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
                     <x-clear-filters :filters="['search','status','type']" :route="route('super.admin.workspaces.index')" />
                 </form>
             </div>

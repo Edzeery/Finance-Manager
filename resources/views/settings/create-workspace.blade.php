@@ -15,8 +15,8 @@
                         </div>
                     </div>
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-accent btn-custom">{{ __('workspace.create_btn') }}</button>
-                        <a href="{{ route('settings.index') }}" class="btn btn-outline-secondary btn-custom">{{ __('general.cancel') }}</a>
+                        <x-button submit>{{ __('workspace.create_btn') }}</x-button>
+                        <x-button href="{{ route('settings.workspace.index') }}" variant="outline">{{ __('general.cancel') }}</x-button>
                     </div>
                 </form>
             </div>

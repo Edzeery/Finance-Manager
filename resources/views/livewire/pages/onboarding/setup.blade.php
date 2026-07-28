@@ -76,14 +76,8 @@ new #[Layout('layouts.guest')] class extends Component
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-accent btn-custom w-100 mb-2"
-            wire:loading.attr="disabled" wire:target="complete">
-            <div wire:loading wire:target="complete" class="spinner-border spinner-border-sm ms-2" role="status"></div>
-            {{ __('onboarding.finish') }}
-        </button>
+        <x-button submit variant="accent" block class="mb-2" wire-target="complete">{{ __('onboarding.finish') }}</x-button>
 
-        <button type="button" class="btn btn-outline-accent btn-custom w-100" wire:click="skip">
-            {{ __('onboarding.skip') }}
-        </button>
+        <x-button variant="outline-accent" block wire-click="skip">{{ __('onboarding.skip') }}</x-button>
     </form>
 </div>

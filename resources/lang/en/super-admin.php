@@ -900,4 +900,10 @@ return [
     'team_roles' => 'Team Roles',
     'verifications' => 'Verifications',
     'verified_amount' => 'Verified Amount',
+
+    // Force Logout
+    'force_logout' => 'Force Logout',
+    'confirm_force_logout' => 'Are you sure you want to force logout :name from all sessions? This will log them out of all devices.',
+    'force_logout_success' => ':name has been logged out from :count session(s) successfully.',
+    'cannot_force_logout_self' => 'You cannot force logout yourself. Use the account settings instead.',
 ];

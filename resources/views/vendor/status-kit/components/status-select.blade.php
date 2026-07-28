@@ -28,11 +28,7 @@
     $framework = config('status-kit-theme.default_framework', 'bootstrap');
     $classes = config("status-kit-theme.select_classes.{$framework}", config('status-kit-theme.select_classes.bootstrap'));
 
-    $placeholderText = $placeholder ?? match (app()->getLocale()) {
-        'ar'    => 'اختر...',
-        'fr'    => 'Choisir...',
-        default => 'Select...',
-    };
+    $placeholderText = $placeholder ?? __('status-kit::statuses.components.select_placeholder');
 
     $maxHeight = config('status-kit-theme.select.max_height', '16rem');
     $zIndex    = config('status-kit-theme.select.z_index', 50);
@@ -57,9 +53,9 @@
             inset-inline-start: 0;
             top: calc(100% + .25rem);
             min-width: 100%;
-            background-color: var(--bs-body-bg, #fff);
-            border: 1px solid var(--bs-border-color, #dee2e6);
-            border-radius: var(--bs-border-radius, .375rem);
+            background-color: var(--status-select-bg, var(--bs-body-bg, #fff));
+            border: 1px solid var(--status-select-border, var(--bs-border-color, #dee2e6));
+            border-radius: var(--status-select-radius, var(--bs-border-radius, .375rem));
             box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .15);
             overflow-y: auto;
             padding: .35rem;
@@ -74,11 +70,11 @@
             align-items: center;
             gap: .5rem;
             padding: .4rem .55rem;
-            border-radius: calc(var(--bs-border-radius, .375rem) - 2px);
+            border-radius: calc(var(--status-select-radius, var(--bs-border-radius, .375rem)) - 2px);
             cursor: pointer;
         }
         .status-select-option.is-highlighted,
-        .status-select-option:hover { background-color: var(--bs-tertiary-bg, #f8f9fa); }
+        .status-select-option:hover { background-color: var(--status-select-highlight, var(--bs-tertiary-bg, #f8f9fa)); }
         .status-select-option.is-selected { font-weight: 600; }
     </style>
 @endonce
@@ -116,6 +112,7 @@
             this.$nextTick(() => {
                 this.$refs.hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
                 this.$refs.hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+                this.$refs.hiddenInput.dispatchEvent(new CustomEvent('livewire-change', { bubbles: true }));
             });
         },
         moveHighlight(delta) {
@@ -178,7 +175,8 @@
                     x-model="query"
                     @click.stop
                     class="{{ $classes['input'] }}"
-                    placeholder="{{ app()->getLocale() === 'ar' ? 'بحث...' : (app()->getLocale() === 'fr' ? 'Rechercher...' : 'Search...') }}"
+                    placeholder="{{ __('status-kit::statuses.components.select_search') }}"
+                    aria-label="{{ __('status-kit::statuses.components.select_search') }}"
                 >
             </li>
         @endif
@@ -200,7 +198,7 @@
         </template>
 
         <li x-show="filteredOptions.length === 0" class="{{ $classes['text_muted'] }} {{ $classes['small'] }} {{ $classes['px_2_py_1'] }}">
-            {{ app()->getLocale() === 'ar' ? 'لا توجد نتائج' : (app()->getLocale() === 'fr' ? 'Aucun résultat' : 'No results') }}
+            {{ __('status-kit::statuses.components.select_no_results') }}
         </li>
     </ul>
 </div>

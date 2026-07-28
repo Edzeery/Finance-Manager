@@ -910,4 +910,10 @@ return [
     'team_roles' => 'أدوار الفريق',
     'verifications' => 'التأكيدات',
     'verified_amount' => 'المبلغ المؤكد',
+
+    // Force Logout
+    'force_logout' => 'إجبار تسجيل الخروج',
+    'confirm_force_logout' => 'هل أنت متأكد من إجبار :name على تسجيل الخروج من جميع الجلسات؟ سيتم تسجيل خروجه من جميع الأجهزة.',
+    'force_logout_success' => 'تم تسجيل خروج :name من :count جلسة (جلسات) بنجاح.',
+    'cannot_force_logout_self' => 'لا يمكنك إجبار نفسك على تسجيل الخروج. استخدم إعدادات الحساب بدلاً من ذلك.',
 ];

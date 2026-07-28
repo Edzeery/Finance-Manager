@@ -154,16 +154,10 @@
         </div>
 
         <div class="d-flex gap-2 mt-4 no-print">
-            <a href="{{ route('account.invoices.index') }}" class="btn btn-outline-secondary btn-custom">
-                <i class="bi bi-arrow-left ms-1"></i>{{ __('general.back') }}
-            </a>
+            <x-button href="{{ route('billing.invoices.index') }}" variant="outline" icon="bi bi-arrow-left">{{ __('general.back') }}</x-button>
             @if($invoice->isPaid())
-            <a href="{{ route('account.invoices.pdf', $invoice) }}" class="btn btn-accent btn-custom">
-                <i class="bi bi-file-earmark-pdf ms-1"></i>{{ __('general.download_pdf') ?? 'PDF' }}
-            </a>
-            <button type="button" class="btn btn-accent btn-custom" onclick="window.print()">
-                <i class="bi bi-printer ms-1"></i>{{ __('general.print') ?? 'طباعة' }}
-            </button>
+            <x-button href="{{ route('billing.invoices.pdf', $invoice) }}" icon="bi bi-file-earmark-pdf">{{ __('general.download_pdf') ?? 'PDF' }}</x-button>
+            <x-button icon="bi bi-printer" onclick="window.print()">{{ __('general.print') ?? 'طباعة' }}</x-button>
             @endif
         </div>
     </div>

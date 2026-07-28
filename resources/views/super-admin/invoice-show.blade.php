@@ -120,8 +120,6 @@
     </div>
 
     <div class="mt-4">
-        <a href="{{ route('super.admin.invoices.index') }}" class="btn" style="padding:8px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px">
-            <i class="bi bi-arrow-left"></i>{{ __('general.back') }}
-        </a>
+        <x-button href="{{ route('super.admin.invoices.index') }}" icon="bi bi-arrow-left" style="padding:8px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text);font-weight:500">{{ __('general.back') }}</x-button>
     </div>
 </x-super-admin-layout>

@@ -9,4 +9,5 @@ return [
     'select_method' => 'Sélectionnez un mode de paiement...',
     'coupon_placeholder' => 'Code promo',
     'already_processed' => 'Ce paiement a déjà été traité.',
+    'title' => 'Paiement',
 ];

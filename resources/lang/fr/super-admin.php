@@ -899,4 +899,10 @@ return [
     'team_roles' => 'Rôles de l\'équipe',
     'verifications' => 'Vérifications',
     'verified_amount' => 'Montant vérifié',
+
+    // Force Logout
+    'force_logout' => 'Déconnexion forcée',
+    'confirm_force_logout' => 'Êtes-vous sûr de vouloir déconnecter :name de toutes les sessions ? Il sera déconnecté de tous les appareils.',
+    'force_logout_success' => ':name a été déconnecté de :count session(s) avec succès.',
+    'cannot_force_logout_self' => 'Vous ne pouvez pas vous déconnecter vous-même. Utilisez les paramètres du compte.',
 ];

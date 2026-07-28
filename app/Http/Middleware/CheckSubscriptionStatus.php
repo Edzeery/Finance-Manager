@@ -9,12 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckSubscriptionStatus
 {
     protected array $alwaysAllowed = [
-        'account.subscriptions*',
-        'account.profile',
-        'account.invoices.*',
-        'account.payments.*',
-        'account.settings.*',
-        'account.settings.index',
+        'billing.subscriptions*',
+        'settings.account*',
+        'billing.invoices.*',
+        'billing.payments.*',
         'invitations.*',
         'notifications.*',
         'payment.*',
@@ -26,7 +24,6 @@ class CheckSubscriptionStatus
         'currency.switch',
         'coupon.validate',
         'onboarding.*',
-        'account.subscriptions.cancel',
     ];
 
     protected array $superRoutes = [
@@ -121,7 +118,7 @@ class CheckSubscriptionStatus
             ], 402);
         }
 
-        return redirect()->route('account.subscriptions')
+        return redirect()->route('billing.subscriptions')
             ->with('error', __('messages.subscription_expired'));
     }
 

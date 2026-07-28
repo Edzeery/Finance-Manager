@@ -32,7 +32,7 @@
                                     @endphp
                                     <tr>
                                         <td>
-                                            <i class="{{ $bc->category?->icon ?? 'bi-tag' }}" style="color:{{ $bc->category?->color ?? '#64748B' }}"></i>
+                                            <i class="{{ $bc->category?->icon ?? 'bi-tag' }}" style="color:{{ $bc->category?->color ?? 'var(--text-muted)' }}"></i>
                                             {{ locale_name($bc->category ?? new stdClass) }}
                                         </td>
                                         <td class="text-end">{{ number_format($bc->allocated_amount, 2) }}</td>
@@ -132,17 +132,13 @@
             @php $canEditBudget = auth()->user()->hasPermission('budget.update'); $canDeleteBudget = auth()->user()->hasPermission('budget.delete'); @endphp
             <div class="d-flex gap-2 mt-4">
                 @if($canEditBudget)
-                    <a href="{{ route('budget.edit', $budget) }}" class="btn btn-outline-secondary btn-custom" style="flex:1">
-                        <i class="bi bi-pencilms-1"></i>{{ __('general.edit') }}
-                    </a>
+                    <x-button href="{{ route('budget.edit', $budget) }}" variant="outline" icon="bi bi-pencil" class="flex-grow-1">{{ __('general.edit') }}</x-button>
                 @endif
                 @if($canDeleteBudget)
                     <form action="{{ route('budget.destroy', $budget) }}" method="POST" id="delete-budget-{{ $budget->id }}" style="display:none">
                         @csrf @method('DELETE')
                     </form>
-                    <button type="button" class="btn btn-outline-danger btn-custom w-100" @click="window.confirmDelete('budget', {{ $budget->id }})">
-                        <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
-                    </button>
+                    <x-button variant="outline-danger" block @click="window.confirmDelete('budget', {{ $budget->id }})" icon="bi bi-trash">{{ __('general.delete') }}</x-button>
                 @endif
             </div>
         </div>

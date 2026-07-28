@@ -2,8 +2,8 @@
 
 namespace App\Models\Concerns;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait HasCategories
 {

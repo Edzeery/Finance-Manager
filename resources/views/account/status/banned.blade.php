@@ -1,7 +1,7 @@
 <x-layouts.guest :title="__('account.banned')">
     <div class="status-page">
         <div class="status-card">
-            <div class="status-icon-wrap" style="background:rgba(239,68,68,0.12);color:#dc2626">
+            <div class="status-icon-wrap" style="background:rgba(239,68,68,0.12);color:var(--danger)">
                 <x-status-icon domain="user" status="banned" set="bi" />
             </div>
             <h2>{{ __('account.banned_title') }}</h2>

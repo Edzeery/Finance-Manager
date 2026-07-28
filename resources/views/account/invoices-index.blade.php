@@ -34,7 +34,7 @@
     <div class="card-custom">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-custom align-middle mb-0">
                     <thead>
                         <tr>
                             <th>{{ __('settings.invoice_number') }}</th>
@@ -67,9 +67,7 @@
                                 <td style="font-size:13px;color:var(--text-muted)">{{ $invoice->created_at->format('Y/m/d') }}</td>
                                 <td class="text-end">
                                     <div class="d-flex gap-1 justify-content-end">
-                                        <a href="{{ route('account.invoices.show', $invoice) }}" class="btn btn-sm btn-outline-primary btn-custom" title="{{ __('general.view') }}">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+                                        <x-button href="{{ route('billing.invoices.show', $invoice) }}" size="sm" variant="outline-accent" icon="bi bi-eye" title="{{ __('general.view') }}"></x-button>
                                     </div>
                                 </td>
                             </tr>

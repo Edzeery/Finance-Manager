@@ -39,9 +39,9 @@
                                 {{-- Has Budget --}}
                                 <template x-if="budgetStatus === true">
                                     <div class="d-flex align-items-center gap-3 p-3" style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:10px; font-size:13px">
-                                        <i class="bi bi-pie-chart-fill" style="color:#3B82F6; font-size:18px"></i>
+                                        <i class="bi bi-pie-chart-fill" style="color:var(--info); font-size:18px"></i>
                                         <div class="flex-grow-1">
-                                            <div class="fw-bold mb-1" style="color:#3B82F6">{{ __('expense.budget_found') }}</div>
+                                            <div class="fw-bold mb-1" style="color:var(--info)">{{ __('expense.budget_found') }}</div>
                                             <div class="d-flex gap-3 flex-wrap">
                                                 <span>{{ __('budget.allocated') }}: <strong x-text="budgetInfo.allocated?.toFixed(2)"></strong></span>
                                                 <span>{{ __('budget.spent') }}: <strong x-text="budgetInfo.spent?.toFixed(2)"></strong></span>
@@ -55,18 +55,14 @@
                                 <template x-if="budgetStatus === false">
                                     <div class="p-3" style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:10px">
                                         <div class="d-flex align-items-start gap-3">
-                                            <i class="bi bi-exclamation-triangle-fill" style="color:#EF4444; font-size:18px; margin-top:2px"></i>
+                                            <i class="bi bi-exclamation-triangle-fill" style="color:var(--danger); font-size:18px; margin-top:2px"></i>
                                             <div class="flex-grow-1">
-                                                <div class="fw-bold mb-2" style="color:#EF4444">{{ __('expense.no_budget_warning') }}</div>
+                                                <div class="fw-bold mb-2" style="color:var(--danger)">{{ __('expense.no_budget_warning') }}</div>
                                                 <div class="d-flex gap-2 flex-wrap">
-                                                    <a href="{{ route('budget.create') }}" wire:navigate
-                                                       class="btn btn-sm btn-custom"
-                                                       style="background:#3B82F6; color:#fff; font-size:12px; padding:4px 12px; border-radius:6px">
-                                                        <i class="bi bi-plus-lg ms-1"></i>{{ __('expense.create_budget_now') }}
-                                                    </a>
+                                                     <x-button href="{{ route('budget.create') }}" wire:navigate size="sm" icon="bi bi-plus-lg" style="background:var(--info); color:#fff; font-size:12px; padding:4px 12px; border-radius:6px">{{ __('expense.create_budget_now') }}</x-button>
                                                     <button type="button" x-on:click="enableDebt()"
                                                             class="btn btn-sm btn-custom"
-                                                            style="background:#F59E0B; color:#fff; font-size:12px; padding:4px 12px; border-radius:6px">
+                                                            style="background:var(--warning); color:#fff; font-size:12px; padding:4px 12px; border-radius:6px">
                                                         <i class="bi bi-credit-card ms-1"></i>{{ __('expense.register_as_debt') }}
                                                     </button>
                                                     <button type="button" x-on:click="dismissWarning()"
@@ -119,8 +115,8 @@
                             <div class="col-12 row g-3" x-show="showDebtFields" x-transition x-cloak>
                                 <div class="col-12">
                                     <div class="d-flex align-items-center gap-2 mb-2 p-2" style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); border-radius:8px; font-size:13px">
-                                        <i class="bi bi-info-circle-fill" style="color:#F59E0B"></i>
-                                        <span style="color:#92400E">{{ __('expense.debt_info_message') }}</span>
+                                        <i class="bi bi-info-circle-fill" style="color:var(--warning)"></i>
+                                        <span style="color:var(--text-secondary)">{{ __('expense.debt_info_message') }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -142,12 +138,8 @@
                         </div>
 
                         <div class="d-flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border)">
-                            <button type="submit" class="btn btn-accent btn-custom">
-                                <i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}
-                            </button>
-                            <a href="{{ route('expense.index') }}" class="btn btn-outline-secondary btn-custom">
-                                <i class="bi bi-x-lg"></i>{{ __('general.cancel') }}
-                            </a>
+                            <x-button submit icon="bi bi-check-lg">{{ __('general.save') }}</x-button>
+                            <x-button href="{{ route('expense.index') }}" icon="bi bi-x-lg" variant="outline">{{ __('general.cancel') }}</x-button>
                         </div>
                     </form>
                 </div>
@@ -200,7 +192,7 @@
                 this.budgetInfo = null;
 
                 try {
-                    const res = await fetch(`/expense-categories/${categoryId}/budget-status`, {
+                    const res = await fetch(`/expense/categories/${categoryId}/budget-status`, {
                         headers: {
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,

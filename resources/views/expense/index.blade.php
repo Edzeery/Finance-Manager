@@ -50,9 +50,7 @@
             <x-data-toolbar entity="expense" :show-export="$canExport" :show-import="$canImport" />
             <x-per-page :current="request('per_page', 15)" :route="route('expense.index')" :preserve="['category','type','date_from','date_to','search','tab']" />
             @if($tab !== 'trashed' && $canCreate)
-                <a href="{{ route('expense.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lg"></i>{{ __('expense.add') }}
-                </a>
+                <x-button href="{{ route('expense.create') }}" icon="bi bi-plus-lg">{{ __('expense.add') }}</x-button>
             @endif
         </div>
     </div>
@@ -79,20 +77,14 @@
                     <span id="selectedCount">0</span> <span>{{ __('general.selected') }}</span>
                     @if($tab === 'trashed')
                         @if($canRestore)
-                            <button type="submit" form="bulkForm" formaction="{{ route('expense.bulk-restore') }}" class="btn btn-sm btn-outline-success btn-custom">
-                                <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('general.restore') }}
-                            </button>
+                            <x-button submit form="bulkForm" formaction="{{ route('expense.bulk-restore') }}" size="sm" variant="outline-success" icon="bi bi-arrow-counterclockwise">{{ __('general.restore') }}</x-button>
                         @endif
                         @if($canForceDelete)
-                            <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkForceDelete()">
-                                <i class="bi bi-trash3ms-1"></i>{{ __('general.force_delete') }}
-                            </button>
+                            <x-button size="sm" variant="outline-danger" @click="confirmBulkForceDelete()" icon="bi bi-trash3">{{ __('general.force_delete') }}</x-button>
                         @endif
                     @else
                         @if($canDelete)
-                            <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkDelete('expense')">
-                                <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
-                            </button>
+                            <x-button size="sm" variant="outline-danger" @click="confirmBulkDelete('expense')" icon="bi bi-trash">{{ __('general.delete') }}</x-button>
                         @endif
                     @endif
                 </div>
@@ -126,7 +118,7 @@
                                     </td>
                                     <td>
                                         <span style="display:inline-flex; align-items:center; gap:6px">
-                                            <i class="{{ $expense->category?->icon ?? 'bi-tag' }}" style="color:{{ $expense->category?->color ?? '#64748B' }}"></i>
+                                            <i class="{{ $expense->category?->icon ?? 'bi-tag' }}" style="color:{{ $expense->category?->color ?? 'var(--text-muted)' }}"></i>
                                             {{ locale_name($expense->category ?? new stdClass) }}
                                         </span>
                                     </td>

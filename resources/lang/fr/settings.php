@@ -125,10 +125,50 @@ return [
     'session_not_found' => 'Session non trouvée.',
     'cannot_revoke_current' => 'Vous ne pouvez pas révoquer votre session actuelle.',
     'no_sessions' => 'Aucune session active trouvée.',
+    'session_ended' => 'Session terminée',
 
     // Login History
     'login_history' => 'Historique de connexion',
     'login_history_help' => 'Tentatives de connexion récentes sur votre compte.',
     'no_login_history' => 'Aucun historique de connexion trouvé.',
     'suspicious_activity' => 'Activité suspecte',
+
+    // Navigation
+    'account' => 'Compte',
+    'personal' => 'Personnel',
+    'workspace' => 'Espace de travail',
+
+    // Integrations
+    'integrations' => 'Intégrations',
+    'integrations_desc' => 'Gérer les intégrations tierces.',
+    'no_integrations' => 'Aucune intégration disponible.',
+
+    // Quick Links
+    'quick_links' => 'Liens rapides',
+    'quick_links_desc' => 'Gérer votre abonnement et vos factures.',
+    'view_plans' => 'Voir les plans',
+
+    // Invoice Details
+    'invoice_details' => 'Détails de la facture',
+    'description' => 'Description',
+    'amount' => 'Montant',
+    'discount' => 'Réduction',
+    'total_due' => 'Total dû',
+    'invoice_generated_at' => 'Facture générée le',
+
+    // Subscription Actions
+    'cancel_payment' => 'Annuler le paiement',
+    'cancel_payment_confirm' => 'Êtes-vous sûr de vouloir annuler ce paiement en attente ?',
+    'no_plan' => 'Aucun forfait',
+    'resume_confirm' => 'Êtes-vous sûr de vouloir reprendre votre abonnement ?',
+    'resume_subscription' => 'Reprendre l\'abonnement',
+
+    // Activity Log
+    'activity_log_desc' => 'Voir toute l\'activité de votre compte',
+
+    // Notification Preferences
+    'notification_settings' => 'Paramètres de Notification',
+    'notification_settings_desc' => 'Personnalisez vos préférences de notification.',
+    'save_preferences' => 'Enregistrer les Préférences',
+    'redirecting_to_tab' => 'Cette page a été déplacée vers le nouvel onglet.',
 ];

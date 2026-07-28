@@ -171,8 +171,8 @@ class BudgetController extends BaseCrudController
     public function categories()
     {
         $this->resetBreadcrumbs();
-        $this->breadcrumb('general.budget', 'budget.index', 'bi-calculator-fill');
-        $this->breadcrumb(__('budget.categories'), null, 'bi-tags');
+        $this->addBreadcrumb(__('general.budget'), route('budget.index'), 'bi-calculator-fill');
+        $this->addBreadcrumb(__('budget.categories'), null, 'bi-tags');
 
         $categories = ExpenseCategory::where('is_active', true)
             ->orderBy('sort_order')
@@ -203,6 +203,6 @@ class BudgetController extends BaseCrudController
                 return $category;
             });
 
-        return view('budget.categories', compact('categories'));
+        return view('budget.categories', $this->withBreadcrumbs(compact('categories')));
     }
 }

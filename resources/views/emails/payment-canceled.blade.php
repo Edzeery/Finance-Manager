@@ -12,7 +12,7 @@
 - **{{ __('emails.status') }}:** {{ $payment->status->label() }}
 </x-mail::panel>
 
-<x-mail::button :url="route('account.subscriptions')">
+<x-mail::button :url="route('billing.subscriptions')">
 {{ __('emails.retry_payment') }}
 </x-mail::button>
 

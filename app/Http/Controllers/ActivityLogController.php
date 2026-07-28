@@ -61,24 +61,33 @@ class ActivityLogController extends Controller
         $logs = $query->paginate($perPage);
 
         if ($isSuperAdmin) {
-            $countAll = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->count();
-            $countCreated = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->where('action', 'created')->count();
-            $countUpdated = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->where('action', 'updated')->count();
-            $countDeleted = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->where('action', 'deleted')->count();
-            $countRestored = ActivityLog::withoutGlobalScope(WorkspaceScope::class)->where('action', 'restored')->count();
+            $counts = ActivityLog::withoutGlobalScope(WorkspaceScope::class)
+                ->selectRaw('action, COUNT(*) as count')
+                ->groupBy('action')
+                ->pluck('count', 'action');
+
+            $countAll = $counts->sum();
+            $countCreated = $counts->get('created', 0);
+            $countUpdated = $counts->get('updated', 0);
+            $countDeleted = $counts->get('deleted', 0);
+            $countRestored = $counts->get('restored', 0);
 
             return view('super-admin.activity-logs', compact('logs', 'countAll', 'countCreated', 'countUpdated', 'countDeleted', 'countRestored'));
         }
 
-        $countBase = ActivityLog::with('user', 'workspace');
+        $countBase = ActivityLog::query();
         if (! auth()->user()->hasPermission('activity-log.view')) {
             $countBase->where('user_id', auth()->id());
         }
-        $countAll = (clone $countBase)->count();
-        $countCreated = (clone $countBase)->where('action', 'created')->count();
-        $countUpdated = (clone $countBase)->where('action', 'updated')->count();
-        $countDeleted = (clone $countBase)->where('action', 'deleted')->count();
-        $countRestored = (clone $countBase)->where('action', 'restored')->count();
+        $counts = $countBase->selectRaw('action, COUNT(*) as count')
+            ->groupBy('action')
+            ->pluck('count', 'action');
+
+        $countAll = $counts->sum();
+        $countCreated = $counts->get('created', 0);
+        $countUpdated = $counts->get('updated', 0);
+        $countDeleted = $counts->get('deleted', 0);
+        $countRestored = $counts->get('restored', 0);
 
         return view('activity_logs.index', $this->withBreadcrumbs(compact('logs', 'countAll', 'countCreated', 'countUpdated', 'countDeleted', 'countRestored')));
     }

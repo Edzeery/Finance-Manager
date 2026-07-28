@@ -10,7 +10,7 @@
     $result = \Edzeery\MyStatusKit\Facades\Status::for($domain, $status);
 @endphp
 
-<span {{ $attributes->merge(['class' => $result->badgeClasses($class)]) }}>
+<span role="status" aria-label="{{ $result->label() }}" {{ $attributes->merge(['class' => $result->badgeClasses($class)]) }}>
     @if($icon)
         {!! $result->icon($set) !!}
     @endif

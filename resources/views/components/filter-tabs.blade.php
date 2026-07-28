@@ -18,7 +18,7 @@
     $routeName = $route ?? request()->route()->getName();
 @endphp
 
-<div class="filter-tabs-wrapper">
+<div class="filter-tabs-wrapper mt-2">
     <div class="filter-tabs-scroll">
         <nav class="filter-tabs" role="tablist">
             @foreach($tabs as $key => $config)

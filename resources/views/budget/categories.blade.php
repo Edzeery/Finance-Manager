@@ -5,9 +5,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div></div>
         <div class="d-flex gap-2 align-items-center">
-            <a href="{{ route('budget.create') }}" class="btn btn-accent btn-custom" wire:navigate>
-                <i class="bi bi-plus-lg"></i>{{ __('budget.add') }}
-            </a>
+            <x-button href="{{ route('budget.create') }}" icon="bi bi-plus-lg" wire:navigate>{{ __('budget.add') }}</x-button>
         </div>
     </div>
 
@@ -41,7 +39,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
-                                            <i class="{{ $cat->icon ?? 'bi-tag' }}" style="color:{{ $cat->color ?? '#64748B' }}; font-size:16px"></i>
+                                            <i class="{{ $cat->icon ?? 'bi-tag' }}" style="color:{{ $cat->color ?? 'var(--text-muted)' }}; font-size:16px"></i>
                                             <span>{{ locale_name($cat) }}</span>
                                         </div>
                                     </td>
@@ -104,10 +102,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @else
-                                            <a href="{{ route('budget.create') }}?category_id={{ $cat->id }}" class="btn btn-sm btn-custom" wire:navigate
-                                               style="background:var(--accent); color:#fff; font-size:11px; padding:3px 10px; border-radius:6px">
-                                                <i class="bi bi-plus-lg ms-1"></i>{{ __('budget.add') }}
-                                            </a>
+                                            <x-button href="{{ route('budget.create') }}?category_id={{ $cat->id }}" size="sm" icon="bi bi-plus-lg" wire:navigate
+                                                style="background:var(--accent); color:#fff; font-size:11px; padding:3px 10px; border-radius:6px">{{ __('budget.add') }}</x-button>
                                         @endif
                                     </td>
                                 </tr>

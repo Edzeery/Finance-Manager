@@ -21,10 +21,7 @@ new class extends Component
 }; ?>
 
 <div>
-    <button type="button" class="btn btn-outline-danger btn-custom px-4"
-            data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-        <i class="bi bi-trashms-1"></i>{{ __('general.delete_account') }}
-    </button>
+    <x-button variant="outline-danger" class="px-4" data-bs-toggle="modal" data-bs-target="#deleteAccountModal" icon="bi bi-trashms-1">{{ __('general.delete_account') }}</x-button>
 
     <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -40,10 +37,8 @@ new class extends Component
                             @error('password') <div class="text-danger mt-1" style="font-size:12px">{{ $message }}</div> @enderror
                         </div>
                         <div class="d-flex gap-3 justify-content-end">
-                            <button type="button" class="btn btn-outline-secondary btn-custom" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i>{{ __('general.cancel') }}</button>
-                            <button type="submit" class="btn btn-danger btn-custom">
-                                <i class="bi bi-trashms-1"></i>{{ __('general.delete_account') }}
-                            </button>
+                            <x-button variant="outline" icon="bi bi-x-lg" data-bs-dismiss="modal">{{ __('general.cancel') }}</x-button>
+                            <x-button submit variant="danger" icon="bi bi-trashms-1">{{ __('general.delete_account') }}</x-button>
                         </div>
                     </form>
                 </div>

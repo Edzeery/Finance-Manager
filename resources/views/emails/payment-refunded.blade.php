@@ -13,7 +13,7 @@
 - **{{ __('emails.date') }}:** {{ $payment->created_at->format('Y-m-d H:i') }}
 </x-mail::panel>
 
-<x-mail::button :url="route('account.payments')">
+<x-mail::button :url="route('billing.payments')">
 {{ __('settings.view_all_payments') }}
 </x-mail::button>
 

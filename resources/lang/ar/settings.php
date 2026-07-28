@@ -126,6 +126,7 @@ return [
     'session_not_found' => 'الجلسة غير موجودة.',
     'cannot_revoke_current' => 'لا يمكنك إلغاء جلستك الحالية.',
     'no_sessions' => 'لا توجد جلسات نشطة.',
+    'session_ended' => 'تم إنهاء الجلسة',
 
     // Login History
     'login_history' => 'سجل تسجيل الدخول',
@@ -147,4 +148,43 @@ return [
     'subscription_period' => 'فترة الاشتراك',
     'plan_price' => 'سعر الباقة',
     'coupon_discount' => 'خصم الكوبون',
+
+    // Navigation
+    'account' => 'الحساب',
+    'personal' => 'شخصي',
+    'workspace' => 'مساحة العمل',
+
+    // Integrations
+    'integrations' => 'التكاملات',
+    'integrations_desc' => 'إدارة التكاملات مع الأطراف الثالثة.',
+    'no_integrations' => 'لا توجد تكاملات متاحة بعد.',
+
+    // Quick Links
+    'quick_links' => 'روابط سريعة',
+    'quick_links_desc' => 'إدارة اشتراكك وفواتيرك.',
+    'view_plans' => 'عرض الباقات',
+
+    // Invoice Details
+    'invoice_details' => 'تفاصيل الفاتورة',
+    'description' => 'الوصف',
+    'amount' => 'المبلغ',
+    'discount' => 'الخصم',
+    'total_due' => 'الإجمالي المستحق',
+    'invoice_generated_at' => 'تم إنشاء الفاتورة في',
+
+    // Subscription Actions
+    'cancel_payment' => 'إلغاء الدفع',
+    'cancel_payment_confirm' => 'هل أنت متأكد من إلغاء هذا الدفع المعلق؟',
+    'no_plan' => 'لا توجد باقة',
+    'resume_confirm' => 'هل أنت متأكد من استئناف اشتراكك؟',
+    'resume_subscription' => 'استئناف الاشتراك',
+
+    // Activity Log
+    'activity_log_desc' => 'عرض جميع النشاطات في حسابك',
+
+    // Notification Preferences
+    'notification_settings' => 'إعدادات الإشعارات',
+    'notification_settings_desc' => 'تخصيص تفضيلات الإشعارات الخاصة بك.',
+    'save_preferences' => 'حفظ التفضيلات',
+    'redirecting_to_tab' => 'تم نقل هذه الصفحة إلى التبويب الجديد.',
 ];

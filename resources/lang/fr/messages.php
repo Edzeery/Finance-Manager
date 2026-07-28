@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'created' => 'Créé avec succès',

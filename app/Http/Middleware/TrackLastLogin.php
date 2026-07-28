@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Concerns\ParsesUserAgent;
 use App\Enums\OnlineStatus;
 use Closure;
 use Illuminate\Http\Request;
@@ -9,6 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TrackLastLogin
 {
+    use ParsesUserAgent;
+
     private const INACTIVE_THRESHOLD_MINUTES = 15;
 
     public function handle(Request $request, Closure $next): Response
@@ -37,7 +40,14 @@ class TrackLastLogin
             || $statusRecord->last_login_at->diffInMinutes($now) > 5
             || $statusRecord->last_login_ip !== $currentIp
         ) {
-            $statusRecord->trackLogin($currentIp);
+            $userAgent = $request->userAgent() ?? '';
+            $statusRecord->trackLogin(
+                $currentIp,
+                $userAgent,
+                $this->parseDevice($userAgent),
+                $this->parseBrowser($userAgent),
+                $this->parseOS($userAgent),
+            );
         }
 
         // Store login_at in session for session management page

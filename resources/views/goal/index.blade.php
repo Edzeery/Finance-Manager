@@ -25,9 +25,7 @@
             <x-data-toolbar entity="goal" :show-export="$canExport" />
             <x-per-page :current="request('per_page', 15)" :route="route('goal.index')" :preserve="['search','tab']" />
             @if($tab !== 'trashed' && $canCreate)
-                <a href="{{ route('goal.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lg"></i>{{ __('goal.add') }}
-                </a>
+                <x-button href="{{ route('goal.create') }}" icon="bi bi-plus-lg">{{ __('goal.add') }}</x-button>
             @endif
         </div>
     </div>
@@ -53,20 +51,14 @@
             <span style="color:var(--text-muted); font-size:13px"><span id="selectedCount">0</span> {{ __('general.selected') }}</span>
             @if($tab === 'trashed')
                 @if($canRestore)
-                    <button type="button" class="btn btn-sm btn-outline-success btn-custom" @click="submitBulk('{{ route('goal.bulk-restore') }}')">
-                        <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('general.restore') }}
-                    </button>
+                    <x-button size="sm" variant="outline-success" @click="submitBulk('{{ route('goal.bulk-restore') }}')" icon="bi bi-arrow-counterclockwise">{{ __('general.restore') }}</x-button>
                 @endif
                 @if($canForceDelete)
-                    <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkForceDelete()">
-                        <i class="bi bi-trash3ms-1"></i>{{ __('general.force_delete') }}
-                    </button>
+                    <x-button size="sm" variant="outline-danger" @click="confirmBulkForceDelete()" icon="bi bi-trash3">{{ __('general.force_delete') }}</x-button>
                 @endif
             @else
                 @if($canDelete)
-                    <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkDelete('goal')">
-                        <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
-                    </button>
+                    <x-button size="sm" variant="outline-danger" @click="confirmBulkDelete('goal')" icon="bi bi-trash">{{ __('general.delete') }}</x-button>
                 @endif
             @endif
         </div>

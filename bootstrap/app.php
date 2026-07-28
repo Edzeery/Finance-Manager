@@ -4,12 +4,12 @@
 use App\Http\Middleware\ApiWorkspace;
 use App\Http\Middleware\CheckActiveSubscription;
 use App\Http\Middleware\CheckApiAbility;
-use App\Http\Middleware\CheckUserStatus;
 use App\Http\Middleware\CheckApiQuota;
 use App\Http\Middleware\CheckApiSubscription;
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\CheckPlanFeature;
 use App\Http\Middleware\CheckSubscriptionStatus;
+use App\Http\Middleware\CheckUserStatus;
 use App\Http\Middleware\EnsureOnboardingCompleted;
 use App\Http\Middleware\ForceTwoFactor;
 use App\Http\Middleware\HasPlatformPermission;

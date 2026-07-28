@@ -50,6 +50,8 @@ return [
     'members_desc' => 'Gérez et invitez des membres de l\'équipe dans votre espace de travail.',
     'roles_manage_desc' => 'Chaque rôle a des permissions spécifiques. Configurez les rôles et permissions depuis la',
     'view_roles' => 'page des rôles',
+    'no_roles' => 'Aucun rôle disponible.',
+    'settings' => 'Paramètres de l\'Espace de Travail',
 
     // Invitation System
     'pending_invitations' => 'Invitations en attente',

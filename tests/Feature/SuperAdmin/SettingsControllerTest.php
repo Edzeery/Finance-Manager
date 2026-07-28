@@ -8,6 +8,7 @@ use App\Services\EnvWriter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class SettingsControllerTest extends TestCase
@@ -76,7 +77,7 @@ class SettingsControllerTest extends TestCase
         try {
             $controller->updateSystem($request, $envWriter);
             $this->fail('Expected validation exception');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $this->assertTrue(true);
         }
 

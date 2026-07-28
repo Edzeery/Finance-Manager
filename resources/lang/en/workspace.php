@@ -50,6 +50,8 @@ return [
     'members_desc' => 'Manage and invite team members to your workspace.',
     'roles_manage_desc' => 'Each role has specific permissions. Configure roles and permissions from the',
     'view_roles' => 'Roles page',
+    'no_roles' => 'No roles available.',
+    'settings' => 'Workspace Settings',
 
     // Invitation System
     'pending_invitations' => 'Pending Invitations',

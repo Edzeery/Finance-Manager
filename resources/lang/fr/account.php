@@ -18,4 +18,7 @@ return [
     'suspended_expires' => 'La suspension expire le',
 
     'reason' => 'Raison',
+
+    'subscription_history' => 'Historique des abonnements',
+    'subscription_history_desc' => 'Un enregistrement de tous vos abonnements passés.',
 ];

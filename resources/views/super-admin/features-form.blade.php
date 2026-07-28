@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ $feature ? __('super-admin.edit_feature') : __('super-admin.create_feature') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ $feature ? __('super-admin.edit_feature') : __('super-admin.create_feature') }}</x-slot>
     <x-slot:page-description>{{ $feature ? __('super-admin.edit_feature_desc') : __('super-admin.create_feature_desc') }}</x-slot>
@@ -83,7 +83,7 @@
             </div>
 
             <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn" style="padding:9px 22px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+                <button type="submit" class="btn" style="padding:9px 22px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
                     {{ $feature ? __('general.update') : __('general.create') }}
                 </button>
                 <a href="{{ route('super.admin.features.index') }}" class="btn" style="padding:9px 22px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px">

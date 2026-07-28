@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Zakat\StoreZakatRequest;
 use App\Http\Requests\Zakat\UpdateHaulSettingsRequest;
 use App\Models\ZakatRecord;
-use App\Services\GoldPriceService;
 use App\Services\CurrencyHelper;
+use App\Services\GoldPriceService;
 use App\Services\ZakatCalculationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -77,7 +77,7 @@ class ZakatController extends Controller
             $nextDate = $user->nextZakatDate()?->format('Y/m/d');
 
             return redirect()->route('zakat.calculator')
-                ->withErrors(['haul' => __('zakat.haul_not_complete') . ' — ' . __('zakat.days_left', ['days' => $daysLeft]) . ' (' . $nextDate . ')']);
+                ->withErrors(['haul' => __('zakat.haul_not_complete').' — '.__('zakat.days_left', ['days' => $daysLeft]).' ('.$nextDate.')']);
         }
 
         $data = $request->validated();
@@ -284,7 +284,7 @@ class ZakatController extends Controller
         foreach ($result['goldBreakdown'] as $item) {
             $record->assets()->create([
                 'type' => 'gold',
-                'name' => __('zakat.gold_value') . ' ' . $item['karat'] . 'K',
+                'name' => __('zakat.gold_value').' '.$item['karat'].'K',
                 'value' => $item['value'],
                 'is_zakatable' => true,
                 'zakatable_value' => $item['value'],

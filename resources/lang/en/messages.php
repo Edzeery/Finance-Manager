@@ -146,4 +146,11 @@ return [
     'payment_method_updated' => 'Payment method updated successfully.',
     'plan_upgrade_required' => 'This feature requires a higher plan. Please upgrade to access it.',
     'rate_limited' => 'Too many requests. Please try again later.',
+    'unauthorized_workspace_settings' => 'You do not have permission to edit workspace settings.',
+    'unauthorized_invite_members' => 'You do not have permission to invite new members.',
+    'unauthorized_manage_members' => 'You do not have permission to manage workspace members.',
+    'unauthorized_manage_roles' => 'You do not have permission to change member roles.',
+    'unauthorized_transfer_workspace' => 'Only the workspace owner can transfer ownership.',
+    'unauthorized_create_workspace' => 'You cannot create a new workspace.',
+    'unauthorized_change_plan' => 'Only the workspace owner can change the plan.',
 ];

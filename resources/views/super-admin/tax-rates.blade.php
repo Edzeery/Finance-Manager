@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.tax_rates') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.tax_rates') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.tax_rates_desc') }}</x-slot>
@@ -18,9 +18,7 @@
             <div class="data-grid-toolbar-right">
                 <div class="d-flex align-items-center gap-2">
                     <x-per-page :current="(int) request('per_page', 20)" :route="route('super.admin.tax-rates.index')" :preserve="['search','status']" :options="[10, 20, 30, 50]" />
-                    <a href="{{ route('super.admin.tax-rates.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
-                        <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_tax_rate') }}
-                    </a>
+                    <x-button href="{{ route('super.admin.tax-rates.create') }}" variant="accent" icon="bi bi-plus-lg">{{ __('super-admin.create_tax_rate') }}</x-button>
                 </div>
             </div>
         </div>
@@ -57,15 +55,11 @@
                                 </td>
                                 <td class="col-actions">
                                     <div class="cell-actions">
-                                        <a href="{{ route('super.admin.tax-rates.edit', $taxRate) }}" class="btn" style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" title="{{ __('general.edit') }}">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
+                                        <x-button href="{{ route('super.admin.tax-rates.edit', $taxRate) }}" icon="bi bi-pencil" title="{{ __('general.edit') }}" style="width:30px;height:30px;padding:0;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" />
                                         <form method="POST" action="{{ route('super.admin.tax-rates.destroy', $taxRate) }}" id="delete-tax-rate-{{ $taxRate->id }}" style="display:none">
                                             @csrf @method('DELETE')
                                         </form>
-                                        <button type="button" class="btn" style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid transparent;background:transparent;color:var(--danger);font-size:13px;transition:all 0.15s" title="{{ __('general.delete') }}" @click="confirmDeleteTaxRate({{ $taxRate->id }})">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <x-button icon="bi bi-trash" title="{{ __('general.delete') }}" @click="confirmDeleteTaxRate({{ $taxRate->id }})" style="width:30px;height:30px;padding:0;border-radius:var(--radius-xs);border:1px solid transparent;background:transparent;color:var(--danger);font-size:13px;transition:all 0.15s" />
                                     </div>
                                 </td>
                             </tr>

@@ -5,6 +5,7 @@ use App\Http\Controllers\Account\InvoiceController;
 use App\Http\Controllers\Account\PaymentController;
 use App\Http\Controllers\Account\SubscriptionController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\Api\BudgetStatusController;
 use App\Http\Controllers\Asset\AssetController;
 use App\Http\Controllers\Budget\BudgetController;
 use App\Http\Controllers\CheckoutController;
@@ -12,14 +13,15 @@ use App\Http\Controllers\CouponValidationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\Debt\DebtController;
-use App\Http\Controllers\Api\BudgetStatusController;
 use App\Http\Controllers\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Expense\ExpenseController;
 use App\Http\Controllers\Goal\FinancialGoalController;
 use App\Http\Controllers\Income\IncomeCategoryController;
 use App\Http\Controllers\Income\IncomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationSettingsController;
 use App\Http\Controllers\PaymentReturnController;
+use App\Http\Controllers\PingController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\Report\ReportController;
 use App\Http\Controllers\SearchController;
@@ -38,7 +40,7 @@ use Livewire\Volt\Volt;
 Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->group(function () {
 
     // Heartbeat: keeps user's online_status alive
-    Route::post('/ping', \App\Http\Controllers\PingController::class)
+    Route::post('/ping', PingController::class)
         ->middleware('throttle:30,1')
         ->name('ping');
 
@@ -100,7 +102,7 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
         Route::put('/{income}', [IncomeController::class, 'update'])
             ->middleware(['permission:income.update', 'throttle:web-crud'])->name('update');
         Route::delete('/{income}', [IncomeController::class, 'destroy'])
-            ->middleware(['permission:income.delete', 'throttle:web-crud'])->name('destroy');
+            ->middleware(['permission:income.delete', 'throttle:web-delete'])->name('destroy');
         Route::delete('/{id}/force-delete', [IncomeController::class, 'forceDelete'])
             ->middleware(['permission:income.force-delete', 'throttle:web-sensitive'])->name('force-delete');
         Route::patch('/{income}/archive', [IncomeController::class, 'archive'])
@@ -118,7 +120,7 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
         Route::put('/categories/{incomeCategory}', [IncomeCategoryController::class, 'update'])
             ->middleware(['permission:income-category.update', 'throttle:web-crud'])->name('categories.update');
         Route::delete('/categories/{incomeCategory}', [IncomeCategoryController::class, 'destroy'])
-            ->middleware(['permission:income-category.delete', 'throttle:web-crud'])->name('categories.destroy');
+            ->middleware(['permission:income-category.delete', 'throttle:web-delete'])->name('categories.destroy');
     });
 
     Route::prefix('expense')->name('expense.')->middleware(['permission:expense.view', 'plan.feature:income_expense', 'throttle:web-list'])->group(function () {
@@ -156,12 +158,11 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
         Route::put('/categories/{expenseCategory}', [ExpenseCategoryController::class, 'update'])
             ->middleware(['permission:expense-category.update', 'throttle:web-crud'])->name('categories.update');
         Route::delete('/categories/{expenseCategory}', [ExpenseCategoryController::class, 'destroy'])
-            ->middleware(['permission:expense-category.delete', 'throttle:web-crud'])->name('categories.destroy');
+            ->middleware(['permission:expense-category.delete', 'throttle:web-delete'])->name('categories.destroy');
+        Route::get('/categories/{expenseCategory}/budget-status', [BudgetStatusController::class, 'getBudgetStatus'])
+            ->middleware(['permission:expense.view', 'throttle:web-list'])
+            ->name('categories.budget-status');
     });
-
-    Route::get('/expense-categories/{expenseCategory}/budget-status', [BudgetStatusController::class, 'getBudgetStatus'])
-        ->middleware(['permission:expense.view', 'throttle:web-list'])
-        ->name('expense.categories.budget-status');
 
     Route::prefix('debt')->name('debt.')->middleware(['permission:debt.view', 'plan.feature:debt', 'throttle:web-list'])->group(function () {
         Route::post('/bulk-delete', [DebtController::class, 'bulkDelete'])
@@ -287,43 +288,64 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
         Route::get('/yearly', [ReportController::class, 'yearly'])->name('yearly');
     });
 
-    Route::prefix('settings')->name('settings.')->middleware(['permission:workspace-setting.view', 'plan.feature:team_management', 'throttle:web-crud'])->group(function () {
+    // ── Workspace Settings (admin-only) ──────────────────────────────
+    Route::prefix('settings/workspace')->name('settings.workspace.')->middleware(['permission:workspace-setting.view', 'plan.feature:team_management', 'throttle:web-crud'])->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('index');
     });
-
-    Route::permanentRedirect('/settings/subscriptions', '/account/subscriptions')->name('settings.subscriptions');
 
     Route::get('/coupon/validate/{code}/{amount?}', [CouponValidationController::class, 'check'])
         ->middleware('auth')->name('coupon.validate');
 
-    Route::prefix('workspace')->name('settings.workspace.')->group(function () {
+    // ── Workspace Management (CRUD) ─────────────────────────────────
+    Route::prefix('settings/workspace')->name('settings.workspace.')->group(function () {
         Route::get('/create', [WorkspaceController::class, 'create'])
             ->name('create');
         Route::post('/create', [WorkspaceController::class, 'store'])
             ->name('store');
         Route::post('/update', [WorkspaceController::class, 'update'])
-            ->middleware('permission:workspace-setting.update')->name('update');
+            ->middleware(['permission:workspace-setting.update', 'throttle:web-crud'])->name('update');
 
         Route::post('/members/invite', [WorkspaceController::class, 'invite'])
-            ->middleware(['permission:workspace-user.invite', 'plan.feature:team_management'])->name('members.invite');
+            ->middleware(['permission:workspace-user.invite', 'plan.feature:team_management', 'throttle:web-crud'])->name('members.invite');
         Route::put('/members/{user}/role', [WorkspaceController::class, 'changeRole'])
-            ->middleware(['permission:workspace-user.role', 'plan.feature:team_management'])->name('members.change-role');
+            ->middleware(['permission:workspace-user.role', 'plan.feature:team_management', 'throttle:web-crud'])->name('members.change-role');
         Route::delete('/members/{user}', [WorkspaceController::class, 'remove'])
-            ->middleware(['permission:workspace-user.remove', 'plan.feature:team_management'])->name('members.remove');
+            ->middleware(['permission:workspace-user.remove', 'plan.feature:team_management', 'throttle:web-crud'])->name('members.remove');
         Route::post('/members/transfer', [WorkspaceController::class, 'transferOwnership'])
-            ->middleware(['permission:workspace-user.role', 'plan.feature:team_management'])->name('members.transfer');
+            ->middleware(['permission:workspace-user.role', 'plan.feature:team_management', 'throttle:web-crud'])->name('members.transfer');
         Route::get('/roles', [RoleController::class, 'index'])
             ->middleware(['permission:workspace-role.view', 'plan.feature:roles_permissions'])->name('roles.index');
         Route::get('/roles/{role}', [RoleController::class, 'show'])
             ->middleware(['permission:workspace-role.view', 'plan.feature:roles_permissions'])->name('roles.show');
     });
 
-    Route::prefix('account')->name('account.')->group(function () {
+    // ── Account Settings (personal) ─────────────────────────────────
+    Route::prefix('settings/account')->name('settings.account.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Account\SettingsController::class, 'index'])->name('index');
+        Route::post('/', [App\Http\Controllers\Account\SettingsController::class, 'update'])->name('update');
         Route::get('/profile', ProfileController::class)->name('profile');
+        Route::delete('/sessions/{sessionId}', [App\Http\Controllers\Account\SettingsController::class, 'revokeSession'])->name('sessions.revoke');
+        Route::delete('/sessions', [App\Http\Controllers\Account\SettingsController::class, 'revokeAllSessions'])->name('sessions.revoke-all');
+        Route::prefix('developer')->name('developer.')->middleware('plan.feature:api_access')->group(function () {
+            Route::get('/', [DeveloperController::class, 'index'])->name('index');
+            Route::post('/tokens', [DeveloperController::class, 'store'])->name('store');
+            Route::post('/tokens/{token}/show', [DeveloperController::class, 'show'])->name('show');
+            Route::put('/tokens/{token}', [DeveloperController::class, 'update'])->name('update');
+            Route::post('/tokens/{token}/regenerate', [DeveloperController::class, 'regenerate'])->name('regenerate');
+            Route::post('/tokens/{token}/deactivate', [DeveloperController::class, 'deactivate'])->name('deactivate');
+            Route::post('/tokens/{token}/activate', [DeveloperController::class, 'activate'])->name('activate');
+            Route::delete('/tokens/{token}', [DeveloperController::class, 'destroy'])->name('revoke');
+            Route::delete('/tokens', [DeveloperController::class, 'destroyAll'])->name('revoke-all');
+            Route::post('/verify-password', [DeveloperController::class, 'verifyPassword'])->name('verify-password');
+        });
+    });
+
+    // ── Billing (subscriptions, payments, invoices) ──────────────────
+    Route::prefix('billing')->name('billing.')->group(function () {
         Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions');
         Route::get('/subscriptions/fee-breakdown', [SubscriptionController::class, 'feeBreakdown'])->name('subscriptions.fee-breakdown');
         Route::post('/subscriptions/change-plan', [WorkspaceController::class, 'changePlan'])
-            ->middleware('permission:workspace-user.role')->name('subscriptions.change-plan');
+            ->middleware(['permission:workspace-user.role', 'throttle:web-crud'])->name('subscriptions.change-plan');
         Route::post('/subscriptions/cancel', [WorkspaceController::class, 'cancel'])
             ->name('subscriptions.cancel');
         Route::post('/subscriptions/cancel-payment/{payment}', [SubscriptionController::class, 'cancelPayment'])
@@ -338,25 +360,17 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
             Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
             Route::get('/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('pdf');
         });
-        Route::get('/settings', [App\Http\Controllers\Account\SettingsController::class, 'index'])->name('settings');
-        Route::post('/settings', [App\Http\Controllers\Account\SettingsController::class, 'update'])->name('settings.update');
-        Route::prefix('settings')->name('settings.')->group(function () {
-            Route::delete('/sessions/{sessionId}', [App\Http\Controllers\Account\SettingsController::class, 'revokeSession'])->name('sessions.revoke');
-            Route::delete('/sessions', [App\Http\Controllers\Account\SettingsController::class, 'revokeAllSessions'])->name('sessions.revoke-all');
-            Route::prefix('developer')->name('developer')->middleware('plan.feature:api_access')->group(function () {
-                Route::get('/', [DeveloperController::class, 'index'])->name('');
-                Route::post('/tokens', [DeveloperController::class, 'store'])->name('.store');
-                Route::post('/tokens/{token}/show', [DeveloperController::class, 'show'])->name('.show');
-                Route::put('/tokens/{token}', [DeveloperController::class, 'update'])->name('.update');
-                Route::post('/tokens/{token}/regenerate', [DeveloperController::class, 'regenerate'])->name('.regenerate');
-                Route::post('/tokens/{token}/deactivate', [DeveloperController::class, 'deactivate'])->name('.deactivate');
-                Route::post('/tokens/{token}/activate', [DeveloperController::class, 'activate'])->name('.activate');
-                Route::delete('/tokens/{token}', [DeveloperController::class, 'destroy'])->name('.revoke');
-                Route::delete('/tokens', [DeveloperController::class, 'destroyAll'])->name('.revoke-all');
-                Route::post('/verify-password', [DeveloperController::class, 'verifyPassword'])->name('.verify-password');
-            });
-        });
     });
+
+    // ── Legacy redirects (old URLs → new structure) ──────────────────
+    // Route::permanentRedirect('/account/profile', '/settings/account/profile');
+    // Route::permanentRedirect('/account/settings', '/settings/account');
+    // Route::permanentRedirect('/account/subscriptions', '/billing/subscriptions');
+    // Route::permanentRedirect('/account/payments', '/billing/payments');
+    // Route::permanentRedirect('/account/invoices', '/billing/invoices');
+    // Route::permanentRedirect('/settings', '/settings/workspace');
+    // Route::permanentRedirect('/settings/subscriptions', '/billing/subscriptions');
+    // Route::permanentRedirect('/settings/workspace/billing', '/billing/subscriptions');
 
     // Invitation management
     Route::prefix('invitations')->name('invitations.')->group(function () {
@@ -386,12 +400,14 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
 
     Route::prefix('notifications')->name('notifications.')->middleware('permission:notification.view')->group(function () {
         Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::get('/settings', [NotificationSettingsController::class, 'index'])->name('settings');
+        Route::put('/settings', [NotificationSettingsController::class, 'update'])->name('settings.update');
         Route::post('/{notification}/read', [NotificationController::class, 'markRead'])->name('read');
         Route::delete('/{notification}', [NotificationController::class, 'destroy'])->name('destroy');
         Route::post('/mark-all-read', [NotificationController::class, 'markAllRead'])->name('mark-all-read');
     });
 
-    Route::permanentRedirect('/profile', '/account/profile')->name('profile');
+    Route::permanentRedirect('/profile', '/settings/account/profile')->name('redirect.profile');
 
     require __DIR__.'/super-admin.php';
 

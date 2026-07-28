@@ -40,6 +40,7 @@ return [
         'offline'          => 'غير متصل',
     ],
 
+
     'email_verification' => [
         'email_verified'   => 'تم التحقق من البريد',
         'email_unverified' => 'البريد غير مؤكد',
@@ -217,6 +218,8 @@ return [
         'overdrawn'             => 'ب saldo سالب',
     ],
 
+
+
     'general' => [
         // حالات مشتركة
         'active'      => 'مفعّل',
@@ -381,6 +384,10 @@ return [
         'confirmed_email'      => 'البريد مؤكد',
         'unconfirmed_email'    => 'البريد غير مؤكد',
         'password_reset'       => 'تمت إعادة التعيين',
+        'current_device' => 'الجهاز الحالي',
+        'session_active' => 'نشطة',
+        'session_inactive' => 'غير نشطة',
+        'session_ended' => 'منتهية',
         'unknown'              => 'مجهول',
     ],
 ];

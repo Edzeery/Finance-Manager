@@ -66,6 +66,7 @@ class CheckUserStatus
 
         if ($statusRecord->isExpired() && $statusRecord->status === UserStatus::Suspended) {
             $statusRecord->changeStatus(UserStatus::Active, ' Suspension period expired');
+
             return $next($request);
         }
 
@@ -77,15 +78,15 @@ class CheckUserStatus
 
         $targetRoute = match ($status) {
             UserStatus::Inactive => 'account.inactive',
-            UserStatus::Pending  => 'account.pending',
+            UserStatus::Pending => 'account.pending',
             UserStatus::Suspended => 'account.suspended',
-            UserStatus::Banned   => 'account.banned',
-            default              => 'account.inactive',
+            UserStatus::Banned => 'account.banned',
+            default => 'account.inactive',
         };
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => __('auth.account_' . $status->value),
+                'message' => __('auth.account_'.$status->value),
                 'status' => $status->value,
                 'reason' => $statusRecord->status_reason,
             ], 403);

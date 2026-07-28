@@ -74,4 +74,13 @@ return [
     'token_deactivated_desc' => 'هذا المفتاح متوقف ولا يمكن استخدامه. قم بتفعيله أولاً لعرض قيمة المفتاح.',
     'token_usage' => 'استخدام المفاتيح',
     'token_limit_reached' => 'لقد وصلت إلى الحد الأقصى لعدد المفاتيح (:limit) المسموح به في خطتك.',
+    'api_quota' => 'حصة API',
+    'per_minute' => 'لكل دقيقة',
+    'per_hour' => 'لكل ساعة',
+    'per_day' => 'لكل يوم',
+    'remaining' => 'متبقي',
+    'requests_7d' => 'طلبات (7 أيام)',
+    'quick_test_desc' => 'اختبر مفتاح API الخاص بك بطلب تجريبي.',
+    'usage_history' => 'سجل الاستخدام',
+    'usage_history_desc' => 'لقد قمت بـ :total طلبات في آخر 30 يوم.',
 ];

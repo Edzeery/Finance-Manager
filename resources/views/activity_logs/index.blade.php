@@ -17,7 +17,7 @@
             'App\Models\User' => __('general.user'),
             'App\Models\Workspace' => __('settings.workspace'),
             'App\Models\Subscription' => __('settings.subscription'),
-            'App\Models\Invoice' => __('invoice.title'),
+            'App\Models\Invoice' => __('settings.invoice'),
             'App\Models\Payment' => __('payment.title'),
         ];
         $actionConfigs = [

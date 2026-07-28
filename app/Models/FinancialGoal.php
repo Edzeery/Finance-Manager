@@ -22,6 +22,7 @@ class FinancialGoal extends Model
     protected $fillable = [
         'user_id', 'workspace_id', 'name_ar', 'name_fr', 'name_en', 'target_amount',
         'current_amount', 'target_date', 'status', 'icon', 'color', 'notes', 'completed_at',
+        'last_milestone_notified',
     ];
 
     protected function casts(): array
@@ -76,5 +77,13 @@ class FinancialGoal extends Model
     public function scopeCompleted($query)
     {
         return $query->where('status', GoalStatus::Completed);
+    }
+
+    public function getNameAttribute(): string
+    {
+        $locale = app()->getLocale();
+        $column = "name_{$locale}";
+
+        return $this->attributes[$column] ?? $this->name_en ?? $this->name_ar ?? __('goals.untitled');
     }
 }

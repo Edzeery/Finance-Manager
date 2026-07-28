@@ -22,4 +22,15 @@ return [
     'no_notifications' => 'No notifications yet',
     'view_all' => 'View All Notifications',
     'confirm_delete_notification' => 'Are you sure you want to delete this notification?',
+
+    'notif_new_user' => 'New User Registration',
+    'notif_new_user_desc' => 'Alert when a new user registers on the platform.',
+    'notif_new_payment' => 'New Payment Received',
+    'notif_new_payment_desc' => 'Notification when a payment is received from any user.',
+    'notif_subscription_activated' => 'Subscription Activated',
+    'notif_subscription_activated_desc' => 'Notification when a user activates or renews a subscription.',
+    'notif_backup_completed' => 'Backup Completed',
+    'notif_backup_completed_desc' => 'Notification when a system backup is created successfully.',
+    'notif_system_alert' => 'System Alert',
+    'notif_system_alert_desc' => 'Critical system alerts and warnings.',
 ];

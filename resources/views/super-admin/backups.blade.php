@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.backups') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.backups') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.backups_desc') }}</x-slot>
@@ -9,7 +9,7 @@
             <div class="data-grid-toolbar-right">
                 <form method="POST" action="{{ route('super.admin.backups.create') }}" style="display:inline">
                     @csrf
-                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
                         <i class="bi bi-cloud-arrow-up"></i>{{ __('super-admin.create_backup') }}
                     </button>
                 </form>

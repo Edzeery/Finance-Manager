@@ -606,8 +606,7 @@ new #[Layout('layouts.guest')] class extends Component {
     </div>
 
     @if ( $pendingPayment  ?? null && $pendingPlanInfo)
-        <div class="alert alert-warning d-flex align-items-start gap-3 mb-4 p-3 rounded-3 border-0 shadow-sm"
-            style="background: #fff3cd; border: 1px solid #ffc107;">
+        <div class="alert alert-warning-custom d-flex align-items-start gap-3 mb-4 p-3 rounded-3 border-0 shadow-sm">
             <div class="flex-shrink-0">
                 <x-status-icon domain="general" status="warning" set="bi" class="fs-4" />
             </div>
@@ -1025,7 +1024,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
             @if ($redirectUrl)
                 <div class="text-center mt-3">
-                    <p class="small text-muted">{{ __('onboarding.redirecting') }}</p>
+                    <p class="small text-muted">{{ __('onboarding.redirecting_payment_gateway') }}</p>
                     <a href="{{ $redirectUrl }}" class="btn btn-accent btn-sm" target="_blank" rel="noopener">
                         {{ __('onboarding.proceed_to_payment') }}
                     </a>
@@ -1033,15 +1032,9 @@ new #[Layout('layouts.guest')] class extends Component {
             @endif
         </div>
     @elseif ($selectedPlan && ($selectedPlan['is_free'] ?? false))
-        <button type="button" class="btn btn-accent btn-custom w-100 proceed-btn" wire:click="proceed"
-            wire:loading.attr="disabled" wire:target="proceed">
-            {{ __('onboarding.continue') }}
-        </button>
+        <x-button variant="accent" block wire-click="proceed" wire-target="proceed" class="proceed-btn">{{ __('onboarding.continue') }}</x-button>
     @elseif ($isTrialPlan)
-        <button type="button" class="btn btn-accent btn-custom w-100 proceed-btn" wire:click="proceedTrial"
-            wire:loading.attr="disabled" wire:target="proceedTrial">
-            <i class="bi bi-rocket-takeoffms-1"></i>{{ __('onboarding.start_free_trial') }}
-        </button>
+        <x-button variant="accent" block wire-click="proceedTrial" wire-target="proceedTrial" icon="bi bi-rocket-takeoff" class="proceed-btn">{{ __('onboarding.start_free_trial') }}</x-button>
     @endif
 
     @if ($selectedPlan && !($selectedPlan['is_free'] ?? false))

@@ -151,9 +151,16 @@
             <div x-show="open" style="display:none">
                 <a href="{{ route('super.admin.notifications.index') }}"
                    class="sidebar-nav-item {{ request()->routeIs('super.admin.notifications*') ? 'active' : '' }}"
-                   wire:navigate data-label="{{ __('admin.notifications') }}">
+                   wire:navigate data-label="{{ __('admin.notifications') }}" x-data="{ adminUnreadCount: 0 }" x-init="fetch('{{ route('super.admin.notifications.index') }}', { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } }).then(r => r.json()).then(d => adminUnreadCount = d.unread_count || 0).catch(() => {})">
                     <i class="bi bi-bell"></i>
                     <span x-show="!sidebarCollapsed" x-cloak>{{ __('admin.notifications') }}</span>
+                    <span x-show="adminUnreadCount > 0 && !sidebarCollapsed" x-cloak class="badge rounded-pill bg-danger ms-auto" style="font-size:10px;padding:2px 6px" x-text="adminUnreadCount"></span>
+                </a>
+                <a href="{{ route('super.admin.notifications.settings') }}"
+                   class="sidebar-nav-item {{ request()->routeIs('super.admin.notifications.settings*') ? 'active' : '' }}"
+                   wire:navigate data-label="{{ __('notifications.preferences') }}">
+                    <i class="bi bi-sliders"></i>
+                    <span x-show="!sidebarCollapsed" x-cloak>{{ __('notifications.preferences') }}</span>
                 </a>
                 <a href="{{ route('super.admin.backups.index') }}"
                    class="sidebar-nav-item {{ request()->routeIs('super.admin.backups*') ? 'active' : '' }}"

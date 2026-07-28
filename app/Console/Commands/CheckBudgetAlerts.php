@@ -30,7 +30,7 @@ class CheckBudgetAlerts extends Command
         $count = 0;
         foreach ($budgets as $budget) {
             try {
-                $name = $budget->name_ar;
+                $name = $budget->name;
                 $spentPercent = $budget->adherence_rate;
 
                 if ($budget->is_exceeded) {

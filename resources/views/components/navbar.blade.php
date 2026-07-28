@@ -27,10 +27,7 @@
                 </button>
                 @auth
 
-                    <a href="{{ route('dashboard') }}"
-                        class="btn btn-accent btn-custom mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-grid-1x2-fillms-1"></i>{{ __('general.dashboard') }}
-                    </a>
+                    <x-button href="{{ route('dashboard') }}" icon="bi bi-grid-1x2-fillms-1" class="mb-0 d-flex align-items-center gap-2">{{ __('general.dashboard') }}</x-button>
                 @endauth
             </div>
         @elseif ($isSetup)

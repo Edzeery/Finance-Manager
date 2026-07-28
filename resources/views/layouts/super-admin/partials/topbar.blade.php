@@ -20,53 +20,72 @@
 
         {{-- Admin Notifications --}}
         <div class="dropdown" x-data="adminNotificationDropdown()" @click.away="open = false" @keydown.escape.window="open = false">
-            <button class="topbar-btn position-relative" type="button" @click="toggle()" aria-label="{{ __('admin.notifications') }}">
-                <i class="bi bi-bell"></i>
+            <button class="topbar-btn position-relative" type="button" @click="toggle()" aria-label="{{ __('notifications.page_title') }}">
+                <i class="bi bi-bell-fill"></i>
                 <template x-if="unreadCount > 0">
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" x-text="unreadCount" style="font-size:0.6rem;"></span>
                 </template>
             </button>
-            <div class="dropdown-menu dropdown-menu-end p-0" x-show="open" style="display:none;width:360px;max-height:480px;overflow-y:auto;" x-transition>
-                <div class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2 bg-light">
-                    <strong>{{ __('admin.notifications') }}</strong>
-                    <template x-if="unreadCount > 0">
-                        <button class="btn btn-sm btn-link p-0 text-decoration-none" type="button" @click="markAllRead">
-                            <i class="bi bi-check-allms-1"></i>{{ __('admin.mark_all_read') }}
-                        </button>
-                    </template>
+            <div class="dropdown-menu dropdown-menu-end p-0" x-show="open" style="display:none;width:min(380px,calc(100vw - 32px));max-height:480px;overflow-y:auto;" x-transition>
+                <div style="padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+                    <strong style="font-size:13px;font-weight:600;color:var(--text)">{{ __('notifications.page_title') }} <span style="font-weight:400;color:var(--text-muted)">(<span x-text="unreadCount">0</span> {{ __('general.unread') }})</span></strong>
+                    <button x-show="unreadCount > 0" @click="markAllRead" class="btn-text-link" style="font-size:12px">{{ __('notifications.mark_all_read') }}</button>
                 </div>
-                <div class="list-group list-group-flush">
-                    <template x-for="note in notifications" :key="note.id">
-                        <div class="list-group-item list-group-item-action px-3 py-2" :class="{ 'bg-light': !note.is_read }">
-                            <div class="d-flex align-items-start gap-2">
-                                <span class="badge rounded-circle p-1 mt-1 flex-shrink-0" :class="'bg-' + iconColor(note.type)">
-                                    <i class="bi" :class="iconClass(note.type)" style="font-size:0.7rem;"></i>
-                                </span>
-                                <div class="flex-grow-1 min-width-0">
-                                    <div class="d-flex justify-content-between">
-                                        <small class="fw-bold" x-text="note.title_en" :class="{ 'text-muted': note.is_read }"></small>
-                                        <small class="text-muted text-nowrap ms-1" x-text="timeAgo(note.created_at)"></small>
-                                    </div>
-                                    <p class="mb-0 small text-muted text-truncate" x-text="note.message_en"></p>
+
+                {{-- Loading skeleton --}}
+                <template x-if="loading">
+                    <div class="p-3">
+                        <template x-for="i in 3" :key="i">
+                            <div class="d-flex align-items-start gap-2 mb-3">
+                                <div style="width:32px;height:32px;border-radius:8px;background:var(--bg-subtle);flex-shrink:0"></div>
+                                <div style="flex:1">
+                                    <div style="height:12px;width:70%;background:var(--bg-subtle);border-radius:4px;margin-bottom:6px"></div>
+                                    <div style="height:10px;width:90%;background:var(--bg-subtle);border-radius:4px"></div>
                                 </div>
-                                <template x-if="!note.is_read">
-                                    <button class="btn btn-sm btn-link p-0 flex-shrink-0" type="button" @click.stop="markRead(note.id)">
-                                        <i class="bi bi-check text-primary"></i>
-                                    </button>
-                                </template>
                             </div>
-                        </div>
-                    </template>
-                    <template x-if="notifications.length === 0">
-                        <div class="text-center py-4 text-muted">
-                            <i class="bi bi-bell-slash d-block mb-1" style="font-size:1.5rem;"></i>
-                            <small>{{ __('admin.no_notifications') }}</small>
-                        </div>
-                    </template>
-                </div>
-                <a class="dropdown-item text-center small py-2 border-top" href="{{ route('super.admin.notifications.index') }}">
-                    {{ __('admin.view_all') }}
-                    <i class="bi bi-arrow-right ms-1"></i>
+                        </template>
+                    </div>
+                </template>
+
+                {{-- Empty state --}}
+                <template x-if="!loading && notifications.length === 0">
+                    <div class="text-center py-4" style="color:var(--text-muted);font-size:13px">
+                        <i class="bi bi-bell-slash" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4"></i>
+                        {{ __('notifications.empty') }}
+                    </div>
+                </template>
+
+                {{-- Notification list --}}
+                <template x-if="!loading">
+                    <div>
+                        <template x-for="n in notifications" :key="n.id">
+                            <div class="d-flex align-items-start gap-2 px-3 py-2" :style="n.is_read ? '' : 'background:var(--bg-subtle)'" style="border-bottom:1px solid var(--border)">
+                                <div :style="'background:' + iconBg(n.type) + ';color:' + iconColor(n.type) + ';flex-shrink:0;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center'">
+                                    <i class="bi" :class="iconClass(n.type)"></i>
+                                </div>
+                                <div style="flex:1;min-width:0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="fw-bold" x-text="n.title" :style="n.is_read ? 'color:var(--text-muted)' : 'color:var(--text)'" style="font-size:13px"></small>
+                                        <small class="text-nowrap ms-1" style="font-size:11px;color:var(--text-muted)" x-text="n.time"></small>
+                                    </div>
+                                    <p class="mb-0 text-truncate" style="font-size:12px;color:var(--text-muted);margin-top:1px" x-text="n.message"></p>
+                                </div>
+                                <div class="d-flex flex-column align-items-center gap-1" style="flex-shrink:0">
+                                    <button x-show="!n.is_read" @click.stop="markRead(n.id)" class="btn p-0" style="color:var(--accent);background:none;border:none;font-size:14px;line-height:1" title="{{ __('notifications.mark_read') }}">
+                                        <i class="bi bi-check2-circle"></i>
+                                    </button>
+                                    <button @click.stop="deleteNotif(n.id)" class="btn p-0" style="color:var(--text-muted);background:none;border:none;font-size:12px;line-height:1" title="{{ __('general.delete') }}">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <a class="dropdown-item text-center small py-2 border-top" href="{{ route('super.admin.notifications.index') }}" style="font-size:12px;color:var(--accent);text-decoration:none;font-weight:500">
+                    {{ __('notifications.view_all') }}
+                    <i class="bi bi-arrow-end ms-1" style="font-size:10px"></i>
                 </a>
             </div>
         </div>

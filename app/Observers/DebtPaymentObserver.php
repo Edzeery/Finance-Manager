@@ -20,7 +20,7 @@ class DebtPaymentObserver
     private function syncDebtStatus(DebtPayment $payment): void
     {
         $debt = $payment->debt;
-        if (!$debt) {
+        if (! $debt) {
             return;
         }
 

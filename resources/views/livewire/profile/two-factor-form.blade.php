@@ -120,9 +120,7 @@ new class extends Component
             <p class="text-muted" style="font-size:14px;">
                 {{ __('messages.add_2fa_security') }}
             </p>
-            <button wire:click="showQrCode" class="btn btn-accent btn-custom mt-2">
-                {{ __('general.setup_2fa') }}
-            </button>
+            <x-button wire-click="showQrCode" class="mt-2">{{ __('general.setup_2fa') }}</x-button>
         @else
             <div class="text-center my-3">
                 <p>{{ __('messages.scan_qr_code') }}</p>
@@ -146,10 +144,7 @@ new class extends Component
                 @enderror
             </div>
 
-            <button wire:click="confirm" class="btn btn-accent btn-custom">
-                <div wire:loading wire:target="confirm" class="spinner-border spinner-border-sm ms-2" role="status"></div>
-                {{ __('general.confirm_enable') }}
-            </button>
+            <x-button wire-click="confirm" wire-target="confirm">{{ __('general.confirm_enable') }}</x-button>
         @endif
     @else
         <div class="alert alert-success d-flex align-items-center gap-2" style="font-size:14px;">
@@ -168,15 +163,11 @@ new class extends Component
                         <div style="font-family:monospace; font-size:14px; padding:4px 0;">{{ $recoveryCode }}</div>
                     @endforeach
                 </div>
-                <button wire:click="regenerateRecoveryCodes" class="btn btn-sm btn-outline-secondary mt-2">
-                    {{ __('general.regenerate_recovery_codes') }}
-                </button>
+                <x-button variant="outline" size="sm" wire-click="regenerateRecoveryCodes" class="mt-2">{{ __('general.regenerate_recovery_codes') }}</x-button>
             </div>
         @endif
 
-        <button wire:click="confirmDisable" class="btn btn-danger btn-custom mt-2">
-            {{ __('general.disable') }}
-        </button>
+        <x-button variant="danger" wire-click="confirmDisable" class="mt-2">{{ __('general.disable') }}</x-button>
 
         @if ($confirming)
             <div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;">
@@ -184,12 +175,8 @@ new class extends Component
                     <h5 style="font-size:16px;font-weight:600;margin-bottom:8px;">{{ __('general.confirm') }}</h5>
                     <p style="font-size:14px;color:var(--text-muted);margin-bottom:1.5rem;">{{ __('messages.confirm_disable_2fa') }}</p>
                     <div style="display:flex;gap:8px;justify-content:flex-end;">
-                        <button wire:click="cancelConfirmation" type="button" class="btn btn-outline-secondary btn-custom" style="font-size:13px;padding:7px 16px;">
-                            {{ __('general.cancel') }}
-                        </button>
-                        <button wire:click="executeConfirmed" type="button" class="btn btn-danger btn-custom" style="font-size:13px;padding:7px 16px;">
-                            {{ __('general.disable') }}
-                        </button>
+                        <x-button variant="outline" wire-click="cancelConfirmation" style="font-size:13px;padding:7px 16px;">{{ __('general.cancel') }}</x-button>
+                        <x-button variant="danger" wire-click="executeConfirmed" style="font-size:13px;padding:7px 16px;">{{ __('general.disable') }}</x-button>
                     </div>
                 </div>
             </div>

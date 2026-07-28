@@ -12,6 +12,7 @@ use App\Models\SubscriptionPlan;
 use App\Services\CurrencyHelper;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SubscriptionController extends Controller
 {
@@ -34,12 +35,12 @@ class SubscriptionController extends Controller
             ? Payment::withoutWorkspace()
                 ->whereIn('subscription_id', $subscriptionIds)
                 ->latest()
-                ->take(10)
-                ->get()
-            : collect();
+                ->paginate(10)
+            : new LengthAwarePaginator(collect(), 0, 10);
 
         $hasSubscriptionHistory = $allSubscriptions->count() > 1
-            || ($allSubscriptions->isNotEmpty() && ! in_array($allSubscriptions->first()->status, [SubscriptionStatus::Active, SubscriptionStatus::Trialing], true));
+            || ($allSubscriptions->isNotEmpty() && $allSubscriptions->first()->status !== SubscriptionStatus::Active
+                && $allSubscriptions->first()->status !== SubscriptionStatus::Trialing);
 
         $plans = SubscriptionPlan::active()
             ->public()
@@ -86,12 +87,12 @@ class SubscriptionController extends Controller
         $user = auth()->user();
 
         if ($payment->user_id !== $user->id) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.unauthorized'));
         }
 
         if (! $payment->isPending()) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.payment_not_pending'));
         }
 
@@ -100,7 +101,7 @@ class SubscriptionController extends Controller
             'canceled_at' => now(),
         ]);
 
-        return redirect()->route('account.subscriptions')
+        return redirect()->route('billing.subscriptions')
             ->with('success', __('messages.payment_cancelled'));
     }
 
@@ -110,18 +111,18 @@ class SubscriptionController extends Controller
         $workspace = $user->currentWorkspace;
 
         if (! $workspace || ! $user->isWorkspaceOwner($workspace)) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.unauthorized'));
         }
 
         $subscription = $workspace->owner()?->first()?->activeSubscription();
         if (! $subscription) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.no_subscription'));
         }
 
         if (! $subscription->canceled_at || ! $subscription->isOnGrace()) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.subscription_not_cancelled'));
         }
 
@@ -130,7 +131,7 @@ class SubscriptionController extends Controller
             'canceled_at' => null,
         ]);
 
-        return redirect()->route('account.subscriptions')
+        return redirect()->route('billing.subscriptions')
             ->with('success', __('messages.subscription_resumed'));
     }
 
@@ -140,7 +141,7 @@ class SubscriptionController extends Controller
         $workspace = $user->currentWorkspace;
 
         if (! $workspace || ! $user->isWorkspaceOwner($workspace)) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.unauthorized'));
         }
 
@@ -150,7 +151,7 @@ class SubscriptionController extends Controller
 
         $subscription = $workspace->owner()?->first()?->activeSubscription();
         if (! $subscription) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.no_active_subscription'));
         }
 
@@ -161,7 +162,7 @@ class SubscriptionController extends Controller
             'payment_method' => $validated['payment_method'],
         ]);
 
-        return redirect()->route('account.subscriptions')
+        return redirect()->route('billing.subscriptions')
             ->with('success', __('messages.payment_method_updated'));
     }
 

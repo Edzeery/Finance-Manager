@@ -8,9 +8,7 @@
 
 <div class="d-flex gap-2 align-items-center">
     @if($showPrint)
-        <button type="button" class="btn btn-sm btn-outline-secondary btn-custom d-print-none" @click="window.print()" title="{{ __('general.print') }}">
-            <i class="bi bi-printer"></i>
-        </button>
+        <x-button variant="outline" size="sm" icon="bi bi-printer" @click="window.print()" title="{{ __('general.print') }}" class="d-print-none" />
     @endif
 
     @if($showExport)
@@ -34,9 +32,7 @@
     @endif
 
     @if($showImport)
-        <button type="button" class="btn btn-sm btn-outline-secondary btn-custom d-print-none" data-bs-toggle="modal" data-bs-target="#importModal" title="{{ __('general.import') }}">
-            <i class="bi bi-upload"></i>
-        </button>
+        <x-button variant="outline" size="sm" icon="bi bi-upload" data-bs-toggle="modal" data-bs-target="#importModal" title="{{ __('general.import') }}" class="d-print-none" />
     @endif
 
     {{ $slot ?? '' }}

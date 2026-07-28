@@ -34,4 +34,5 @@ return [
     'with_budget' => ':count catégories avec budget',
     'without_budget' => ':count catégories sans budget',
     'total_categories' => ':count catégories au total',
+    'auto_end_date_hint' => 'Le budget se terminera automatiquement à cette date.',
 ];

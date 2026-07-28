@@ -69,9 +69,7 @@
                     <div class="mb-3">
                         <x-toggle-switch name="is_active" :checked="old('is_active', '1')" :label="$activeLabel" />
                     </div>
-                    <button type="submit" class="btn btn-accent btn-custom w-100">
-                        <i class="bi bi-plus-lg"></i>{{ $addLabel }}
-                    </button>
+                    <x-button submit block icon="bi bi-plus-lg">{{ $addLabel }}</x-button>
                 </form>
             </div>
         </div>
@@ -184,8 +182,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary btn-custom" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i>{{ $cancelLabel }}</button>
-                    <button type="submit" class="btn btn-accent btn-custom">{{ $saveLabel }}</button>
+                    <x-button variant="outline" icon="bi bi-x-lg" data-bs-dismiss="modal">{{ $cancelLabel }}</x-button>
+                    <x-button submit>{{ $saveLabel }}</x-button>
                 </div>
             </form>
         </div>

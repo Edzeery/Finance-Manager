@@ -19,8 +19,19 @@ class AdminNotificationController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         if ($request->expectsJson() || $request->ajax()) {
+            $locale = app()->getLocale();
+            $notifications = $this->notificationService->getRecent(20)->map(fn ($n) => [
+                'id' => $n->id,
+                'title' => $n->{"title_{$locale}"} ?: $n->title_en,
+                'message' => $n->{"message_{$locale}"} ?: $n->message_en,
+                'type' => $n->type,
+                'is_read' => $n->is_read,
+                'created_at' => $n->created_at->toISOString(),
+                'time' => $n->created_at->diffForHumans(),
+            ]);
+
             return response()->json([
-                'notifications' => $this->notificationService->getRecent(20),
+                'notifications' => $notifications,
                 'unread_count' => $this->notificationService->getUnreadCount(),
             ]);
         }
@@ -30,6 +41,8 @@ class AdminNotificationController extends Controller
 
         if ($filter === 'unread') {
             $query->unread();
+        } elseif ($filter === 'read') {
+            $query->where('is_read', true);
         }
 
         $type = $request->input('type');
@@ -45,7 +58,7 @@ class AdminNotificationController extends Controller
     public function show(AdminNotification $notification): View
     {
         if (! $notification->is_read) {
-            $this->notificationService->markAsRead($notification->id);
+            $notification->markAsRead();
         }
 
         return view('super-admin.notifications.show', compact('notification'));
@@ -53,10 +66,10 @@ class AdminNotificationController extends Controller
 
     public function markRead(Request $request, AdminNotification $notification): JsonResponse|RedirectResponse
     {
-        $this->notificationService->markAsRead($notification->id);
+        $notification->markAsRead();
 
         if (! $request->expectsJson() && ! $request->ajax()) {
-            return redirect()->back()->with('success', __('admin.mark_read'));
+            return redirect()->back()->with('success', __('notifications.marked_read'));
         }
 
         return response()->json(['success' => true]);
@@ -67,7 +80,7 @@ class AdminNotificationController extends Controller
         $this->notificationService->markAllAsRead();
 
         if (! $request->expectsJson() && ! $request->ajax()) {
-            return redirect()->back()->with('success', __('admin.mark_all_read'));
+            return redirect()->back()->with('success', __('notifications.all_marked_read'));
         }
 
         return response()->json(['success' => true]);
@@ -78,7 +91,7 @@ class AdminNotificationController extends Controller
         $notification->delete();
 
         if (! $request->expectsJson() && ! $request->ajax()) {
-            return redirect()->back()->with('success', __('admin.delete'));
+            return redirect()->back()->with('success', __('notifications.deleted'));
         }
 
         return response()->json(['success' => true]);

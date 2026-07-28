@@ -153,54 +153,66 @@ class DashboardController extends Controller
         $search = request('search', '');
 
         $range = $this->dateFilter->resolveDateRange($period, $startDate, $endDate);
+        $locale = app()->getLocale();
 
-        $incomeQuery = Income::active()->with('category');
-        $expenseQuery = Expense::active()->with('category');
+        $incomeQuery = Income::active()
+            ->select(
+                'incomes.id',
+                DB::raw("'income' as type"),
+                'incomes.date',
+                'incomes.description',
+                'incomes.amount',
+                DB::raw("COALESCE(ic.name_{$locale}, '—') as category")
+            )
+            ->leftJoin('income_categories as ic', 'incomes.category_id', '=', 'ic.id');
+
+        $expenseQuery = Expense::active()
+            ->select(
+                'expenses.id',
+                DB::raw("'expense' as type"),
+                'expenses.date',
+                'expenses.description',
+                'expenses.amount',
+                DB::raw("COALESCE(ec.name_{$locale}, '—') as category")
+            )
+            ->leftJoin('expense_categories as ec', 'expenses.category_id', '=', 'ec.id');
 
         if ($range['start'] && $range['end']) {
-            $incomeQuery->whereBetween('date', [$range['start'], $range['end']]);
-            $expenseQuery->whereBetween('date', [$range['start'], $range['end']]);
+            $incomeQuery->whereBetween('incomes.date', [$range['start'], $range['end']]);
+            $expenseQuery->whereBetween('expenses.date', [$range['start'], $range['end']]);
         }
 
         if ($categoryId) {
-            $incomeQuery->where('category_id', $categoryId);
-            $expenseQuery->where('category_id', $categoryId);
+            $incomeQuery->where('incomes.category_id', $categoryId);
+            $expenseQuery->where('expenses.category_id', $categoryId);
         }
 
         if ($search) {
-            $incomeQuery->where('description', 'like', "%{$search}%");
-            $expenseQuery->where('description', 'like', "%{$search}%");
+            $incomeQuery->where('incomes.description', 'like', "%{$search}%");
+            $expenseQuery->where('expenses.description', 'like', "%{$search}%");
         }
 
-        $locale = app()->getLocale();
+        $incomeCount = $type !== 'expense' ? (clone $incomeQuery)->count() : 0;
+        $expenseCount = $type !== 'income' ? (clone $expenseQuery)->count() : 0;
+        $totalIncome = $type !== 'expense' ? (float) (clone $incomeQuery)->sum('amount') : 0;
+        $totalExpense = $type !== 'income' ? (float) (clone $expenseQuery)->sum('amount') : 0;
 
-        $incomes = $type !== 'expense' ? $incomeQuery->latest('date')->get()->map(fn ($i) => [
-            'id' => $i->id,
-            'date' => $i->date,
-            'description' => $i->description,
-            'category' => $i->category?->{'name_'.$locale} ?? '—',
-            'amount' => $i->amount,
-            'type' => 'income',
-        ]) : collect();
+        if ($type === 'expense') {
+            $query = $expenseQuery;
+        } elseif ($type === 'income') {
+            $query = $incomeQuery;
+        } else {
+            $query = $incomeQuery->unionAll($expenseQuery);
+        }
 
-        $expenses = $type !== 'income' ? $expenseQuery->latest('date')->get()->map(fn ($e) => [
-            'id' => $e->id,
-            'date' => $e->date,
-            'description' => $e->description,
-            'category' => $e->category?->{'name_'.$locale} ?? '—',
-            'amount' => $e->amount,
-            'type' => 'expense',
-        ]) : collect();
-
-        $allTransactions = collect()->merge($incomes)->merge($expenses)->sortByDesc('date')->values();
-
-        $totalIncome = (float) $incomes->sum('amount');
-        $totalExpense = (float) $expenses->sum('amount');
-        $totalCount = $allTransactions->count();
-
+        $totalCount = $incomeCount + $expenseCount;
         $perPage = 15;
         $currentPage = (int) request('txn_page', 1);
-        $paginatedItems = $allTransactions->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $paginatedItems = $query->orderBy('date', 'desc')
+            ->offset(($currentPage - 1) * $perPage)
+            ->limit($perPage)
+            ->get();
+
         $paginatedTransactions = new LengthAwarePaginator($paginatedItems, $totalCount, $perPage, $currentPage, [
             'path' => request()->url(),
             'query' => request()->query(),
@@ -311,42 +323,34 @@ class DashboardController extends Controller
     {
         $locale = app()->getLocale();
 
-        $incomeQuery = Income::active()->with('category');
-        $expenseQuery = Expense::active()->with('category');
+        $incomeQuery = Income::active()
+            ->select(
+                'incomes.date',
+                'incomes.description',
+                'incomes.amount',
+                DB::raw("'income' as type"),
+                DB::raw("COALESCE(ic.name_{$locale}, '—') as category")
+            )
+            ->leftJoin('income_categories as ic', 'incomes.category_id', '=', 'ic.id');
+
+        $expenseQuery = Expense::active()
+            ->select(
+                'expenses.date',
+                'expenses.description',
+                'expenses.amount',
+                DB::raw("'expense' as type"),
+                DB::raw("COALESCE(ec.name_{$locale}, '—') as category")
+            )
+            ->leftJoin('expense_categories as ec', 'expenses.category_id', '=', 'ec.id');
 
         if ($start && $end) {
-            $incomeQuery->whereBetween('date', [$start, $end]);
-            $expenseQuery->whereBetween('date', [$start, $end]);
+            $incomeQuery->whereBetween('incomes.date', [$start, $end]);
+            $expenseQuery->whereBetween('expenses.date', [$start, $end]);
         }
 
-        $recentIncomes = $incomeQuery
-            ->latest('date')
-            ->take(5)
-            ->get()
-            ->map(fn ($i) => [
-                'date' => $i->date,
-                'description' => $i->description,
-                'category' => $i->category?->{'name_'.$locale} ?? '—',
-                'amount' => $i->amount,
-                'type' => 'income',
-            ]);
-
-        $recentExpenses = $expenseQuery
-            ->latest('date')
-            ->take(5)
-            ->get()
-            ->map(fn ($e) => [
-                'date' => $e->date,
-                'description' => $e->description,
-                'category' => $e->category?->{'name_'.$locale} ?? '—',
-                'amount' => $e->amount,
-                'type' => 'expense',
-            ]);
-
-        return collect()
-            ->merge($recentIncomes)
-            ->merge($recentExpenses)
-            ->sortByDesc('date')
-            ->take(10);
+        return $incomeQuery->unionAll($expenseQuery)
+            ->orderBy('date', 'desc')
+            ->limit(10)
+            ->get();
     }
 }

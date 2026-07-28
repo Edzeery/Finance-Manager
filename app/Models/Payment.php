@@ -17,7 +17,7 @@ class Payment extends Model
     use BelongsToWorkspace, HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'uuid', 'workspace_id', 'subscription_id', 'user_id', 'coupon_id','method_id',
+        'uuid', 'workspace_id', 'subscription_id', 'user_id', 'coupon_id', 'method_id',
         'refunded_by', 'refunded_at', 'refund_reason', 'refund_amount',
         'amount', 'currency', 'status',
         'original_amount', 'discount_amount',
@@ -138,7 +138,6 @@ class Payment extends Model
 
         return null;
     }
-
 
     public function scopePending($query)
     {

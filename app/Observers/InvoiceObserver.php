@@ -31,7 +31,7 @@ class InvoiceObserver
     private function createExpenseFromInvoice(Invoice $invoice): void
     {
         $existing = Expense::where('user_id', $invoice->user_id)
-            ->where('notes', 'LIKE', '%فاتورة اشتراك #' . $invoice->number . '%')
+            ->where('notes', 'LIKE', '%فاتورة اشتراك #'.$invoice->number.'%')
             ->first();
 
         if ($existing) {

@@ -1,4 +1,4 @@
-{{-- resources\views\super-admin\payment-methods.blade.php --}}
+﻿{{-- resources\views\super-admin\payment-methods.blade.php --}}
 <x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.payment_methods') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.payment_methods') }}</x-slot>
@@ -30,16 +30,14 @@
                                 'active' => __('general.active'),
                                 'inactive' => __('general.inactive'),
                             ]" placeholder="{{ __('general.all_status') }}" min-width="110px" />
-                            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                            <x-button variant="accent" submit>{{ __('general.filter') }}</x-button>
                             <x-clear-filters :filters="['search','type','status']" :route="route('super.admin.payment-methods.index')" />
                         </form>
                     </div>
                     <div class="data-grid-toolbar-right">
                         <div class="d-flex align-items-center gap-2">
                             <x-per-page :current="(int) request('per_page', 15)" :route="route('super.admin.payment-methods.index')" :preserve="['search','type','status']" :options="[10, 15, 25, 50]" />
-                            <a href="{{ route('super.admin.payment-methods.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
-                                <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_payment_method') }}
-                            </a>
+                            <x-button href="{{ route('super.admin.payment-methods.create') }}" variant="accent" icon="bi bi-plus-lg">{{ __('super-admin.create_payment_method') }}</x-button>
                         </div>
                     </div>
                 </div>
@@ -98,15 +96,11 @@
                                         </td>
                                         <td class="col-actions">
                                             <div class="cell-actions">
-                                                <a href="{{ route('super.admin.payment-methods.edit', $method) }}" class="btn" style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" title="{{ __('general.edit') }}">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
+                                                <x-button href="{{ route('super.admin.payment-methods.edit', $method) }}" icon="bi bi-pencil" title="{{ __('general.edit') }}" style="width:30px;height:30px;padding:0;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" />
                                                 <form method="POST" action="{{ route('super.admin.payment-methods.destroy', $method) }}" id="delete-payment-method-{{ $method->id }}" style="display:none">
                                                     @csrf @method('DELETE')
                                                 </form>
-                                                <button type="button" class="btn" style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid transparent;background:transparent;color:var(--danger);font-size:13px;transition:all 0.15s" title="{{ __('general.delete') }}" @click="confirmDeletePaymentMethod({{ $method->id }})">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                <x-button icon="bi bi-trash" title="{{ __('general.delete') }}" @click="confirmDeletePaymentMethod({{ $method->id }})" style="width:30px;height:30px;padding:0;border-radius:var(--radius-xs);border:1px solid transparent;background:transparent;color:var(--danger);font-size:13px;transition:all 0.15s" />
                                             </div>
                                         </td>
                                     </tr>
@@ -129,9 +123,7 @@
                 <div class="data-grid-toolbar">
                     <div class="data-grid-toolbar-left"></div>
                     <div class="data-grid-toolbar-right">
-                        <a href="{{ route('super.admin.gateways.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
-                            <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_gateway_structure') }}
-                        </a>
+                        <x-button href="{{ route('super.admin.gateways.create') }}" variant="accent" icon="bi bi-plus-lg">{{ __('super-admin.create_gateway_structure') }}</x-button>
                     </div>
                 </div>
 
@@ -169,15 +161,11 @@
                                         <td>{{ $gateway->sort_order }}</td>
                                         <td class="col-actions">
                                             <div class="cell-actions">
-                                                <a href="{{ route('super.admin.gateways.edit', $gateway) }}" class="btn" style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" title="{{ __('general.edit') }}">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
+                                                <x-button href="{{ route('super.admin.gateways.edit', $gateway) }}" icon="bi bi-pencil" title="{{ __('general.edit') }}" style="width:30px;height:30px;padding:0;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" />
                                                 <form method="POST" action="{{ route('super.admin.gateways.destroy', $gateway) }}" id="delete-gateway-{{ $gateway->id }}" style="display:none">
                                                     @csrf @method('DELETE')
                                                 </form>
-                                                <button type="button" class="btn" style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid transparent;background:transparent;color:var(--danger);font-size:13px;transition:all 0.15s" title="{{ __('general.delete') }}" @click="confirmDeleteGateway({{ $gateway->id }}, '{{ $gateway->key }}')">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                <x-button icon="bi bi-trash" title="{{ __('general.delete') }}" @click="confirmDeleteGateway({{ $gateway->id }}, '{{ $gateway->key }}')" style="width:30px;height:30px;padding:0;border-radius:var(--radius-xs);border:1px solid transparent;background:transparent;color:var(--danger);font-size:13px;transition:all 0.15s" />
                                             </div>
                                         </td>
                                     </tr>

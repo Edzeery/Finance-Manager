@@ -22,4 +22,15 @@ return [
     'no_notifications' => 'لا توجد إشعارات بعد',
     'view_all' => 'عرض كل الإشعارات',
     'confirm_delete_notification' => 'هل أنت متأكد من حذف هذا الإشعار؟',
+
+    'notif_new_user' => 'تسجيل مستخدم جديد',
+    'notif_new_user_desc' => 'تنبيه عند تسجيل مستخدم جديد على المنصة.',
+    'notif_new_payment' => 'دفعة جديدة مستلمة',
+    'notif_new_payment_desc' => 'إشعار عند استلام دفعة من أي مستخدم.',
+    'notif_subscription_activated' => 'تفعيل الاشتراك',
+    'notif_subscription_activated_desc' => 'إشعار عند تفعيل أو تجديد اشتراك من قبل مستخدم.',
+    'notif_backup_completed' => 'اكتمل النسخ الاحتياطي',
+    'notif_backup_completed_desc' => 'إشعار عند إنشاء نسخة احتياطية بنجاح.',
+    'notif_system_alert' => 'تنبيه النظام',
+    'notif_system_alert_desc' => 'تنبيهات وتحذيرات النظام الحرجة.',
 ];

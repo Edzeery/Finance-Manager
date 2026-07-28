@@ -93,7 +93,7 @@ class DeveloperController extends Controller
         $currentCount = $user->tokens()->whereNull('deactivated_at')->count();
 
         if ($currentCount >= $maxTokens) {
-            return redirect()->route('account.settings.developer')
+            return redirect()->route('settings.account.developer.index')
                 ->with('error', __('developer.token_limit_reached', ['limit' => $maxTokens]));
         }
 
@@ -116,7 +116,7 @@ class DeveloperController extends Controller
         $tokenModel->plaintext_token = Crypt::encryptString($newToken->plainTextToken);
         $tokenModel->save();
 
-        return redirect()->route('account.settings.developer')
+        return redirect()->route('settings.account.developer.index')
             ->with('api_token', $newToken->plainTextToken)
             ->with('success', __('developer.token_created'));
     }
@@ -168,7 +168,7 @@ class DeveloperController extends Controller
 
         $token->update(['name' => $validated['name']]);
 
-        return redirect()->route('account.settings.developer')
+        return redirect()->route('settings.account.developer.index')
             ->with('success', __('developer.token_updated'));
     }
 
@@ -191,7 +191,7 @@ class DeveloperController extends Controller
 
         $token->delete();
 
-        return redirect()->route('account.settings.developer')
+        return redirect()->route('settings.account.developer.index')
             ->with('api_token', $newToken->plainTextToken)
             ->with('success', __('developer.token_regenerated'));
     }
@@ -206,7 +206,7 @@ class DeveloperController extends Controller
 
         $token->update(['deactivated_at' => now()]);
 
-        return redirect()->route('account.settings.developer')
+        return redirect()->route('settings.account.developer.index')
             ->with('success', __('developer.token_deactivated'));
     }
 
@@ -220,7 +220,7 @@ class DeveloperController extends Controller
 
         $token->update(['deactivated_at' => null]);
 
-        return redirect()->route('account.settings.developer')
+        return redirect()->route('settings.account.developer.index')
             ->with('success', __('developer.token_activated'));
     }
 
@@ -245,7 +245,7 @@ class DeveloperController extends Controller
 
         $token->delete();
 
-        return redirect()->route('account.settings.developer')
+        return redirect()->route('settings.account.developer.index')
             ->with('success', __('developer.token_revoked'));
     }
 
@@ -253,7 +253,7 @@ class DeveloperController extends Controller
     {
         auth()->user()->tokens()->delete();
 
-        return redirect()->route('account.settings.developer')
+        return redirect()->route('settings.account.developer.index')
             ->with('success', __('developer.all_tokens_revoked'));
     }
 }

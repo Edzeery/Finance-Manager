@@ -12,6 +12,7 @@ use App\Services\Payments\PaymentGatewayRegistry;
 use App\Services\TwoFactorAuthenticationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
@@ -288,8 +289,8 @@ class SettingsController extends Controller
         Setting::set('zakat.silver_per_gram', (string) ($validated['zakat_silver_per_gram'] ?? 0));
         Setting::set('zakat.default_karat', (string) ($validated['zakat_gold_karat'] ?? 24));
 
-        \Illuminate\Support\Facades\Cache::forget('gold_24k_gram_usd');
-        \Illuminate\Support\Facades\Cache::forget('silver_gram_usd');
+        Cache::forget('gold_24k_gram_usd');
+        Cache::forget('silver_gram_usd');
 
         return redirect()->route('super.admin.settings.index')
             ->with('success', __('messages.settings_saved'));

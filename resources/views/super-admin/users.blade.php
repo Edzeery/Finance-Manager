@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.users') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.users') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.users_desc') }}</x-slot>
@@ -42,20 +42,13 @@
                     @if ($showSubTabs && request('super_admin'))
                         <input type="hidden" name="super_admin" value="{{ request('super_admin') }}">
                     @endif
-                    <button type="submit" class="btn"
-                        style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <x-button variant="accent" submit>{{ __('general.filter') }}</x-button>
                     <x-clear-filters :filters="['search', 'status', 'super_admin']" :route="route('super.admin.users.index')" />
                 </form>
                 @if (request('status') === 'trashed')
-                    <button id="bulk-restore-btn" class="btn bulk-btn" style="display:none"
-                        onclick="confirmBulkRestore()">
-                        <i class="bi bi-arrow-counterclockwise"></i> {{ __('general.restore') }}
-                    </button>
+                    <x-button id="bulk-restore-btn" class="bulk-btn" style="display:none" onclick="confirmBulkRestore()" icon="bi bi-arrow-counterclockwise">{{ __('general.restore') }}</x-button>
                 @else
-                    <button id="bulk-delete-btn" class="btn bulk-btn" style="display:none"
-                        onclick="confirmBulkDelete()">
-                        <i class="bi bi-trash"></i> {{ __('general.delete') }}
-                    </button>
+                    <x-button id="bulk-delete-btn" class="bulk-btn" style="display:none" onclick="confirmBulkDelete()" icon="bi bi-trash">{{ __('general.delete') }}</x-button>
                 @endif
             </div>
             <div class="data-grid-toolbar-right">
@@ -153,16 +146,8 @@
                                 <td class="col-actions">
                                     @if (request('status') === 'trashed')
                                         <div class="cell-actions">
-                                            <button type="button" class="btn btn-icon"
-                                                title="{{ __('general.restore') }}"
-                                                onclick="confirmRestoreUser({{ $user->id }})">
-                                                <i class="bi bi-arrow-counterclockwise"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-icon btn-icon-danger"
-                                                title="{{ __('general.force_delete') }}"
-                                                onclick="confirmForceDeleteUser({{ $user->id }})">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <x-button icon="bi bi-arrow-counterclockwise" title="{{ __('general.restore') }}" onclick="confirmRestoreUser({{ $user->id }})" class="btn-icon" />
+                                            <x-button icon="bi bi-trash" title="{{ __('general.force_delete') }}" onclick="confirmForceDeleteUser({{ $user->id }})" class="btn-icon btn-icon-danger" />
                                             <form id="restore-user-{{ $user->id }}"
                                                 action="{{ route('super.admin.users.restore', $user->id) }}"
                                                 method="POST" class="d-none">@csrf</form>
@@ -172,15 +157,12 @@
                                         </div>
                                     @else
                                         <div class="cell-actions">
-                                            <a href="{{ route('super.admin.users.edit', $user) }}"
-                                                class="btn btn-icon" title="{{ __('super-admin.edit_user') }}">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-icon btn-icon-danger"
-                                                title="{{ __('general.delete') }}"
-                                                onclick="confirmDeleteUser({{ $user->id }})">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <x-button href="{{ route('super.admin.users.edit', $user) }}" icon="bi bi-pencil" title="{{ __('super-admin.edit_user') }}" class="btn-icon" />
+                                            <x-button icon="bi bi-box-arrow-right" title="{{ __('super-admin.force_logout') }}" onclick="confirmForceLogout({{ $user->id }}, '{{ addslashes($user->name) }}')" class="btn-icon" style="color:#f59e0b;border-color:#f59e0b;" />
+                                            <x-button icon="bi bi-trash" title="{{ __('general.delete') }}" onclick="confirmDeleteUser({{ $user->id }})" class="btn-icon btn-icon-danger" />
+                                            <form id="force-logout-user-{{ $user->id }}"
+                                                action="{{ route('super.admin.users.force-logout', $user) }}"
+                                                method="POST" class="d-none">@csrf</form>
                                             <form id="delete-user-{{ $user->id }}"
                                                 action="{{ route('super.admin.users.destroy', $user) }}"
                                                 method="POST" class="d-none">@csrf @method('DELETE')</form>
@@ -246,6 +228,19 @@
                         if (confirmed) form.submit();
                     },
                     '{{ __('general.delete') }}', 'btn-danger'
+                );
+            }
+
+            function confirmForceLogout(userId, userName) {
+                const form = document.getElementById('force-logout-user-' + userId);
+                if (!form) return;
+                showConfirmModal(
+                    '{{ __('general.confirm') }}',
+                    '{{ __('super-admin.confirm_force_logout') }}'.replace(':name', userName),
+                    (confirmed) => {
+                        if (confirmed) form.submit();
+                    },
+                    '{{ __('super-admin.force_logout') }}', 'btn-warning'
                 );
             }
 
@@ -448,7 +443,7 @@
             }
 
             .btn-icon-danger:hover {
-                background: rgba(239, 68, 68, 0.08);
+                background: var(--danger-light);
                 color: var(--danger);
                 border-color: var(--danger);
             }

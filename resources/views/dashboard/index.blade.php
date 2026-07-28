@@ -302,7 +302,7 @@
             <div class="dashboard-chart-card h-100">
                 <div class="chart-header">
                     <h5 class="d-flex align-items-center gap-2">
-                        <i class="bi bi-heart-fill" style="color:{{ $zakatDue ? 'var(--success)' : '#6366F1' }}"></i>
+                        <i class="bi bi-heart-fill" style="color:{{ $zakatDue ? 'var(--success)' : 'var(--accent)' }}"></i>
                         <span>{{ __('zakat.zakat_haul') }}</span>
                     </h5>
                     <a href="{{ route('zakat.calculator') }}" wire:navigate style="font-size:13px;color:var(--accent);text-decoration:none">{{ __('zakat.calculate') }}</a>
@@ -313,7 +313,7 @@
                         <div style="font-size:14px; font-weight:600; color:var(--success); margin-top:8px">{{ __('zakat.haul_complete') }}</div>
                         <div style="font-size:12px; color:var(--text-muted); margin-top:4px">{{ __('zakat.calculate_first') }}</div>
                     @else
-                        <div style="font-size:36px; font-weight:700; color:#6366F1; line-height:1">{{ $zakatDaysLeft }}</div>
+                        <div style="font-size:36px; font-weight:700; color:var(--accent); line-height:1">{{ $zakatDaysLeft }}</div>
                         <div style="font-size:14px; font-weight:600; color:var(--text); margin-top:8px">{{ __('dashboard.days_until_zakat', ['days' => $zakatDaysLeft]) }}</div>
                         <div style="font-size:12px; color:var(--text-muted); margin-top:4px">{{ __('zakat.next_zakat_date') }}: {{ $zakatNextDateDisplay }}</div>
                     @endif
@@ -671,7 +671,7 @@
                 <option value="overdue" {{ request('debt_status') === 'overdue' ? 'selected' : '' }}>{{ __('dashboard.overdue_debts_status') }}</option>
             </select>
             <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('general.search') }}" class="form-control" style="width:auto;min-width:180px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)">
-            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--text);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
         </form>
     </div>
 
@@ -791,7 +791,7 @@
                 <option value="expense" {{ request('txn_type') === 'expense' ? 'selected' : '' }}>{{ __('dashboard.expense_only') }}</option>
             </select>
             <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('general.search') }}" class="form-control" style="width:auto;min-width:180px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)">
-            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--text);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
         </form>
     </div>
 
@@ -895,7 +895,7 @@
                     <option value="{{ $type->value }}" {{ request('asset_type') === $type->value ? 'selected' : '' }}>{{ $type->label() }}</option>
                 @endforeach
             </select>
-            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--text);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
         </form>
     </div>
 
@@ -1021,7 +1021,7 @@
                 <option value="exceeded" {{ request('budget_status') === 'exceeded' ? 'selected' : '' }}>{{ __('dashboard.exceeded_budgets') }}</option>
                 <option value="inactive" {{ request('budget_status') === 'inactive' ? 'selected' : '' }}>{{ __('dashboard.inactive_budgets') }}</option>
             </select>
-            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--text);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
         </form>
     </div>
 
@@ -1140,7 +1140,7 @@
                 <option value="completed" {{ request('goal_status') === 'completed' ? 'selected' : '' }}>{{ __('dashboard.completed_goals') }}</option>
                 <option value="cancelled" {{ request('goal_status') === 'cancelled' ? 'selected' : '' }}>{{ __('dashboard.cancelled_goals') }}</option>
             </select>
-            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--text);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
         </form>
     </div>
 

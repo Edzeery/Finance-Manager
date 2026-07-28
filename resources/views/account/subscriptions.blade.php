@@ -47,20 +47,14 @@
             <span class="flex-grow-1">{{ __('settings.pending_payment_block') }}</span>
             <div class="d-flex gap-2 flex-shrink-0">
                 @if ($continueUrl)
-                    <a href="{{ $continueUrl }}" target="_blank" class="btn btn-warning btn-custom btn-sm">
-                        <i class="bi bi-credit-card ms-1"></i>{{ __('settings.complete_payment') }}
-                    </a>
+                    <x-button href="{{ $continueUrl }}" target="_blank" size="sm" icon="bi bi-credit-card" class="btn-warning">{{ __('settings.complete_payment') }}</x-button>
                 @else
-                    <a href="{{ route('payment.status', $pendingPayment) }}" class="btn btn-warning btn-custom btn-sm">
-                        <i class="bi bi-credit-card ms-1"></i>{{ __('settings.complete_payment') }}
-                    </a>
+                    <x-button href="{{ route('payment.status', $pendingPayment) }}" size="sm" icon="bi bi-credit-card" class="btn-warning">{{ __('settings.complete_payment') }}</x-button>
                 @endif
-                <form method="POST" action="{{ route('account.subscriptions.cancel-payment', $pendingPayment) }}"
+                <form method="POST" action="{{ route('billing.subscriptions.cancel-payment', $pendingPayment) }}"
                     onsubmit="return confirm('{{ __('settings.cancel_payment_confirm') }}')">
                     @csrf
-                    <button type="submit" class="btn btn-outline-secondary btn-custom btn-sm">
-                        <i class="bi bi-x-lg ms-1"></i>{{ __('settings.cancel_payment') }}
-                    </button>
+                    <x-button submit size="sm" variant="outline" icon="bi bi-x-lg">{{ __('settings.cancel_payment') }}</x-button>
                 </form>
             </div>
         </div>
@@ -224,24 +218,14 @@
                         @if ($isOwner && !$pendingPayment)
                             <div class="d-flex gap-2 flex-wrap">
                                 @if ($subscription && $subscription->isActive())
-                                    <a href="#available-plans" class="btn btn-accent btn-custom">
-                                        <i class="bi bi-arrow-repeat ms-1"></i>{{ __('settings.change_plan') }}
-                                    </a>
+                                    <x-button href="#available-plans" icon="bi bi-arrow-repeat">{{ __('settings.change_plan') }}</x-button>
                                     @if (!$plan->isFree() && !$subscription->canceled_at)
-                                        <button type="button" class="btn btn-outline-danger btn-custom"
-                                            @click="confirmCancelSubscription()">
-                                            <i
-                                                class="bi bi-x-circle ms-1"></i>{{ __('settings.cancel_subscription') }}
-                                        </button>
+                                        <x-button variant="outline-danger" @click="confirmCancelSubscription()" icon="bi bi-x-circle">{{ __('settings.cancel_subscription') }}</x-button>
                                     @elseif($subscription->canceled_at && $subscription->isOnGrace())
-                                        <form method="POST" action="{{ route('account.subscriptions.resume') }}"
+                                        <form method="POST" action="{{ route('billing.subscriptions.resume') }}"
                                             style="display:inline">
                                             @csrf
-                                            <button type="submit" class="btn btn-outline-accent btn-custom"
-                                                onclick="return confirm('{{ __('settings.resume_confirm') }}')">
-                                                <i
-                                                    class="bi bi-arrow-repeat ms-1"></i>{{ __('settings.resume_subscription') }}
-                                            </button>
+                                            <x-button submit variant="outline-accent" icon="bi bi-arrow-repeat" onclick="return confirm('{{ __('settings.resume_confirm') }}')">{{ __('settings.resume_subscription') }}</x-button>
                                         </form>
                                     @elseif($subscription->canceled_at)
                                         <span class="text-muted-sm" style="font-size:13px;padding:8px 0">
@@ -250,10 +234,7 @@
                                         </span>
                                     @endif
                                 @else
-                                    <a href="#available-plans" class="btn btn-accent btn-custom">
-                                        <i
-                                            class="bi bi-rocket-takeoff ms-1"></i>{{ __('settings.renew_subscription') }}
-                                    </a>
+                                    <x-button href="#available-plans" icon="bi bi-rocket-takeoff">{{ __('settings.renew_subscription') }}</x-button>
                                 @endif
                             </div>
                         @endif
@@ -263,9 +244,7 @@
                                 style="font-size:48px;color:var(--text-muted);opacity:0.4"></i>
                             <p class="text-muted mt-3 mb-3">{{ __('settings.no_subscription') }}</p>
                             @if ($isOwner)
-                                <a href="#available-plans" class="btn btn-accent btn-custom">
-                                    <i class="bi bi-rocket-takeoff ms-1"></i>{{ __('settings.choose_plan') }}
-                                </a>
+                                <x-button href="#available-plans" icon="bi bi-rocket-takeoff">{{ __('settings.choose_plan') }}</x-button>
                             @endif
                         </div>
                     @endif
@@ -330,11 +309,7 @@
                                             </td>
                                             <td>
                                                 @if ($continueUrl)
-                                                    <a href="{{ $continueUrl }}" target="_blank"
-                                                        class="btn btn-sm btn-warning">
-                                                        <i
-                                                            class="bi bi-credit-card ms-1"></i>{{ __('settings.complete_payment') }}
-                                                    </a>
+                                                    <x-button href="{{ $continueUrl }}" target="_blank" size="sm" icon="bi bi-credit-card" class="btn-warning">{{ __('settings.complete_payment') }}</x-button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -342,12 +317,11 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="mt-3 text-end">
-                            <a href="{{ route('account.payments') }}"
-                                class="btn btn-outline-accent btn-custom btn-sm">
-                                <i class="bi bi-eye ms-1"></i>{{ __('settings.view_all_payments') }}
-                            </a>
-                        </div>
+                        @if ($payments->hasPages())
+                            <div class="mt-3 d-flex justify-content-end">
+                                {{ $payments->appends(request()->query())->links() }}
+                            </div>
+                        @endif
                     @else
                         <div class="text-center py-4">
                             <x-empty-state icon="bi bi-inbox" :title="__('settings.no_payments')" />
@@ -361,9 +335,9 @@
                 <div class="settings-section">
                     <div class="settings-card">
                         <h5 class="section-title mb-1 d-flex align-items-center gap-2"><i
-                                class="bi bi-clock-history text-accent"></i><span>{{ __('settings.subscription_history') }}</span>
+                                class="bi bi-clock-history text-accent"></i><span>{{ __('account.subscription_history') }}</span>
                         </h5>
-                        <p class="section-desc mb-3">{{ __('settings.subscription_history_desc') }}</p>
+                        <p class="section-desc mb-3">{{ __('account.subscription_history_desc') }}</p>
 
                         <div class="table-responsive">
                             <table class="table table-custom mb-0">
@@ -420,9 +394,7 @@
                             </h5>
                             <p class="section-desc mb-0">{{ __('settings.invoices_desc') }}</p>
                         </div>
-                        <a href="{{ route('account.invoices.index') }}" class="btn btn-accent btn-custom">
-                            <i class="bi bi-receipt ms-1"></i>{{ __('settings.view_all_invoices') }}
-                        </a>
+                        <x-button href="{{ route('billing.invoices.index') }}" icon="bi bi-receipt">{{ __('settings.view_all_invoices') }}</x-button>
                     </div>
                 </div>
             </div>
@@ -430,7 +402,7 @@
 
         {{-- Available Plans Sidebar --}}
         <div class="col-lg-4" id="available-plans">
-            <div class="settings-section" style="position:sticky;top:24px">
+            <div class="settings-section" style="position:sticky;top:80px">
                 <div class="settings-card">
                     <h5 class="section-title mb-1 d-flex align-items-center gap-2"><i
                             class="bi bi-grid-3x3-gap text-accent"></i><span>{{ __('settings.available_plans') }}</span>
@@ -507,7 +479,7 @@
                                 </div>
 
                                 @if (!$isCurrent)
-                                    <form action="{{ route('account.subscriptions.change-plan') }}" method="POST"
+                                    <form action="{{ route('billing.subscriptions.change-plan') }}" method="POST"
                                         class="plan-form" onsubmit="return handlePlanSubmit(this)">
                                         @csrf
                                         <input type="hidden" name="plan_slug" value="{{ $plan->slug }}">
@@ -590,11 +562,7 @@
                                     </form>
                                 @else
                                     <div class="d-grid">
-                                        <button type="button" class="btn btn-outline-accent btn-custom btn-sm"
-                                            disabled>
-                                            <i
-                                                class="bi bi-check-lg ms-1"></i>{{ __('settings.current_plan_label') }}
-                                        </button>
+                                        <x-button variant="outline-accent" size="sm" icon="bi bi-check-lg" disabled>{{ __('settings.current_plan_label') }}</x-button>
                                     </div>
                                 @endif
                             </div>
@@ -660,7 +628,7 @@
                         if (confirmed) {
                             const form = document.createElement('form');
                             form.method = 'POST';
-                            form.action = '{{ route('account.subscriptions.cancel') }}';
+                            form.action = '{{ route('billing.subscriptions.cancel') }}';
                             form.innerHTML = '@csrf';
                             document.body.appendChild(form);
                             form.submit();
@@ -746,7 +714,7 @@
                 var container = form.querySelector('[class^="fee-breakdown-"]');
                 if (!container) return;
 
-                fetch('{{ route('account.subscriptions.fee-breakdown') }}?' + params.toString())
+                fetch('{{ route('billing.subscriptions.fee-breakdown') }}?' + params.toString())
                     .then(function(r) {
                         return r.json();
                     })
@@ -969,9 +937,7 @@
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0" id="upgradeModalFooter" style="display:none">
-                    <button type="button" class="btn btn-outline-secondary btn-custom px-4" data-bs-dismiss="modal">
-                        {{ __('general.cancel') }}
-                    </button>
+                    <x-button variant="outline" class="px-4" data-bs-dismiss="modal">{{ __('general.cancel') }}</x-button>
                     <button type="button" class="btn btn-accent btn-custom px-4" id="upgradeModalConfirmBtn"
                         onclick="confirmUpgrade()">
                         <span class="btn-text"><i
@@ -1023,7 +989,7 @@
                     });
                     if (coupon) params.set('coupon', coupon);
 
-                    fetch('{{ route('account.subscriptions.fee-breakdown') }}?' + params.toString())
+                    fetch('{{ route('billing.subscriptions.fee-breakdown') }}?' + params.toString())
                         .then(r => r.json())
                         .then(data => {
                             upgradeModalData = data;

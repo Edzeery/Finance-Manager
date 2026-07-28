@@ -9,6 +9,7 @@ use App\Models\Income;
 use App\Support\DatabaseHelper;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ChartDataService implements ChartDataServiceInterface
 {
@@ -94,23 +95,30 @@ class ChartDataService implements ChartDataServiceInterface
 
             $nameField = 'name_'.app()->getLocale();
 
-            $query = Expense::active()->with('category');
+            $query = Expense::active()
+                ->select(
+                    "expense_categories.{$nameField} as category_name",
+                    'expense_categories.color as category_color',
+                    DB::raw('SUM(expenses.amount) as total_amount')
+                )
+                ->leftJoin('expense_categories', 'expenses.category_id', '=', 'expense_categories.id');
 
             if ($start && $end) {
-                $query->whereBetween('date', [$start, $end]);
+                $query->whereBetween('expenses.date', [$start, $end]);
             }
 
-            $grouped = $query->get()
-                ->groupBy(fn ($e) => $e->category?->{$nameField} ?? __('general.uncategorized'));
+            $results = $query->groupBy('expense_categories.id', 'expense_categories.color')
+                ->orderByDesc('total_amount')
+                ->get();
 
             $labels = [];
             $data = [];
             $colors = [];
 
-            foreach ($grouped as $category => $items) {
-                $labels[] = $category;
-                $data[] = (float) $items->sum('amount');
-                $colors[] = $items->first()->category?->color ?? '#64748B';
+            foreach ($results as $row) {
+                $labels[] = $row->category_name ?? __('general.uncategorized');
+                $data[] = (float) $row->total_amount;
+                $colors[] = $row->category_color ?? '#64748B';
             }
 
             return [

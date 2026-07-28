@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\PaymentStatus;
 use App\Enums\SubscriptionStatus;
 use App\Models\Payment;
+use App\Models\Subscription;
 use App\Services\Payments\PaymentTransitionValidator;
 
 class PaymentStatusService
@@ -28,7 +29,7 @@ class PaymentStatusService
         $this->transitionValidator->transition($payment, PaymentStatus::CheckoutCanceled);
 
         if ($payment->subscription_id) {
-            $sub = \App\Models\Subscription::withoutWorkspace()->find($payment->subscription_id);
+            $sub = Subscription::withoutWorkspace()->find($payment->subscription_id);
             if ($sub && $sub->status === SubscriptionStatus::PastDue) {
                 $sub->update(['status' => SubscriptionStatus::Canceled->value, 'canceled_at' => now()]);
             }

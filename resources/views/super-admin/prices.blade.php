@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.prices') }} - {{ $plan->name }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.prices') }}: {{ $plan->name }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.prices_desc') }}</x-slot>
@@ -13,7 +13,7 @@
             <div class="data-grid-toolbar-right">
                 <div class="d-flex align-items-center gap-2">
                     <x-per-page :current="(int) request('per_page', 50)" :route="route('super.admin.plans.prices.index', $plan)" :options="[10, 20, 50, 100]" />
-                    <a href="{{ route('super.admin.plans.prices.create', $plan) }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+                    <a href="{{ route('super.admin.plans.prices.create', $plan) }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
                         <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_price') }}
                     </a>
                 </div>

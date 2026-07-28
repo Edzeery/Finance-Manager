@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\NotificationService;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -24,7 +25,7 @@ new #[Layout('layouts.guest')] class extends Component
         $this->email = request()->string('email');
     }
 
-    public function resetPassword(): void
+    public function resetPassword(NotificationService $notificationService): void
     {
         $this->validate([
             'token'    => ['required'],
@@ -34,12 +35,13 @@ new #[Layout('layouts.guest')] class extends Component
 
         $status = Password::reset(
             $this->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) {
+            function ($user) use ($notificationService) {
                 $user->forceFill([
                     'password'       => Hash::make($this->password),
                     'remember_token' => Str::random(60),
                 ])->save();
                 event(new PasswordReset($user));
+                $notificationService->passwordChanged($user->id);
             }
         );
 
@@ -96,11 +98,7 @@ new #[Layout('layouts.guest')] class extends Component
                 required autocomplete="new-password" />
         </div>
 
-        <button type="submit" class="btn btn-accent btn-custom w-100">
-            <div wire:loading wire:target="resetPassword" class="spinner-border spinner-border-sm ms-2" role="status"></div>
-            <i class="bi bi-shield-check ms-2" wire:loading.remove wire:target="resetPassword"></i>
-            {{ __('general.reset_password') }}
-        </button>
+        <x-button submit icon="bi bi-shield-check" variant="accent" block wire-target="resetPassword">{{ __('general.reset_password') }}</x-button>
 
     </form>
 

@@ -9,6 +9,7 @@ use App\Models\Income;
 use App\Models\IncomeCategory;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
@@ -30,61 +31,89 @@ class TransactionController extends Controller
         $sortField = $request->input('sort', 'date');
         $sortDir = $request->input('direction', 'desc');
 
-        $incomesQuery = Income::active()
-            ->with('category:id,name_ar,name_fr,name_en,color');
+        $incomeQuery = Income::active()
+            ->select(
+                'incomes.id',
+                DB::raw("'income' as type"),
+                'incomes.amount',
+                'incomes.date',
+                'incomes.description',
+                'incomes.is_archived',
+                'incomes.created_at',
+                'incomes.category_id',
+                DB::raw("COALESCE(ic.name_{$locale}, '—') as category_name"),
+                DB::raw("COALESCE(ic.color, '#64748B') as category_color")
+            )
+            ->leftJoin('income_categories as ic', 'incomes.category_id', '=', 'ic.id');
 
-        $expensesQuery = Expense::active()
-            ->with('category:id,name_ar,name_fr,name_en,color');
+        $expenseQuery = Expense::active()
+            ->select(
+                'expenses.id',
+                DB::raw("'expense' as type"),
+                'expenses.amount',
+                'expenses.date',
+                'expenses.description',
+                'expenses.is_archived',
+                'expenses.created_at',
+                'expenses.category_id',
+                DB::raw("COALESCE(ec.name_{$locale}, '—') as category_name"),
+                DB::raw("COALESCE(ec.color, '#64748B') as category_color")
+            )
+            ->leftJoin('expense_categories as ec', 'expenses.category_id', '=', 'ec.id');
 
-        if ($search) {
-            $incomesQuery->where(function ($q) use ($search) {
-                $q->where('description', 'like', "%{$search}%")
-                    ->orWhere('amount', 'like', "%{$search}%");
-            });
-            $expensesQuery->where(function ($q) use ($search) {
-                $q->where('description', 'like', "%{$search}%")
-                    ->orWhere('amount', 'like', "%{$search}%");
-            });
+        foreach ([$incomeQuery, $expenseQuery] as $q) {
+            if ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('description', 'like', "%{$search}%")
+                        ->orWhere('amount', 'like', "%{$search}%");
+                });
+            }
+            if ($dateFrom) {
+                $q->where('date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $q->where('date', '<=', $dateTo);
+            }
         }
 
-        if ($dateFrom) {
-            $incomesQuery->where('date', '>=', $dateFrom);
-            $expensesQuery->where('date', '>=', $dateFrom);
+        $incomeCount = (clone $incomeQuery)->count();
+        $expenseCount = (clone $expenseQuery)->count();
+
+        if ($type === 'income') {
+            $query = $incomeQuery;
+        } elseif ($type === 'expense') {
+            $query = $expenseQuery;
+        } else {
+            $query = $incomeQuery->unionAll($expenseQuery);
         }
 
-        if ($dateTo) {
-            $incomesQuery->where('date', '<=', $dateTo);
-            $expensesQuery->where('date', '<=', $dateTo);
-        }
-
-        $incomeCount = (clone $incomesQuery)->count();
-        $expenseCount = (clone $expensesQuery)->count();
-
-        $incomes = $incomesQuery->get()->map(fn ($i) => $this->mapTransaction($i, 'income', $locale));
-        $expenses = $expensesQuery->get()->map(fn ($e) => $this->mapTransaction($e, 'expense', $locale));
-
-        $all = $incomes->concat($expenses);
-
-        if ($type && in_array($type, ['income', 'expense'])) {
-            $all = $all->where('type', $type);
-        }
-
-        $sortField = match ($sortField) {
+        $sortColumn = match ($sortField) {
             'amount' => 'amount',
             'type' => 'type',
             'category' => 'category_name',
             default => 'date',
         };
-
-        $all = $sortDir === 'asc'
-            ? $all->sortBy($sortField, SORT_REGULAR, false)
-            : $all->sortByDesc($sortField);
-
-        $all = $all->values();
+        $query->orderBy($sortColumn, $sortDir);
 
         $page = LengthAwarePaginator::resolveCurrentPage();
-        $total = $all->count();
-        $items = $all->forPage($page, $perPage)->values();
+        $total = match ($type) {
+            'income' => $incomeCount,
+            'expense' => $expenseCount,
+            default => $incomeCount + $expenseCount,
+        };
+        $items = $query->offset(($page - 1) * $perPage)->limit($perPage)->get()
+            ->map(fn ($item) => [
+                'id' => $item->id,
+                'type' => $item->type,
+                'amount' => (float) $item->amount,
+                'date' => $item->date,
+                'description' => $item->description ?? '',
+                'category_name' => $item->category_name ?? '—',
+                'category_color' => $item->category_color ?? '#64748B',
+                'category_id' => $item->category_id,
+                'is_archived' => (bool) $item->is_archived,
+                'created_at' => $item->created_at,
+            ]);
 
         $transactions = new LengthAwarePaginator(
             $items,
@@ -105,24 +134,6 @@ class TransactionController extends Controller
         return view('transactions.index', $this->withBreadcrumbs(compact(
             'transactions', 'search', 'tab', 'type', 'dateFrom', 'dateTo', 'sortField', 'sortDir', 'perPage', 'categories', 'tabs'
         )));
-    }
-
-    private function mapTransaction($model, string $type, string $locale): array
-    {
-        $category = $model->category;
-
-        return [
-            'id' => $model->id,
-            'type' => $type,
-            'amount' => (float) $model->amount,
-            'date' => $model->date,
-            'description' => $model->description ?? '',
-            'category_name' => $category?->{'name_'.$locale} ?? '—',
-            'category_color' => $category?->color ?? '#64748B',
-            'category_id' => $category?->id,
-            'is_archived' => (bool) $model->is_archived,
-            'created_at' => $model->created_at,
-        ];
     }
 
     private function getCategoryOptions(string $locale): array

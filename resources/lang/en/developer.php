@@ -74,4 +74,13 @@ return [
     'token_deactivated_desc' => 'This token is deactivated and cannot be used. Activate it first to view the token value.',
     'token_usage' => 'Token Usage',
     'token_limit_reached' => 'You have reached the maximum number of tokens (:limit) allowed by your plan.',
+    'api_quota' => 'API Quota',
+    'per_minute' => 'Per Minute',
+    'per_hour' => 'Per Hour',
+    'per_day' => 'Per Day',
+    'remaining' => 'remaining',
+    'requests_7d' => 'requests (7d)',
+    'quick_test_desc' => 'Quickly test your API token with a sample request.',
+    'usage_history' => 'Usage History',
+    'usage_history_desc' => 'You have made :total requests in the last 30 days.',
 ];

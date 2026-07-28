@@ -25,13 +25,15 @@ class WorkspaceScope implements Scope
             return;
         }
 
+        $table = $model->getTable();
+
         if ($model instanceof IncomeCategory || $model instanceof ExpenseCategory || $model instanceof Notification) {
-            $builder->where(function (Builder $query) use ($workspaceId) {
-                $query->where('workspace_id', $workspaceId)
-                    ->orWhereNull('workspace_id');
+            $builder->where(function (Builder $query) use ($workspaceId, $table) {
+                $query->where("{$table}.workspace_id", $workspaceId)
+                    ->orWhereNull("{$table}.workspace_id");
             });
         } else {
-            $builder->where('workspace_id', $workspaceId);
+            $builder->where("{$table}.workspace_id", $workspaceId);
         }
     }
 }

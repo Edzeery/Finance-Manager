@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\PaymentGateway;
 use App\Models\PaymentMethod;
@@ -150,7 +150,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component
                             @foreach (['' => __('general.all'), 'active' => __('general.active'), 'inactive' => __('general.inactive')] as $val => $label)
                                 <button type="button" wire:click="$set('statusFilter', '{{ $val }}')"
                                     style="padding:5px 12px;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--text-muted);cursor:pointer;transition:all 0.15s"
-                                    @style(['background:var(--accent) !important;color:#0F172A !important' => $statusFilter === $val])>
+                                    @style(['background:var(--accent) !important;color:var(--primary) !important' => $statusFilter === $val])>
                                     {{ $label }}
                                 </button>
                             @endforeach
@@ -171,7 +171,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component
                                 <option value="{{ $val }}">{{ $val }}</option>
                             @endforeach
                         </select>
-                        <a href="{{ route('super.admin.payment-methods.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+                        <a href="{{ route('super.admin.payment-methods.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
                             <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_payment_method') }}
                         </a>
                     </div>
@@ -262,7 +262,7 @@ new #[Layout('layouts.super-admin.app')] class extends Component
             <div class="data-grid-toolbar">
                 <div class="data-grid-toolbar-left"></div>
                 <div class="data-grid-toolbar-right">
-                    <a href="{{ route('super.admin.gateways.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+                    <a href="{{ route('super.admin.gateways.create') }}" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer">
                         <i class="bi bi-plus-lg"></i>{{ __('super-admin.create_gateway_structure') }}
                     </a>
                 </div>

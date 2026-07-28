@@ -11,6 +11,7 @@ use App\Services\Payments\GatewayManager;
 use App\Services\Payments\PaymentTransitionValidator;
 use App\Services\PaymentService;
 use App\Services\SubscriptionActivationService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -186,7 +187,7 @@ class RenewSubscriptions extends Command
         Payment $payment,
         string $billingPeriod,
         SubscriptionActivationService $activationService,
-        \Carbon\Carbon $originalEndsAt,
+        Carbon $originalEndsAt,
     ): void {
         $newStartsAt = $originalEndsAt ?? now();
 

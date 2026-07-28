@@ -18,4 +18,6 @@ return [
     'suspended_expires' => 'تنتهي مدة التعليق في',
 
     'reason' => 'السبب',
+    'subscription_history' => 'سجل الاشتراكات',
+    'subscription_history_desc' => 'آخر اشتراكاتك المفعلة والملغاة ...',
 ];

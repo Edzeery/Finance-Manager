@@ -30,8 +30,8 @@
 
     @livewireScripts
     @stack('scripts')
-    <script type="module" src="https://esm.sh/ionicons@latest/loader"></script>
-    <script nomodule src="https://esm.sh/ionicons@latest/loader"></script>
+    <script type="module" src="https://esm.sh/ionicons@8.0.13/loader"></script>
+    <script nomodule src="https://esm.sh/ionicons@8.0.13/loader"></script>
 </body>
 
 </html>

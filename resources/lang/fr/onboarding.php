@@ -15,7 +15,9 @@ return [
     'pay_now' => 'Payer maintenant',
     'proceed_to_payment' => 'Procéder au paiement',
     'processing_payment' => 'Traitement du paiement...',
-    'redirecting' => 'Redirection vers la passerelle de paiement...',
+    'redirecting' => 'Redirection en cours... Vous allez être redirigé automatiquement.',
+    'redirecting_payment_gateway' => 'Redirection vers la passerelle de paiement...',
+
     'remaining' => 'restant',
     'drag_drop_hint' => 'Glissez-déposez votre reçu ici',
     'browse_files' => 'Parcourir les fichiers',
@@ -201,4 +203,7 @@ return [
     // Development
     'force_complete' => 'Finaliser le paiement (Développement)',
     'force_complete_hint' => 'Développement uniquement : finaliser le paiement et activer l\'abonnement.',
+    'gateway_fee' => 'Frais de passerelle',
+    'tax_added' => 'Taxe ajoutée',
+    'tax_disclosed' => 'Taxe (incluse)',
 ];

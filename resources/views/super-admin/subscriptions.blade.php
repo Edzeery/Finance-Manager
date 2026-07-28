@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.subscriptions') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.subscriptions') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.subscriptions_desc') }}</x-slot>
@@ -30,8 +30,7 @@
                     @if (request('plan_id'))
                         <input type="hidden" name="plan_id" value="{{ request('plan_id') }}">
                     @endif
-                    <button type="submit" class="btn"
-                        style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <x-button variant="accent" submit>{{ __('general.filter') }}</x-button>
                     <x-clear-filters :filters="['search', 'status', 'plan_id']" :route="route('super.admin.subscriptions.index')" />
                 </form>
             </div>
@@ -77,11 +76,7 @@
                                     <div class="d-inline-flex align-items-center gap-1">
                                         <span class="badge sub-plan-name"
                                             style="font-size:11px;background:var(--bg-subtle);color:var(--text);padding:2px 8px;border-radius:6px">{{ $sub->plan?->name ?? '—' }}</span>
-                                        <button type="button" class="btn btn-sm p-0 border-0 bg-transparent"
-                                            @click="openPlanModal()" title="{{ __('settings.change_plan') }}">
-                                            <i class="bi bi-pencil"
-                                                style="font-size:11px;color:var(--text-muted)"></i>
-                                        </button>
+                                        <x-button icon="bi bi-pencil" @click="openPlanModal()" title="{{ __('settings.change_plan') }}" style="padding:0;border:0;background:transparent;font-size:11px;color:var(--text-muted)" />
                                         <span x-show="planFlash === 'ok'" x-cloak x-transition
                                             style="color:var(--success);font-size:11px"><i
                                                 class="bi bi-check-circle-fill"></i></span>
@@ -135,10 +130,7 @@
                                     </div>
                                 </td>
                                 <td class="col-actions">
-                                    <a href="{{ route('super.admin.subscriptions.show', $sub) }}"
-                                        class="btn btn-icon" title="{{ __('general.view') }}">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                                    <x-button href="{{ route('super.admin.subscriptions.show', $sub) }}" icon="bi bi-eye" title="{{ __('general.view') }}" class="btn-icon" />
                                 </td>
                             </tr>
                         @endforeach
@@ -170,7 +162,7 @@
                 </div>
                 <div class="modal-footer" style="border-top:1px solid var(--border);padding:14px 20px">
                     <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)" data-bs-dismiss="modal">{{ __('general.cancel') }}</button>
-                    <button type="button" id="planSaveBtn" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none">
+                    <button type="button" id="planSaveBtn" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none">
                         <i class="bi bi-check-lg"></i> {{ __('general.save') }}
                     </button>
                 </div>

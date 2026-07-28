@@ -380,6 +380,10 @@ return [
         'confirmed_email'      => 'E-mail confirmé',
         'unconfirmed_email'    => 'E-mail non confirmé',
         'password_reset'       => 'Réinitialisation du mot de passe',
+        'current_device'       => 'Appareil actuel',
+        'session_active'       => 'Active',
+        'session_inactive'     => 'Inactive',
+        'session_ended'        => 'Terminée',
         'unknown'              => 'Inconnu',
     ],
 ];

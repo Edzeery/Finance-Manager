@@ -30,7 +30,7 @@ class SubscriptionExpiryWarning extends Notification
                 ->line(__('subscription.grace_expires', [
                     'date' => $this->subscription->grace_ends_at?->format('Y-m-d'),
                 ]))
-                ->action(__('subscription.renew'), route('account.subscriptions'));
+                ->action(__('subscription.renew'), route('billing.subscriptions'));
         }
 
         return (new MailMessage)
@@ -39,7 +39,7 @@ class SubscriptionExpiryWarning extends Notification
             ->line(__('subscription.expiry_reminder_date', [
                 'date' => $this->subscription->ends_at?->format('Y-m-d'),
             ]))
-            ->action(__('subscription.renew'), route('account.subscriptions'));
+            ->action(__('subscription.renew'), route('billing.subscriptions'));
     }
 
     public function toArray(object $notifiable): array

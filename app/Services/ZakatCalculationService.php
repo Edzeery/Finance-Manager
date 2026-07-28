@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Asset;
 use App\Models\Debt;
-use App\Services\HijriDateService;
 use Illuminate\Support\Collection;
 
 class ZakatCalculationService
@@ -102,7 +102,7 @@ class ZakatCalculationService
 
     public function loadUserAssets(?int $userId = null): array
     {
-        $query = \App\Models\Asset::zakatable();
+        $query = Asset::zakatable();
         if ($userId) {
             $query->where('user_id', $userId);
         }

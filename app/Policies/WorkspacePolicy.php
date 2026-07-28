@@ -48,4 +48,17 @@ class WorkspacePolicy
         return $workspace->isOwner($user)
             || $user->hasPermission('workspace.transfer', 'platform');
     }
+
+    public function inviteMembers(User $user, Workspace $workspace): bool
+    {
+        return $workspace->isOwner($user)
+            || $user->hasPermission('workspace-user.invite', 'workspace');
+    }
+
+    public function viewTeam(User $user, Workspace $workspace): bool
+    {
+        return $workspace->isOwner($user)
+            || $user->hasPermission('workspace-user.view', 'workspace')
+            || $user->hasPermission('workspace-user.invite', 'workspace');
+    }
 }

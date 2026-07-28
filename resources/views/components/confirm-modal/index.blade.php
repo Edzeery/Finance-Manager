@@ -24,12 +24,8 @@
                 </div>
             </div>
             <div class="modal-footer justify-content-center border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary btn-custom px-4" data-bs-dismiss="modal">
-                    {{ __('general.cancel') }}
-                </button>
-                <button type="button" id="confirmModalAction" class="btn btn-danger btn-custom px-4" data-default-text="{{ __('general.delete') }}" data-force-delete-text="{{ __('general.force_delete') }}">
-                    {{ __('general.delete') }}
-                </button>
+                <x-button variant="outline" class="px-4" data-bs-dismiss="modal">{{ __('general.cancel') }}</x-button>
+                <x-button variant="danger" id="confirmModalAction" class="px-4" data-default-text="{{ __('general.delete') }}" data-force-delete-text="{{ __('general.force_delete') }}">{{ __('general.delete') }}</x-button>
             </div>
         </div>
     </div>

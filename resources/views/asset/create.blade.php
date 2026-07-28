@@ -168,7 +168,7 @@
                                     <span style="cursor:help" title="{{ __('asset.total_value_help') }}">
                                         <i class="bi bi-question-circle" style="font-size:12px; color:var(--text-muted)"></i>
                                     </span>
-                                    <span id="autoCalcBadge" style="display:none; font-size:11px; padding:1px 6px; border-radius:4px; background:rgba(34,197,94,0.1); color:#16a34a; font-weight:500">
+                                    <span id="autoCalcBadge" style="display:none; font-size:11px; padding:1px 6px; border-radius:4px; background:var(--success-light); color:var(--success); font-weight:500">
                                         <i class="bi bi-calculator"></i> {{ __('asset.auto_calculated') }}
                                     </span>
                                 </label>
@@ -219,12 +219,8 @@
 
                         {{-- ═══ Actions ═══ --}}
                         <div class="d-flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border)">
-                            <button type="submit" class="btn btn-accent btn-custom">
-                                <i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}
-                            </button>
-                            <a href="{{ route('asset.index') }}" class="btn btn-outline-secondary btn-custom">
-                                <i class="bi bi-x-lg"></i>{{ __('general.cancel') }}
-                            </a>
+                            <x-button submit icon="bi bi-check-lg">{{ __('general.save') }}</x-button>
+                            <x-button href="{{ route('asset.index') }}" icon="bi bi-x-lg" variant="outline">{{ __('general.cancel') }}</x-button>
                         </div>
                     </form>
                 </div>
@@ -278,7 +274,7 @@
                 return;
             }
             var pct = (karatPurity[karat] * 100).toFixed(1);
-            badge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border-radius:6px;background:rgba(255,193,7,0.1);color:#f59e0b;font-weight:500"><i class="bi bi-gem"></i>' + karat + 'K — ' + pct + '% {{ __("asset.purity") }}</span>';
+            badge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border-radius:6px;background:var(--warning-light);color:var(--warning);font-weight:500"><i class="bi bi-gem"></i>' + karat + 'K — ' + pct + '% {{ __("asset.purity") }}</span>';
         }
 
         function calculateTotal() {
@@ -312,7 +308,7 @@
                 totalInput.value = calculated.toFixed(2);
                 autoBadge.style.display = 'inline';
                 preview.style.display = 'block';
-                preview.innerHTML = '<i class="bi bi-check-circle" style="color:#16a34a"></i> ' + formula + ' = <strong>' + currencySymbol + ' ' + calculated.toFixed(2) + '</strong>';
+                preview.innerHTML = '<i class="bi bi-check-circle" style="color:var(--success)"></i> ' + formula + ' = <strong>' + currencySymbol + ' ' + calculated.toFixed(2) + '</strong>';
             } else {
                 autoBadge.style.display = 'none';
                 preview.style.display = 'none';

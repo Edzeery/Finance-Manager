@@ -9,11 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckActiveSubscription
 {
     protected array $except = [
-        'account.subscriptions*',
-        'account.invoices.*',
-        'account.payments.*',
-        'account.settings.*',
-        'account.profile',
+        'billing.subscriptions*',
+        'billing.invoices.*',
+        'billing.payments.*',
+        'settings.account*',
+        'settings.workspace*',
         'onboarding.*',
         'invitations.*',
         'notifications.*',
@@ -23,7 +23,6 @@ class CheckActiveSubscription
         'chargily.back',
         'paypal.back',
         'coupon.validate',
-        'account.subscriptions.cancel',
         'locale.switch',
         'theme.switch',
         'currency.switch',
@@ -70,7 +69,7 @@ class CheckActiveSubscription
             ], 402);
         }
 
-        return redirect()->route('account.subscriptions')
+        return redirect()->route('billing.subscriptions')
             ->with('warning', __('messages.subscription_required'));
     }
 

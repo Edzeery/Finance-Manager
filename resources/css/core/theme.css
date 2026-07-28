@@ -19,13 +19,12 @@ body {
 
 * {
     scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-    border-radius: var(--radius) 0 0;
+    scrollbar-color: var(--accent) transparent;
 }
 
 *::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: auto;
+    height: auto;
 }
 
 *::-webkit-scrollbar-track {
@@ -33,12 +32,12 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-    background: var(--border);
+    background: var(--text-muted);
     border-radius: 8px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
+    background: var(--accent);
 }
 
 [x-cloak] {

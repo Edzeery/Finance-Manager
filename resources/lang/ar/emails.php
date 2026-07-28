@@ -80,4 +80,22 @@ return [
 
     'payment_refunded_subject' => 'تم استرجاع الدفع — :app',
     'payment_refunded_line' => 'تم استرجاع دفعتك. سيتم إرجاع المبلغ إلى طريقة الدفع الأصلية.',
+
+    // Status Changed
+    'status_changed_subject' => 'تم تحديث حالة حسابك',
+    'status_changed_line' => 'تم تحديث حالة حسابك إلى :status.',
+    'status_changed_footer' => 'إذا لم تطلب هذا التغيير، يرجى الاتصال بالدعم فوراً.',
+    'status_reason' => 'السبب',
+
+    'workspace_welcome_subject' => 'مرحباً بك في :workspace — :app',
+    'workspace_welcome_greeting' => 'أهلاً بك، :name!',
+    'workspace_welcome_intro' => 'تمت إضافتك إلى مساحة العمل **:workspace** بدور **:role**.',
+    'workspace_welcome_inviter_intro' => 'يمكنك الآن الوصول إلى مساحة العمل والبدء بالعمل مع فريقك.',
+    'workspace_welcome_cta' => 'الذهاب إلى مساحة العمل',
+    'workspace_welcome_support' => 'إذا كان لديك أي استفسار، فقط قم بالرد على هذا البريد — نحن هنا لمساعدتك!',
+    'workspace_welcome_team' => 'فريق :app',
+
+    'notification_greeting' => 'مرحباً :name،',
+    'notification_view' => 'عرض الإشعارات',
+    'notification_team' => 'فريق :app',
 ];

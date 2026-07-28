@@ -22,7 +22,6 @@ new #[Layout('layouts.guest')] class extends Component {
 
         $token = Session::get('invitation_token');
         if ($token) {
-            Session::forget('invitation_token');
             $this->redirect(route('invitations.accept', $token), navigate: true);
             return;
         }
@@ -85,11 +84,7 @@ new #[Layout('layouts.guest')] class extends Component {
         </div>
 
         {{-- Submit --}}
-        <button type="submit" class="btn btn-accent btn-custom w-100">
-            <div wire:loading wire:target="login" class="spinner-border spinner-border-sm ms-2" role="status"></div>
-            <i class="bi bi-box-arrow-in-right ms-2" wire:loading.remove wire:target="login"></i>
-            {{ __('general.login') }}
-        </button>
+        <x-button submit icon="bi bi-box-arrow-in-right" variant="accent" block wire-target="login">{{ __('general.login') }}</x-button>
 
     </form>
 

@@ -116,7 +116,7 @@ class GoldPriceService
         }
 
         try {
-            $response = Http::timeout(10)->get(self::BASE_URL . '/' . $symbol);
+            $response = Http::timeout(10)->get(self::BASE_URL.'/'.$symbol);
 
             if ($response->successful()) {
                 $data = $response->json();

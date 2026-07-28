@@ -126,6 +126,11 @@ return [
     'date_to' => 'Date de fin',
     'today' => 'Aujourd\'hui',
     'yesterday' => 'Hier',
+    'older' => 'Plus ancien',
+    'just_now' => 'à l\'instant',
+    'minutes_abbrev' => 'min',
+    'hours_abbrev' => 'h',
+    'days_abbrev' => 'j',
     'this_week' => 'Cette semaine',
     'this_month' => 'Ce mois',
     'custom_range' => 'Plage personnalisée',
@@ -295,5 +300,5 @@ return [
     'optional' => 'Optionnel',
     'reason' => 'Raison',
     'saving' => 'Enregistrement...',
-    'unsaved' => 'Non enregistré'
+    'unsaved' => 'Non enregistré',
 ];

@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.activity_log') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.activity_log') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.activity_log') }}</x-slot>
@@ -17,7 +17,7 @@
             'App\Models\User' => __('general.user'),
             'App\Models\Workspace' => __('settings.workspace'),
             'App\Models\Subscription' => __('settings.subscription'),
-            'App\Models\Invoice' => __('invoice.title'),
+            'App\Models\Invoice' => __('settings.invoice'),
             'App\Models\Payment' => __('payment.title'),
         ];
         $actionConfigs = [
@@ -47,7 +47,7 @@
                     @if (request('action') && request('action') !== 'all')
                         <input type="hidden" name="action" value="{{ request('action') }}">
                     @endif
-                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
                     <x-clear-filters :filters="['search','action','date_from','date_to']" :route="route('super.admin.activity-log')" />
                 </form>
             </div>

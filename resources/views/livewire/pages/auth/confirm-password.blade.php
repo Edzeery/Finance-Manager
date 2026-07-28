@@ -50,9 +50,7 @@ new #[Layout('layouts.guest')] class extends Component
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-accent btn-custom w-100">
-            <i class="bi bi-shield-check ms-2"></i>{{ __('general.confirm') }}
-        </button>
+        <x-button submit icon="bi bi-shield-check" variant="accent" block>{{ __('general.confirm') }}</x-button>
 
     </form>
 

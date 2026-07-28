@@ -15,7 +15,7 @@ class ProfileTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get(route('account.profile'));
+        $response = $this->actingAs($user)->get(route('settings.account.profile'));
 
         $response
             ->assertOk()

@@ -55,14 +55,8 @@ new #[Layout('layouts.guest')] class extends Component
     @endif
 
     <div class="d-flex gap-3 mt-2">
-        <button wire:click="sendVerification" class="btn btn-accent btn-custom flex-grow-1">
-            <div wire:loading wire:target="sendVerification" class="spinner-border spinner-border-sm ms-2" role="status"></div>
-            <i class="bi bi-envelope ms-2" wire:loading.remove wire:target="sendVerification"></i>
-            {{ __('general.resend_verification_email') }}
-        </button>
-        <button wire:click="logout" class="btn btn-outline-secondary btn-custom btn-icon" title="{{ __('general.logout') }}">
-            <i class="bi bi-box-arrow-right"></i>
-        </button>
+        <x-button wire-click="sendVerification" icon="bi bi-envelope" variant="accent" class="flex-grow-1" wire-target="sendVerification">{{ __('general.resend_verification_email') }}</x-button>
+        <x-button wire-click="logout" variant="outline" icon="bi bi-box-arrow-right" title="{{ __('general.logout') }}"></x-button>
     </div>
 
 </div>

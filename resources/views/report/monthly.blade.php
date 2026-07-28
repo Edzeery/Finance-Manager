@@ -20,9 +20,7 @@
             </select>
         </div>
         <div class="col-auto">
-            <button type="submit" class="btn btn-accent btn-custom">
-                <i class="bi bi-searchms-1"></i>{{ __('general.filter') }}
-            </button>
+            <x-button submit variant="accent" icon="bi bi-search">{{ __('general.filter') }}</x-button>
         </div>
     </form>
 

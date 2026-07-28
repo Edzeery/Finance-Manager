@@ -117,7 +117,7 @@ class ExpenseController extends BaseCrudController
                 'due_date' => $request->input('debt_due_date'),
                 'status' => DebtStatus::Active,
                 'description' => $request->input('description'),
-                'notes' => 'تم إنشاؤه تلقائياً من مصروف: ' . ($request->input('description') ?? ''),
+                'notes' => 'تم إنشاؤه تلقائياً من مصروف: '.($request->input('description') ?? ''),
             ]);
             $data['debt_id'] = $debt->id;
             $debtCreated = true;

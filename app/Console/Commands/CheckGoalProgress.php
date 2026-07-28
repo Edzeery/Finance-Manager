@@ -26,7 +26,7 @@ class CheckGoalProgress extends Command
         $count = 0;
         foreach ($goals as $goal) {
             try {
-                $name = $goal->name_ar;
+                $name = $goal->name;
                 $progress = $goal->progress;
 
                 if ($progress >= 100) {
@@ -35,8 +35,9 @@ class CheckGoalProgress extends Command
                     $count++;
                 } else {
                     $milestone = (int) (floor($progress / 25) * 25);
-                    if ($milestone > 0) {
+                    if ($milestone > 0 && $milestone > $goal->last_milestone_notified) {
                         $notifier->goalMilestoneReached($goal->user_id, $name, $milestone);
+                        $goal->update(['last_milestone_notified' => $milestone]);
                         $count++;
                     }
 

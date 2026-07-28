@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __("super-admin.role_name_{$role->slug}") }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __("super-admin.role_name_{$role->slug}") }}</x-slot>
     <x-slot:page-description>{{ $role->description }}</x-slot>
@@ -27,7 +27,7 @@
                             <span style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">{{ __('super-admin.role_slug') }}</span>
                             <code style="font-size:13px;background:var(--bg-subtle);padding:4px 10px;border-radius:6px;display:inline-block">{{ $role->slug }}</code>
                         </div>
-                        <button type="submit" class="btn" style="width:100%;padding:9px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">
+                        <button type="submit" class="btn" style="width:100%;padding:9px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px">
                             <i class="bi bi-check-lg"></i>{{ __('general.save') }}
                         </button>
                     </div>
@@ -43,7 +43,7 @@
                     </div>
                     <div class="section-card-body">
                         <div class="mb-3 d-flex flex-wrap gap-2">
-                            <button type="button" class="btn" style="padding:5px 12px;font-size:11px;border-radius:var(--radius-xs);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer" @click="toggleAllPermissions(true)">{{ __('general.select_all') }}</button>
+                            <button type="button" class="btn" style="padding:5px 12px;font-size:11px;border-radius:var(--radius-xs);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer" @click="toggleAllPermissions(true)">{{ __('general.select_all') }}</button>
                             <button type="button" class="btn" style="padding:5px 12px;font-size:11px;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer" @click="toggleAllPermissions(false)">{{ __('general.deselect_all') }}</button>
                         </div>
 

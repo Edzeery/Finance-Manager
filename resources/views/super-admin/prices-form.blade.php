@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ $price ? __('super-admin.edit_price') : __('super-admin.create_price') }} - {{ $plan->name }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ $price ? __('super-admin.edit_price') : __('super-admin.create_price') }}</x-slot>
     <x-slot:page-description>{{ $plan->name }} — {{ $price ? __('super-admin.edit_price_desc') : __('super-admin.create_price_desc') }}</x-slot>
@@ -48,7 +48,7 @@
             </div>
 
             <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn" style="padding:9px 22px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+                <button type="submit" class="btn" style="padding:9px 22px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
                     {{ $price ? __('general.update') : __('general.create') }}
                 </button>
                 <a href="{{ route('super.admin.plans.prices.index', $plan) }}" class="btn" style="padding:9px 22px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text);font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px">

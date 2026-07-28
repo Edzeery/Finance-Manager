@@ -25,17 +25,13 @@ class WorkspaceController extends Controller
 
     public function changePlan(Request $request)
     {
-        $workspace = auth()->user()->currentWorkspace;
-
-        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
-            return redirect()->route('account.subscriptions')
-                ->with('error', __('messages.unauthorized'));
-        }
+        $workspace = $this->ensureWorkspace();
+        $this->authorize('update', $workspace);
 
         $targetPlan = $this->subscriptionService->getPlan($request->input('plan_slug'));
 
         if (! $targetPlan) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.plan_not_found'));
         }
 
@@ -52,7 +48,7 @@ class WorkspaceController extends Controller
         if ($currentPlan && $targetPlan->sort_order < $currentPlan->sort_order) {
             $check = $this->subscriptionService->canDowngrade($workspace, $targetPlan, $currentSub);
             if (! $check['can_downgrade']) {
-                return redirect()->route('account.subscriptions')
+                return redirect()->route('billing.subscriptions')
                     ->with('error', implode(' ', $check['errors']));
             }
         }
@@ -66,7 +62,7 @@ class WorkspaceController extends Controller
         );
 
         if (! $result['subscription']) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', $result['message']);
         }
 
@@ -86,39 +82,31 @@ class WorkspaceController extends Controller
                 ->with('warning', $result['message']);
         }
 
-        return redirect()->route('account.subscriptions')
+        return redirect()->route('billing.subscriptions')
             ->with('success', $result['message']);
     }
 
     public function cancel()
     {
-        $workspace = auth()->user()->currentWorkspace;
-
-        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
-            return redirect()->route('account.subscriptions')
-                ->with('error', __('messages.unauthorized'));
-        }
+        $workspace = $this->ensureWorkspace();
+        $this->authorize('update', $workspace);
 
         $subscription = $workspace->owner()?->first()?->activeSubscription();
         if (! $subscription || $subscription->isExpired()) {
-            return redirect()->route('account.subscriptions')
+            return redirect()->route('billing.subscriptions')
                 ->with('error', __('messages.no_active_subscription'));
         }
 
         $this->subscriptionService->cancelSubscription($subscription, 'immediate');
 
-        return redirect()->route('account.subscriptions')
+        return redirect()->route('billing.subscriptions')
             ->with('success', __('messages.subscription_canceled'));
     }
 
     public function invite(Request $request)
     {
-        $workspace = auth()->user()->currentWorkspace;
-
-        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
-            return redirect()->route('settings.index')
-                ->with('error', __('messages.unauthorized'));
-        }
+        $workspace = $this->ensureWorkspace();
+        $this->authorize('inviteMembers', $workspace);
 
         $validated = $request->validate([
             'email' => ['required', 'email'],
@@ -133,22 +121,18 @@ class WorkspaceController extends Controller
                 $validated['role']
             );
 
-            return redirect()->route('settings.index')
+            return redirect()->route('settings.workspace.index')
                 ->with('success', __('messages.invite_sent'));
         } catch (\RuntimeException $e) {
-            return redirect()->route('settings.index')
+            return redirect()->route('settings.workspace.index')
                 ->with('error', $e->getMessage());
         }
     }
 
     public function changeRole(Request $request, User $user)
     {
-        $workspace = auth()->user()->currentWorkspace;
-
-        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
-            return redirect()->route('settings.index')
-                ->with('error', __('messages.unauthorized'));
-        }
+        $workspace = $this->ensureWorkspace();
+        $this->authorize('manageRoles', $workspace);
 
         $validated = $request->validate([
             'role' => ['required', 'in:workspace_deputy_admin,workspace_finance_manager,workspace_accountant,workspace_editor,workspace_viewer'],
@@ -157,42 +141,34 @@ class WorkspaceController extends Controller
         $changed = $this->workspaceService->changeRole($workspace, $user, $validated['role']);
 
         if (! $changed) {
-            return redirect()->route('settings.index')
+            return redirect()->route('settings.workspace.index')
                 ->with('error', __('messages.role_change_failed'));
         }
 
-        return redirect()->route('settings.index')
+        return redirect()->route('settings.workspace.index')
             ->with('success', __('messages.role_changed'));
     }
 
     public function remove(User $user)
     {
-        $workspace = auth()->user()->currentWorkspace;
-
-        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
-            return redirect()->route('settings.index')
-                ->with('error', __('messages.unauthorized'));
-        }
+        $workspace = $this->ensureWorkspace();
+        $this->authorize('manageMembers', $workspace);
 
         $removed = $this->workspaceService->removeUser($workspace, $user);
 
         if (! $removed) {
-            return redirect()->route('settings.index')
+            return redirect()->route('settings.workspace.index')
                 ->with('error', __('messages.remove_failed'));
         }
 
-        return redirect()->route('settings.index')
+        return redirect()->route('settings.workspace.index')
             ->with('success', __('messages.removed'));
     }
 
     public function transferOwnership(Request $request)
     {
-        $workspace = auth()->user()->currentWorkspace;
-
-        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
-            return redirect()->route('settings.index')
-                ->with('error', __('messages.unauthorized'));
-        }
+        $workspace = $this->ensureWorkspace();
+        $this->authorize('transfer', $workspace);
 
         $validated = $request->validate([
             'user_id' => ['required', 'exists:users,id'],
@@ -203,11 +179,11 @@ class WorkspaceController extends Controller
         $transferred = $this->workspaceService->transferOwnership($workspace, $newOwner);
 
         if (! $transferred) {
-            return redirect()->route('settings.index')
+            return redirect()->route('settings.workspace.index')
                 ->with('error', __('messages.transfer_failed'));
         }
 
-        return redirect()->route('settings.index')
+        return redirect()->route('settings.workspace.index')
             ->with('success', __('messages.ownership_transferred'));
     }
 
@@ -243,12 +219,8 @@ class WorkspaceController extends Controller
 
     public function update(Request $request)
     {
-        $workspace = auth()->user()->currentWorkspace;
-
-        if (! $workspace || ! auth()->user()->isWorkspaceOwner($workspace)) {
-            return redirect()->route('settings.index')
-                ->with('error', __('messages.unauthorized'));
-        }
+        $workspace = $this->ensureWorkspace();
+        $this->authorize('update', $workspace);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
@@ -256,7 +228,18 @@ class WorkspaceController extends Controller
 
         $workspace->update(['name' => $validated['name']]);
 
-        return redirect()->route('settings.index')
+        return redirect()->route('settings.workspace.index')
             ->with('success', __('messages.settings_saved'));
+    }
+
+    private function ensureWorkspace(): Workspace
+    {
+        $workspace = auth()->user()->currentWorkspace;
+
+        if (! $workspace) {
+            abort(404, __('workspace.not_found'));
+        }
+
+        return $workspace;
     }
 }

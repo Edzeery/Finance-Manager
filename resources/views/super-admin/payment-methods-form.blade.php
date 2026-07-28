@@ -246,12 +246,8 @@
         </div>
 
         <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-accent btn-custom">
-                {{ $paymentMethod ? __('general.update') : __('general.create') }}
-            </button>
-            <a href="{{ route('super.admin.payment-methods.index') }}" class="btn btn-outline-secondary btn-custom">
-                {{ __('general.cancel') }}
-            </a>
+            <x-button variant="accent" submit>{{ $paymentMethod ? __('general.update') : __('general.create') }}</x-button>
+            <x-button href="{{ route('super.admin.payment-methods.index') }}" variant="outline">{{ __('general.cancel') }}</x-button>
         </div>
     </form>
 

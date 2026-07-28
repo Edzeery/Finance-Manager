@@ -22,4 +22,15 @@ return [
     'no_notifications' => 'Aucune notification pour le moment',
     'view_all' => 'Voir toutes les notifications',
     'confirm_delete_notification' => 'Êtes-vous sûr de vouloir supprimer cette notification ?',
+
+    'notif_new_user' => 'Nouvel enregistrement d\'utilisateur',
+    'notif_new_user_desc' => 'Alerte lorsqu\'un nouvel utilisateur s\'inscrit sur la plateforme.',
+    'notif_new_payment' => 'Nouveau paiement reçu',
+    'notif_new_payment_desc' => 'Notification lorsqu\'un paiement est reçu d\'un utilisateur.',
+    'notif_subscription_activated' => 'Abonnement activé',
+    'notif_subscription_activated_desc' => 'Notification lorsqu\'un utilisateur active ou renouvelle un abonnement.',
+    'notif_backup_completed' => 'Sauvegarde terminée',
+    'notif_backup_completed_desc' => 'Notification lorsqu\'une sauvegarde système est créée avec succès.',
+    'notif_system_alert' => 'Alerte système',
+    'notif_system_alert_desc' => 'Alertes et avertissements critiques du système.',
 ];

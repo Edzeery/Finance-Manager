@@ -24,7 +24,7 @@
                 <h4 class="profile-name mt-4">{{ $user->name }}</h4>
                 <p class="profile-email">{{ $user->email }}</p>
                 <span class="profile-joined">{{ __('profile.member_since') }} {{ $user->created_at->translatedFormat('F Y') }}</span>
-                <a href="{{ route('account.settings') }}" class="profile-settings-btn">
+                <a href="{{ route('settings.account.index') }}" class="profile-settings-btn">
                     <i class="bi bi-gearms-1"></i>{{ __('general.settings') }}
                 </a>
             </div>
@@ -51,7 +51,7 @@
                         <i class="bi bi-file-earmark-bar-graph-fill"></i>
                         <span>{{ __('general.report') }}</span>
                     </a>
-                    <a href="{{ route('settings.index') }}" wire:navigate class="profile-nav-item">
+                    <a href="{{ route('settings.workspace.index') }}" wire:navigate class="profile-nav-item">
                         <i class="bi bi-gear-fill"></i>
                         <span>{{ __('general.settings') }}</span>
                     </a>
@@ -102,24 +102,20 @@
 
         <div class="profile-main">
             <div class="profile-stats mb-4" role="list">
-                <div class="stat-card stat-income" role="listitem">
+
                     <x-kpi-card icon="bi-cash-stack" iconBg="rgba(34,197,94,0.12)" iconColor="var(--success)" :label="__('profile.stats_income')" :value="$incomeCount" />
-                </div>
-                <div class="stat-card stat-expense" role="listitem">
+
                     <x-kpi-card icon="bi-cart" iconBg="rgba(239,68,68,0.12)" iconColor="var(--danger)" :label="__('profile.stats_expense')" :value="$expenseCount" />
-                </div>
-                <div class="stat-card stat-goal" role="listitem">
+
                     <x-kpi-card icon="bi-flag" iconBg="rgba(139,92,246,0.12)" iconColor="#8B5CF6" :label="__('profile.stats_goals')" :value="$goalCount" />
-                </div>
-                <div class="stat-card stat-debt" role="listitem">
+
+
                     <x-kpi-card icon="bi-credit-card-2-front" iconBg="rgba(245,158,11,0.12)" iconColor="var(--warning)" :label="__('profile.stats_debts')" :value="$debtCount" />
-                </div>
-                <div class="stat-card stat-asset" role="listitem">
+
                     <x-kpi-card icon="bi-pie-chart" iconBg="rgba(59,130,246,0.12)" iconColor="var(--info)" :label="__('profile.stats_assets')" :value="$assetCount" />
-                </div>
-                <div class="stat-card stat-budget" role="listitem">
+
                     <x-kpi-card icon="bi-calculator" iconBg="rgba(21,183,108,0.12)" iconColor="var(--accent)" :label="__('profile.stats_budgets')" :value="$budgetCount" />
-                </div>
+
             </div>
 
             <div class="settings-card">
@@ -136,9 +132,7 @@
             </div>
 
             <div class="text-center mt-4">
-                <a href="{{ route('account.settings') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-gearms-1"></i>{{ __('settings.preferences') }}
-                </a>
+                <x-button href="{{ route('settings.account.index') }}" variant="accent" icon="bi bi-gear">{{ __('settings.preferences') }}</x-button>
             </div>
         </div>
     </div>

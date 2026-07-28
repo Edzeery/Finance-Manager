@@ -111,7 +111,7 @@ class SubscriptionUpgradeTest extends TestCase
         $businessPlan = SubscriptionPlan::where('slug', 'business')->firstOrFail();
         $cashMethod = PaymentMethod::where('key', 'cash')->firstOrFail();
 
-        $response = $this->post(route('account.subscriptions.change-plan'), [
+        $response = $this->post(route('billing.subscriptions.change-plan'), [
             'plan_slug' => $businessPlan->slug,
             'billing' => 'yearly',
             'payment_method' => $cashMethod->key,

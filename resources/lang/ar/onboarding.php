@@ -15,7 +15,8 @@ return [
     'pay_now' => 'ادفع الآن',
     'proceed_to_payment' => 'المتابعة إلى الدفع',
     'processing_payment' => 'جارٍ معالجة الدفع...',
-    'redirecting' => 'جارٍ التحويل إلى بوابة الدفع...',
+    'redirecting' => 'جارٍ التحويل سيتم توجيهك تلقائيا ...',
+    'redirecting_payment_gateway' => 'جارٍ التحويل إلى بوابة الدفع',
     'remaining' => 'متبقي',
     'drag_drop_hint' => 'اسحب وأفلت إيصالك هنا',
     'browse_files' => 'تصفح الملفات',
@@ -201,4 +202,7 @@ return [
     // Development
     'force_complete' => 'إكمال الدفع (تجريبي)',
     'force_complete_hint' => 'للتطوير فقط: إكمال الدفع وتفعيل الاشتراك.',
+    'gateway_fee' => 'رسوم بوابة الدفع',
+    'tax_added' => 'الضريبة المضافة',
+    'tax_disclosed' => 'الضريبة (مضمنة)',
 ];

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class IncomeCategory extends Model
 {
-    use BelongsToWorkspace, HasFactory, HasCategories;
+    use BelongsToWorkspace, HasCategories, HasFactory;
 
     protected bool $allowsNullWorkspace = true;
 

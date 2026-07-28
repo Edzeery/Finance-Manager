@@ -29,7 +29,7 @@ class ZakatExport implements FromCollection, ShouldAutoSize, WithHeadings
             ->map(fn ($record) => [
                 __('zakat.date') => $record->calculation_date->format('Y-m-d'),
                 __('zakat.hijri_year') => $record->hijri_year,
-                __('zakat.calendar_type') => __('zakat.' . ($record->calendar_type ?? 'hijri')),
+                __('zakat.calendar_type') => __('zakat.'.($record->calendar_type ?? 'hijri')),
                 __('zakat.total_wealth') => $record->total_wealth,
                 __('zakat.total_zakatable') => $record->total_zakatable,
                 __('zakat.total_debts') => $record->total_debts,

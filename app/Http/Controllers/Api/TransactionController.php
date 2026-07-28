@@ -7,39 +7,57 @@ use App\Models\Expense;
 use App\Models\Income;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
         $perPage = $request->integer('per_page', 15);
+        $page = $request->integer('page', 1);
+        $locale = app()->getLocale();
 
-        $incomes = Income::with('category')->get()
-            ->map(fn ($i) => [
-                'id' => $i->id,
-                'type' => 'income',
-                'amount' => $i->amount,
-                'date' => $i->date,
-                'description' => $i->description,
-                'category' => $i->category?->name,
-                'created_at' => $i->created_at,
-            ]);
+        $incomeQuery = Income::active()
+            ->select(
+                'incomes.id',
+                DB::raw("'income' as type"),
+                'incomes.amount',
+                'incomes.date',
+                'incomes.description',
+                'incomes.created_at',
+                DB::raw("COALESCE(ic.name_{$locale}, '—') as category")
+            )
+            ->leftJoin('income_categories as ic', 'incomes.category_id', '=', 'ic.id');
 
-        $expenses = Expense::with('category')->get()
-            ->map(fn ($e) => [
-                'id' => $e->id,
-                'type' => 'expense',
-                'amount' => $e->amount,
-                'date' => $e->date,
-                'description' => $e->description,
-                'category' => $e->category?->name,
-                'created_at' => $e->created_at,
-            ]);
+        $expenseQuery = Expense::active()
+            ->select(
+                'expenses.id',
+                DB::raw("'expense' as type"),
+                'expenses.amount',
+                'expenses.date',
+                'expenses.description',
+                'expenses.created_at',
+                DB::raw("COALESCE(ec.name_{$locale}, '—') as category")
+            )
+            ->leftJoin('expense_categories as ec', 'expenses.category_id', '=', 'ec.id');
 
-        $transactions = $incomes->concat($expenses)
-            ->sortByDesc('date')
-            ->values();
+        $incomeCount = (clone $incomeQuery)->count();
+        $expenseCount = (clone $expenseQuery)->count();
+        $total = $incomeCount + $expenseCount;
 
-        return response()->json(['data' => $transactions->values()]);
+        $query = $incomeQuery->unionAll($expenseQuery);
+        $query->orderBy('date', 'desc');
+
+        $items = $query->offset(($page - 1) * $perPage)->limit($perPage)->get();
+
+        return response()->json([
+            'data' => $items,
+            'meta' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => (int) ceil($total / $perPage),
+            ],
+        ]);
     }
 }

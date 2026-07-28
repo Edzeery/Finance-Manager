@@ -9,4 +9,5 @@ return [
     'select_method' => 'اختر طريقة الدفع...',
     'coupon_placeholder' => 'رمز الخصم',
     'already_processed' => 'تمت معالجة هذا الدفع بالفعل.',
+    'title' => 'الدفع',
 ];

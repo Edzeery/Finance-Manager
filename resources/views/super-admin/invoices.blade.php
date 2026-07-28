@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.invoices') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.invoices') }}</x-slot>
     <x-slot:page-description>{{ __('super-admin.invoices_desc') }}</x-slot>
@@ -24,8 +24,7 @@
                     <input type="date" name="date_to" class="form-control grid-filter-sm"
                         style="width:auto;min-width:130px;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text)"
                         value="{{ request('date_to') }}">
-                    <button type="submit" class="btn"
-                        style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+                    <x-button variant="accent" submit>{{ __('general.filter') }}</x-button>
                     <x-clear-filters :filters="['search', 'status', 'date_from', 'date_to']" :route="route('super.admin.invoices.index')" />
                 </form>
             </div>
@@ -65,11 +64,7 @@
                                 </td>
                                 <td class="cell-muted">{{ $invoice->created_at->format('Y/m/d') }}</td>
                                 <td class="col-actions">
-                                    <a href="{{ route('super.admin.invoices.show', $invoice) }}" class="btn"
-                                        style="width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s"
-                                        title="{{ __('general.view') }}">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                                    <x-button href="{{ route('super.admin.invoices.show', $invoice) }}" icon="bi bi-eye" title="{{ __('general.view') }}" style="width:30px;height:30px;padding:0;border-radius:var(--radius-xs);border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:13px;text-decoration:none;transition:all 0.15s" />
                                 </td>
                             </tr>
                         @endforeach

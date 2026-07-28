@@ -59,11 +59,7 @@
                 <input type="date" x-model="endDate" class="form-custom">
             </div>
             <template x-if="startDate && endDate">
-                <a x-bind:href="'{{ $baseUrl }}?period=custom&start_date=' + startDate + '&end_date=' + endDate + '{{ $preservedStr }}'"
-                    class="btn btn-accent btn-sm px-3">
-                    <i class="bi bi-check-lg"></i>
-                    <span>{{ __('filters.apply') }}</span>
-                </a>
+                <x-button x-bind:href="'{{ $baseUrl }}?period=custom&start_date=' + startDate + '&end_date=' + endDate + '{{ $preservedStr }}'" size="sm" icon="bi bi-check-lg" class="px-3">{{ __('filters.apply') }}</x-button>
             </template>
         </div>
     </div>

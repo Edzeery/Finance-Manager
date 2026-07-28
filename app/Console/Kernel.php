@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
         // Grace period expiry reminders (3 days before ends_at)
         $schedule->command('subscriptions:remind-expiry')->dailyAt('09:00')->withoutOverlapping();
         $schedule->command('noest:check-deliveries')->hourly()->withoutOverlapping();
+        $schedule->command('auth:purge-old-records --days=90')->dailyAt('04:00')->withoutOverlapping();
     }
 
     protected function commands(): void

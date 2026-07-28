@@ -181,21 +181,10 @@ new #[Layout('layouts.guest')] class extends Component {
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-accent btn-custom w-100 mb-3">
-                        <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm ms-2"
-                            role="status"></div>
-                        <i class="bi bi-check-circle ms-2" wire:loading.remove wire:target="verify"></i>
-                        {{ __('general.verify') }}
-                    </button>
+                    <x-button submit variant="accent" block icon="bi bi-check-circle" wire-target="verify" class="mb-3">{{ __('general.verify') }}</x-button>
 
                     <div class="text-center">
-                        <button type="button" wire:click="resendEmailCode" class="btn-text-link">
-                            <div wire:loading wire:target="resendEmailCode"
-                                class="spinner-border spinner-border-smms-1" role="status"
-                                style="width:12px;height:12px;"></div>
-                            <i class="bi bi-arrow-clockwisems-1" wire:loading.remove wire:target="resendEmailCode"></i>
-                            {{ __('general.resend_code') }}
-                        </button>
+                        <x-button wire-click="resendEmailCode" class="btn-text-link" icon="bi bi-arrow-clockwise" wire-target="resendEmailCode">{{ __('general.resend_code') }}</x-button>
                     </div>
                 @else
                     <div class="text-center py-4">
@@ -226,17 +215,10 @@ new #[Layout('layouts.guest')] class extends Component {
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-accent btn-custom w-100 mb-3">
-                    <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm ms-2" role="status">
-                    </div>
-                    <i class="bi bi-check-circle ms-2" wire:loading.remove wire:target="verify"></i>
-                    {{ __('general.verify') }}
-                </button>
+                <x-button submit variant="accent" block icon="bi bi-check-circle" wire-target="verify" class="mb-3">{{ __('general.verify') }}</x-button>
 
                 <div class="text-center">
-                    <button type="button" wire:click="switchMode" class="btn-text-link">
-                        <i class="bi bi-keyms-1"></i>{{ __('general.use_recovery_code') }}
-                    </button>
+                    <x-button wire-click="switchMode" class="btn-text-link" icon="bi bi-key">{{ __('general.use_recovery_code') }}</x-button>
                 </div>
             </form>
         @else
@@ -258,17 +240,10 @@ new #[Layout('layouts.guest')] class extends Component {
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-accent btn-custom w-100 mb-3">
-                    <div wire:loading wire:target="verify" class="spinner-border spinner-border-sm ms-2"
-                        role="status"></div>
-                    <i class="bi bi-check-circle ms-2" wire:loading.remove wire:target="verify"></i>
-                    {{ __('general.verify') }}
-                </button>
+                <x-button submit variant="accent" block icon="bi bi-check-circle" wire-target="verify" class="mb-3">{{ __('general.verify') }}</x-button>
 
                 <div class="text-center">
-                    <button type="button" wire:click="switchMode" class="btn-text-link">
-                        <i class="bi bi-phonems-1"></i>{{ __('general.use_auth_code') }}
-                    </button>
+                    <x-button wire-click="switchMode" class="btn-text-link" icon="bi bi-phone">{{ __('general.use_auth_code') }}</x-button>
                 </div>
             </form>
         @endif

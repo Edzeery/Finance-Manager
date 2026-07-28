@@ -5,6 +5,7 @@ namespace Tests;
 use App\Models\PaymentMethod;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Testing\TestResponse;
 use Livewire\Component;
 use Livewire\Mechanisms\ComponentRegistry;
@@ -25,7 +26,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function seedPaymentMethods(): void
     {
-        if (! \Illuminate\Support\Facades\Schema::hasTable('payment_methods')) {
+        if (! Schema::hasTable('payment_methods')) {
             return;
         }
 

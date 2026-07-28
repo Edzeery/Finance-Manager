@@ -17,7 +17,7 @@ class EnvWriter
      * Update multiple key-value pairs in the .env file.
      *
      * @param  array<string, string|null>  $updates  Key => value pairs (null to remove)
-     * @return array<string, array{old: string|null, new: string|null}>  Changed keys
+     * @return array<string, array{old: string|null, new: string|null}> Changed keys
      */
     public function update(array $updates): array
     {

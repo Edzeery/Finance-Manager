@@ -80,4 +80,22 @@ return [
 
     'payment_refunded_subject' => 'Payment Refunded — :app',
     'payment_refunded_line' => 'Your payment has been refunded. The refund amount will be credited to your original payment method.',
+
+    // Status Changed
+    'status_changed_subject' => 'Your account status has been updated',
+    'status_changed_line' => 'Your account status has been updated to :status.',
+    'status_changed_footer' => 'If you did not request this change, please contact support immediately.',
+    'status_reason' => 'Reason',
+
+    'workspace_welcome_subject' => 'Welcome to :workspace — :app',
+    'workspace_welcome_greeting' => 'Welcome, :name!',
+    'workspace_welcome_intro' => 'You\'ve been added to the **:workspace** workspace as **:role**.',
+    'workspace_welcome_inviter_intro' => 'You can now access the workspace and start collaborating with your team.',
+    'workspace_welcome_cta' => 'Go to Workspace',
+    'workspace_welcome_support' => 'If you have any questions, just reply to this email — we\'re here to help!',
+    'workspace_welcome_team' => 'The :app Team',
+
+    'notification_greeting' => 'Hello :name,',
+    'notification_view' => 'View Notifications',
+    'notification_team' => 'The :app Team',
 ];

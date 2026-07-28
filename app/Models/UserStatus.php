@@ -21,6 +21,10 @@ class UserStatus extends Model
         'status_changed_at',
         'last_login_at',
         'last_login_ip',
+        'last_user_agent',
+        'last_device',
+        'last_browser',
+        'last_os',
         'last_activity_at',
         'expires_at',
     ];
@@ -80,11 +84,15 @@ class UserStatus extends Model
         return $this->expires_at && $this->expires_at->isPast();
     }
 
-    public function trackLogin(string $ip): void
+    public function trackLogin(string $ip, ?string $userAgent = null, ?string $device = null, ?string $browser = null, ?string $os = null): void
     {
         $this->update([
             'last_login_at' => now(),
             'last_login_ip' => $ip,
+            'last_user_agent' => $userAgent,
+            'last_device' => $device,
+            'last_browser' => $browser,
+            'last_os' => $os,
             'online_status' => OnlineStatus::Online,
         ]);
     }

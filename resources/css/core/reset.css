@@ -4,8 +4,7 @@ html {
 
 body {
     margin: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-en);
@@ -31,22 +30,22 @@ body.landing-page {
 
 .overflow-y-auto {
     scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+     scrollbar-color: var(--accent) transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar {
-    width: 12px;
+    width: auto;
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
-    background: var(--border-light, #f1f1f1);
+    background: transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 10px;
+    background: var(--text-muted);
+    border-radius: 8px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-hover, #15b76b8f);
+    background: var(--accent);
 }

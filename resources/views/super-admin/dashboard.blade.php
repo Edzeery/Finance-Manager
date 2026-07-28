@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     @php
         $baseCur = $data['base_currency'] ?? \App\Services\CurrencyHelper::baseCurrency();
         $baseSym = \App\Services\CurrencyHelper::symbol($baseCur);
@@ -292,7 +292,7 @@
                 @endforeach
             </select>
             @endif
-            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+            <x-button variant="accent" submit>{{ __('general.filter') }}</x-button>
         </form>
     </div>
 
@@ -366,8 +366,8 @@
         />
         <x-kpi-card
             icon="bi-x-circle"
-            iconBg="rgba(239,68,68,0.12)"
-            iconColor="#EF4444"
+            iconBg="var(--danger-light)"
+            iconColor="var(--danger)"
             :label="__('super-admin.canceled')"
             :value="$data['canceled']"
         />
@@ -406,7 +406,7 @@
                 @endforeach
             </select>
             @endif
-            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+            <x-button variant="accent" submit>{{ __('general.filter') }}</x-button>
         </form>
     </div>
 
@@ -477,7 +477,7 @@
                 @endforeach
             </select>
             @endif
-            <button type="submit" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer">{{ __('general.filter') }}</button>
+            <x-button variant="accent" submit>{{ __('general.filter') }}</x-button>
         </form>
     </div>
 

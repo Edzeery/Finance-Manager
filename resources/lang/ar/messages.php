@@ -146,4 +146,11 @@ return [
     'payment_not_pending' => 'هذا الدفع لم يعد معلقًا.',
     'subscription_resumed' => 'تم استئناف اشتراكك.',
     'subscription_not_cancelled' => ' اشتراكك غير ملغى حالياً.',
+    'unauthorized_workspace_settings' => 'ليس لديك صلاحية لتعديل إعدادات مساحة العمل.',
+    'unauthorized_invite_members' => 'ليس لديك صلاحية لدعوة أعضاء جدد.',
+    'unauthorized_manage_members' => 'ليس لديك صلاحية لإدارة أعضاء مساحة العمل.',
+    'unauthorized_manage_roles' => 'ليس لديك صلاحية لتغيير أدوار الأعضاء.',
+    'unauthorized_transfer_workspace' => 'فقط المالك يمكنه نقل ملكية مساحة العمل.',
+    'unauthorized_create_workspace' => 'لا يمكنك إنشاء مساحة عمل جديدة.',
+    'unauthorized_change_plan' => 'فقط مالك مساحة العمل يمكنه تغيير الخطة.',
 ];

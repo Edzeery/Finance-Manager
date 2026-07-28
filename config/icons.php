@@ -467,7 +467,6 @@ return [
         'play-circle' => 'play-circle-outline',
         'pause-circle' => 'pause-circle-outline',
 
-
     ],
 
     // ==========================================================

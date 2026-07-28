@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Enums\InvitationStatus;
-use Carbon\Carbon;
 use App\Models\Concerns\BelongsToWorkspace;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 class Invitation extends Model
 {
-    use HasFactory, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory;
 
     protected $table = 'workspace_invitations';
 

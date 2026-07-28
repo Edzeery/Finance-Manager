@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -17,7 +18,7 @@ new class extends Component
         $this->email = Auth::user()->email;
     }
 
-    public function updateProfileInformation(): void
+    public function updateProfileInformation(NotificationService $notificationService): void
     {
         $user = Auth::user();
 
@@ -29,10 +30,13 @@ new class extends Component
         $user->fill($validated);
 
         if ($user->isDirty('email')) {
+            $newEmail = $user->email;
             $user->email_verified_at = null;
+            $user->save();
+            $notificationService->emailChanged($user->id, $newEmail);
+        } else {
+            $user->save();
         }
-
-        $user->save();
 
         $this->dispatch('profile-updated', name: $user->name);
     }
@@ -74,15 +78,13 @@ new class extends Component
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
                 <div class="mt-2">
                     <span style="font-size:13px; color:var(--text-muted)">{{ __('general.email_unverified') }}</span>
-                    <button wire:click.prevent="sendVerification" type="button" class="btn btn-sm p-0 ms-1" style="color:var(--accent); text-decoration:underline; font-size:13px; background:none; border:none; vertical-align:baseline">
-                        {{ __('general.resend_verification') }}
-                    </button>
+                    <x-button wire:click.prevent="sendVerification" class="p-0 ms-1" style="color:var(--accent); text-decoration:underline; font-size:13px; background:none; border:none; vertical-align:baseline">{{ __('general.resend_verification') }}</x-button>
                 </div>
             @endif
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <button type="submit" class="btn btn-accent btn-custom"><i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}</button>
+            <x-button submit icon="bi bi-check-lg" icon-position="right">{{ __('general.save') }}</x-button>
             <div wire:loading wire:target="updateProfileInformation" class="spinner-border spinner-border-sm" role="status" style="color:var(--accent)"></div>
             <span wire:loading.remove wire:target="updateProfileInformation" wire:transition
                   x-data="{ show: false }"

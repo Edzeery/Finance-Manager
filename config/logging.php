@@ -5,6 +5,7 @@ use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Sentry\Laravel\LogChannel;
 
 return [
 
@@ -186,7 +187,7 @@ return [
         ],
 
         'sentry' => [
-            'via' => \Sentry\Laravel\LogChannel::class,
+            'via' => LogChannel::class,
             'level' => env('SENTRY_LOG_LEVEL', 'error'),
         ],
 

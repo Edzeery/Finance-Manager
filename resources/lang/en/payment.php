@@ -9,4 +9,5 @@ return [
     'select_method' => 'Select payment method...',
     'coupon_placeholder' => 'Coupon code',
     'already_processed' => 'This payment has already been processed.',
+    'title' => 'Payment',
 ];

@@ -25,9 +25,7 @@
             <x-data-toolbar entity="budget" :show-export="$canExport" />
             <x-per-page :current="request('per_page', 15)" :route="route('budget.index')" :preserve="['search','tab']" />
             @if($tab !== 'trashed' && $canCreate)
-                <a href="{{ route('budget.create') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-plus-lg"></i>{{ __('budget.add') }}
-                </a>
+                <x-button href="{{ route('budget.create') }}" icon="bi bi-plus-lg">{{ __('budget.add') }}</x-button>
             @endif
         </div>
     </div>
@@ -53,20 +51,14 @@
             <span style="color:var(--text-muted); font-size:13px"><span id="selectedCount">0</span> {{ __('general.selected') }}</span>
             @if($tab === 'trashed')
                 @if($canRestore)
-                    <button type="button" class="btn btn-sm btn-outline-success btn-custom" @click="submitBulk('{{ route('budget.bulk-restore') }}')">
-                        <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('general.restore') }}
-                    </button>
+                    <x-button size="sm" variant="outline-success" @click="submitBulk('{{ route('budget.bulk-restore') }}')" icon="bi bi-arrow-counterclockwise">{{ __('general.restore') }}</x-button>
                 @endif
                 @if($canForceDelete)
-                    <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkForceDelete()">
-                        <i class="bi bi-trash3ms-1"></i>{{ __('general.force_delete') }}
-                    </button>
+                    <x-button size="sm" variant="outline-danger" @click="confirmBulkForceDelete()" icon="bi bi-trash3">{{ __('general.force_delete') }}</x-button>
                 @endif
             @else
                 @if($canDelete)
-                    <button type="button" class="btn btn-sm btn-outline-danger btn-custom" @click="confirmBulkDelete('budget')">
-                        <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
-                    </button>
+                    <x-button size="sm" variant="outline-danger" @click="confirmBulkDelete('budget')" icon="bi bi-trash">{{ __('general.delete') }}</x-button>
                 @endif
             @endif
         </div>
@@ -134,9 +126,7 @@
                                     @if($canRestore)
                                         <form action="{{ route('budget.restore', $budget) }}" method="POST" style="display:inline; flex:1">
                                             @csrf @method('PATCH')
-                                            <button type="submit" class="btn btn-sm btn-outline-success btn-custom" style="flex:1">
-                                                <i class="bi bi-arrow-counterclockwisems-1"></i>{{ __('general.restore') }}
-                                            </button>
+                                            <x-button submit size="sm" variant="outline-success" icon="bi bi-arrow-counterclockwise" class="flex-grow-1">{{ __('general.restore') }}</x-button>
                                         </form>
                                     @endif
                                     @if($canForceDelete)
@@ -145,9 +135,7 @@
                                         </button>
                                     @endif
                                 @else
-                                    <a href="{{ route('budget.show', $budget) }}" class="btn btn-sm btn-outline-secondary btn-custom" style="flex:1">
-                                        <i class="bi bi-eyems-1"></i>{{ __('general.details') }}
-                                    </a>
+                                    <x-button href="{{ route('budget.show', $budget) }}" size="sm" variant="outline" icon="bi bi-eye" class="flex-grow-1">{{ __('general.details') }}</x-button>
                                     @if($canUpdate)
                                         <a href="{{ route('budget.edit', $budget) }}" class="action-btn" title="{{ __('general.edit') }}">
                                             <i class="bi bi-pencil"></i>

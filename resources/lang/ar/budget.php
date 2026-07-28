@@ -34,4 +34,5 @@ return [
     'with_budget' => ':count صنف له ميزانية',
     'without_budget' => ':count صنف بدون ميزانية',
     'total_categories' => ':count إجمالي الأصناف',
+    'auto_end_date_hint' => 'ستنتهي الميزانية تلقائياً في هذا التاريخ.',
 ];

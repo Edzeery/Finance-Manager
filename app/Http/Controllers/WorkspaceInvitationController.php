@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\WorkspaceWelcomeEmail;
 use App\Models\Invitation;
 use App\Services\WorkspaceInvitationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
 class WorkspaceInvitationController extends Controller
@@ -67,9 +69,21 @@ class WorkspaceInvitationController extends Controller
         try {
             $this->invitationService->accept($invitation, auth()->user());
 
-            if (! auth()->user()->current_workspace_id) {
-                auth()->user()->update(['current_workspace_id' => $invitation->workspace_id]);
+            $user = auth()->user();
+
+            if (! $user->current_workspace_id) {
+                $user->update(['current_workspace_id' => $invitation->workspace_id]);
             }
+
+            if (! $user->hasCompletedOnboarding()) {
+                $user->markOnboardingComplete();
+            }
+
+            session()->forget('invitation_token');
+
+            Mail::to($user)->queue(
+                new WorkspaceWelcomeEmail($user, $invitation->workspace, $invitation->role)
+            );
 
             return redirect()->route('dashboard')
                 ->with('success', __('workspace.invitation_accepted_msg', [
@@ -105,7 +119,7 @@ class WorkspaceInvitationController extends Controller
         try {
             $this->invitationService->cancel($invitation, auth()->user());
 
-            return redirect()->route('settings.index')
+            return redirect()->route('settings.workspace.index')
                 ->with('success', __('workspace.invitation_cancelled_msg'));
         } catch (\RuntimeException $e) {
             return back()->with('error', $e->getMessage());
@@ -121,7 +135,7 @@ class WorkspaceInvitationController extends Controller
         try {
             $this->invitationService->resend($invitation);
 
-            return redirect()->route('settings.index')
+            return redirect()->route('settings.workspace.index')
                 ->with('success', __('workspace.invitation_resent_msg'));
         } catch (\RuntimeException $e) {
             return back()->with('error', $e->getMessage());

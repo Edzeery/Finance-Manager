@@ -28,8 +28,7 @@ class EnsureOnboardingCompleted
         'theme.switch',
         'currency.switch',
         'logout',
-        'invitations.accept',
-        'invitations.decline',
+        'invitations.*',
 
     ];
 

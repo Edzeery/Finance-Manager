@@ -20,8 +20,6 @@ class CheckNoestDeliveries extends Command
     {
         $noestService = app(NoestService::class);
 
-use App\Models\PaymentMethod;
-
         Payment::whereHas('paymentMethod', fn ($q) => $q->where('key', 'noest'))
             ->where('status', PaymentStatus::CheckoutPending->value)
             ->whereNotNull('transaction_id')

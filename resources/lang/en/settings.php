@@ -127,6 +127,7 @@ return [
     'session_not_found' => 'Session not found.',
     'cannot_revoke_current' => 'You cannot revoke your current session.',
     'no_sessions' => 'No active sessions found.',
+    'session_ended' => 'Session ended',
 
     // Login History
     'login_history' => 'Login History',
@@ -148,4 +149,43 @@ return [
     'subscription_period' => 'Subscription Period',
     'plan_price' => 'Plan Price',
     'coupon_discount' => 'Coupon Discount',
+
+    // Navigation
+    'account' => 'Account',
+    'personal' => 'Personal',
+    'workspace' => 'Workspace',
+
+    // Integrations
+    'integrations' => 'Integrations',
+    'integrations_desc' => 'Connect and manage third-party integrations.',
+    'no_integrations' => 'No integrations available yet.',
+
+    // Quick Links
+    'quick_links' => 'Quick Links',
+    'quick_links_desc' => 'Manage your subscription and billing.',
+    'view_plans' => 'View Plans',
+
+    // Invoice Details
+    'invoice_details' => 'Invoice Details',
+    'description' => 'Description',
+    'amount' => 'Amount',
+    'discount' => 'Discount',
+    'total_due' => 'Total Due',
+    'invoice_generated_at' => 'Invoice generated at',
+
+    // Subscription Actions
+    'cancel_payment' => 'Cancel Payment',
+    'cancel_payment_confirm' => 'Are you sure you want to cancel this pending payment?',
+    'no_plan' => 'No Plan',
+    'resume_confirm' => 'Are you sure you want to resume your subscription?',
+    'resume_subscription' => 'Resume Subscription',
+
+    // Activity Log
+    'activity_log_desc' => 'View all activity across your account',
+
+    // Notification Preferences
+    'notification_settings' => 'Notification Settings',
+    'notification_settings_desc' => 'Customize your notification preferences.',
+    'save_preferences' => 'Save Preferences',
+    'redirecting_to_tab' => 'This page has been moved to the new tab.',
 ];

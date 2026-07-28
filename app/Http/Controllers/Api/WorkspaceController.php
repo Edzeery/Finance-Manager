@@ -10,6 +10,8 @@ use App\Models\Workspace;
 use App\Services\WorkspaceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class WorkspaceController extends Controller
 {
@@ -17,7 +19,7 @@ class WorkspaceController extends Controller
         private readonly WorkspaceService $workspaceService,
     ) {}
 
-    public function index(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
+    public function index(Request $request): ResourceCollection
     {
         if ($request->user()->hasRole('super_admin')) {
             $workspaces = Workspace::all();
@@ -28,7 +30,7 @@ class WorkspaceController extends Controller
         return WorkspaceResource::collection($workspaces);
     }
 
-    public function store(StoreWorkspaceRequest $request): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function store(StoreWorkspaceRequest $request): JsonResponse|JsonResource
     {
         try {
             $workspace = $this->workspaceService->createForUser($request->user(), $request->validated());

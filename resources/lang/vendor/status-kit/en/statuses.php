@@ -378,6 +378,10 @@ return [
         'confirmed_email'      => 'Email Confirmed',
         'unconfirmed_email'    => 'Email Unconfirmed',
         'password_reset'       => 'Password Reset',
+        'current_device'       => 'Current device',
+        'session_active'       => 'Active',
+        'session_inactive'     => 'Inactive',
+        'session_ended'        => 'Ended',
         'unknown'              => 'Unknown',
     ],
 ];

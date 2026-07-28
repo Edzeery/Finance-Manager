@@ -151,11 +151,25 @@
                 open: false,
                 notifications: [],
                 unreadCount: 0,
+                loading: true,
                 pollInterval: null,
+                iconMap: {
+                    new_user:               { bg: 'rgba(59,130,246,0.1)',  color: 'var(--info)',     icon: 'bi-person-plus' },
+                    new_payment:            { bg: 'rgba(34,197,94,0.1)',  color: 'var(--success)',  icon: 'bi-cash-stack' },
+                    subscription_activated: { bg: 'rgba(99,102,241,0.1)', color: '#6366F1',         icon: 'bi-stars' },
+                    backup_completed:       { bg: 'rgba(139,92,246,0.1)', color: 'var(--sa-indigo)', icon: 'bi-cloud-check' },
+                    system_alert:           { bg: 'rgba(239,68,68,0.1)',  color: 'var(--danger)',   icon: 'bi-exclamation-triangle' },
+                },
+                _icon(type, key) { return (this.iconMap[type] || { bg: 'rgba(59,130,246,0.1)', color: 'var(--info)', icon: 'bi-bell' })[key]; },
+                iconBg(type)    { return this._icon(type, 'bg'); },
+                iconColor(type) { return this._icon(type, 'color'); },
+                iconClass(type) { return this._icon(type, 'icon'); },
 
                 init() {
                     this.fetchNotifications();
-                    this.pollInterval = setInterval(() => this.fetchNotifications(), 30000);
+                    this.pollInterval = setInterval(() => {
+                        if (!document.hidden) this.fetchNotifications();
+                    }, 30000);
                 },
 
                 destroy() {
@@ -177,14 +191,11 @@
                         })
                         .then(r => r.json())
                         .then(data => {
-                            this.notifications = (data.notifications || []).map(n => ({
-                                ...n,
-                                _title: n['title_' + locale] || n.title_en || n.title_ar || n.title_fr || '',
-                                _message: n['message_' + locale] || n.message_en || n.message_ar || n.message_fr || '',
-                            }));
+                            this.notifications = data.notifications || [];
                             this.unreadCount = data.unread_count || 0;
+                            this.loading = false;
                         })
-                        .catch(() => {});
+                        .catch(() => { this.loading = false; });
                 },
 
                 markRead(id) {
@@ -192,7 +203,8 @@
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
                         }
                     }).then(() => this.fetchNotifications());
                 },
@@ -202,47 +214,38 @@
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
                         }
                     }).then(() => this.fetchNotifications());
                 },
 
-                iconClass(type) {
-                    const map = {
-                        new_user: 'bi-person-plus',
-                        new_payment: 'bi-cash-stack',
-                        subscription_activated: 'bi-stars',
-                        backup_completed: 'bi-cloud-check',
-                        system_alert: 'bi-exclamation-triangle',
-                    };
-                    return map[type] || 'bi-bell';
+                deleteNotif(id) {
+                    if (!confirm('{{ __("notifications.delete_confirm") }}')) return;
+                    fetch(`/super-admin/notifications/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    }).then(() => this.fetchNotifications());
                 },
 
-                iconColor(type) {
-                    const map = {
-                        new_user: 'primary',
-                        new_payment: 'success',
-                        subscription_activated: 'info',
-                        backup_completed: 'secondary',
-                        system_alert: 'warning',
-                    };
-                    return map[type] || 'secondary';
-                },
-
-                timeAgo(dateStr) {
+                _timeAgo(dateStr) {
                     const now = new Date();
                     const date = new Date(dateStr);
                     const diff = Math.floor((now - date) / 1000);
-                    if (diff < 60) return '{{ __('general.just_now') }}';
-                    if (diff < 3600) return Math.floor(diff / 60) + 'm';
-                    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-                    return Math.floor(diff / 86400) + 'd';
+                    if (diff < 60) return '{{ __("general.just_now") }}';
+                    if (diff < 3600) return Math.floor(diff / 60) + '{{ __("general.minutes_abbrev") }}';
+                    if (diff < 86400) return Math.floor(diff / 3600) + '{{ __("general.hours_abbrev") }}';
+                    return Math.floor(diff / 86400) + '{{ __("general.days_abbrev") }}';
                 },
             };
         }
     </script>
-    <script type="module" src="https://esm.sh/ionicons@latest/loader"></script>
-    <script nomodule src="https://esm.sh/ionicons@latest/loader"></script>
+    <script type="module" src="https://esm.sh/ionicons@8.0.13/loader"></script>
+    <script nomodule src="https://esm.sh/ionicons@8.0.13/loader"></script>
 </body>
 
 </html>

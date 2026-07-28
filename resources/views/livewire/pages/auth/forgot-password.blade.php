@@ -55,11 +55,7 @@ new #[Layout('layouts.guest')] class extends Component
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-accent btn-custom w-100">
-            <div wire:loading wire:target="sendPasswordResetLink" class="spinner-border spinner-border-sm ms-2" role="status"></div>
-            <i class="bi bi-envelope ms-2" wire:loading.remove wire:target="sendPasswordResetLink"></i>
-            {{ __('general.send_reset_link') }}
-        </button>
+        <x-button submit icon="bi bi-envelope" variant="accent" block wire-target="sendPasswordResetLink">{{ __('general.send_reset_link') }}</x-button>
 
     </form>
 

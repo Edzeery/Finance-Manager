@@ -24,9 +24,7 @@
                                 <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:4px">{{ __('developer.api_tokens') }}</div>
                                 <h3 style="font-weight:700;color:#fff;margin-bottom:0">{{ __('developer.api') }} <span style="font-weight:400;font-size:14px;color:rgba(255,255,255,0.6)">{{ __('developer.api_tokens_desc') }}</span></h3>
                             </div>
-                            <button class="btn btn-custom flex-shrink-0" style="background:rgba(255,255,255,0.2);color:#fff;border:none" data-bs-toggle="modal" data-bs-target="#createTokenModal">
-                                <i class="bi bi-plus-lg ms-1"></i>{{ __('developer.create_token') }}
-                            </button>
+                            <x-button icon="bi bi-plus-lg" style="background:rgba(255,255,255,0.2);color:#fff;border:none" data-bs-toggle="modal" data-bs-target="#createTokenModal" class="flex-shrink-0">{{ __('developer.create_token') }}</x-button>
                         </div>
                     </div>
 
@@ -128,16 +126,12 @@
                         @if($tokens->isNotEmpty())
                             <div class="d-flex gap-2">
                                 @if($tokens->count() > 1)
-                                    <form action="{{ route('account.settings.developer.revoke-all') }}" method="POST" id="revoke-all-form">
+                                    <form action="{{ route('settings.account.developer.revoke-all') }}" method="POST" id="revoke-all-form">
                                         @csrf @method('DELETE')
-                                        <button type="button" class="btn btn-sm btn-outline-danger" @click="showConfirmModal('{{ __('developer.revoke_all') }}', '{{ __('developer.revoke_all_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('revoke-all-form').submit(); }, '{{ __('developer.revoke_all') }}', 'btn-danger')">
-                                            <i class="bi bi-trash ms-1"></i>{{ __('developer.revoke_all') }}
-                                        </button>
+                                        <x-button size="sm" variant="outline-danger" @click="showConfirmModal('{{ __('developer.revoke_all') }}', '{{ __('developer.revoke_all_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('revoke-all-form').submit(); }, '{{ __('developer.revoke_all') }}', 'btn-danger')" icon="bi bi-trash">{{ __('developer.revoke_all') }}</x-button>
                                     </form>
                                 @endif
-                                <button class="btn btn-accent btn-custom btn-sm" data-bs-toggle="modal" data-bs-target="#createTokenModal">
-                                    <i class="bi bi-plus-lg ms-1"></i>{{ __('developer.create_token') }}
-                                </button>
+                                <x-button size="sm" icon="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#createTokenModal">{{ __('developer.create_token') }}</x-button>
                             </div>
                         @endif
                     </div>
@@ -149,9 +143,7 @@
                             </div>
                             <p class="fw-medium mb-1">{{ __('developer.no_tokens') }}</p>
                             <p class="text-muted small mb-3">{{ __('developer.no_tokens_desc') }}</p>
-                            <button class="btn btn-accent btn-custom" data-bs-toggle="modal" data-bs-target="#createTokenModal">
-                                <i class="bi bi-plus-lg ms-1"></i>{{ __('developer.create_token') }}
-                            </button>
+                            <x-button icon="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#createTokenModal">{{ __('developer.create_token') }}</x-button>
                         </div>
                     @else
                         <div class="d-flex flex-column gap-2">
@@ -221,48 +213,34 @@
                                             </div>
                                         </div>
                                         <div class="d-flex gap-1 flex-shrink-0">
-                                            <button type="button" class="btn btn-sm btn-outline-accent" title="{{ __('developer.details') }}"
-                                                @click="showTokenFullDetails({{ $token['id'] }}, '{{ $token['name'] }}', '{{ $token['created_at']->format('M d, Y H:i') }}', '{{ $token['last_used_at'] ? $token['last_used_at']->diffForHumans() : __('developer.never_used') }}', {{ json_encode($token['abilities']) }}, '{{ $token['expires_at'] ? $token['expires_at']->format('M d, Y') : __('developer.never_expires') }}', {{ $token['deactivated_at'] ? 'true' : 'false' }})">
-                                                <i class="bi bi-info-circle"></i>
-                                            </button>
+                                            <x-button size="sm" variant="outline-accent" title="{{ __('developer.details') }}"
+                                                @click="showTokenFullDetails({{ $token['id'] }}, '{{ $token['name'] }}', '{{ $token['created_at']->format('M d, Y H:i') }}', '{{ $token['last_used_at'] ? $token['last_used_at']->diffForHumans() : __('developer.never_used') }}', {{ json_encode($token['abilities']) }}, '{{ $token['expires_at'] ? $token['expires_at']->format('M d, Y') : __('developer.never_expires') }}', {{ $token['deactivated_at'] ? 'true' : 'false' }})" icon="bi bi-info-circle" />
                                             @if($isActive)
-                                                <button type="button" class="btn btn-sm btn-outline-accent" title="{{ __('developer.view_token') }}"
-                                                    @click="showTokenFullDetails({{ $token['id'] }}, '{{ $token['name'] }}', '{{ $token['created_at']->format('M d, Y H:i') }}', '{{ $token['last_used_at'] ? $token['last_used_at']->diffForHumans() : __('developer.never_used') }}', {{ json_encode($token['abilities']) }}, '{{ $token['expires_at'] ? $token['expires_at']->format('M d, Y') : __('developer.never_expires') }}', {{ $token['deactivated_at'] ? 'true' : 'false' }})">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-outline-accent" title="{{ __('developer.rename') }}"
-                                                    @click="showRenameModal({{ $token['id'] }}, '{{ $token['name'] }}')">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <form action="{{ route('account.settings.developer.regenerate', $token['id']) }}" method="POST" id="regenerate-form-{{ $token['id'] }}" style="display:inline">
+                                                <x-button size="sm" variant="outline-accent" title="{{ __('developer.view_token') }}"
+                                                    @click="showTokenFullDetails({{ $token['id'] }}, '{{ $token['name'] }}', '{{ $token['created_at']->format('M d, Y H:i') }}', '{{ $token['last_used_at'] ? $token['last_used_at']->diffForHumans() : __('developer.never_used') }}', {{ json_encode($token['abilities']) }}, '{{ $token['expires_at'] ? $token['expires_at']->format('M d, Y') : __('developer.never_expires') }}', {{ $token['deactivated_at'] ? 'true' : 'false' }})" icon="bi bi-eye" />
+                                                <x-button size="sm" variant="outline-accent" title="{{ __('developer.rename') }}"
+                                                    @click="showRenameModal({{ $token['id'] }}, '{{ $token['name'] }}')" icon="bi bi-pencil" />
+                                                <form action="{{ route('settings.account.developer.regenerate', $token['id']) }}" method="POST" id="regenerate-form-{{ $token['id'] }}" style="display:inline">
                                                     @csrf
-                                                    <button type="button" class="btn btn-sm btn-outline-warning" title="{{ __('developer.regenerate') }}"
-                                                        @click="showConfirmModal('{{ __('developer.regenerate') }}', '{{ __('developer.regenerate_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('regenerate-form-{{ $token['id'] }}').submit(); }, '{{ __('developer.regenerate') }}', 'btn-warning')">
-                                                        <i class="bi bi-arrow-clockwise"></i>
-                                                    </button>
+                                                    <x-button size="sm" variant="outline" title="{{ __('developer.regenerate') }}"
+                                                        @click="showConfirmModal('{{ __('developer.regenerate') }}', '{{ __('developer.regenerate_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('regenerate-form-{{ $token['id'] }}').submit(); }, '{{ __('developer.regenerate') }}', 'btn-warning')" icon="bi bi-arrow-clockwise" />
                                                 </form>
-                                                <form action="{{ route('account.settings.developer.deactivate', $token['id']) }}" method="POST" id="deactivate-form-{{ $token['id'] }}" style="display:inline">
+                                                <form action="{{ route('settings.account.developer.deactivate', $token['id']) }}" method="POST" id="deactivate-form-{{ $token['id'] }}" style="display:inline">
                                                     @csrf
-                                                    <button type="button" class="btn btn-sm btn-outline-warning" title="{{ __('developer.deactivate') }}"
-                                                        @click="showConfirmModal('{{ __('developer.deactivate') }}', '{{ __('developer.deactivate_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('deactivate-form-{{ $token['id'] }}').submit(); }, '{{ __('developer.deactivate') }}', 'btn-warning')">
-                                                        <i class="bi bi-pause-fill"></i>
-                                                    </button>
+                                                    <x-button size="sm" variant="outline" title="{{ __('developer.deactivate') }}"
+                                                        @click="showConfirmModal('{{ __('developer.deactivate') }}', '{{ __('developer.deactivate_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('deactivate-form-{{ $token['id'] }}').submit(); }, '{{ __('developer.deactivate') }}', 'btn-warning')" icon="bi bi-pause-fill" />
                                                 </form>
                                             @elseif($isDeactivated)
-                                                <form action="{{ route('account.settings.developer.activate', $token['id']) }}" method="POST" id="activate-form-{{ $token['id'] }}" style="display:inline">
+                                                <form action="{{ route('settings.account.developer.activate', $token['id']) }}" method="POST" id="activate-form-{{ $token['id'] }}" style="display:inline">
                                                     @csrf
-                                                    <button type="button" class="btn btn-sm btn-outline-success" title="{{ __('developer.activate') }}"
-                                                        @click="showConfirmModal('{{ __('developer.activate') }}', '{{ __('developer.activate_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('activate-form-{{ $token['id'] }}').submit(); }, '{{ __('developer.activate') }}', 'btn-success')">
-                                                        <i class="bi bi-play-fill"></i>
-                                                    </button>
+                                                    <x-button size="sm" variant="outline-success" title="{{ __('developer.activate') }}"
+                                                        @click="showConfirmModal('{{ __('developer.activate') }}', '{{ __('developer.activate_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('activate-form-{{ $token['id'] }}').submit(); }, '{{ __('developer.activate') }}', 'btn-success')" icon="bi bi-play-fill" />
                                                 </form>
                                             @endif
-                                            <form action="{{ route('account.settings.developer.revoke', $token['id']) }}" method="POST" id="revoke-form-{{ $token['id'] }}" style="display:inline">
+                                            <form action="{{ route('settings.account.developer.revoke', $token['id']) }}" method="POST" id="revoke-form-{{ $token['id'] }}" style="display:inline">
                                                 @csrf @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-outline-danger" title="{{ __('developer.revoke') }}"
-                                                    @click="showConfirmModal('{{ __('developer.revoke') }}', '{{ __('developer.revoke_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('revoke-form-{{ $token['id'] }}').submit(); }, '{{ __('developer.revoke') }}', 'btn-danger')">
-                                                    <i class="bi bi-x-lg"></i>
-                                                </button>
+                                                <x-button size="sm" variant="outline-danger" title="{{ __('developer.revoke') }}"
+                                                    @click="showConfirmModal('{{ __('developer.revoke') }}', '{{ __('developer.revoke_confirm') }}', (confirmed) => { if (confirmed) document.getElementById('revoke-form-{{ $token['id'] }}').submit(); }, '{{ __('developer.revoke') }}', 'btn-danger')" icon="bi bi-x-lg" />
                                             </form>
                                         </div>
                                     </div>
@@ -276,7 +254,7 @@
 
         {{-- Sidebar --}}
         <div class="col-lg-4">
-            <div class="settings-section" style="position:sticky;top:24px">
+            <div class="settings-section" style="position:sticky;top:80px">
 
                 {{-- Quick Test --}}
                 <div class="settings-card mb-3">
@@ -293,9 +271,7 @@
                     </div>
                     @if($tokens->isNotEmpty())
                         <div class="mt-2 d-flex gap-1">
-                            <button class="btn btn-sm btn-outline-accent flex-fill" @click="testApiToken()">
-                                <i class="bi bi-play-fill ms-1"></i>{{ __('general.test_connection') }}
-                            </button>
+                            <x-button size="sm" variant="outline-accent" @click="testApiToken()" icon="bi bi-play-fill" class="flex-fill">{{ __('general.test_connection') }}</x-button>
                         </div>
                         <div id="apiTestResult" class="mt-2 d-none"></div>
                     @endif
@@ -310,9 +286,7 @@
                     <div class="mt-2">
                         <div class="d-flex align-items-center gap-1" style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:6px;padding:8px 12px">
                             <code style="font-size:13px;flex:1;background:none;border:none;padding:0" class="copy-target">{{ url('/api') }}</code>
-                            <button class="btn btn-sm btn-link text-muted p-0" @click="copyToClipboard(this, '{{ url('/api') }}')" title="{{ __('general.copy') }}">
-                                <i class="bi bi-clipboard"></i>
-                            </button>
+                            <x-button size="sm" class="btn-text-link text-muted p-0" @click="copyToClipboard(this, '{{ url('/api') }}')" title="{{ __('general.copy') }}" icon="bi bi-clipboard" />
                         </div>
                     </div>
                 </div>
@@ -372,9 +346,7 @@
                         <span>{{ __('developer.api_documentation_link') }}</span>
                     </h5>
                     <p class="section-desc mt-2 mb-3">{{ __('developer.api_documentation_desc') }}</p>
-                    <a href="{{ route('api.documentation') }}" class="btn btn-accent btn-custom w-100" target="_blank">
-                        <i class="bi bi-box-arrow-up-right ms-1"></i>{{ __('general.api_documentation') }}
-                    </a>
+                    <x-button href="{{ route('api.documentation') }}" target="_blank" block icon="bi bi-box-arrow-up-right">{{ __('general.api_documentation') }}</x-button>
                 </div>
 
             </div>
@@ -384,7 +356,7 @@
     {{-- Create Token Modal --}}
     <div class="modal fade" id="createTokenModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <form method="POST" action="{{ route('account.settings.developer.store') }}" class="modal-content">
+            <form method="POST" action="{{ route('settings.account.developer.store') }}" class="modal-content">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">{{ __('developer.create_token') }}</h5>
@@ -406,8 +378,8 @@
                         <label class="form-label-custom">{{ __('developer.select_abilities') }}</label>
                         <p class="text-muted small mb-2">{{ __('developer.select_abilities_desc') }}</p>
                         <div class="d-flex gap-2 mb-2">
-                            <button type="button" class="btn btn-sm btn-outline-accent" @click="document.querySelectorAll('.ability-check').forEach(c=>c.checked=true)">{{ __('developer.select_all') }}</button>
-                            <button type="button" class="btn btn-sm btn-outline-accent" @click="document.querySelectorAll('.ability-check').forEach(c=>c.checked=false)">{{ __('developer.deselect_all') }}</button>
+                            <x-button size="sm" variant="outline-accent" @click="document.querySelectorAll('.ability-check').forEach(c=>c.checked=true)">{{ __('developer.select_all') }}</x-button>
+                            <x-button size="sm" variant="outline-accent" @click="document.querySelectorAll('.ability-check').forEach(c=>c.checked=false)">{{ __('developer.deselect_all') }}</x-button>
                         </div>
                         <div style="max-height:360px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:8px">
                             @php
@@ -439,8 +411,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-accent" data-bs-dismiss="modal">{{ __('developer.cancel') }}</button>
-                    <button type="submit" class="btn btn-accent btn-custom">{{ __('developer.generate') }}</button>
+                    <x-button variant="outline" data-bs-dismiss="modal">{{ __('developer.cancel') }}</x-button>
+                    <x-button submit>{{ __('developer.generate') }}</x-button>
                 </div>
             </form>
         </div>
@@ -471,16 +443,12 @@
                         <label class="form-label-custom">{{ __('developer.new_token_created') }}</label>
                         <div class="d-flex align-items-center gap-1" style="background:var(--bg-subtle);border:2px dashed var(--accent);border-radius:8px;padding:10px 12px">
                             <code id="tokenValueDisplay" style="font-size:12px;word-break:break-all;flex:1;background:none;border:none;padding:0" class="copy-target"></code>
-                            <button class="btn btn-accent btn-custom btn-sm flex-shrink-0" @click="copyTokenValue()" id="copyTokenBtn">
-                                <i class="bi bi-clipboard ms-1"></i>{{ __('developer.copy_token') }}
-                            </button>
+                            <x-button size="sm" @click="copyTokenValue()" id="copyTokenBtn" icon="bi bi-clipboard" class="flex-shrink-0">{{ __('developer.copy_token') }}</x-button>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 justify-content-center pt-2">
-                    <button type="button" class="btn btn-accent btn-custom px-4" data-bs-dismiss="modal" @click="setTimeout(() => location.reload(), 100)">
-                        <i class="bi bi-check-lg ms-1"></i>{{ __('general.got_it') }}
-                    </button>
+                    <x-button data-bs-dismiss="modal" @click="setTimeout(() => location.reload(), 100)" icon="bi bi-check-lg" class="px-4">{{ __('general.got_it') }}</x-button>
                 </div>
             </div>
         </div>
@@ -502,8 +470,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-accent" data-bs-dismiss="modal">{{ __('developer.cancel') }}</button>
-                    <button type="submit" class="btn btn-accent btn-custom">{{ __('general.save') }}</button>
+                    <x-button variant="outline" data-bs-dismiss="modal">{{ __('developer.cancel') }}</x-button>
+                    <x-button submit>{{ __('general.save') }}</x-button>
                 </div>
             </form>
         </div>
@@ -531,22 +499,20 @@
                             <x-password-input id="detailsViewTokenPassword" placeholder="{{ __('developer.enter_password') }}" />
                         </div>
                         <div id="detailsViewTokenError" class="text-danger small mt-1 d-none"></div>
-                        <button class="btn btn-accent btn-custom btn-sm w-100 mt-2" @click="confirmDetailsViewToken()" id="detailsViewTokenBtn">
+                        <x-button size="sm" block class="mt-2" @click="confirmDetailsViewToken()" id="detailsViewTokenBtn">
                             <span id="detailsViewTokenBtnText">{{ __('developer.view_token') }}</span>
                             <div class="spinner-border spinner-border-sm d-none" id="detailsViewTokenSpinner"></div>
-                        </button>
+                        </x-button>
                         <div id="detailsTokenReveal" class="d-none mt-2">
                             <div class="d-flex align-items-center gap-1" style="background:var(--bg-subtle);border:2px dashed var(--accent);border-radius:8px;padding:10px 12px">
                                 <code id="detailsTokenFullDisplay" style="font-size:12px;word-break:break-all;flex:1;background:none;border:none;padding:0" class="copy-target"></code>
-                                <button class="btn btn-accent btn-custom btn-sm flex-shrink-0" @click="copyDetailsToken()" id="copyDetailsTokenBtn">
-                                    <i class="bi bi-clipboard ms-1"></i>{{ __('developer.copy_token') }}
-                                </button>
+                                <x-button size="sm" @click="copyDetailsToken()" id="copyDetailsTokenBtn" icon="bi bi-clipboard" class="flex-shrink-0">{{ __('developer.copy_token') }}</x-button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-accent btn-custom" data-bs-dismiss="modal">{{ __('general.close') }}</button>
+                    <x-button variant="outline" data-bs-dismiss="modal">{{ __('general.close') }}</x-button>
                 </div>
             </div>
         </div>
@@ -680,7 +646,7 @@
         errorEl.classList.add('d-none');
         revealEl.classList.add('d-none');
 
-        fetch('{{ route('account.settings.developer.show', '__ID__') }}'.replace('__ID__', detailsTokenTargetId), {
+        fetch('{{ route('settings.account.developer.show', '__ID__') }}'.replace('__ID__', detailsTokenTargetId), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -719,7 +685,7 @@
 
     function showRenameModal(id, currentName) {
         const form = document.getElementById('renameTokenForm');
-        form.action = '{{ route('account.settings.developer.update', '__ID__') }}'.replace('__ID__', id);
+        form.action = '{{ route('settings.account.developer.update', '__ID__') }}'.replace('__ID__', id);
         document.getElementById('renameTokenInput').value = currentName;
         new bootstrap.Modal(document.getElementById('renameTokenModal')).show();
     }

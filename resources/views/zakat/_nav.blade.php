@@ -3,12 +3,10 @@
 @endphp
 
 <div class="d-flex gap-2 mb-4">
-    <a href="{{ route('zakat.calculator') }}"
-       class="btn btn-custom {{ $current === 'zakat.calculator' ? 'btn-accent' : 'btn-outline-secondary' }}">
-        <i class="bi bi-calculatorms-1"></i>{{ __('zakat.calculate') }}
-    </a>
-    <a href="{{ route('zakat.history') }}"
-       class="btn btn-custom {{ $current === 'zakat.history' ? 'btn-accent' : 'btn-outline-secondary' }}">
-        <i class="bi bi-clock-historyms-1"></i>{{ __('zakat.history') }}
-    </a>
+    <x-button href="{{ route('zakat.calculator') }}"
+        :variant="$current === 'zakat.calculator' ? 'accent' : 'outline'"
+        icon="bi bi-calculator">{{ __('zakat.calculate') }}</x-button>
+    <x-button href="{{ route('zakat.history') }}"
+        :variant="$current === 'zakat.history' ? 'accent' : 'outline'"
+        icon="bi bi-clock-history">{{ __('zakat.history') }}</x-button>
 </div>

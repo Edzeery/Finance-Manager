@@ -9,12 +9,14 @@ use App\Http\Resources\BudgetResource;
 use App\Repositories\BudgetRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class BudgetController extends Controller
 {
     public function __construct(private BudgetRepository $budgetRepo) {}
 
-    public function index(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
+    public function index(Request $request): ResourceCollection
     {
         $filters = array_merge(
             $request->only(['search', 'per_page']),
@@ -25,7 +27,7 @@ class BudgetController extends Controller
         return BudgetResource::collection($budgets);
     }
 
-    public function store(StoreBudgetRequest $request): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function store(StoreBudgetRequest $request): JsonResponse|JsonResource
     {
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
@@ -37,7 +39,7 @@ class BudgetController extends Controller
         return response()->json(new BudgetResource($budget), 201);
     }
 
-    public function show(Request $request, int $id): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function show(Request $request, int $id): JsonResponse|JsonResource
     {
         $budget = $this->budgetRepo->findOrFail($id);
         $this->authorize('view', $budget);
@@ -45,7 +47,7 @@ class BudgetController extends Controller
         return response()->json(new BudgetResource($budget));
     }
 
-    public function update(UpdateBudgetRequest $request, int $id): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function update(UpdateBudgetRequest $request, int $id): JsonResponse|JsonResource
     {
         $budget = $this->budgetRepo->findOrFail($id);
         $this->authorize('update', $budget);

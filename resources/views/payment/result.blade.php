@@ -13,7 +13,7 @@
             <x-status-icon domain="general" :status="$current['icon']" set="bi" style="font-size:64px;color:{{ $current['color'] }};margin-bottom:16px" />
             <h3 style="font-weight:600;margin-bottom:8px">{{ $current['title'] }}</h3>
             <p style="color:var(--text-muted);margin-bottom:24px">{{ $current['message'] }}</p>
-            <a href="{{ route('settings.index') }}" class="btn btn-accent">{{ __('payment.back_to_settings') }}</a>
+            <x-button href="{{ route('settings.workspace.index') }}" variant="accent">{{ __('payment.back_to_settings') }}</x-button>
         </div>
     </div>
 </x-app-layout>

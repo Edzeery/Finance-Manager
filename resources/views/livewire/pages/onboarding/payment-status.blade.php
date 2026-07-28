@@ -260,15 +260,9 @@ new #[Layout('layouts.guest')] class extends Component
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
 
             <div class="d-grid gap-2 mt-3">
-                <button wire:click="continueWithGateway" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-rightms-1"></i>{{ __('onboarding.continue_payment') ?? __('onboarding.resume_payment') }}
-                </button>
-                <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') ?? __('onboarding.cancel_change_method') }}
-                </button>
-                <button wire:click="cancelPaymentAndChangePlan" class="btn btn-outline-secondary btn-custom">
-                    <i class="bi bi-x-lg"></i>{{ __('onboarding.cancel_payment') }}
-                </button>
+                <x-button wire-click="continueWithGateway" variant="accent" icon="bi bi-arrow-right">{{ __('onboarding.continue_payment') ?? __('onboarding.resume_payment') }}</x-button>
+                <x-button wire-click="switchGateway" variant="outline-accent" icon="bi bi-arrow-left-right">{{ __('onboarding.switch_gateway') ?? __('onboarding.cancel_change_method') }}</x-button>
+                <x-button wire-click="cancelPaymentAndChangePlan" variant="outline" icon="bi bi-x-lg">{{ __('onboarding.cancel_payment') }}</x-button>
             </div>
 
         {{-- WAITING --}}
@@ -297,17 +291,11 @@ new #[Layout('layouts.guest')] class extends Component
             <div class="alert alert-danger py-2 small">{{ $errorMessage ?? __('onboarding.payment_failed') }}</div>
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
             <div class="d-grid gap-2 mt-3">
-                <button wire:click="retry" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
-                </button>
+                <x-button wire-click="retry" variant="accent" icon="bi bi-arrow-repeat">{{ __('onboarding.retry_payment') }}</x-button>
                 @if ($payment && OnboardingService::isManual($payment->paymentMethod?->key))
-                <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
-                </button>
+                <x-button wire-click="manualProof" variant="outline-accent" icon="bi bi-upload">{{ __('onboarding.upload_manual_proof') }}</x-button>
                 @endif
-                <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
-                </button>
+                <x-button wire-click="switchGateway" variant="outline-accent" icon="bi bi-arrow-left-right">{{ __('onboarding.switch_gateway') }}</x-button>
             </div>
 
         {{-- CANCELED --}}
@@ -345,17 +333,11 @@ new #[Layout('layouts.guest')] class extends Component
 
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
             <div class="d-grid gap-2 mt-3">
-                <button wire:click="retry" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
-                </button>
+                <x-button wire-click="retry" variant="accent" icon="bi bi-arrow-repeat">{{ __('onboarding.retry_payment') }}</x-button>
                 @if ($payment && OnboardingService::isManual($payment->paymentMethod?->key))
-                <button wire:click="manualProof" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-uploadms-1"></i>{{ __('onboarding.upload_manual_proof') }}
-                </button>
+                <x-button wire-click="manualProof" variant="outline-accent" icon="bi bi-upload">{{ __('onboarding.upload_manual_proof') }}</x-button>
                 @endif
-                <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
-                </button>
+                <x-button wire-click="switchGateway" variant="outline-accent" icon="bi bi-arrow-left-right">{{ __('onboarding.switch_gateway') }}</x-button>
             </div>
 
         {{-- PENDING MANUAL VERIFICATION --}}
@@ -386,9 +368,7 @@ new #[Layout('layouts.guest')] class extends Component
             @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
             <div class="d-grid gap-2 mt-3">
                 @if ($payment)
-                <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                    <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
-                </button>
+                <x-button wire-click="switchGateway" variant="outline-accent" icon="bi bi-arrow-left-right">{{ __('onboarding.switch_gateway') }}</x-button>
                 @endif
             </div>
         @endif

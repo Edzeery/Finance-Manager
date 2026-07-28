@@ -80,4 +80,14 @@ return [
 
     'payment_refunded_subject' => 'Paiement remboursé — :app',
     'payment_refunded_line' => 'Votre paiement a été remboursé. Le montant sera crédité sur votre moyen de paiement d\'origine.',
+
+    // Status Changed
+    'status_changed_subject' => 'Le statut de votre compte a été mis à jour',
+    'status_changed_line' => 'Le statut de votre compte a été mis à jour à :status.',
+    'status_changed_footer' => 'Si vous n\'avez pas demandé ce changement, veuillez contacter le support immédiatement.',
+    'status_reason' => 'Raison',
+
+    'notification_greeting' => 'Bonjour :name,',
+    'notification_view' => 'Voir les notifications',
+    'notification_team' => 'L\'équipe :app',
 ];

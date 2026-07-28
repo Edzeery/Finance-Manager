@@ -94,9 +94,9 @@ class SubscriptionGracePeriodTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->get(route('dashboard'));
-        $response->assertRedirect(route('account.subscriptions'));
+        $response->assertRedirect(route('billing.subscriptions'));
 
-        $response = $this->get(route('account.subscriptions'));
+        $response = $this->get(route('billing.subscriptions'));
         $response->assertOk();
 
         $response = $this->post(route('logout'));
@@ -222,7 +222,7 @@ class SubscriptionGracePeriodTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->get(route('dashboard'));
-        $response->assertRedirect(route('account.subscriptions'));
+        $response->assertRedirect(route('billing.subscriptions'));
     }
 
     public function test_trialing_subscription_allows_access(): void

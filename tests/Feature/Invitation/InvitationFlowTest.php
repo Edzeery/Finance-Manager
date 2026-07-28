@@ -238,7 +238,7 @@ class InvitationFlowTest extends TestCase
 
         $response = $this->delete(route('invitations.cancel', $invitation));
 
-        $response->assertRedirect(route('settings.index'));
+        $response->assertRedirect(route('settings.workspace.index'));
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('workspace_invitations', [
@@ -279,7 +279,7 @@ class InvitationFlowTest extends TestCase
 
         $response = $this->post(route('invitations.resend', $invitation));
 
-        $response->assertRedirect(route('settings.index'));
+        $response->assertRedirect(route('settings.workspace.index'));
         $response->assertSessionHas('success');
 
         $invitation->refresh();

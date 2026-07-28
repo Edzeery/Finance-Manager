@@ -89,12 +89,8 @@
                         </div>
 
                         <div class="d-flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border)">
-                            <button type="submit" class="btn btn-accent btn-custom">
-                                <i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}
-                            </button>
-                            <a href="{{ route('goal.index') }}" class="btn btn-outline-secondary btn-custom">
-                                <i class="bi bi-x-lg"></i>{{ __('general.cancel') }}
-                            </a>
+                            <x-button submit icon="bi bi-check-lg">{{ __('general.save') }}</x-button>
+                            <x-button href="{{ route('goal.index') }}" icon="bi bi-x-lg" variant="outline">{{ __('general.cancel') }}</x-button>
                         </div>
                     </form>
                 </div>

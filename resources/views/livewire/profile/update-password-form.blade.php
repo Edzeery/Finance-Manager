@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -12,7 +13,7 @@ new class extends Component
     public string $password = '';
     public string $password_confirmation = '';
 
-    public function updatePassword(): void
+    public function updatePassword(NotificationService $notificationService): void
     {
         try {
             $validated = $this->validate([
@@ -27,6 +28,8 @@ new class extends Component
         Auth::user()->update([
             'password' => Hash::make($validated['password']),
         ]);
+
+        $notificationService->passwordChanged(Auth::id());
 
         $this->reset('current_password', 'password', 'password_confirmation');
 
@@ -56,7 +59,7 @@ new class extends Component
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <button type="submit" class="btn btn-accent btn-custom"><i class="bi bi-check-lg ms-1"></i>{{ __('general.save') }}</button>
+            <x-button submit icon="bi bi-check-lg" icon-position="right">{{ __('general.save') }}</x-button>
             <div wire:loading wire:target="updatePassword" class="spinner-border spinner-border-sm" role="status" style="color:var(--accent)"></div>
             <span wire:loading.remove wire:target="updatePassword" wire:transition
                   x-data="{ show: false }"

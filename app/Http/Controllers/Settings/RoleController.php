@@ -13,13 +13,7 @@ class RoleController extends Controller
 
     public function index()
     {
-        $this->resetBreadcrumbs()
-            ->addBreadcrumb(__('settings.title'), route('settings.index'), 'bi-gear')
-            ->addBreadcrumb(__('workspace.roles'));
-
-        $roles = Role::workspace()->with('permissions')->withCount('users')->orderBy('sort_order')->get();
-
-        return view('settings.roles', $this->withBreadcrumbs(compact('roles')));
+        return redirect()->route('settings.workspace.index', ['tab' => 'roles']);
     }
 
     public function show(Role $role)
@@ -27,8 +21,8 @@ class RoleController extends Controller
         abort_if($role->level !== 'workspace', 404);
 
         $this->resetBreadcrumbs()
-            ->addBreadcrumb(__('settings.title'), route('settings.index'), 'bi-gear')
-            ->addBreadcrumb(__('workspace.roles'), route('settings.workspace.roles.index'))
+            ->addBreadcrumb(__('settings.title'), route('settings.workspace.index', ['tab' => 'roles']), 'bi-gear')
+            ->addBreadcrumb(__('workspace.roles'), route('settings.workspace.index', ['tab' => 'roles']))
             ->addBreadcrumb($role->name);
 
         $permissions = Permission::whereIn('module', [

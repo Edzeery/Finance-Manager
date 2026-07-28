@@ -100,6 +100,9 @@ return [
         'suspended' => 'suspended',
         'banned' => 'banned',
     ],
+    // ══════════════════════════════════════════════════════════════
+    // الجلسات
+    // ══════════════════════════════════════════════════════════════
 
     // ══════════════════════════════════════════════════════════════
     // التحقق من البريد
@@ -499,6 +502,7 @@ return [
         'confirmed_email' => ['icon' => 'verified'],
         'unconfirmed_email' => ['icon' => 'unverified'],
         'password_reset' => ['variant' => 'info', 'light' => 'text-blue-700 bg-blue-100', 'dark' => 'dark:text-blue-300 dark:bg-blue-900/40', 'hex' => '#2563eb', 'icon' => 'key'],
+        'current' => ['variant' => 'info', 'light' => 'text-blue-700 bg-blue-100', 'dark' => 'dark:text-blue-300 dark:bg-blue-900/40', 'hex' => '#2563eb', 'icon' => 'key'],
         'unknown' => ['icon' => 'default'],
     ],
 

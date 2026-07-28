@@ -28,17 +28,17 @@ class UserStatusChanged extends Notification implements HasLocalePreference
         $status = $this->newStatus;
         $pageUrl = match ($status) {
             UserStatus::Inactive => route('account.inactive'),
-            UserStatus::Pending  => route('account.pending'),
+            UserStatus::Pending => route('account.pending'),
             UserStatus::Suspended => route('account.suspended'),
-            UserStatus::Banned   => route('account.banned'),
-            default              => route('dashboard'),
+            UserStatus::Banned => route('account.banned'),
+            default => route('dashboard'),
         };
 
         $mail = (new MailMessage)
-            ->subject(__('emails.status_changed_subject', ['status' => __('account.' . strtolower($status->value))]))
+            ->subject(__('emails.status_changed_subject', ['status' => __('account.'.strtolower($status->value))]))
             ->greeting(__('emails.hello'))
             ->line(__('emails.status_changed_line', [
-                'status' => __('account.' . strtolower($status->value)),
+                'status' => __('account.'.strtolower($status->value)),
             ]));
 
         if ($this->reason) {
@@ -61,7 +61,7 @@ class UserStatusChanged extends Notification implements HasLocalePreference
         return [
             'old_status' => $this->oldStatus->value,
             'new_status' => $this->newStatus->value,
-            'reason'     => $this->reason,
+            'reason' => $this->reason,
         ];
     }
 }

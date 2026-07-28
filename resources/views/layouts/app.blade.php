@@ -10,7 +10,7 @@
         content="{{ $metaDescription ?? config('app.name') . ' - ' . __('general.app_description') }}">
     <meta name="theme-color" content="#15B76C">
     <meta name="theme-switch-url" content="{{ route('theme.switch') }}">
-    <meta name="password-verify-url" content="{{ route('account.settings.developer.verify-password') }}">
+    <meta name="password-verify-url" content="{{ route('settings.account.developer.verify-password') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <title>{{ $title ?? config('app.name') }}</title>
@@ -52,18 +52,17 @@
                 @endphp
                 @if ($hasExpiredWithoutGrace)
                     <div x-data="{ show: true }" x-show="show" x-transition.duration.300
-                        class="mx-3 mx-md-4 mt-2 mb-0 px-3 py-2 rounded-2 d-flex align-items-center justify-content-between"
-                        style="background:#fff3cd;color:#856404;border:1px solid #ffc107;font-size:13px">
+                        class="alert-warning-custom mx-3 mx-md-4 mt-2 mb-0 px-3 py-2 rounded-2 d-flex align-items-center justify-content-between"
+                        style="font-size:13px">
                         <div>
-                            <i class="bi bi-exclamation-triangle-fillms-1"></i>
+                            <i class="bi bi-exclamation-triangle-fill ms-1"></i>
                             {{ __('enums.subscription_status.expired') ?? 'اشتراكك منتهي. يرجى تجديد الاشتراك.' }}
-                            <a href="{{ route('account.subscriptions') }}" class="ms-2 fw-bold text-decoration-underline"
-                                style="color:#856404">
+                            <a href="{{ route('billing.subscriptions') }}" class="ms-2 fw-bold text-decoration-underline alert-warning-custom-link">
                                 {{ __('subscription.renew') ?? 'تجديد' }}
                             </a>
                         </div>
                         <button @click="show = false" type="button"
-                            style="background:none;border:none;color:#856404;cursor:pointer;padding:2px 6px">
+                            class="alert-warning-custom-close">
                             <i class="bi bi-x-lg" style="font-size:11px"></i>
                         </button>
                     </div>
@@ -80,7 +79,7 @@
                     @endisset
                 </div>
 
-                <div class="p-3 p-md-4">
+                <div class="p-3 p-md-4 mt-5">
                     {{ $slot }}
                 </div>
             </main>
@@ -97,13 +96,13 @@
                 'title' => __('general.profile'),
                 'description' => __('general.manage_profile'),
                 'icon' => 'bi bi-person',
-                'url' => route('account.profile'),
+                'url' => route('settings.account.profile'),
             ],
             [
                 'title' => __('general.settings'),
                 'description' => __('general.manage_settings'),
                 'icon' => 'bi bi-gear',
-                'url' => route('settings.index'),
+                'url' => route('settings.workspace.index'),
             ],
             [
                 'title' => __('transactions.add_income'),
@@ -157,7 +156,7 @@
                 'title' => __('invoices.title'),
                 'description' => __('invoices.view_all'),
                 'icon' => 'bi bi-receipt',
-                'url' => route('account.invoices.index'),
+                'url' => route('billing.invoices.index'),
             ],
         ]" />
     </div>
@@ -196,8 +195,8 @@
         })();
     </script>
     @stack('scripts')
-    <script type="module" src="https://esm.sh/ionicons@latest/loader"></script>
-    <script nomodule src="https://esm.sh/ionicons@latest/loader"></script>
+    <script type="module" src="https://esm.sh/ionicons@8.0.13/loader"></script>
+    <script nomodule src="https://esm.sh/ionicons@8.0.13/loader"></script>
     @include('layouts.partials._alpine-components')
 </body>
 

@@ -25,6 +25,7 @@ use App\Models\Workspace;
 use App\Models\ZakatAsset;
 use App\Models\ZakatRecord;
 use App\Services\InvoiceNumberGenerator;
+use App\Services\NotificationService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -342,6 +343,25 @@ class DemoDataSeeder extends Seeder
                     'workspace_id' => $workspace->id,
                 ]));
             }
+
+            // ── Notifications ──────────────────────────────────────
+            $notifService = app(NotificationService::class);
+
+            $notifService->budgetExceeded($user->id, 'Monthly Budget', 5000);
+
+            $notifService->budgetNearingLimit($user->id, 'Savings Budget', 78);
+
+            $notifService->debtReminder($user->id, 'Samy', 35000, now()->addMonth()->format('Y-m-d'));
+
+            $notifService->goalAchieved($user->id, 'Umrah Trip');
+
+            $notifService->goalMilestoneReached($user->id, 'Emergency Fund', 40);
+
+            $notifService->goalDeadlineApproaching($user->id, 'Buy a Car', 45);
+
+            $notifService->zakatReminder($user->id);
+
+            $notifService->zakatApproachingReminder($user->id, 15);
 
             $this->command?->info('Demo data created successfully!');
             $this->command?->info('Email: demo@example.com / Password: password');

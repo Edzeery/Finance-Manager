@@ -18,8 +18,6 @@
 {{ __('emails.view_details') }}
 </x-mail::button>
 
-{{ __('emails.debt_reminder_line') }}
-
 {{ __('emails.regards') }}
 {{ config('app.name') }}
 </x-mail::message>

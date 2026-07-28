@@ -2,9 +2,15 @@
 
 namespace App\Listeners;
 
+use App\Concerns\ParsesUserAgent;
 use App\Contracts\Services\ActivityLogServiceInterface;
 use App\Jobs\LogActivity;
 use App\Models\LoginAttempt;
+use App\Models\Notification;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\Workspace;
+use App\Services\NotificationService;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
@@ -14,8 +20,11 @@ use Illuminate\Events\Dispatcher;
 
 class LogAuthEvent
 {
+    use ParsesUserAgent;
+
     public function __construct(
         private readonly ActivityLogServiceInterface $activityLog,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public function handleLogin(Login $event): void
@@ -26,6 +35,12 @@ class LogAuthEvent
 
         // Record successful login attempt
         $this->recordAttempt($event->user, 'success');
+
+        // Detect new device
+        if ($event->user && $event->guard === 'web') {
+            $this->detectNewDevice($event->user);
+            $this->notifyAdminOnUserLogin($event->user);
+        }
     }
 
     public function handleLogout(Logout $event): void
@@ -56,7 +71,7 @@ class LogAuthEvent
         ]);
 
         // Record failed login attempt
-        $user = \App\Models\User::where('email', $email)->first();
+        $user = User::where('email', $email)->first();
         $suspicious = LoginAttempt::detectSuspicious($email, $ip);
 
         $this->recordAttempt($user, 'failed', [
@@ -71,6 +86,25 @@ class LogAuthEvent
                 'ip' => $ip,
                 'recent_failures' => LoginAttempt::recentFailuresForIp($ip),
             ]);
+
+            if ($user) {
+                // Throttle: skip if a suspicious notification was sent in the last 30 minutes
+                $recentSuspicious = Notification::withoutGlobalScopes()
+                    ->where('user_id', $user->id)
+                    ->where('type', 'login_suspicious')
+                    ->where('created_at', '>=', now()->subMinutes(30))
+                    ->exists();
+
+                if (! $recentSuspicious) {
+                    $this->notificationService->loginSuspicious(
+                        $user->id,
+                        $ip,
+                        __('notifications.suspicious_login_reason', [
+                            'count' => LoginAttempt::recentFailuresForIp($ip),
+                        ])
+                    );
+                }
+            }
         }
     }
 
@@ -132,39 +166,83 @@ class LogAuthEvent
         );
     }
 
-    private function parseDevice(string $userAgent): string
+    private function detectNewDevice(User $user): void
     {
-        if (preg_match('/Mobile|Android|iPhone|iPad|iPod/i', $userAgent)) {
-            return preg_match('/iPad|iPod/i', $userAgent) ? 'tablet' : 'phone';
+        $currentUA = request()->userAgent() ?? '';
+        if (! $currentUA) {
+            return;
         }
-        return 'desktop';
+
+        // Throttle: skip if a new device notification was sent in the last 30 minutes
+        $recentNotification = Notification::withoutGlobalScopes()
+            ->where('user_id', $user->id)
+            ->where('type', 'login_new_device')
+            ->where('created_at', '>=', now()->subMinutes(30))
+            ->exists();
+
+        if ($recentNotification) {
+            return;
+        }
+
+        $statusRecord = $user->statusRecord;
+        if (! $statusRecord) {
+            return;
+        }
+
+        // Compare against the last known login's user agent
+        if ($statusRecord->last_user_agent !== null && $statusRecord->last_user_agent === $currentUA) {
+            return;
+        }
+
+        $device = $this->parseDevice($currentUA);
+        $browser = $this->parseBrowser($currentUA);
+        $os = $this->parseOS($currentUA);
+        $ip = request()->ip();
+
+        $this->notificationService->loginNewDevice(
+            $user->id,
+            $device,
+            $browser,
+            $os,
+            $ip
+        );
     }
 
-    private function parseBrowser(string $userAgent): string
+    private function notifyAdminOnUserLogin(User $user): void
     {
-        $browsers = [
-            'Edg/' => 'Edge', 'OPR' => 'Opera', 'Chrome' => 'Chrome',
-            'Firefox' => 'Firefox', 'Safari' => 'Safari', 'MSIE' => 'IE', 'Trident' => 'IE',
-        ];
-        foreach ($browsers as $pattern => $name) {
-            if (stripos($userAgent, $pattern) !== false) {
-                return $name;
-            }
-        }
-        return 'Unknown';
-    }
+        $statusRecord = $user->statusRecord;
+        $lastLogin = $statusRecord?->last_login_at;
 
-    private function parseOS(string $userAgent): string
-    {
-        $oses = [
-            'Windows NT 10' => 'Windows 10/11', 'Mac OS X' => 'macOS',
-            'Android' => 'Android', 'iPhone OS' => 'iOS', 'iPad' => 'iPadOS', 'Linux' => 'Linux',
-        ];
-        foreach ($oses as $pattern => $name) {
-            if (stripos($userAgent, $pattern) !== false) {
-                return $name;
-            }
+        // New user (never logged in) or absent for 30+ days
+        if ($lastLogin && $lastLogin->diffInDays(now()) < 30) {
+            return;
         }
-        return 'Unknown';
+
+        $daysSinceLastLogin = $lastLogin ? (int) $lastLogin->diffInDays(now()) : 0;
+
+        // Notify workspace owner(s)
+        $workspaceIds = $user->workspaces()->pluck('workspaces.id');
+        $adminRoleId = Role::where('slug', 'workspace_admin')->value('id');
+
+        if (! $adminRoleId) {
+            return;
+        }
+
+        $ownerIds = Workspace::query()
+            ->join('workspace_role_user', 'workspaces.id', '=', 'workspace_role_user.workspace_id')
+            ->where('workspace_role_user.role_id', $adminRoleId)
+            ->whereIn('workspaces.id', $workspaceIds)
+            ->pluck('workspace_role_user.user_id')
+            ->unique()
+            ->reject(fn ($id) => $id === $user->id);
+
+        foreach ($ownerIds as $ownerId) {
+            $this->notificationService->workspaceMemberLoggedIn(
+                $ownerId,
+                $user->name,
+                $user->email,
+                $daysSinceLastLogin
+            );
+        }
     }
 }

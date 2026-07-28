@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-use App\Enums\UserStatus;
 use App\Enums\OnlineStatus;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Notifications\UserStatusChanged;
 use App\Rules\PasswordRule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -321,5 +322,20 @@ class UserController extends Controller
 
         return redirect()->route('super.admin.users.index')
             ->with('success', __('messages.user_status_updated'));
+    }
+
+    public function forceLogoutAllSessions(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return redirect()->route('super.admin.users.index')
+                ->with('error', __('super-admin.cannot_force_logout_self'));
+        }
+
+        $deleted = DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->delete();
+
+        return redirect()->route('super.admin.users.index')
+            ->with('success', __('super-admin.force_logout_success', ['name' => $user->name, 'count' => $deleted]));
     }
 }

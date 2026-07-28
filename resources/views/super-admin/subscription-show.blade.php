@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('super-admin.subscriptions') }} #{{ $subscription->id }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('super-admin.subscriptions') }} #{{ $subscription->id }}</x-slot>
     <x-slot:page-description>{{ $subscription->workspace?->name ?? __('general.unknown') }} &mdash; {{ $subscription->plan?->name ?? '—' }}</x-slot>
@@ -35,9 +35,7 @@
                                 <div class="d-inline-flex align-items-center gap-2">
                                     <span id="plan-display" class="badge" style="font-size:11px;background:var(--bg-subtle);color:var(--text);padding:2px 10px;border-radius:6px">{{ $subscription->plan?->name ?? '—' }}</span>
                                     @if($plans->count() > 1)
-                                    <button type="button" class="btn btn-sm p-0 border-0 bg-transparent" @click="openPlanModal()" title="{{ __('settings.change_plan') }}">
-                                        <i class="bi bi-pencil" style="font-size:12px;color:var(--text-muted)"></i>
-                                    </button>
+                                    <x-button icon="bi bi-pencil" @click="openPlanModal()" title="{{ __('settings.change_plan') }}" style="padding:0;border:0;background:transparent;font-size:12px;color:var(--text-muted)" />
                                     @endif
                                     <span x-show="planFlash === 'ok'" x-cloak x-transition style="color:var(--success);font-size:12px">
                                         <i class="bi bi-check-circle-fill"></i>
@@ -163,11 +161,7 @@
                     <form method="POST" action="{{ route('super.admin.subscriptions.cancel', $subscription) }}" id="cancel-subscription-{{ $subscription->id }}" style="display:none">
                         @csrf
                     </form>
-                    <button type="button" class="btn btn-outline-danger btn-custom"
-                        style="width:100%"
-                        @click="confirmCancelSubscription({{ $subscription->id }})" {{ $subscription->status === \App\Enums\SubscriptionStatus::Canceled || $subscription->status === \App\Enums\SubscriptionStatus::Expired ? 'disabled' : '' }}>
-                        <i class="bi bi-x-circle"></i>{{ __('settings.cancel_subscription') }}
-                    </button>
+                    <x-button variant="danger" block icon="bi bi-x-circle" @click="confirmCancelSubscription({{ $subscription->id }})" {{ $subscription->status === \App\Enums\SubscriptionStatus::Canceled || $subscription->status === \App\Enums\SubscriptionStatus::Expired ? 'disabled' : '' }}>{{ __('settings.cancel_subscription') }}</x-button>
                 </div>
             </div>
 
@@ -207,7 +201,7 @@
                 </div>
                 <div class="modal-footer" style="border-top:1px solid var(--border);padding:14px 20px">
                     <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)" data-bs-dismiss="modal">{{ __('general.cancel') }}</button>
-                    <button type="button" id="planSaveBtn" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none">
+                    <button type="button" id="planSaveBtn" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none">
                         <i class="bi bi-check-lg"></i> {{ __('general.save') }}
                     </button>
                 </div>
@@ -216,9 +210,7 @@
     </div>
 
     <div class="mt-4">
-        <a href="{{ route('super.admin.subscriptions.index') }}" class="btn btn-back">
-            <i class="bi bi-arrow-left"></i>{{ __('general.back') }}
-        </a>
+        <x-button href="{{ route('super.admin.subscriptions.index') }}" icon="bi bi-arrow-left" class="btn-back">{{ __('general.back') }}</x-button>
     </div>
 
     @push('scripts')

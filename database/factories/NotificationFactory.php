@@ -16,7 +16,7 @@ class NotificationFactory extends Factory
         return [
             'user_id' => User::factory(),
             'workspace_id' => Workspace::factory(),
-            'type' => fake()->randomElement(['budget_alert', 'debt_reminder', 'goal_achieved', 'zakat_reminder']),
+            'type' => fake()->randomElement(['budget_exceeded', 'debt_reminder', 'goal_achieved', 'zakat_reminder']),
             'title_ar' => fake('ar_SA')->sentence(),
             'title_fr' => fake('fr_FR')->sentence(),
             'title_en' => fake()->sentence(),

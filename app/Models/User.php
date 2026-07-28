@@ -9,6 +9,7 @@ use App\Enums\SubscriptionStatus;
 use App\Enums\UserStatus as UserStatusEnum;
 use App\Models\UserStatus as UserStatusModel;
 use App\Notifications\VerifyEmail as CustomVerifyEmail;
+use App\Services\HijriDateService;
 use App\Services\OnboardingService;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -20,9 +21,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Services\HijriDateService;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
 #[Fillable(['name', 'email', 'password', 'locale', 'theme', 'currency', 'timezone', 'current_workspace_id', 'onboarding_completed_at', 'plan_confirmed_at', 'pending_plan_id', 'zakat_start_date', 'calendar_type', 'last_zakat_date'])]
@@ -34,7 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected function casts(): array
     {
-        return [ 
+        return [
             'deleted_at' => 'datetime',
             'password' => 'hashed',
             'onboarding_completed_at' => 'datetime',
@@ -107,12 +108,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->statusRecord?->status_reason;
     }
 
-    public function getStatusChangedAtAttribute(): ?\Illuminate\Support\Carbon
+    public function getStatusChangedAtAttribute(): ?Carbon
     {
         return $this->statusRecord?->status_changed_at;
     }
 
-    public function getLastLoginAtAttribute(): ?\Illuminate\Support\Carbon
+    public function getLastLoginAtAttribute(): ?Carbon
     {
         return $this->statusRecord?->last_login_at;
     }
@@ -177,12 +178,14 @@ class User extends Authenticatable implements MustVerifyEmail
         $subscription = Subscription::withoutWorkspace()
             ->where('user_id', $this->id)
             ->whereIn('status', [SubscriptionStatus::Active->value, SubscriptionStatus::Trialing->value])
-            ->whereNotNull('ends_at')
-            ->where('ends_at', '>', now())
+            ->where(function ($q) {
+                $q->whereNull('ends_at')
+                    ->orWhere('ends_at', '>', now());
+            })
             ->latest()
             ->first();
 
-        if ($subscription) {
+        if ($subscription && $subscription->isActive()) {
             return $subscription;
         }
 
@@ -286,7 +289,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function hasRole(string|array $roles): bool
     {
-        $slugs = $this->roles()->pluck('slug')->toArray();
+        $slugs = $this->relationLoaded('roles')
+            ? $this->roles->pluck('slug')->toArray()
+            : $this->roles()->pluck('slug')->toArray();
+
         foreach ((array) $roles as $role) {
             if (in_array($role, $slugs)) {
                 return true;
@@ -502,6 +508,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Notification::class);
     }
 
+    public function notificationPreferences(): HasMany
+    {
+        return $this->hasMany(NotificationPreference::class);
+    }
+
+    public function adminNotificationPreferences(): HasMany
+    {
+        return $this->hasMany(AdminNotificationPreference::class);
+    }
+
     public function settings(): HasMany
     {
         return $this->hasMany(UserSetting::class);
@@ -550,7 +566,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->calendar_type === 'hijri' ? 354 : 365;
     }
 
-    public function nextZakatDate(): ?\Illuminate\Support\Carbon
+    public function nextZakatDate(): ?Carbon
     {
         $baseDate = $this->last_zakat_date ?? $this->zakat_start_date;
 

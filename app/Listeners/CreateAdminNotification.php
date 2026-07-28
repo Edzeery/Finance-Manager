@@ -6,6 +6,7 @@ use App\Events\PaymentCompleted;
 use App\Events\SubscriptionActivated;
 use App\Services\AdminNotificationService;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Log;
 
 class CreateAdminNotification
 {
@@ -15,15 +16,42 @@ class CreateAdminNotification
 
     public function handle(object $event): void
     {
-        match (true) {
-            $event instanceof Registered => $this->notificationService->newUserRegistered($event->user),
-            $event instanceof PaymentCompleted => $this->notificationService->newPaymentReceived($event->payment, $event->payment->subscription?->workspace?->owner()?->first() ?? $event->payment->user),
-            $event instanceof SubscriptionActivated => $this->notificationService->subscriptionActivated(
-                $event->subscription->user->name,
-                $event->subscription->plan->name,
-                $event->subscription->user,
-            ),
-            default => null,
-        };
+        try {
+            match (true) {
+                $event instanceof Registered => $this->notificationService->newUserRegistered($event->user),
+                $event instanceof PaymentCompleted => $this->handlePayment($event),
+                $event instanceof SubscriptionActivated => $this->handleSubscription($event),
+                default => null,
+            };
+        } catch (\Throwable $e) {
+            Log::error('Failed to create admin notification', [
+                'event' => class_basename($event),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    }
+
+    private function handlePayment(PaymentCompleted $event): void
+    {
+        $payment = $event->payment;
+        $user = $payment->subscription?->workspace?->owner()?->first() ?? $payment->user;
+
+        if ($user) {
+            $this->notificationService->newPaymentReceived($payment, $user);
+        }
+    }
+
+    private function handleSubscription(SubscriptionActivated $event): void
+    {
+        $subscription = $event->subscription;
+
+        if ($subscription->user && $subscription->plan) {
+            $this->notificationService->subscriptionActivated(
+                $subscription->user->name,
+                $subscription->plan->name,
+                $subscription->user,
+            );
+        }
     }
 }

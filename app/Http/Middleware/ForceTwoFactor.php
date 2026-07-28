@@ -12,15 +12,17 @@ class ForceTwoFactor
 
     public function handle(Request $request, Closure $next): Response
     {
-        // $user = $request->user();
-        // if (!$user) return $next($request);
+        $user = $request->user();
+        if (! $user) {
+            return $next($request);
+        }
 
-        // $hasForcedRole = collect(self::FORCED_ROLES)->contains(fn($r) => $user->hasRole($r));
+        $hasForcedRole = collect(self::FORCED_ROLES)->contains(fn ($r) => $user->hasRole($r));
 
-        // if ($hasForcedRole && !$user->hasTwoFactorEnabled()) {
-        //     return redirect()->route('two-factor.setup')
-        //         ->with('warning', __('auth.2fa_required_for_admin'));
-        // }
+        if ($hasForcedRole && ! $user->hasTwoFactorEnabled()) {
+            return redirect()->route('two-factor.setup')
+                ->with('warning', __('auth.2fa_required_for_admin'));
+        }
 
         return $next($request);
     }

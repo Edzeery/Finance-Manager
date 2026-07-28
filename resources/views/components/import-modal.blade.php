@@ -26,8 +26,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-outline-secondary btn-custom" data-bs-dismiss="modal">{{ __('general.cancel') }}</button>
-                    <button type="submit" class="btn btn-sm btn-accent btn-custom">{{ __('general.import') }}</button>
+                    <x-button variant="outline" size="sm" data-bs-dismiss="modal">{{ __('general.cancel') }}</x-button>
+                    <x-button submit size="sm">{{ __('general.import') }}</x-button>
                 </div>
             </form>
         </div>

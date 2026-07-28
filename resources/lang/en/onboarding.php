@@ -15,7 +15,9 @@ return [
     'pay_now' => 'Pay Now',
     'proceed_to_payment' => 'Proceed to Payment',
     'processing_payment' => 'Processing payment...',
-    'redirecting' => 'Redirecting to payment gateway...',
+    'redirecting' => 'Redirecting... You will be redirected automatically.',
+    'redirecting_payment_gateway' => 'Redirecting to payment gateway...',
+
     'remaining' => 'remaining',
     'drag_drop_hint' => 'Drag & drop your receipt here',
     'browse_files' => 'Browse Files',
@@ -201,4 +203,7 @@ return [
     // Development
     'force_complete' => 'Complete Payment (Dev)',
     'force_complete_hint' => 'Development only: complete the payment and activate subscription.',
+    'gateway_fee' => 'Gateway Fee',
+    'tax_added' => 'Tax Added',
+    'tax_disclosed' => 'Tax (included)',
 ];

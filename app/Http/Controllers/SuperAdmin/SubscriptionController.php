@@ -215,6 +215,7 @@ class SubscriptionController extends Controller
                 if ($request->expectsJson()) {
                     return response()->json(['success' => false, 'message' => implode(' ', $check['errors'])], 422);
                 }
+
                 return back()->with('error', implode(' ', $check['errors']));
             }
         }
@@ -229,6 +230,7 @@ class SubscriptionController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => $result['message']], 422);
             }
+
             return back()->with('error', $result['message']);
         }
 

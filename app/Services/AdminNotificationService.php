@@ -56,7 +56,7 @@ class AdminNotificationService
                 'ar' => "دفعة بقيمة \${$payment->amount} من {$user->name} عبر {$methodKey}.",
                 'fr' => "Paiement de \${$payment->amount} de {$user->name} via {$methodKey}.",
             ],
-            ['payment_id' => $payment->id, 'amount' => $payment->amount, 'method' => $methodKey, 'user_id' => $user->id]
+            ['payment_id' => $payment->id, 'amount' => $payment->amount, 'currency' => $payment->currency, 'method' => $methodKey, 'user_id' => $user->id]
         );
     }
 
@@ -96,19 +96,22 @@ class AdminNotificationService
         );
     }
 
-    public function systemAlert(string $title, string $message, ?array $data = null): AdminNotification
+    public function systemAlert(array $title, array $message, ?array $data = null): AdminNotification
     {
         return $this->create(
             'system_alert',
-            ['en' => $title, 'ar' => $title, 'fr' => $title],
-            ['en' => $message, 'ar' => $message, 'fr' => $message],
+            $title,
+            $message,
             $data
         );
     }
 
     public function markAsRead(int $id): void
     {
-        AdminNotification::where('id', $id)->update(['is_read' => true, 'read_at' => now()]);
+        $notification = AdminNotification::find($id);
+        if ($notification) {
+            $notification->markAsRead();
+        }
     }
 
     public function markAllAsRead(): void

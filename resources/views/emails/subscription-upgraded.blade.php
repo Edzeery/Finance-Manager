@@ -11,7 +11,7 @@
 - **{{ __('emails.next_billing') }}:** {{ $subscription->next_billing_at?->format('Y-m-d') ?? __('emails.na') }}
 </x-mail::panel>
 
-<x-mail::button :url="route('account.subscriptions')">
+<x-mail::button :url="route('billing.subscriptions')">
 {{ __('emails.view_subscriptions') }}
 </x-mail::button>
 

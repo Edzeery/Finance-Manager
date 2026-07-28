@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Models\Payment;
 use App\Services\Payments\Noest\NoestService;
@@ -429,7 +429,7 @@ $ss = [
                             <option value="{{ $wilaya['code'] ?? $wilaya['id'] }}">{{ $wilaya['nom'] ?? $wilaya['name'] }}</option>
                         @endforeach
                     </select>
-                    <button type="button" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;cursor:pointer" wire:click="exportCsv">
+                    <button type="button" class="btn" style="padding:7px 14px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none;cursor:pointer" wire:click="exportCsv">
                         <i class="bi bi-downloadms-1"></i>{{ __("super-admin.noest_export_csv") }}
                     </button>
                     @if(count($selectedOrders))
@@ -634,7 +634,7 @@ $ss = [
                 </div>
                 <div class="modal-footer" style="border-top:1px solid var(--border);padding:14px 20px">
                     <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text)" data-bs-dismiss="modal">{{ __("general.cancel") }}</button>
-                    <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none" wire:click="saveEdit" wire:loading.attr="disabled">
+                    <button type="button" class="btn" style="padding:7px 16px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:var(--primary);font-weight:600;border:none" wire:click="saveEdit" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="saveEdit">{{ __("general.save") }}</span>
                         <span wire:loading wire:target="saveEdit"><span class="spinner-border spinner-border-sm" role="status"></span></span>
                     </button>

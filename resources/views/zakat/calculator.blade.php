@@ -19,15 +19,13 @@
                         @csrf
 
                         {{-- Zakat Haul Section --}}
-                        <div class="mb-4 p-3" style="border-radius:8px; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15)">
+                        <div class="mb-4 p-3" style="border-radius:8px; background:var(--accent-light); border:1px solid var(--accent-border)">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="fw-bold mb-0 d-flex align-items-center gap-2" style="font-size:14px; color:#6366F1">
+                                <h6 class="fw-bold mb-0 d-flex align-items-center gap-2" style="font-size:14px; color:var(--accent)">
                                     <i class="bi bi-calendar-event"></i>
                                     {{ __('zakat.zakat_haul') }}
                                 </h6>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" style="font-size:11px" onclick="openHaulModal()">
-                                    <i class="bi bi-gear"></i> {{ __('zakat.update_haul') }}
-                                </button>
+                                <x-button variant="outline" size="sm" icon="bi bi-gear" onclick="openHaulModal()" style="font-size:11px">{{ __('zakat.update_haul') }}</x-button>
                             </div>
 
                             @if(! $haulStatus['has_start_date'])
@@ -59,7 +57,7 @@
                                             {{ __('zakat.haul_complete') }}
                                         </span>
                                     @else
-                                        <span class="d-flex align-items-center gap-1" style="font-size:13px; color:#6366F1">
+                                        <span class="d-flex align-items-center gap-1" style="font-size:13px; color:var(--accent)">
                                             <i class="bi bi-hourglass-split"></i>
                                             {{ __('zakat.days_left', ['days' => $haulStatus['days_remaining']]) }}
                                             <span style="color:var(--text-muted)"> — {{ __('zakat.next_zakat_date') }}: {{ $haulStatus['next_date_hijri'] ?? $haulStatus['next_date'] }}</span>
@@ -73,7 +71,7 @@
                             <i class="bi bi-currency-exchange"></i>
                             <span>
                                 {{ __('zakat.currency_used', ['currency' => config('finance.currency')]) }}
-                                <a href="{{ route('account.settings') }}" style="text-decoration:underline; color:var(--accent)">{{ __('zakat.change_currency') }}</a>
+                                <a href="{{ route('settings.account.index') }}" style="text-decoration:underline; color:var(--accent)">{{ __('zakat.change_currency') }}</a>
                             </span>
                         </div>
 
@@ -93,9 +91,7 @@
                                 </div>
                                 <div class="col-md-5">
                                     <div class="d-flex align-items-center gap-2" style="margin-top:22px">
-                                        <button type="button" onclick="fetchPrices()" id="fetchBtn" class="btn btn-outline-accent btn-custom" style="white-space:nowrap">
-                                            <i class="bi bi-arrow-clockwisems-1" id="fetchIcon"></i>{{ __('zakat.fetch_prices') }}
-                                        </button>
+                                        <x-button variant="outline-accent" onclick="fetchPrices()" id="fetchBtn" icon="bi bi-arrow-clockwise" style="white-space:nowrap">{{ __('zakat.fetch_prices') }}</x-button>
                                         <small id="fetchStatus" class="text-muted d-none"></small>
                                     </div>
                                 </div>
@@ -104,7 +100,7 @@
 
                         {{-- Section 2: Gold Holdings (multi-karat) --}}
                         <div class="mb-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:#FFC107">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:var(--warning)">
                                 <i class="bi bi-gem"></i>
                                 {{ __('zakat.gold_holdings') }}
                             </h6>
@@ -145,25 +141,21 @@
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end" style="padding-bottom:2px">
                                         @if($idx > 0)
-                                        <button type="button" onclick="removeGoldRow(this)" class="btn btn-outline-danger btn-sm" style="padding:4px 8px; font-size:12px" title="{{ __('general.remove') }}">
-                                            <i class="bi bi-x-lg"></i>
-                                        </button>
+                                        <x-button variant="outline-danger" size="sm" icon="bi bi-x-lg" onclick="removeGoldRow(this)" style="padding:4px 8px; font-size:12px" title="{{ __('general.remove') }}"></x-button>
                                         @endif
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
 
-                            <button type="button" onclick="addGoldRow()" class="btn btn-outline-secondary btn-sm mt-2" style="font-size:12px">
-                                <i class="bi bi-plus-lg"></i>{{ __('zakat.add_gold_row') }}
-                            </button>
+                            <x-button variant="outline" size="sm" icon="bi bi-plus-lg" onclick="addGoldRow()" class="mt-2" style="font-size:12px">{{ __('zakat.add_gold_row') }}</x-button>
 
-                            <div class="mt-3 p-3" style="border-radius:8px; background:rgba(255,193,7,0.06); border:1px solid rgba(255,193,7,0.15)">
+                            <div class="mt-3 p-3" style="border-radius:8px; background:var(--warning-light); border:1px solid var(--warning-border)">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span style="font-size:13px; font-weight:600; color:#FFC107">
-                                        <i class="bi bi-gemms-1"></i>{{ __('zakat.gold_total') }}
+                                    <span style="font-size:13px; font-weight:600; color:var(--warning)">
+                                        <i class="bi bi-gem ms-1"></i>{{ __('zakat.gold_total') }}
                                     </span>
-                                    <span id="goldTotalDisplay" style="font-size:15px; font-weight:700; color:#FFC107">0 {{ config('finance.currency_symbol') }}</span>
+                                    <span id="goldTotalDisplay" style="font-size:15px; font-weight:700; color:var(--warning)">0 {{ config('finance.currency_symbol') }}</span>
                                 </div>
                                 <small id="goldTotalWeight" style="color:var(--text-muted); font-size:11px"></small>
                             </div>
@@ -172,7 +164,7 @@
 
                         {{-- Section 3: Silver --}}
                         <div class="mb-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:#94A3B8">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:var(--text-muted)">
                                 <i class="bi bi-gem"></i>
                                 {{ __('zakat.silver_value') }}
                             </h6>
@@ -186,7 +178,7 @@
 
                         {{-- Section 4: Cash & Bank Accounts --}}
                         <div class="mb-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:#22C55E">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:var(--success)">
                                 <i class="bi bi-cash-stack"></i>
                                 {{ __('zakat.cash_and_bank') }}
                             </h6>
@@ -219,7 +211,7 @@
 
                         {{-- Section 5: Business Goods --}}
                         <div class="mb-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:#3B82F6">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:var(--accent)">
                                 <i class="bi bi-shop"></i>
                                 {{ __('zakat.business_goods') }}
                             </h6>
@@ -236,7 +228,7 @@
 
                         {{-- Section 6: Investments --}}
                         <div class="mb-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:#8B5CF6">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:var(--sa-purple)">
                                 <i class="bi bi-graph-up-arrow"></i>
                                 {{ __('zakat.investments') }}
                             </h6>
@@ -268,7 +260,7 @@
 
                         {{-- Section 7: Other Assets --}}
                         <div class="mb-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:#F59E0B">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-size:14px; color:var(--warning)">
                                 <i class="bi bi-box"></i>
                                 {{ __('zakat.other_assets') }}
                             </h6>
@@ -284,7 +276,7 @@
                                     <label class="form-label-custom d-flex align-items-center gap-1">
                                         <span>{{ __('zakat.expected_receivables') }}</span>
                                         @if($owedDebtsTotal > 0)
-                                            <span style="font-size:11px; padding:2px 6px; border-radius:4px; background:rgba(20,184,166,0.1); color:#14b8a6; font-weight:500">
+                                            <span style="font-size:11px; padding:2px 6px; border-radius:4px; background:var(--accent-light); color:var(--accent); font-weight:500">
                                                 <i class="bi bi-link-45deg"></i> {{ __('zakat.auto_from_debts') }}
                                             </span>
                                         @endif
@@ -324,12 +316,8 @@
                             $canCalculate = $haulStarted && $haulDue;
                         @endphp
                         <div class="d-flex gap-3 mt-4">
-                            <button type="submit" class="btn btn-accent btn-custom" {{ $canCalculate ? '' : 'disabled' }}>
-                                <i class="bi bi-calculatorms-1"></i>{{ __('zakat.calculate') }}
-                            </button>
-                            <button type="submit" name="save" value="1" class="btn btn-outline-accent btn-custom" {{ $canCalculate ? '' : 'disabled' }}>
-                                <i class="bi bi-savems-1"></i>{{ __('zakat.save_record') }}
-                            </button>
+                            <x-button submit variant="accent" icon="bi bi-calculator" :disabled="!$canCalculate">{{ __('zakat.calculate') }}</x-button>
+                            <x-button submit variant="outline-accent" icon="bi bi-save" name="save" value="1" :disabled="!$canCalculate">{{ __('zakat.save_record') }}</x-button>
                         </div>
                         @if(! $haulStarted)
                             <div class="mt-2" style="font-size:12px; color:var(--warning); display:flex; align-items:center; gap:6px">
@@ -337,7 +325,7 @@
                                 {{ __('zakat.set_start_date') }}
                             </div>
                         @elseif(! $haulDue)
-                            <div class="mt-2" style="font-size:12px; color:#6366F1; display:flex; align-items:center; gap:6px">
+                            <div class="mt-2" style="font-size:12px; color:var(--accent); display:flex; align-items:center; gap:6px">
                                 <i class="bi bi-hourglass-split"></i>
                                 {{ __('zakat.haul_not_complete') }} — {{ __('zakat.days_left', ['days' => auth()->user()->daysUntilNextZakat()]) }}
                             </div>
@@ -414,7 +402,7 @@
                         @endif
 
                         @if($owedDebts->count() > 0)
-                            <div style="font-size:12px; font-weight:600; color:#14b8a6; margin-bottom:6px">
+                            <div style="font-size:12px; font-weight:600; color:var(--info); margin-bottom:6px">
                                 <i class="bi bi-arrow-down-left"></i> {{ __('zakat.your_receivables') }} ({{ __('debt.owed') }})
                             </div>
                             @foreach($owedDebts as $debt)
@@ -422,12 +410,12 @@
                                     <span style="color:var(--text-muted)">
                                         <i class="bi bi-person" style="font-size:10px"></i> {{ $debt['counterparty_name'] }}
                                     </span>
-                                    <span style="color:#14b8a6">{{ number_format($debt['remaining_amount'], 2) }}</span>
+                                    <span style="color:var(--info)">{{ number_format($debt['remaining_amount'], 2) }}</span>
                                 </div>
                             @endforeach
                             <div class="d-flex justify-content-between mt-1 mb-3" style="font-size:12px; font-weight:600">
-                                <span style="color:#14b8a6">{{ __('zakat.expected_receivables') }}</span>
-                                <span style="color:#14b8a6">+ {{ number_format($owedDebtsTotal, 2) }} {{ config('finance.currency_symbol') }}</span>
+                                <span style="color:var(--info)">{{ __('zakat.expected_receivables') }}</span>
+                                <span style="color:var(--info)">+ {{ number_format($owedDebtsTotal, 2) }} {{ config('finance.currency_symbol') }}</span>
                             </div>
                             <div style="font-size:11px; color:var(--text-muted); padding:6px 8px; background:rgba(20,184,166,0.06); border-radius:6px; border:1px solid rgba(20,184,166,0.15)">
                                 <i class="bi bi-info-circle"></i> {{ __('zakat.receivables_not_zakatable') }}
@@ -550,9 +538,7 @@
                                     </a>
                                 @endforeach
                             </div>
-                            <a href="{{ route('zakat.history') }}" class="btn btn-outline-accent btn-custom w-100 mt-3" style="font-size:13px">
-                                <i class="bi bi-clock-historyms-1"></i>{{ __('zakat.view_all_history') }}
-                            </a>
+                            <x-button href="{{ route('zakat.history') }}" variant="outline-accent" icon="bi bi-clock-history" block class="mt-3" style="font-size:13px">{{ __('zakat.view_all_history') }}</x-button>
                         @endif
                     </div>
                 </div>
@@ -662,12 +648,8 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-accent btn-custom">
-                            <i class="bi bi-check-lg"></i> {{ __('general.save') }}
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary btn-custom" onclick="closeHaulModal()">
-                            {{ __('general.cancel') }}
-                        </button>
+                        <x-button submit variant="accent" icon="bi bi-check-lg">{{ __('general.save') }}</x-button>
+                        <x-button variant="outline" onclick="closeHaulModal()">{{ __('general.cancel') }}</x-button>
                     </div>
                 </form>
             </div>

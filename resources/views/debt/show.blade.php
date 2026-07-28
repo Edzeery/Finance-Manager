@@ -111,9 +111,7 @@
                                 <input type="text" name="notes" class="form-custom" maxlength="1000">
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-accent btn-custom">
-                                    <i class="bi bi-check-lg ms-1"></i>{{ __('debt.add_payment') }}
-                                </button>
+                                <x-button submit icon="bi bi-check-lg">{{ __('debt.add_payment') }}</x-button>
                             </div>
                         </form>
                     </div>
@@ -157,17 +155,13 @@
                     @php $canEditDebt = auth()->user()->hasPermission('debt.update'); $canDeleteDebt = auth()->user()->hasPermission('debt.delete'); @endphp
                     <div class="d-flex gap-2 mt-3">
                         @if($canEditDebt)
-                            <a href="{{ route('debt.edit', $debt) }}" class="btn btn-outline-secondary btn-custom" style="flex:1">
-                                <i class="bi bi-pencilms-1"></i>{{ __('general.edit') }}
-                            </a>
+                            <x-button href="{{ route('debt.edit', $debt) }}" variant="outline" icon="bi bi-pencil" class="flex-grow-1">{{ __('general.edit') }}</x-button>
                         @endif
                         @if($canDeleteDebt)
                             <form action="{{ route('debt.destroy', $debt) }}" method="POST" id="delete-debt-{{ $debt->id }}" style="display:none">
                                 @csrf @method('DELETE')
                             </form>
-                            <button type="button" class="btn btn-outline-danger btn-custom w-100" @click="window.confirmDelete('debt', {{ $debt->id }})">
-                                <i class="bi bi-trashms-1"></i>{{ __('general.delete') }}
-                            </button>
+                            <x-button variant="outline-danger" block @click="window.confirmDelete('debt', {{ $debt->id }})" icon="bi bi-trash">{{ __('general.delete') }}</x-button>
                         @endif
                     </div>
                 </div>

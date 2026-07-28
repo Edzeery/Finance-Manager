@@ -45,14 +45,14 @@
                             <tr>
                                 <td>{{ __('zakat.gold_weight') }}</td>
                                 <td class="text-end">{{ number_format($r->gold_weight, 4) }}g × {{ number_format($r->gold_price_per_gram, 2) }}</td>
-                                <td class="text-end fw-bold" style="color:#FFC107">{{ number_format($r->gold_value, 2) }}</td>
+                                <td class="text-end fw-bold" style="color:var(--warning)">{{ number_format($r->gold_value, 2) }}</td>
                             </tr>
                             @endif
                             @if($r->silver_weight)
                             <tr>
                                 <td>{{ __('zakat.silver_weight') }}</td>
                                 <td class="text-end">{{ number_format($r->silver_weight, 4) }}g × {{ number_format($r->silver_price_per_gram, 2) }}</td>
-                                <td class="text-end fw-bold" style="color:#94A3B8">{{ number_format($r->silver_value, 2) }}</td>
+                                <td class="text-end fw-bold" style="color:var(--text-muted)">{{ number_format($r->silver_value, 2) }}</td>
                             </tr>
                             @endif
                             @if(!$r->gold_weight && !$r->silver_weight)
@@ -86,7 +86,7 @@
                             <tr><td>{{ __('zakat.cash_value') }}</td><td class="text-end">{{ number_format($r->cash_value, 2) }}</td></tr>
                             <tr><td>{{ __('zakat.bank_value') }}</td><td class="text-end">{{ number_format($r->bank_value, 2) }}</td></tr>
                             <tr><td>{{ __('zakat.ccp_value') }}</td><td class="text-end">{{ number_format($r->ccp_value, 2) }}</td></tr>
-                            <tr class="fw-bold"><td>{{ __('zakat.cash_and_bank') }}</td><td class="text-end" style="color:#22C55E">{{ number_format($r->cash_value + $r->bank_value + $r->ccp_value, 2) }}</td></tr>
+                            <tr class="fw-bold"><td>{{ __('zakat.cash_and_bank') }}</td><td class="text-end" style="color:var(--success)">{{ number_format($r->cash_value + $r->bank_value + $r->ccp_value, 2) }}</td></tr>
                         </tbody>
                         </table>
                     </div>
@@ -218,12 +218,8 @@
             @endif
 
             <div class="mt-4 d-flex gap-2">
-                <a href="{{ route('zakat.calculator') }}" class="btn btn-accent btn-custom">
-                    <i class="bi bi-arrow-leftms-1"></i>{{ __('zakat.calculate') }}
-                </a>
-                <a href="{{ route('zakat.history') }}" class="btn btn-outline-secondary btn-custom" style="flex:1">
-                    <i class="bi bi-clock-historyms-1"></i>{{ __('zakat.history') }}
-                </a>
+                <x-button href="{{ route('zakat.calculator') }}" variant="accent" icon="bi bi-arrow-left">{{ __('zakat.calculate') }}</x-button>
+                <x-button href="{{ route('zakat.history') }}" variant="outline" icon="bi bi-clock-history" style="flex:1">{{ __('zakat.history') }}</x-button>
             </div>
         </div>
     </div>

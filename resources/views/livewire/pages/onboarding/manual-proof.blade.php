@@ -289,9 +289,7 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
         @includeWhen($payment, 'livewire.pages.onboarding.partials.payment-details')
         <div class="d-grid gap-2 mt-3">
-            <button wire:click="proceed" class="btn btn-accent btn-custom">
-                <i class="bi bi-arrow-rightms-1"></i>{{ __('onboarding.continue') }}
-            </button>
+            <x-button wire-click="proceed" variant="accent" icon="bi bi-arrow-right">{{ __('onboarding.continue') }}</x-button>
         </div>
 
     @elseif ($view === 'rejected')
@@ -326,15 +324,9 @@ new #[Layout('layouts.guest')] class extends Component
         <hr>
         <p class="small text-muted mb-2">{{ __('onboarding.retry_or_change_method') }}</p>
         <div class="d-grid gap-2">
-            <button wire:click="retry" class="btn btn-accent btn-custom">
-                <i class="bi bi-arrow-repeatms-1"></i>{{ __('onboarding.retry_payment') }}
-            </button>
-            <button wire:click="switchGateway" class="btn btn-outline-accent btn-custom">
-                <i class="bi bi-arrow-left-rightms-1"></i>{{ __('onboarding.switch_gateway') }}
-            </button>
-            <button wire:click="changePlan" class="btn btn-outline-secondary btn-custom">
-                <i class="bi bi-gridms-1"></i>{{ __('onboarding.change_plan') }}
-            </button>
+            <x-button wire-click="retry" variant="accent" icon="bi bi-arrow-repeat">{{ __('onboarding.retry_payment') }}</x-button>
+            <x-button wire-click="switchGateway" variant="outline-accent" icon="bi bi-arrow-left-right">{{ __('onboarding.switch_gateway') }}</x-button>
+            <x-button wire-click="changePlan" variant="outline" icon="bi bi-grid">{{ __('onboarding.change_plan') }}</x-button>
         </div>
 
     @elseif ($view === 'submitted')
@@ -388,10 +380,7 @@ new #[Layout('layouts.guest')] class extends Component
         <div wire:poll.5s="checkStatus" class="d-none"></div>
 
         <div class="d-grid gap-2 mt-3">
-            <button type="button" wire:click="confirmCancel"
-                class="btn btn-outline-danger btn-custom mb-0 d-flex align-items-center gap-2">
-                <i class="bi bi-x-circlems-1"></i>{{ __('onboarding.cancel_change_method') }}
-            </button>
+            <x-button wire-click="confirmCancel" variant="outline-danger" icon="bi bi-x-circle" class="mb-0">{{ __('onboarding.cancel_change_method') }}</x-button>
         </div>
     @else
         <p class="text-muted small mb-3">{{ __('onboarding.manual_payment_instructions', ['method' => __('onboarding.method_' . ($payment->paymentMethod?->key))]) }}</p>
@@ -484,10 +473,7 @@ new #[Layout('layouts.guest')] class extends Component
         </form>
 
         <div class="d-grid gap-2 mt-3">
-            <button type="button" wire:click="confirmCancel"
-                class="btn btn-outline-danger btn-custom mb-0 d-flex align-items-center gap-2 justify-center">
-                <i class="bi bi-x-circlems-1"></i>{{ __('onboarding.cancel_change_method') }}
-            </button>
+            <x-button wire-click="confirmCancel" variant="outline-danger" icon="bi bi-x-circle" class="mb-0 justify-center">{{ __('onboarding.cancel_change_method') }}</x-button>
         </div>
     @endif
 
@@ -497,12 +483,8 @@ new #[Layout('layouts.guest')] class extends Component
                 <h5 style="font-size:16px;font-weight:600;margin-bottom:8px;">{{ __('general.confirm') }}</h5>
                 <p style="font-size:14px;color:var(--text-muted);margin-bottom:1.5rem;">{{ __('onboarding.cancel_confirm_desc') }}</p>
                 <div style="display:flex;gap:8px;justify-content:flex-end;">
-                    <button wire:click="cancelConfirmation" type="button" class="btn btn-outline-secondary btn-custom" style="font-size:13px;padding:7px 16px;">
-                        {{ __('general.cancel') }}
-                    </button>
-                    <button wire:click="executeConfirmed" type="button" class="btn btn-danger btn-custom" style="font-size:13px;padding:7px 16px;">
-                        {{ __('onboarding.cancel_change_method') }}
-                    </button>
+                    <x-button wire-click="cancelConfirmation" variant="outline" style="font-size:13px;padding:7px 16px;">{{ __('general.cancel') }}</x-button>
+                    <x-button wire-click="executeConfirmed" variant="danger" style="font-size:13px;padding:7px 16px;">{{ __('onboarding.cancel_change_method') }}</x-button>
                 </div>
             </div>
         </div>

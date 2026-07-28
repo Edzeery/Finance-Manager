@@ -9,12 +9,14 @@ use App\Http\Resources\ExpenseResource;
 use App\Repositories\ExpenseRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ExpenseController extends Controller
 {
     public function __construct(private ExpenseRepository $expenseRepo) {}
 
-    public function index(Request $request): \Illuminate\Http\Resources\Json\ResourceCollection
+    public function index(Request $request): ResourceCollection
     {
         $filters = array_merge(
             $request->only(['category', 'date_from', 'date_to', 'search', 'per_page']),
@@ -25,7 +27,7 @@ class ExpenseController extends Controller
         return ExpenseResource::collection($expenses);
     }
 
-    public function store(StoreExpenseRequest $request): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function store(StoreExpenseRequest $request): JsonResponse|JsonResource
     {
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
@@ -35,7 +37,7 @@ class ExpenseController extends Controller
         return response()->json(new ExpenseResource($expense), 201);
     }
 
-    public function show(Request $request, int $id): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function show(Request $request, int $id): JsonResponse|JsonResource
     {
         $expense = $this->expenseRepo->findOrFail($id);
         $this->authorize('view', $expense);
@@ -43,7 +45,7 @@ class ExpenseController extends Controller
         return response()->json(new ExpenseResource($expense));
     }
 
-    public function update(UpdateExpenseRequest $request, int $id): JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+    public function update(UpdateExpenseRequest $request, int $id): JsonResponse|JsonResource
     {
         $expense = $this->expenseRepo->findOrFail($id);
         $this->authorize('update', $expense);

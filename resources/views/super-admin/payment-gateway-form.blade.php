@@ -142,7 +142,7 @@
                                     <span class="small text-muted mt-1">{{ __('super-admin.field_encrypted') }}</span>
                                 </div>
                                 <div class="col-md-1">
-                                    <button type="button" class="btn btn-sm btn-outline-danger remove-field-row"><i class="bi bi-trash"></i></button>
+                                    <x-button variant="danger" size="sm" icon="bi bi-trash" class="remove-field-row" />
                                 </div>
                             </div>
                             <div class="row g-2 mt-1">
@@ -172,32 +172,26 @@
                                                         <input type="text" name="fields[{{ $i }}][options][{{ $oi }}][label]" value="{{ $ol }}" class="form-custom" placeholder="{{ __('super-admin.field_option_label') }}">
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <button type="button" class="btn btn-sm btn-outline-danger remove-option"><i class="bi bi-x-lg"></i></button>
+                                                        <x-button variant="danger" size="sm" icon="bi bi-x-lg" class="remove-option" />
                                                     </div>
                                                 </div>
                                             @endforeach
                                         @endif
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary add-option" data-fi="{{ $i }}"><i class="bi bi-plus"></i> {{ __('super-admin.add_option') }}</button>
+                                    <x-button variant="outline" size="sm" icon="bi bi-plus" class="add-option" data-fi="{{ $i }}">{{ __('super-admin.add_option') }}</x-button>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                <button type="button" id="add-field-row" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-plus"></i> {{ __('super-admin.add_field') }}
-                </button>
+                <x-button variant="outline" size="sm" icon="bi bi-plus" id="add-field-row">{{ __('super-admin.add_field') }}</x-button>
             </div>
         </div>
 
         <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-accent btn-custom">
-                {{ $gateway ? __('general.update') : __('general.create') }}
-            </button>
-            <a href="{{ route('super.admin.payment-methods.index') }}" class="btn btn-outline-secondary btn-custom">
-                {{ __('general.cancel') }}
-            </a>
+            <x-button variant="accent" submit>{{ $gateway ? __('general.update') : __('general.create') }}</x-button>
+            <x-button href="{{ route('super.admin.payment-methods.index') }}" variant="outline">{{ __('general.cancel') }}</x-button>
         </div>
     </form>
 

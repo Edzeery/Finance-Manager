@@ -1,4 +1,4 @@
-<x-super-admin-layout>
+﻿<x-super-admin-layout>
     <x-slot:title>{{ __('profile.title') }} - {{ config('app.name') }}</x-slot>
     <x-slot:page-title>{{ __('general.profile') }}</x-slot>
     <x-slot:page-description>{{ __('profile.page_description') }}</x-slot>
@@ -19,7 +19,7 @@
                 <p class="profile-email">{{ $user->email }}</p>
                 <span class="profile-joined">{{ __('profile.member_since') }} {{ $user->created_at->translatedFormat('F Y') }}</span>
                 <div class="mt-3 text-center">
-                    <span class="badge" style="background:var(--accent);color:#0F172A;font-size:12px;padding:4px 12px;border-radius:20px">
+                    <span class="badge" style="background:var(--accent);color:var(--primary);font-size:12px;padding:4px 12px;border-radius:20px">
                         <i class="bi bi-shield-fill-checkms-1"></i>{{ __('super-admin.super_admin') }}
                     </span>
                 </div>

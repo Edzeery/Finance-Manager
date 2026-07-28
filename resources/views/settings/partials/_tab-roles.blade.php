@@ -1,8 +1,4 @@
-<x-app-layout>
-    <x-slot:title>{{ __('workspace.roles') }} - {{ config('app.name') }}</x-slot>
-    <x-slot:page-title>{{ __('workspace.roles') }}</x-slot>
-    <x-slot:page-description>{{ __('workspace.roles_desc') }}</x-slot>
-
+@if($roles->count())
     <div class="row g-3 stagger-fade-in">
         @foreach($roles as $role)
             <div class="col-md-6 col-lg-4">
@@ -28,11 +24,15 @@
                             <x-status-badge domain="general" status="info" set="bi" size="xs" class="ms-1" />
                         @endif
                     </div>
-                    <a href="{{ route('settings.workspace.roles.show', $role) }}" class="btn" style="width:100%;padding:9px;font-size:13px;border-radius:var(--radius-sm);background:var(--accent);color:#0F172A;font-weight:600;border:none;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin-top:16px">
-                        <i class="bi bi-eye"></i>{{ __('general.view') }}
-                    </a>
+                    <x-button href="{{ route('settings.workspace.roles.show', $role) }}" block icon="bi bi-eye" style="margin-top:16px">{{ __('general.view') }}</x-button>
                 </div>
             </div>
         @endforeach
     </div>
-</x-app-layout>
+@else
+    <div class="settings-card">
+        <div class="text-center py-4">
+            <x-empty-state icon="bi bi-shield-check" :title="__('workspace.no_roles')" />
+        </div>
+    </div>
+@endif

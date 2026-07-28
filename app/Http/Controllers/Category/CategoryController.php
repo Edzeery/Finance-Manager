@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Category;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 abstract class CategoryController extends Controller
 {

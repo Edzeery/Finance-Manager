@@ -84,19 +84,15 @@
                 @auth
                     <x-button variant="accent" :href="route('dashboard')" icon="bi bi-grid-1x2-fill"
                         icon-position="left">{{ __('general.dashboard') }}</x-button>
-                    <a href="{{ route('api.documentation') }}"
-                        class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-book ms-2"></i>API
-                    </a>
+                    <x-button href="{{ route('api.documentation') }}" variant="outline" size="lg"
+                        icon="bi bi-book" icon-position="right" class="mb-0">API</x-button>
                 @else
-                    <a href="{{ route('register') }}"
-                        class="btn btn-accent btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-person-plus ms-2"></i>{{ __('welcome.hero_cta_started') }}
-                    </a>
-                    <a href="#features"
-                        class="btn btn-outline-secondary btn-custom btn-lg mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-play-circle ms-2"></i>{{ __('welcome.hero_cta_demo') }}
-                    </a>
+                    <x-button href="{{ route('register') }}" variant="accent" size="lg"
+                        icon="bi bi-person-plus" icon-position="right"
+                        class="mb-0">{{ __('welcome.hero_cta_started') }}</x-button>
+                    <x-button href="#features" variant="outline" size="lg"
+                        icon="bi bi-play-circle" icon-position="right"
+                        class="mb-0">{{ __('welcome.hero_cta_demo') }}</x-button>
                 @endauth
             </div>
         </div>
@@ -208,7 +204,7 @@
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon" style="background:rgba(99,102,241,0.1);color:#6366f1">
+                <div class="feature-icon" style="background:var(--accent-light);color:var(--accent)">
                     <i class="bi bi-arrow-left-right"></i>
                 </div>
                 <h3>{{ __('general.transactions') }}</h3>
@@ -216,7 +212,7 @@
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon" style="background:rgba(236,72,153,0.1);color:#ec4899">
+                <div class="feature-icon" style="background:var(--danger-light);color:var(--danger)">
                     <i class="bi bi-bullseye"></i>
                 </div>
                 <h3>{{ __('goal.title') }}</h3>
@@ -224,7 +220,7 @@
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon" style="background:rgba(34,197,94,0.1);color:#22c55e">
+                <div class="feature-icon" style="background:var(--success-light);color:var(--success)">
                     <i class="bi bi-bell-fill"></i>
                 </div>
                 <h3>{{ __('general.notifications') }}</h3>
@@ -232,7 +228,7 @@
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon" style="background:rgba(251,146,60,0.1);color:#fb923c">
+                <div class="feature-icon" style="background:var(--warning-light);color:var(--warning)">
                     <i class="bi bi-file-earmark-bar-graph"></i>
                 </div>
                 <h3>{{ __('report.title') }}</h3>
@@ -240,7 +236,7 @@
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon" style="background:rgba(168,85,247,0.1);color:#a855f7">
+                <div class="feature-icon" style="background:var(--info-light);color:var(--info)">
                     <i class="bi bi-receipt"></i>
                 </div>
                 <h3>{{ __('settings.invoices') }}</h3>
@@ -248,7 +244,7 @@
             </div>
 
             <div class="feature-card">
-                <div class="feature-icon" style="background:rgba(6,182,212,0.1);color:#06b6d4">
+                <div class="feature-icon" style="background:var(--info-light);color:var(--info)">
                     <i class="bi bi-people-fill"></i>
                 </div>
                 <h3>{{ __('workspace.members') }}</h3>
@@ -303,21 +299,21 @@
 
         <div class="feature-grid" style="max-width:900px;margin:0 auto">
             <div class="feature-card" style="text-align:center">
-                <div class="feature-icon" style="background:rgba(99,102,241,0.1);color:#6366f1;margin:0 auto 16px">
+                <div class="feature-icon" style="background:var(--accent-light);color:var(--accent);margin:0 auto 16px">
                     <i class="bi bi-person-plus-fill"></i>
                 </div>
                 <h3>{{ __('workspace.invite_member') }}</h3>
                 <p>{{ __('welcome.team_feature_invite') }}</p>
             </div>
             <div class="feature-card" style="text-align:center">
-                <div class="feature-icon" style="background:rgba(34,197,94,0.1);color:#22c55e;margin:0 auto 16px">
+                <div class="feature-icon" style="background:var(--success-light);color:var(--success);margin:0 auto 16px">
                     <i class="bi bi-shield-check"></i>
                 </div>
                 <h3>{{ __('general.roles') }}</h3>
                 <p>{{ __('welcome.team_feature_roles') }}</p>
             </div>
             <div class="feature-card" style="text-align:center">
-                <div class="feature-icon" style="background:rgba(251,146,60,0.1);color:#fb923c;margin:0 auto 16px">
+                <div class="feature-icon" style="background:var(--warning-light);color:var(--warning);margin:0 auto 16px">
                     <i class="bi bi-arrow-left-right"></i>
                 </div>
                 <h3>{{ __('workspace.transfer_ownership') }}</h3>
@@ -338,15 +334,11 @@
             <p style="font-size:16px;color:var(--text-muted);margin-bottom:24px">{{ __('welcome.api_description') }}
             </p>
             <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="{{ route('api.documentation') }}"
-                    class="btn btn-accent btn-custom d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-bookms-1"></i>{{ __('developer.api_documentation_link') }}
-                </a>
+                <x-button href="{{ route('api.documentation') }}" variant="accent"
+                    icon="bi bi-book">{{ __('developer.api_documentation_link') }}</x-button>
                 @auth
-                    <a href="{{ route('account.settings.developer') }}"
-                        class="btn btn-outline-secondary btn-custom d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-keyms-1"></i>{{ __('developer.api_tokens') }}
-                    </a>
+                    <x-button href="{{ route('settings.account.developer.index') }}" variant="outline"
+                        icon="bi bi-key">{{ __('developer.api_tokens') }}</x-button>
                 @endauth
             </div>
         </div>
@@ -396,21 +388,21 @@
                         @endif
                         @if ($allFeatures->count() > 3)
                             <li>
-                                <button @click="showAll = !showAll" type="button" class="btn btn-link p-0"
-                                    style="font-size:13px;color:var(--accent);text-decoration:none">
+                                <x-button @click="showAll = !showAll" variant="ghost" size="sm"
+                                    style="font-size:13px;color:var(--accent);text-decoration:none;padding:0">
                                     <span x-show="!showAll">{{ __('general.show_more') }}
                                         ({{ $allFeatures->count() - 3 }})</span>
                                     <span x-show="showAll">{{ __('general.show_less') }}</span>
-                                </button>
+                                </x-button>
                             </li>
                         @endif
                     </ul>
                     @auth
-                        <a href="{{ route('dashboard') }}"
-                            class="btn btn-accent btn-custom w-100">{{ __('general.dashboard') }}</a>
+                        <x-button href="{{ route('dashboard') }}" variant="accent"
+                            block>{{ __('general.dashboard') }}</x-button>
                     @else
-                        <a href="{{ route('register') }}"
-                            class="btn btn-accent btn-custom w-100">{{ $plan->button_text ?? __('welcome.pricing_cta') }}</a>
+                        <x-button href="{{ route('register') }}" variant="accent"
+                            block>{{ $plan->button_text ?? __('welcome.pricing_cta') }}</x-button>
                     @endauth
                 </div>
             @endforeach
@@ -477,15 +469,13 @@
             <h2>{{ __('welcome.cta_title') }}</h2>
             <p>{{ __('welcome.cta_description') }}</p>
             @auth
-                <a href="{{ route('dashboard') }}"
-                    class="btn btn-accent btn-custom btn-lg d-flex align-items-center gap-2 mx-auto" style="width:220px">
-                    <i class="bi bi-grid-1x2-fill ms-2"></i>{{ __('general.dashboard') }}
-                </a>
+                <x-button href="{{ route('dashboard') }}" variant="accent" size="lg"
+                    icon="bi bi-grid-1x2-fill" icon-position="right"
+                    class="mx-auto" style="width:220px">{{ __('general.dashboard') }}</x-button>
             @else
-                <a href="{{ route('register') }}"
-                    class="btn btn-accent btn-custom btn-lg d-flex align-items-center gap-2 mx-auto" style="width:220px">
-                    <i class="bi bi-person-plus ms-2"></i>{{ __('welcome.hero_cta_started') }}
-                </a>
+                <x-button href="{{ route('register') }}" variant="accent" size="lg"
+                    icon="bi bi-person-plus" icon-position="right"
+                    class="mx-auto" style="width:220px">{{ __('welcome.hero_cta_started') }}</x-button>
             @endauth
         </div>
     </section>
@@ -533,8 +523,8 @@
 
     @livewireScripts
     @stack('scripts')
-    <script type="module" src="https://esm.sh/ionicons@latest/loader"></script>
-    <script nomodule src="https://esm.sh/ionicons@latest/loader"></script>
+    <script type="module" src="https://esm.sh/ionicons@8.0.13/loader"></script>
+    <script nomodule src="https://esm.sh/ionicons@8.0.13/loader"></script>
 </body>
 
 </html>

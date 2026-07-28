@@ -6,11 +6,12 @@
 .app-layout .main-content {
   flex: 1;
   margin-left: var(--sidebar-width);
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   transition: margin var(--transition-base);
   max-width: 100%;
+  overflow: hidden;
 }
 
 [dir="rtl"] .app-layout .main-content {
@@ -96,6 +97,36 @@
   width: 100%;
   max-width: var(--max-content-width);
   margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.main-content > main .p-3.p-md-4.mt-5 {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.main-content > main .p-3.p-md-4.mt-5::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-content > main .p-3.p-md-4.mt-5::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-content > main .p-3.p-md-4.mt-5::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 8px;
+}
+
+.main-content > main .p-3.p-md-4.mt-5::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 
 @media (max-width: 1199.98px) {
@@ -136,7 +167,7 @@
 
   .main-content > main > .p-3,
   .main-content > main > .p-3\:p-4 {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+    padding-inline-start: 12px !important;
+    padding-inline-end: 12px !important;
   }
 }
