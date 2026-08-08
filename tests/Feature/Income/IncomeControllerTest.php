@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Income;
 
+use App\Models\Debt;
 use App\Models\Income;
 use App\Models\IncomeCategory;
 use App\Models\User;
@@ -207,5 +208,72 @@ class IncomeControllerTest extends TestCase
             ->get(route('income.index', ['trashed' => 'true']))
             ->assertOk()
             ->assertViewIs('income.index');
+    }
+
+    public function test_store_on_credit_creates_debt_without_income(): void
+    {
+        $data = [
+            'category_id' => $this->category->id,
+            'amount' => 1000,
+            'description' => 'Sold on credit',
+            'date' => '2026-06-15',
+            'is_new_debt' => true,
+            'debt_counterparty' => 'Client Co',
+            'debt_due_date' => '2026-08-15',
+        ];
+
+        $this->actingAs($this->user)
+            ->post(route('income.store'), $data)
+            ->assertRedirect(route('income.index'));
+
+        $this->assertDatabaseHas('debts', [
+            'user_id' => $this->user->id,
+            'type' => 'owed',
+            'counterparty_name' => 'Client Co',
+            'total_amount' => 1000,
+            'paid_amount' => 0,
+        ]);
+        $this->assertDatabaseMissing('incomes', [
+            'user_id' => $this->user->id,
+            'amount' => 1000,
+        ]);
+    }
+
+    public function test_store_on_credit_with_count_at_incurrence_creates_linked_income(): void
+    {
+        $data = [
+            'category_id' => $this->category->id,
+            'amount' => 1000,
+            'description' => 'Sold on credit now',
+            'date' => '2026-06-15',
+            'is_new_debt' => true,
+            'count_at_incurrence' => true,
+            'debt_counterparty' => 'Client Co',
+            'debt_due_date' => '2026-08-15',
+        ];
+
+        $this->actingAs($this->user)
+            ->post(route('income.store'), $data)
+            ->assertRedirect(route('income.index'));
+
+        $debt = Debt::withoutWorkspace()->where('counterparty_name', 'Client Co')->first();
+        $this->assertNotNull($debt);
+        $this->assertDatabaseHas('incomes', [
+            'user_id' => $this->user->id,
+            'amount' => 1000,
+            'debt_id' => $debt->id,
+        ]);
+    }
+
+    public function test_store_on_credit_requires_debt_fields(): void
+    {
+        $this->actingAs($this->user)
+            ->post(route('income.store'), [
+                'category_id' => $this->category->id,
+                'amount' => 1000,
+                'date' => '2026-06-15',
+                'is_new_debt' => true,
+            ])
+            ->assertSessionHasErrors(['debt_counterparty', 'debt_due_date']);
     }
 }

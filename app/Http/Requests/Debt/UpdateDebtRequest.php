@@ -26,6 +26,9 @@ class UpdateDebtRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1000'],
             'reminder_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'count_at_incurrence' => ['boolean'],
+            'expense_category_id' => ['nullable', 'exists:expense_categories,id'],
+            'income_category_id' => ['nullable', 'exists:income_categories,id'],
         ];
     }
 }

@@ -9,6 +9,7 @@ return [
     ],
     'date' => 'The :attribute is not a valid date.',
     'budget_exceeded' => 'This exceeds the budget. Allocated: :allocated, spent: :spent, remaining: :remaining.',
+    'payment_exceeds_remaining' => 'The amount exceeds the remaining debt. Remaining: :amount.',
     'password' => [
         'min' => 'The :attribute must be at least :min characters.',
     ],

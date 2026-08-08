@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Income;
 
 use App\Contracts\Repositories\IncomeRepositoryInterface;
+use App\Enums\DebtStatus;
+use App\Enums\DebtType;
 use App\Http\Controllers\BaseCrudController;
 use App\Http\Requests\Income\StoreIncomeRequest;
 use App\Http\Requests\Income\UpdateIncomeRequest;
+use App\Models\Debt;
 use App\Models\Income;
 use App\Models\IncomeCategory;
 use Illuminate\Http\Request;
@@ -104,10 +107,40 @@ class IncomeController extends BaseCrudController
         $data['user_id'] = auth()->id();
         $data['is_recurring'] = $request->boolean('is_recurring');
 
+        $debtCreated = false;
+        if ($request->boolean('is_new_debt') && $request->filled('debt_counterparty')) {
+            $countAtIncurrence = $request->boolean('count_at_incurrence');
+
+            $debt = Debt::create([
+                'user_id' => auth()->id(),
+                'type' => DebtType::Owed,
+                'counterparty_name' => $request->input('debt_counterparty'),
+                'total_amount' => $request->input('amount'),
+                'paid_amount' => 0,
+                'due_date' => $request->input('debt_due_date'),
+                'status' => DebtStatus::Active,
+                'description' => $request->input('description'),
+                'notes' => 'تم إنشاؤه تلقائياً من دخل: '.($request->input('description') ?? ''),
+                'income_category_id' => $request->input('category_id'),
+                'count_at_incurrence' => $countAtIncurrence,
+            ]);
+
+            if ($countAtIncurrence) {
+                $data['debt_id'] = $debt->id;
+                $debtCreated = true;
+            } else {
+                return redirect()->route('income.index')
+                    ->with('success', __('messages.income_created_as_debt'));
+            }
+        }
+
         $this->incomeRepo->create($data);
 
-        return redirect()->route('income.index')
-            ->with('success', __('messages.income_created'));
+        $message = $debtCreated
+            ? __('messages.income_created_as_debt')
+            : __('messages.income_created');
+
+        return redirect()->route('income.index')->with('success', $message);
     }
 
     public function edit(Income $income)

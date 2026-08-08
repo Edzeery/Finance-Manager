@@ -93,39 +93,78 @@
 
 <script>
 (function() {
-    var overlay = document.getElementById('pageLoaderOverlay');
-    var bar = document.getElementById('pageLoaderBar');
-    var progress = bar.querySelector('.page-loader-progress');
-    var timer = null;
+    if (window.__pageLoaderInitialized) {
+        return;
+    }
+    window.__pageLoaderInitialized = true;
+
+    var MIN_DISPLAY = 350;
+    var SETTLE = 150;
+    var showTime = 0;
     var hideTimer = null;
 
+    function elements() {
+        var overlay = document.getElementById('pageLoaderOverlay');
+        var bar = document.getElementById('pageLoaderBar');
+        var progress = bar ? bar.querySelector('.page-loader-progress') : null;
+        return { overlay: overlay, bar: bar, progress: progress };
+    }
+
     function show() {
-        overlay.classList.add('active');
-        overlay.classList.remove('done');
-        bar.classList.add('active');
-        bar.classList.remove('done');
-        progress.style.width = '0%';
-        clearTimeout(timer);
+        var el = elements();
+        if (!el.overlay || !el.bar) {
+            return;
+        }
+        el.overlay.classList.add('active');
+        el.overlay.classList.remove('done');
+        el.bar.classList.add('active');
+        el.bar.classList.remove('done');
+        if (el.progress) {
+            el.progress.style.width = '0%';
+        }
         clearTimeout(hideTimer);
+        showTime = Date.now();
     }
 
     function hide() {
-        bar.classList.add('done');
-        bar.classList.remove('active');
-        overlay.classList.add('done');
-        overlay.classList.remove('active');
-
+        var el = elements();
+        if (!el.overlay || !el.bar) {
+            return;
+        }
+        var remaining = MIN_DISPLAY - (Date.now() - showTime);
+        if (remaining < 0) {
+            remaining = 0;
+        }
+        clearTimeout(hideTimer);
         hideTimer = setTimeout(function() {
-            bar.classList.remove('done');
-            overlay.classList.remove('done');
-            progress.style.width = '0%';
-        }, 400);
+            el.bar.classList.add('done');
+            el.bar.classList.remove('active');
+            el.overlay.classList.add('done');
+            el.overlay.classList.remove('active');
+
+            setTimeout(function() {
+                if (el.bar) {
+                    el.bar.classList.remove('done');
+                }
+                if (el.overlay) {
+                    el.overlay.classList.remove('done');
+                }
+                if (el.progress) {
+                    el.progress.style.width = '0%';
+                }
+            }, 400);
+        }, remaining + SETTLE);
     }
 
     document.addEventListener('livewire:navigate', show);
     document.addEventListener('livewire:navigated', hide);
     window.addEventListener('beforeunload', show);
     window.addEventListener('load', hide);
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+            hide();
+        }
+    });
 })();
 </script>
 @endonce

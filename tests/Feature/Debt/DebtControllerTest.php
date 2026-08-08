@@ -262,4 +262,65 @@ class DebtControllerTest extends TestCase
             ->assertOk()
             ->assertViewIs('debt.index');
     }
+
+    public function test_soft_delete_keeps_payment_and_linked_transaction(): void
+    {
+        $debt = Debt::factory()->create([
+            'user_id' => $this->user->id,
+            'workspace_id' => $this->workspace->id,
+            'type' => 'owed',
+            'total_amount' => 5000,
+            'paid_amount' => 0,
+            'status' => 'active',
+            'count_at_incurrence' => false,
+        ]);
+
+        $payment = $debt->payments()->create([
+            'workspace_id' => $this->workspace->id,
+            'amount' => 1000,
+            'payment_date' => '2026-06-15',
+        ]);
+
+        $income = $payment->income;
+        $this->assertNotNull($income);
+
+        $this->actingAs($this->user)
+            ->delete(route('debt.destroy', $debt))
+            ->assertRedirect(route('debt.index'));
+
+        $this->assertSoftDeleted($debt);
+        $this->assertDatabaseHas('debt_payments', ['id' => $payment->id]);
+        $this->assertDatabaseHas('incomes', ['id' => $income->id]);
+    }
+
+    public function test_force_delete_removes_payment_and_linked_transaction(): void
+    {
+        $debt = Debt::factory()->create([
+            'user_id' => $this->user->id,
+            'workspace_id' => $this->workspace->id,
+            'type' => 'owed',
+            'total_amount' => 5000,
+            'paid_amount' => 0,
+            'status' => 'active',
+            'count_at_incurrence' => false,
+        ]);
+
+        $payment = $debt->payments()->create([
+            'workspace_id' => $this->workspace->id,
+            'amount' => 1000,
+            'payment_date' => '2026-06-15',
+        ]);
+
+        $income = $payment->income;
+        $this->assertNotNull($income);
+
+        $debt->delete();
+
+        $this->actingAs($this->user)
+            ->delete(route('debt.force-delete', $debt->id))
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('debt_payments', ['id' => $payment->id]);
+        $this->assertSoftDeleted($income);
+    }
 }

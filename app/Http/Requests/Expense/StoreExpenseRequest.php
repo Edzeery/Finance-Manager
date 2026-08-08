@@ -29,6 +29,7 @@ class StoreExpenseRequest extends FormRequest
             'recurring_end_date' => ['nullable', 'date', 'after_or_equal:date'],
             'notes' => ['nullable', 'string', 'max:1000'],
             'is_new_debt' => ['boolean'],
+            'count_at_incurrence' => ['boolean'],
             'debt_counterparty' => ['nullable', 'string', 'max:255', 'required_if:is_new_debt,true'],
             'debt_due_date' => ['nullable', 'date', 'required_if:is_new_debt,true'],
         ];
@@ -48,6 +49,10 @@ class StoreExpenseRequest extends FormRequest
         $date = $this->input('date');
 
         if (! $categoryId || ! $date || $amount <= 0) {
+            return;
+        }
+
+        if ($this->boolean('is_new_debt') && ! $this->boolean('count_at_incurrence')) {
             return;
         }
 

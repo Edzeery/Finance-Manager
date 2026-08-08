@@ -34,6 +34,6 @@ return [
     'no_budget_warning' => 'This category has no budget. You can create a budget or register the expense as a debt.',
     'create_budget_now' => 'Create Budget Now',
     'register_as_debt' => 'Register as Debt',
-    'debt_info_message' => 'This expense will be recorded as a debt. Enter the counterparty name and due date.',
+    'debt_info_message' => 'This expense will be recorded as a payable debt (you owe others). It will appear in expense reports when settled.',
     'continue_without_budget' => 'Continue without budget',
 ];

@@ -24,6 +24,10 @@ class StoreIncomeRequest extends FormRequest
             'recurring_frequency' => ['required_if:is_recurring,true', 'nullable', Rule::in(RecurringFrequency::values())],
             'recurring_end_date' => ['nullable', 'date', 'after:date'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'is_new_debt' => ['boolean'],
+            'count_at_incurrence' => ['boolean'],
+            'debt_counterparty' => ['nullable', 'string', 'max:255', 'required_if:is_new_debt,true'],
+            'debt_due_date' => ['nullable', 'date', 'required_if:is_new_debt,true'],
         ];
     }
 

@@ -6,7 +6,9 @@
         <div class="col-lg-8">
             <div class="card-custom">
                 <div class="card-body p-4">
-                    <form action="{{ route('debt.update', $debt) }}" method="POST">
+                    <form action="{{ route('debt.update', $debt) }}" method="POST"
+                          x-data="debtForm()"
+                          @change="if ($event.target && $event.target.name === 'type') debtType = $event.target.value">
                         @csrf @method('PUT')
 
                         <div class="row g-3">
@@ -26,6 +28,32 @@
                                 <label class="form-label-custom">{{ __('debt.counterparty') }} <span class="text-danger">*</span></label>
                                 <input type="text" name="counterparty_name" value="{{ old('counterparty_name', $debt->counterparty_name) }}" class="form-custom @error('counterparty_name') is-invalid @enderror" required maxlength="255">
                                 @error('counterparty_name') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
+                            </div>
+
+                            <div class="col-md-6" x-show="debtType === 'owing'" x-cloak>
+                                <label class="form-label-custom">{{ __('debt.expense_category') }}</label>
+                                <select name="expense_category_id" class="form-custom @error('expense_category_id') is-invalid @enderror">
+                                    <option value="">{{ __('general.select') }}</option>
+                                    @foreach($expenseCategories as $cat)
+                                        <option value="{{ $cat->id }}" {{ old('expense_category_id', $debt->expense_category_id) == $cat->id ? 'selected' : '' }}>{{ locale_name($cat) }}</option>
+                                    @endforeach
+                                </select>
+                                @error('expense_category_id') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
+                            </div>
+
+                            <div class="col-md-6" x-show="debtType === 'owed'" x-cloak>
+                                <label class="form-label-custom">{{ __('debt.income_category') }}</label>
+                                <select name="income_category_id" class="form-custom @error('income_category_id') is-invalid @enderror">
+                                    <option value="">{{ __('general.select') }}</option>
+                                    @foreach($incomeCategories as $cat)
+                                        <option value="{{ $cat->id }}" {{ old('income_category_id', $debt->income_category_id) == $cat->id ? 'selected' : '' }}>{{ locale_name($cat) }}</option>
+                                    @endforeach
+                                </select>
+                                @error('income_category_id') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
+                            </div>
+
+                            <div class="col-12">
+                                <x-toggle-switch name="count_at_incurrence" id="count_at_incurrence" :checked="old('count_at_incurrence', $debt->count_at_incurrence)" label="{{ __('debt.count_at_incurrence') }}" hint="{{ __('debt.count_at_incurrence_hint') }}" />
                             </div>
 
                             <div class="col-md-6">
@@ -78,4 +106,20 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+    function debtForm() {
+        return {
+            debtType: '{{ $debt->type->value }}',
+            init() {
+                this.$nextTick(() => {
+                    var el = document.querySelector('input[name="type"]');
+                    if (el && el.value) this.debtType = el.value;
+                });
+            }
+        };
+    }
+    </script>
+    @endpush
 </x-app-layout>

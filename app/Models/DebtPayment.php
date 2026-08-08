@@ -16,7 +16,7 @@ class DebtPayment extends Model
         static::addGlobalScope(new WorkspaceScope);
     }
 
-    protected $fillable = ['debt_id', 'workspace_id', 'amount', 'payment_date', 'notes'];
+    protected $fillable = ['debt_id', 'workspace_id', 'amount', 'payment_date', 'notes', 'expense_id', 'income_id'];
 
     protected function casts(): array
     {
@@ -26,8 +26,27 @@ class DebtPayment extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Debt, $this>
+     */
     public function debt(): BelongsTo
     {
         return $this->belongsTo(Debt::class);
+    }
+
+    /**
+     * @return BelongsTo<Expense, $this>
+     */
+    public function expense(): BelongsTo
+    {
+        return $this->belongsTo(Expense::class);
+    }
+
+    /**
+     * @return BelongsTo<Income, $this>
+     */
+    public function income(): BelongsTo
+    {
+        return $this->belongsTo(Income::class);
     }
 }

@@ -5,11 +5,17 @@ namespace App\Models;
 use App\Enums\RecurringFrequency;
 use App\Models\Concerns\BelongsToWorkspace;
 use App\Models\Scopes\WorkspaceScope;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property Carbon $date
+ * @property Carbon|null $recurring_end_date
+ * @property RecurringFrequency|null $recurring_frequency
+ */
 class Expense extends Model
 {
     use BelongsToWorkspace, HasFactory, SoftDeletes;

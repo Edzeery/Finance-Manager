@@ -4,16 +4,29 @@ namespace App\Observers;
 
 use App\Enums\DebtStatus;
 use App\Models\DebtPayment;
+use App\Services\DebtSettlementService;
 
 class DebtPaymentObserver
 {
+    public function __construct(
+        private DebtSettlementService $settlementService,
+    ) {}
+
     public function created(DebtPayment $payment): void
     {
+        $this->settlementService->settle($payment);
+        $this->syncDebtStatus($payment);
+    }
+
+    public function updated(DebtPayment $payment): void
+    {
+        $this->settlementService->refresh($payment);
         $this->syncDebtStatus($payment);
     }
 
     public function deleted(DebtPayment $payment): void
     {
+        $this->settlementService->reverse($payment);
         $this->syncDebtStatus($payment);
     }
 

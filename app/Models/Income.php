@@ -5,11 +5,17 @@ namespace App\Models;
 use App\Enums\RecurringFrequency;
 use App\Models\Concerns\BelongsToWorkspace;
 use App\Models\Scopes\WorkspaceScope;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property Carbon $date
+ * @property Carbon|null $recurring_end_date
+ * @property RecurringFrequency|null $recurring_frequency
+ */
 class Income extends Model
 {
     use BelongsToWorkspace, HasFactory, SoftDeletes;
@@ -22,7 +28,7 @@ class Income extends Model
     protected $fillable = [
         'user_id', 'workspace_id', 'category_id', 'amount', 'description', 'date',
         'is_recurring', 'recurring_frequency', 'recurring_end_date',
-        'is_archived', 'receipt_path', 'notes',
+        'is_archived', 'receipt_path', 'notes', 'debt_id',
     ];
 
     protected function casts(): array
@@ -45,6 +51,14 @@ class Income extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(IncomeCategory::class, 'category_id');
+    }
+
+    /**
+     * @return BelongsTo<Debt, $this>
+     */
+    public function debt(): BelongsTo
+    {
+        return $this->belongsTo(Debt::class);
     }
 
     public function scopeForPeriod($query, $start, $end)

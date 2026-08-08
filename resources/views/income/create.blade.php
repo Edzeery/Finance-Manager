@@ -6,7 +6,9 @@
         <div class="col-lg-8">
             <div class="card-custom">
                 <div class="card-body p-4">
-                    <form action="{{ route('income.store') }}" method="POST">
+                    <form action="{{ route('income.store') }}" method="POST"
+                          x-data="incomeForm()"
+                          @change="if ($event.target.id === 'is_new_debt_hidden') showDebtFields = ($event.target.value === '1')">
                         @csrf
 
                         <div class="row g-3">
@@ -72,6 +74,34 @@
                                 <label class="form-label-custom">{{ __('income.notes') }}</label>
                                 <textarea name="notes" class="form-custom" rows="3" maxlength="1000">{{ old('notes') }}</textarea>
                             </div>
+
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <x-toggle-switch name="is_new_debt" id="is_new_debt" :checked="old('is_new_debt')" label="{{ __('income.register_as_debt') }}" hint="{{ __('income.register_as_debt_hint') }}" />
+                                </div>
+                            </div>
+
+                            <div class="col-12 row g-3" x-show="showDebtFields" x-transition x-cloak>
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center gap-2 mb-2 p-2" style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); border-radius:8px; font-size:13px">
+                                        <i class="bi bi-info-circle-fill" style="color:var(--warning)"></i>
+                                        <span style="color:var(--text-secondary)">{{ __('income.debt_info_message') }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">{{ __('debt.counterparty_name') }} <span class="text-danger">*</span></label>
+                                    <input type="text" name="debt_counterparty" value="{{ old('debt_counterparty') }}" class="form-custom @error('debt_counterparty') is-invalid @enderror" placeholder="{{ __('debt.counterparty_name') }}" :required="showDebtFields">
+                                    @error('debt_counterparty') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">{{ __('debt.due_date') }} <span class="text-danger">*</span></label>
+                                    <input type="date" name="debt_due_date" value="{{ old('debt_due_date') }}" class="form-custom @error('debt_due_date') is-invalid @enderror" :required="showDebtFields">
+                                    @error('debt_due_date') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-12">
+                                    <x-toggle-switch name="count_at_incurrence" id="count_at_incurrence" :checked="old('count_at_incurrence')" label="{{ __('debt.count_at_incurrence') }}" hint="{{ __('debt.count_at_incurrence_hint') }}" />
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex gap-3 mt-4 pt-3" style="border-top:1px solid var(--border)">
@@ -86,6 +116,18 @@
 
     @push('scripts')
     <script>
+    function incomeForm() {
+        return {
+            showDebtFields: false,
+            init() {
+                this.$nextTick(() => {
+                    var el = document.getElementById('is_new_debt_hidden');
+                    if (el && el.value === '1') this.showDebtFields = true;
+                });
+            }
+        };
+    }
+
     function toggleRecurring() {
         var hidden = document.getElementById('is_recurring_hidden');
         document.getElementById('recurringFields').style.display =

@@ -6,6 +6,7 @@ use App\Enums\DebtStatus;
 use App\Enums\DebtType;
 use App\Models\Concerns\BelongsToWorkspace;
 use App\Models\Scopes\WorkspaceScope;
+use App\Services\DebtSettlementService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,11 +20,20 @@ class Debt extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new WorkspaceScope);
+
+        static::forceDeleting(function (Debt $debt) {
+            $payments = $debt->payments()->with(['expense', 'income'])->get();
+
+            foreach ($payments as $payment) {
+                app(DebtSettlementService::class)->reverse($payment);
+            }
+        });
     }
 
     protected $fillable = [
         'user_id', 'workspace_id', 'type', 'counterparty_name', 'total_amount', 'paid_amount',
         'due_date', 'status', 'description', 'reminder_date', 'notes',
+        'count_at_incurrence', 'expense_category_id', 'income_category_id',
     ];
 
     protected function casts(): array
@@ -35,6 +45,7 @@ class Debt extends Model
             'paid_amount' => 'decimal:2',
             'due_date' => 'date',
             'reminder_date' => 'date',
+            'count_at_incurrence' => 'boolean',
         ];
     }
 
@@ -43,9 +54,28 @@ class Debt extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<DebtPayment, $this>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(DebtPayment::class);
+    }
+
+    /**
+     * @return BelongsTo<ExpenseCategory, $this>
+     */
+    public function expenseCategory(): BelongsTo
+    {
+        return $this->belongsTo(ExpenseCategory::class);
+    }
+
+    /**
+     * @return BelongsTo<IncomeCategory, $this>
+     */
+    public function incomeCategory(): BelongsTo
+    {
+        return $this->belongsTo(IncomeCategory::class);
     }
 
     public function getRemainingAmountAttribute(): float

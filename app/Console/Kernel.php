@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('finance:send-debt-reminders')->dailyAt('08:00')->withoutOverlapping();
         $schedule->command('finance:check-budget-alerts')->dailyAt('09:00')->withoutOverlapping();
         $schedule->command('finance:check-goal-progress')->dailyAt('10:00')->withoutOverlapping();
-        $schedule->command('finance:process-recurring')->dailyAt('03:00')->withoutOverlapping();
+        $schedule->command('finance:process-recurring')->dailyAt('00:00')->withoutOverlapping();
         $schedule->command('finance:send-zakat-reminders')->dailyAt('10:00')->withoutOverlapping();
         $schedule->command('backup:run --only-db --disable-notifications')->dailyAt('02:00')->withoutOverlapping();
         $schedule->command('backup:clean --disable-notifications')->dailyAt('02:30')->withoutOverlapping();

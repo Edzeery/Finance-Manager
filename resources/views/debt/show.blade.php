@@ -63,14 +63,24 @@
                                     <th>{{ __('debt.payment_date') }}</th>
                                     <th class="text-end">{{ __('debt.payment_amount') }}</th>
                                     <th>{{ __('debt.payment_notes') }}</th>
+                                    <th>{{ __('debt.linked_transaction') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($debt->payments as $payment)
                                     <tr>
                                         <td>{{ $payment->payment_date->format('Y/m/d') }}</td>
-                                        <td text-start fw-bold style="color:var(--success)">-{{ number_format($payment->amount, 2) }}</td>
-                                        <td>{{ $payment->notes ?: 'â€”' }}</td>
+                                        <td class="text-start fw-bold" style="color:var(--success)">-{{ number_format($payment->amount, 2) }}</td>
+                                        <td>{{ $payment->notes ?: '—' }}</td>
+                                        <td>
+                                            @if($payment->expense)
+                                                <a href="{{ route('expense.edit', $payment->expense) }}" class="badge" style="background:rgba(239,68,68,0.12);color:var(--danger)">{{ __('debt.linked_expense') }} #{{ $payment->expense_id }}</a>
+                                            @elseif($payment->income)
+                                                <a href="{{ route('income.edit', $payment->income) }}" class="badge" style="background:rgba(34,197,94,0.12);color:var(--success)">{{ __('debt.linked_income') }} #{{ $payment->income_id }}</a>
+                                            @else
+                                                <span style="color:var(--text-muted)">—</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -95,13 +105,14 @@
                     <div class="card-body">
                         <form action="{{ route('debt.payments.store', $debt) }}" method="POST" class="row g-3">
                             @csrf
-                            <div class="col-md-4">
-                                <label class="form-label-custom">{{ __('debt.payment_amount') }} <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="number" step="0.01" min="0.01" name="amount" class="form-custom" required placeholder="0.00" max="{{ $debt->remaining_amount }}">
-                                    <span class="input-group-text" style="background:var(--bg); border:1px solid var(--border); border-radius:0 8px 8px 0; color:var(--text-muted); font-size:13px">{{ config('finance.currency_symbol') }}</span>
+                                <div class="col-md-4">
+                                    <label class="form-label-custom">{{ __('debt.payment_amount') }} <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" min="0.01" name="amount" class="form-custom @error('amount') is-invalid @enderror" required placeholder="0.00" max="{{ $debt->remaining_amount }}">
+                                        <span class="input-group-text" style="background:var(--bg); border:1px solid var(--border); border-radius:0 8px 8px 0; color:var(--text-muted); font-size:13px">{{ config('finance.currency_symbol') }}</span>
+                                    </div>
+                                    @error('amount') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
                                 </div>
-                            </div>
                             <div class="col-md-4">
                                 <label class="form-label-custom">{{ __('debt.payment_date') }} <span class="text-danger">*</span></label>
                                 <input type="date" name="payment_date" class="form-custom" required value="{{ date('Y-m-d') }}">
@@ -134,12 +145,27 @@
                     </div>
                     <div class="info-row">
                         <span class="info-label">{{ __('debt.due_date') }}</span>
-                        <span class="info-value">{{ $debt->due_date?->format('Y/m/d') ?: 'â€”' }}</span>
+                        <span class="info-value">{{ $debt->due_date?->format('Y/m/d') ?: '—' }}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">{{ __('debt.reminder_date') }}</span>
-                        <span class="info-value">{{ $debt->reminder_date?->format('Y/m/d') ?: 'â€”' }}</span>
+                        <span class="info-value">{{ $debt->reminder_date?->format('Y/m/d') ?: '—' }}</span>
                     </div>
+                    <div class="info-row">
+                        <span class="info-label">{{ __('debt.settlement_mode') }}</span>
+                        <span class="info-value">{{ $debt->count_at_incurrence ? __('debt.at_incurrence') : __('debt.at_settlement') }}</span>
+                    </div>
+                    @if($debt->expense_category_id && $debt->type->value === \App\Enums\DebtType::Owing->value)
+                        <div class="info-row">
+                            <span class="info-label">{{ __('debt.expense_category') }}</span>
+                            <span class="info-value">{{ locale_name($debt->expenseCategory) }}</span>
+                        </div>
+                    @elseif($debt->income_category_id && $debt->type->value === \App\Enums\DebtType::Owed->value)
+                        <div class="info-row">
+                            <span class="info-label">{{ __('debt.income_category') }}</span>
+                            <span class="info-value">{{ locale_name($debt->incomeCategory) }}</span>
+                        </div>
+                    @endif
                     @if($debt->description)
                         <div class="info-row">
                             <span class="info-label">{{ __('debt.description') }}</span>

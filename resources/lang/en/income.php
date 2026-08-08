@@ -34,4 +34,7 @@ return [
     'receipt' => 'Receipt',
     'notes' => 'Notes',
     'recurring_help' => 'When enabled, this income will be automatically repeated daily/weekly/monthly/yearly on the specified date.',
+    'register_as_debt' => 'Sell on credit (debt)',
+    'register_as_debt_hint' => 'Record this income as a receivable debt (owed to you)',
+    'debt_info_message' => 'This income will be recorded as a receivable debt (owed to you). It will appear in income reports when collected.',
 ];

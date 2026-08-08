@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Expense;
 
+use App\Models\Debt;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\User;
@@ -207,5 +208,72 @@ class ExpenseControllerTest extends TestCase
             ->get(route('expense.index', ['trashed' => 'true']))
             ->assertOk()
             ->assertViewIs('expense.index');
+    }
+
+    public function test_store_on_credit_creates_debt_without_expense(): void
+    {
+        $data = [
+            'category_id' => $this->category->id,
+            'amount' => 500,
+            'description' => 'On credit',
+            'date' => '2026-06-15',
+            'is_new_debt' => true,
+            'debt_counterparty' => 'Supplier Co',
+            'debt_due_date' => '2026-08-15',
+        ];
+
+        $this->actingAs($this->user)
+            ->post(route('expense.store'), $data)
+            ->assertRedirect(route('expense.index'));
+
+        $this->assertDatabaseHas('debts', [
+            'user_id' => $this->user->id,
+            'type' => 'owing',
+            'counterparty_name' => 'Supplier Co',
+            'total_amount' => 500,
+            'paid_amount' => 0,
+        ]);
+        $this->assertDatabaseMissing('expenses', [
+            'user_id' => $this->user->id,
+            'amount' => 500,
+        ]);
+    }
+
+    public function test_store_on_credit_with_count_at_incurrence_creates_linked_expense(): void
+    {
+        $data = [
+            'category_id' => $this->category->id,
+            'amount' => 500,
+            'description' => 'On credit now',
+            'date' => '2026-06-15',
+            'is_new_debt' => true,
+            'count_at_incurrence' => true,
+            'debt_counterparty' => 'Supplier Co',
+            'debt_due_date' => '2026-08-15',
+        ];
+
+        $this->actingAs($this->user)
+            ->post(route('expense.store'), $data)
+            ->assertRedirect(route('expense.index'));
+
+        $debt = Debt::withoutWorkspace()->where('counterparty_name', 'Supplier Co')->first();
+        $this->assertNotNull($debt);
+        $this->assertDatabaseHas('expenses', [
+            'user_id' => $this->user->id,
+            'amount' => 500,
+            'debt_id' => $debt->id,
+        ]);
+    }
+
+    public function test_store_on_credit_requires_debt_fields(): void
+    {
+        $this->actingAs($this->user)
+            ->post(route('expense.store'), [
+                'category_id' => $this->category->id,
+                'amount' => 500,
+                'date' => '2026-06-15',
+                'is_new_debt' => true,
+            ])
+            ->assertSessionHasErrors(['debt_counterparty', 'debt_due_date']);
     }
 }

@@ -108,6 +108,8 @@ class ExpenseController extends BaseCrudController
 
         $debtCreated = false;
         if ($request->boolean('is_new_debt') && $request->filled('debt_counterparty')) {
+            $countAtIncurrence = $request->boolean('count_at_incurrence');
+
             $debt = Debt::create([
                 'user_id' => auth()->id(),
                 'type' => DebtType::Owing,
@@ -118,9 +120,17 @@ class ExpenseController extends BaseCrudController
                 'status' => DebtStatus::Active,
                 'description' => $request->input('description'),
                 'notes' => 'تم إنشاؤه تلقائياً من مصروف: '.($request->input('description') ?? ''),
+                'expense_category_id' => $request->input('category_id'),
+                'count_at_incurrence' => $countAtIncurrence,
             ]);
-            $data['debt_id'] = $debt->id;
-            $debtCreated = true;
+
+            if ($countAtIncurrence) {
+                $data['debt_id'] = $debt->id;
+                $debtCreated = true;
+            } else {
+                return redirect()->route('expense.index')
+                    ->with('success', __('messages.expense_created_as_debt'));
+            }
         }
 
         $this->expenseRepo->create($data);

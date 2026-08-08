@@ -129,6 +129,9 @@
                                     <input type="date" name="debt_due_date" value="{{ old('debt_due_date') }}" class="form-custom @error('debt_due_date') is-invalid @enderror" :required="showDebtFields">
                                     @error('debt_due_date') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
                                 </div>
+                                <div class="col-12">
+                                    <x-toggle-switch name="count_at_incurrence" id="count_at_incurrence" :checked="old('count_at_incurrence')" label="{{ __('debt.count_at_incurrence') }}" hint="{{ __('debt.count_at_incurrence_hint') }}" />
+                                </div>
                             </div>
 
                             <div class="col-12">

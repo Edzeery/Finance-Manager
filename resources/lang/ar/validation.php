@@ -9,6 +9,7 @@ return [
     ],
     'date' => ':attribute ليس تاريخاً صالحاً.',
     'budget_exceeded' => 'هذا يتجاوز الميزانية المخصصة. المخصصة: :allocated، المصروفة: :spent، المتبقية: :remaining.',
+    'payment_exceeds_remaining' => 'المبلغ يتجاوز المتبقي من الدين. المتبقي: :amount.',
     'password' => [
         'min' => 'يجب أن يكون :attribute على الأقل :min حرفاً.',
     ],

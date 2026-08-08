@@ -10,6 +10,8 @@ use App\Http\Requests\Debt\StoreDebtPaymentRequest;
 use App\Http\Requests\Debt\StoreDebtRequest;
 use App\Http\Requests\Debt\UpdateDebtRequest;
 use App\Models\Debt;
+use App\Models\ExpenseCategory;
+use App\Models\IncomeCategory;
 use Illuminate\Http\Request;
 
 class DebtController extends BaseCrudController
@@ -109,7 +111,10 @@ class DebtController extends BaseCrudController
 
     public function create()
     {
-        return view('debt.create');
+        $expenseCategories = ExpenseCategory::where('is_active', true)->orderBy('sort_order')->get();
+        $incomeCategories = IncomeCategory::where('is_active', true)->orderBy('sort_order')->get();
+
+        return view('debt.create', compact('expenseCategories', 'incomeCategories'));
     }
 
     public function store(StoreDebtRequest $request)
@@ -141,7 +146,7 @@ class DebtController extends BaseCrudController
     public function show(Debt $debt)
     {
         $this->authorize('view', $debt);
-        $debt->load('payments');
+        $debt->load(['payments.expense', 'payments.income', 'expenseCategory', 'incomeCategory']);
 
         return view('debt.show', compact('debt'));
     }
@@ -150,7 +155,10 @@ class DebtController extends BaseCrudController
     {
         $this->authorize('update', $debt);
 
-        return view('debt.edit', compact('debt'));
+        $expenseCategories = ExpenseCategory::where('is_active', true)->orderBy('sort_order')->get();
+        $incomeCategories = IncomeCategory::where('is_active', true)->orderBy('sort_order')->get();
+
+        return view('debt.edit', compact('debt', 'expenseCategories', 'incomeCategories'));
     }
 
     public function update(UpdateDebtRequest $request, Debt $debt)
@@ -176,15 +184,15 @@ class DebtController extends BaseCrudController
     {
         $this->authorize('addPayment', $debt);
 
-        $payment = $debt->payments()->create($request->validated());
-
-        $debt->increment('paid_amount', $request->amount);
-
-        if ((float) $debt->paid_amount >= (float) $debt->total_amount) {
-            $debt->update(['status' => DebtStatus::Paid->value]);
-        } elseif ($debt->status === DebtStatus::Active) {
-            $debt->update(['status' => DebtStatus::Partial->value]);
+        if ((float) $request->amount > (float) $debt->remaining_amount) {
+            return redirect()->back()
+                ->withErrors(['amount' => __('validation.payment_exceeds_remaining', [
+                    'amount' => number_format($debt->remaining_amount, 2),
+                ])])
+                ->withInput();
         }
+
+        $debt->payments()->create($request->validated());
 
         return redirect()->route('debt.show', $debt)
             ->with('success', __('messages.payment_added'));
