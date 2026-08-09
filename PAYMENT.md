@@ -322,6 +322,23 @@ CHARGILY_SECRET_KEY=test_sk_...
 2. Admin reviews in SuperAdmin `PaymentController` → approves/rejects
 3. `PaymentService::verifyPayment()` updates payment + activates subscription
 
+**Enum-typed status (2026-08-08):** `PaymentService::verifyPayment(Payment, PaymentVerificationStatus, ...)` and `applyPaymentSideEffects(Payment, PaymentVerificationStatus)` now type their `$status` parameter as `App\Enums\PaymentVerificationStatus` instead of a raw `string`. All callers (webhook handlers, `PaymentReturnController`, SuperAdmin `PaymentController`, `CheckNoestDeliveries`) pass enum cases. No raw `'approved'`/`'rejected'` literals remain — a typo now fails at runtime with a type error instead of silently skipping.
+
+### Webhook Audit Logging (`payment_webhook_logs`) — All Gateways (2026-08-08)
+
+Every webhook-receiving gateway now writes a DB-persisted `PaymentWebhookLog` row, not just Chargily. In `PaymentWebhookController`, `logWebhookEvent()` creates a row with `status = received` (returning the row), then:
+
+- **Processed** — after the handler succeeds (approval or rejection event processed, payment updated)
+- **Failed** — on invalid payload (400), payment not found (404), or a thrown exception (500); `notes` records the reason
+- `payment_id` is back-filled on the row once the payment resolves; rows with an unknown transaction stay `payment_id = null`
+- Duplicate delivery of the same `(checkout_id, event_type)` updates the existing row (unique constraint) instead of creating a duplicate
+
+Status enum: `App\Enums\PaymentWebhookLogStatus` (`received`/`processed`/`failed`). Chargily's `ChargilyWebhookService` follows the same Received → Processed/Failed lifecycle.
+
+### Listener Registration (2026-08-08)
+
+`App\Providers\EventServiceProvider` was **dead code** (never registered in `bootstrap/providers.php`, no `withEvents()` in `bootstrap/app.php`) and has been **deleted**. `CreateAdminNotification` now exposes three auto-discovered public handlers: `handlePaymentCompleted(PaymentCompleted)`, `handleSubscriptionActivated(SubscriptionActivated)`, `handleUserRegistered(Registered)`. `ActivateWorkspace`, `CompleteOnboarding`, and `SendPaymentReceipt` continue to bind via auto-discovery. `LogAuthEvent` is registered solely through `AppServiceProvider` (`Event::subscribe`).
+
 ### Gateway Config
 
 Sensitive keys encrypted in `payment_methods.credentials` JSON column. `HasGatewaySettings` trait reads from DB with config/env fallback.

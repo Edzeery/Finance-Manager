@@ -1,7 +1,7 @@
 # Subscription System — Finance Manager
 
 > **العربية:** سيناريو الاشتراكات — الدورة الكاملة  
-> آخر تحديث: 2026-07-20
+> آخر تحديث: 2026-08-08
 
 ---
 
@@ -20,13 +20,24 @@
 
 | جدول | Key Columns | Notes |
 |------|------------|-------|
-| `subscription_plans` | id, name, slug, monthly_price, yearly_discount_percent, currency, is_free, is_active, is_public, max_users, max_workspaces, limits (JSON), sort_order, button_text, button_link | 4 seed plans. الميزات عبر pivot `plan_plan_feature`. `yearly_price` محسوب من `yearly_discount_percent`. |
+| `subscription_plans` | id, name, slug, monthly_price, yearly_discount_percent, currency, is_free, is_active, is_public, max_users, max_workspaces, limits (JSON), sort_order, button_text, button_link | 4 seed plans. الميزات عبر pivot `plan_plan_feature`. |
 | `subscriptions` | id, workspace_id, subscription_plan_id, status, starts_at, ends_at, trial_ends_at, canceled_at, payment_method, auto_renew, plan_price_amount | SoftDeletes |
-| `plan_prices` | plan_id, interval (monthly/yearly), amount, currency, is_active | Snapshot prices |
+| `plan_prices` | plan_id, billing_period (monthly/yearly), currency, price, is_active — unique on `(plan_id, billing_period, currency)` | Multi-currency أسعار منفصلة لكل عملة/فترة |
 | `invoices` | id, workspace_id, subscription_id, number, status, subtotal, discount, tax, total, billing_period | Auto-numbered (INV-YYYY-XXXXX) |
 | `payments` | id, workspace_id, subscription_id, amount, method, status, reference | Tracks all payment attempts |
 | `coupons` | id, code, type (percentage/fixed), value, max_uses, min_amount, applies_to | Discount system |
 | `tax_rates` | id, country, name, rate, type (inclusive/exclusive), is_active | Per-country taxation |
+
+### Multi-Currency Pricing (`plan_prices`)
+
+منذ 2026-08-08، الأسعار متعددة العملات مخزّنة في جدول `plan_prices` (سجل لكل `plan_id + billing_period + currency`). قرار معتمد من المنتج: **التسعير السنوي المستقل لكل عملة مقصود وليس تراجعاً**، ويلغي القرار السابق القائل إن السعر السنوي يجب أن يُحتسب دائماً من الصيغة.
+
+ترتيب دقة السعر في `SubscriptionPlan::getYearlyPriceAttribute()` (`app/Models/SubscriptionPlan.php:129-138`):
+
+1. **سجل `PlanPrice`** بصيغة `billing_period = 'yearly'` إن وُجد للخطة (سعر سنوي مستقل/خاص بالعملة).
+2. **الاحتياط:** `monthly_price × 12 × (1 − yearly_discount_percent / 100)` — الصيغة الأصلية، محفوظة كاحتياط فقط.
+
+> السعر يُجمَّد وقت إنشاء الاشتراك في `subscriptions.plan_price_amount` (Snapshot) — تعديل السعر لاحقاً لا يؤثر على الاشتراكات القائمة.
 
 ### Status States
 

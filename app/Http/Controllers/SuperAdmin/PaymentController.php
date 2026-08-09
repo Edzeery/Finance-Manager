@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Contracts\Services\ActivityLogServiceInterface;
 use App\Enums\PaymentStatus;
+use App\Enums\PaymentVerificationStatus;
 use App\Events\PaymentCompleted;
 use App\Http\Controllers\Concerns\HasBreadcrumbs;
 use App\Http\Controllers\Controller;
@@ -132,7 +133,7 @@ class PaymentController extends Controller
 
         $this->paymentService->verifyPayment(
             $payment,
-            'approved',
+            PaymentVerificationStatus::Approved,
             auth()->id(),
             $request->input('notes', 'Approved by admin'),
             $request->input('transaction_reference'),
@@ -212,7 +213,7 @@ class PaymentController extends Controller
 
         $this->paymentService->verifyPayment(
             $payment,
-            'rejected',
+            PaymentVerificationStatus::Rejected,
             auth()->id(),
             $request->input('notes'),
         );

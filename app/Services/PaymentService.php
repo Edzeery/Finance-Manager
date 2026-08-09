@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\PaymentStatus;
+use App\Enums\PaymentVerificationStatus;
 use App\Enums\SubscriptionStatus;
 use App\Events\SubscriptionActivated;
 use App\Exceptions\PaymentException;
@@ -187,21 +188,21 @@ class PaymentService
         return $prefix.'-'.strtoupper(Str::random(10));
     }
 
-    public function verifyPayment(Payment $payment, string $status, ?int $adminId, ?string $notes = null, ?string $transactionReference = null): ?PaymentVerification
+    public function verifyPayment(Payment $payment, PaymentVerificationStatus $status, ?int $adminId, ?string $notes = null, ?string $transactionReference = null): ?PaymentVerification
     {
         return DB::transaction(function () use ($payment, $status, $adminId, $notes, $transactionReference) {
             $existing = PaymentVerification::withoutWorkspace()->where('payment_id', $payment->id)->first();
 
             $data = [
                 'verified_by' => $adminId,
-                'status' => $status,
+                'status' => $status->value,
                 'admin_notes' => $notes,
                 'verified_at' => now(),
             ];
 
             if ($transactionReference) {
                 $data['transaction_reference'] = $transactionReference;
-            } elseif ($status === 'approved' && ! $existing?->transaction_reference) {
+            } elseif ($status === PaymentVerificationStatus::Approved && ! $existing?->transaction_reference) {
                 $data['transaction_reference'] = 'ADMIN-'.strtoupper(Str::random(10));
             }
 
@@ -224,7 +225,7 @@ class PaymentService
         });
     }
 
-    public function applyPaymentSideEffects(Payment $payment, string $status): void
+    public function applyPaymentSideEffects(Payment $payment, PaymentVerificationStatus $status): void
     {
         DB::transaction(function () use ($payment, $status) {
             $payment = Payment::withoutWorkspace()->lockForUpdate()->find($payment->id);
@@ -232,7 +233,7 @@ class PaymentService
                 return;
             }
 
-            if ($status === 'approved') {
+            if ($status === PaymentVerificationStatus::Approved) {
                 if ($payment->isCompleted()) {
                     return;
                 }
@@ -280,7 +281,7 @@ class PaymentService
                 if ($payment->coupon_id && $payment->coupon) {
                     $payment->coupon->markUsed();
                 }
-            } elseif ($status === 'rejected') {
+            } elseif ($status === PaymentVerificationStatus::Rejected) {
                 $this->transitionValidator->transition($payment, PaymentStatus::CheckoutFailed);
                 if ($payment->subscription_id) {
                     $rejectedSub = Subscription::withoutWorkspace()->find($payment->subscription_id);

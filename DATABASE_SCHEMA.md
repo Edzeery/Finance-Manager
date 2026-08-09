@@ -48,7 +48,7 @@
 - **subscription_plans** — id, name_en, name_ar, name_fr, slug, is_free, is_active, is_public, yearly_discount_percent, sort_order, button_text, button_link
 - **plan_features** — Dictionary table of feature definitions (slug, name_en, name_ar, name_fr, type, icon, sort_order, is_core)
 - **plan_plan_feature** — Pivot linking plans to features with value column
-- **plan_prices** — plan_id, billing_period, currency, price, is_active
+- **plan_prices** — plan_id, billing_period (monthly/yearly), currency, price, is_active — UNIQUE `(plan_id, billing_period, currency)`. Multi-currency pricing; yearly price resolution: explicit `PlanPrice` row wins, else `monthly × 12 × (1 − yearly_discount_percent/100)` fallback (2026-08-08 decision)
 - **subscriptions** — user_id, workspace_id, subscription_plan_id, status, starts_at, ends_at, trial_ends_at, canceled_at, grace_ends_at, payment_method, auto_renew, plan_price_amount, billing_period — SoftDeletes
 - **coupons** — code, type (percentage/fixed), value, max_uses, used_count, min_amount, starts_at, expires_at, is_active
 - **coupon_payment_method** — Pivot linking coupons to specific payment methods

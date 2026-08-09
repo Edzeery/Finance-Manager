@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaymentStatus;
+use App\Enums\PaymentVerificationStatus;
 use App\Models\Payment;
 use App\Services\OnboardingService;
 use App\Services\Payments\GatewayManager;
@@ -55,7 +56,7 @@ class PaymentReturnController extends Controller
 
                     $payment->refresh();
 
-                    app(PaymentService::class)->applyPaymentSideEffects($payment, 'approved');
+                    app(PaymentService::class)->applyPaymentSideEffects($payment, PaymentVerificationStatus::Approved);
                     $this->onboardingService->handlePaymentSuccess($payment->user, $payment);
 
                     session()->forget('pending_payment_id');

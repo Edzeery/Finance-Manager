@@ -3,6 +3,12 @@
 **النطاق:** Phase 1 — تشخيص فقط (Audit-Only)  
 **المنهجية:** قراءة فعلية للكود المصدري + أوامر تجريبية (`php artisan event:list`, `php artisan test`, `composer show`)
 
+> ⚠️ **ملاحظة تحديث (2026-08-08):** هذا التقرير تجاوزه `AUDIT_2026-08-08.md` وترميمه. البنود التالية **حُلّت**:
+> - **[PAY-05]** webhook log لكل البوابات → تم تنفيذ تسجيل DB لكل الـ 5 بوابات غير Chargily في `PaymentWebhookController` (حالة `received → processed/failed`).
+> - **[PAY-04]** idempotency Chargily-only → تكرار نفس الحدث `(checkout_id, event_type)` يُحدّث السجل الحالي بدل إنشاء نسخة.
+> - **[F-11]/[EVT]** تكرار `EventServiceProvider`/`AppServiceProvider` → التحقيق الجديد أثبت أن `EventServiceProvider` كان **كوداً ميتاً** (غير مسجّل) فحُذف؛ `CreateAdminNotification` أُصلح بثلاث دوال `handle*` قابلة للاكتشاف التلقائي.
+> - **[SUB-05]/[SUB-07] و yearly pricing** → قرار منتج (2026-08-08): التسعير السنوي المستقل لكل عملة عبر `plan_prices` **مقصود** ويُلغي قرار الصيغة الحصرية. انظر `SUBSCRIPTIONS.md`.
+
 ---
 
 ## 1. البنية العامة والتهيئة (Foundation)

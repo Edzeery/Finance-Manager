@@ -14,44 +14,52 @@ class CreateAdminNotification
         private AdminNotificationService $notificationService,
     ) {}
 
-    public function handle(object $event): void
+    public function handlePaymentCompleted(PaymentCompleted $event): void
     {
         try {
-            match (true) {
-                $event instanceof Registered => $this->notificationService->newUserRegistered($event->user),
-                $event instanceof PaymentCompleted => $this->handlePayment($event),
-                $event instanceof SubscriptionActivated => $this->handleSubscription($event),
-                default => null,
-            };
+            $payment = $event->payment;
+            $user = $payment->subscription?->workspace?->owner()?->first() ?? $payment->user;
+
+            if ($user) {
+                $this->notificationService->newPaymentReceived($payment, $user);
+            }
         } catch (\Throwable $e) {
-            Log::error('Failed to create admin notification', [
-                'event' => class_basename($event),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            $this->logFailure($event, $e);
         }
     }
 
-    private function handlePayment(PaymentCompleted $event): void
+    public function handleSubscriptionActivated(SubscriptionActivated $event): void
     {
-        $payment = $event->payment;
-        $user = $payment->subscription?->workspace?->owner()?->first() ?? $payment->user;
+        try {
+            $subscription = $event->subscription;
 
-        if ($user) {
-            $this->notificationService->newPaymentReceived($payment, $user);
+            if ($subscription->user && $subscription->plan) {
+                $this->notificationService->subscriptionActivated(
+                    $subscription->user->name,
+                    $subscription->plan->name,
+                    $subscription->user,
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->logFailure($event, $e);
         }
     }
 
-    private function handleSubscription(SubscriptionActivated $event): void
+    public function handleUserRegistered(Registered $event): void
     {
-        $subscription = $event->subscription;
-
-        if ($subscription->user && $subscription->plan) {
-            $this->notificationService->subscriptionActivated(
-                $subscription->user->name,
-                $subscription->plan->name,
-                $subscription->user,
-            );
+        try {
+            $this->notificationService->newUserRegistered($event->user);
+        } catch (\Throwable $e) {
+            $this->logFailure($event, $e);
         }
+    }
+
+    private function logFailure(object $event, \Throwable $e): void
+    {
+        Log::error('Failed to create admin notification', [
+            'event' => class_basename($event),
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
     }
 }

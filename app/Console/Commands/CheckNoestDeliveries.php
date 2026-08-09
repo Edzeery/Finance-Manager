@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\PaymentStatus;
+use App\Enums\PaymentVerificationStatus;
 use App\Models\Payment;
 use App\Services\Payments\Noest\NoestService;
 use App\Services\Payments\PaymentTransitionValidator;
@@ -32,7 +33,7 @@ class CheckNoestDeliveries extends Command
                         $normalized = strtolower(trim($deliveryStatus));
 
                         if (in_array($normalized, ['livré', 'delivered', 'livre'])) {
-                            $paymentService->applyPaymentSideEffects($payment, 'approved');
+                            $paymentService->applyPaymentSideEffects($payment, PaymentVerificationStatus::Approved);
                             $this->info("Noest delivery confirmed: payment {$payment->id}");
                             Log::info('Noest delivery confirmed', [
                                 'payment_id' => $payment->id,
