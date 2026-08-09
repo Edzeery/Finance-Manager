@@ -72,7 +72,13 @@ class SubscriptionController extends Controller
 
     public function show(int $id)
     {
-        $subscription = Subscription::withoutWorkspace()->with('workspace', 'plan', 'invoices', 'payments.user')->findOrFail($id);
+        $subscription = Subscription::withoutWorkspace()->with([
+            'workspace',
+            'plan',
+            'invoices' => fn ($q) => $q->withoutWorkspace(),
+            'payments' => fn ($q) => $q->withoutWorkspace(),
+            'payments.user',
+        ])->findOrFail($id);
 
         $this->resetBreadcrumbs()
             ->addBreadcrumb(__('super-admin.super_dashboard'), route('super.admin.dashboard'), 'bi-shield-shaded')

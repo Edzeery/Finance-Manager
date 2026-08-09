@@ -161,7 +161,7 @@
                     <form method="POST" action="{{ route('super.admin.subscriptions.cancel', $subscription) }}" id="cancel-subscription-{{ $subscription->id }}" style="display:none">
                         @csrf
                     </form>
-                    <x-button variant="danger" block icon="bi bi-x-circle" @click="confirmCancelSubscription({{ $subscription->id }})" {{ $subscription->status === \App\Enums\SubscriptionStatus::Canceled || $subscription->status === \App\Enums\SubscriptionStatus::Expired ? 'disabled' : '' }}>{{ __('settings.cancel_subscription') }}</x-button>
+                    <x-button variant="danger" block icon="bi bi-x-circle" @click="confirmCancelSubscription({{ $subscription->id }})" :disabled="$subscription->status === \App\Enums\SubscriptionStatus::Canceled || $subscription->status === \App\Enums\SubscriptionStatus::Expired">{{ __('settings.cancel_subscription') }}</x-button>
                 </div>
             </div>
 
