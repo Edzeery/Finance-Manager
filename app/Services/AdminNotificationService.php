@@ -60,6 +60,26 @@ class AdminNotificationService
         );
     }
 
+    public function paymentFailed(Payment $payment, User $user): AdminNotification
+    {
+        $methodKey = $payment->paymentMethod?->key;
+
+        return $this->create(
+            'payment_failed',
+            [
+                'en' => 'Payment Failed',
+                'ar' => 'دفعة فاشلة',
+                'fr' => 'Échec de paiement',
+            ],
+            [
+                'en' => "Payment of \${$payment->amount} by {$user->name} failed via {$methodKey}.",
+                'ar' => "دفعة بقيمة \${$payment->amount} من {$user->name} فشلت عبر {$methodKey}.",
+                'fr' => "Le paiement de \${$payment->amount} de {$user->name} a échoué via {$methodKey}.",
+            ],
+            ['payment_id' => $payment->id, 'amount' => $payment->amount, 'currency' => $payment->currency, 'method' => $methodKey, 'user_id' => $user->id]
+        );
+    }
+
     public function subscriptionActivated(string $userName, string $planName, User $user): AdminNotification
     {
         return $this->create(
