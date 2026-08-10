@@ -112,15 +112,15 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
         Route::get('/categories', [IncomeCategoryController::class, 'index'])
             ->name('categories.index');
         Route::get('/categories/create', [IncomeCategoryController::class, 'create'])
-            ->middleware('permission:income-category.create')->name('categories.create');
+            ->middleware('permission:income-categories.create')->name('categories.create');
         Route::post('/categories', [IncomeCategoryController::class, 'store'])
-            ->middleware(['permission:income-category.create', 'throttle:web-crud'])->name('categories.store');
-        Route::get('/categories/{incomeCategory}/edit', [IncomeCategoryController::class, 'edit'])
-            ->middleware('permission:income-category.update')->name('categories.edit');
-        Route::put('/categories/{incomeCategory}', [IncomeCategoryController::class, 'update'])
-            ->middleware(['permission:income-category.update', 'throttle:web-crud'])->name('categories.update');
-        Route::delete('/categories/{incomeCategory}', [IncomeCategoryController::class, 'destroy'])
-            ->middleware(['permission:income-category.delete', 'throttle:web-delete'])->name('categories.destroy');
+            ->middleware(['permission:income-categories.create', 'throttle:web-crud'])->name('categories.store');
+        Route::get('/categories/{category}/edit', [IncomeCategoryController::class, 'edit'])
+            ->middleware('permission:income-categories.update')->name('categories.edit');
+        Route::put('/categories/{category}', [IncomeCategoryController::class, 'update'])
+            ->middleware(['permission:income-categories.update', 'throttle:web-crud'])->name('categories.update');
+        Route::delete('/categories/{category}', [IncomeCategoryController::class, 'destroy'])
+            ->middleware(['permission:income-categories.delete', 'throttle:web-delete'])->name('categories.destroy');
     });
 
     Route::prefix('expense')->name('expense.')->middleware(['permission:expense.view', 'plan.feature:income_expense', 'throttle:web-list'])->group(function () {
@@ -150,15 +150,15 @@ Route::middleware(['auth', 'verified', 'subscription', 'subscription.status'])->
         Route::get('/categories', [ExpenseCategoryController::class, 'index'])
             ->name('categories.index');
         Route::get('/categories/create', [ExpenseCategoryController::class, 'create'])
-            ->middleware('permission:expense-category.create')->name('categories.create');
+            ->middleware('permission:expense-categories.create')->name('categories.create');
         Route::post('/categories', [ExpenseCategoryController::class, 'store'])
-            ->middleware(['permission:expense-category.create', 'throttle:web-crud'])->name('categories.store');
-        Route::get('/categories/{expenseCategory}/edit', [ExpenseCategoryController::class, 'edit'])
-            ->middleware('permission:expense-category.update')->name('categories.edit');
-        Route::put('/categories/{expenseCategory}', [ExpenseCategoryController::class, 'update'])
-            ->middleware(['permission:expense-category.update', 'throttle:web-crud'])->name('categories.update');
-        Route::delete('/categories/{expenseCategory}', [ExpenseCategoryController::class, 'destroy'])
-            ->middleware(['permission:expense-category.delete', 'throttle:web-delete'])->name('categories.destroy');
+            ->middleware(['permission:expense-categories.create', 'throttle:web-crud'])->name('categories.store');
+        Route::get('/categories/{category}/edit', [ExpenseCategoryController::class, 'edit'])
+            ->middleware('permission:expense-categories.update')->name('categories.edit');
+        Route::put('/categories/{category}', [ExpenseCategoryController::class, 'update'])
+            ->middleware(['permission:expense-categories.update', 'throttle:web-crud'])->name('categories.update');
+        Route::delete('/categories/{category}', [ExpenseCategoryController::class, 'destroy'])
+            ->middleware(['permission:expense-categories.delete', 'throttle:web-delete'])->name('categories.destroy');
         Route::get('/categories/{expenseCategory}/budget-status', [BudgetStatusController::class, 'getBudgetStatus'])
             ->middleware(['permission:expense.view', 'throttle:web-list'])
             ->name('categories.budget-status');

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Category;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 abstract class CategoryController extends Controller
@@ -25,7 +24,7 @@ abstract class CategoryController extends Controller
         return redirect()->route($this->getIndexRoute());
     }
 
-    public function edit(Model $category)
+    public function edit()
     {
         return redirect()->route($this->getIndexRoute());
     }
@@ -63,8 +62,11 @@ abstract class CategoryController extends Controller
         return redirect()->back()->with('success', __('messages.created'));
     }
 
-    public function update(Request $request, Model $category)
+    public function update(Request $request)
     {
+        $modelClass = $this->getModelClass();
+        $category = $modelClass::findOrFail($request->route('category'));
+
         $this->authorize('update', $category);
 
         $validated = $request->validate($this->getValidationRules());
@@ -74,9 +76,13 @@ abstract class CategoryController extends Controller
         return redirect()->back()->with('success', __('messages.updated'));
     }
 
-    public function destroy(Model $category)
+    public function destroy(Request $request)
     {
+        $modelClass = $this->getModelClass();
+        $category = $modelClass::findOrFail($request->route('category'));
+
         $this->authorize('delete', $category);
+
         $category->delete();
 
         return redirect()->back()->with('success', __('messages.deleted'));
