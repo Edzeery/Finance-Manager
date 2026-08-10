@@ -64,6 +64,9 @@
                                     <td class="text-end" style="font-size:13px">
                                         @if($hasBudget)
                                             {{ number_format($info['allocated'], 2) }}
+                                            @if($info['percentage'] !== null)
+                                                <span class="badge badge-custom ms-1" style="background:rgba(34,197,94,0.12); color:var(--success); font-size:11px">{{ $info['percentage'] }}%</span>
+                                            @endif
                                         @else
                                             <span style="color:var(--text-muted)">-</span>
                                         @endif

@@ -104,11 +104,13 @@ class BudgetController extends BaseCrudController
         $budget = $this->budgetRepo->create($data);
 
         foreach ($categories as $cat) {
-            $budget->categories()->create([
-                'expense_category_id' => $cat['category_id'],
-                'allocated_amount' => $cat['allocated_amount'],
-                'spent_amount' => 0,
-            ]);
+            $budget->categories()->create(array_merge(
+                $this->resolveCategoryAllocation($cat, (float) $data['total_amount']),
+                [
+                    'expense_category_id' => $cat['category_id'],
+                    'spent_amount' => 0,
+                ]
+            ));
         }
 
         return redirect()->route('budget.index')
@@ -145,15 +147,19 @@ class BudgetController extends BaseCrudController
         $existingCategories = $budget->categories()->get()->keyBy('expense_category_id');
 
         foreach ($categories as $cat) {
+            $allocation = $this->resolveCategoryAllocation($cat, (float) $data['total_amount']);
+
             if ($existingCategories->has($cat['category_id'])) {
                 $existingCategories->get($cat['category_id'])->update([
-                    'allocated_amount' => $cat['allocated_amount'],
+                    'allocated_amount' => $allocation['allocated_amount'],
+                    'percentage' => $allocation['percentage'],
                 ]);
                 $existingCategories->forget($cat['category_id']);
             } else {
                 $budget->categories()->create([
                     'expense_category_id' => $cat['category_id'],
-                    'allocated_amount' => $cat['allocated_amount'],
+                    'allocated_amount' => $allocation['allocated_amount'],
+                    'percentage' => $allocation['percentage'],
                     'spent_amount' => 0,
                 ]);
             }
@@ -165,6 +171,18 @@ class BudgetController extends BaseCrudController
 
         return redirect()->route('budget.index')
             ->with('success', __('messages.budget_updated'));
+    }
+
+    private function resolveCategoryAllocation(array $cat, float $totalAmount): array
+    {
+        if ((string) ($cat['use_percentage'] ?? '0') === '1' && isset($cat['percentage']) && $cat['percentage'] !== '') {
+            $percentage = (float) $cat['percentage'];
+            $allocated = round($totalAmount * $percentage / 100, 2);
+
+            return ['allocated_amount' => $allocated, 'percentage' => $percentage];
+        }
+
+        return ['allocated_amount' => (float) ($cat['allocated_amount'] ?? 0), 'percentage' => null];
     }
 
     public function categories()
@@ -201,6 +219,7 @@ class BudgetController extends BaseCrudController
                         'allocated' => (float) $bc->allocated_amount,
                         'spent' => (float) $bc->spent_amount,
                         'remaining' => max(0, (float) $bc->allocated_amount - (float) $bc->spent_amount),
+                        'percentage' => $bc->percentage !== null ? (float) $bc->percentage : null,
                     ];
                 }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Budget;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -34,7 +35,30 @@ class UpdateBudgetRequest extends FormRequest
                         ->where('workspace_id', $workspaceId)
                         ->orWhereNull('workspace_id')),
             ],
-            'categories.*.allocated_amount' => ['required', 'numeric', 'min:0'],
+            'categories.*.allocated_amount' => ['nullable', 'numeric', 'min:0'],
+            'categories.*.percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'categories.*.use_percentage' => ['nullable', 'boolean'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function ($validator) {
+            $total = 0;
+
+            foreach ($this->input('categories', []) as $cat) {
+                if ((string) ($cat['use_percentage'] ?? '0') !== '1') {
+                    continue;
+                }
+
+                if (isset($cat['percentage']) && $cat['percentage'] !== '') {
+                    $total += (float) $cat['percentage'];
+                }
+            }
+
+            if ($total > 100) {
+                $validator->errors()->add('categories', __('budget.percentage_sum_exceeds', ['total' => rtrim(rtrim(number_format($total, 2), '0'), '.')]));
+            }
+        });
     }
 }

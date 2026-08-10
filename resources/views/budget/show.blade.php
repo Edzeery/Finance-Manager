@@ -34,6 +34,9 @@
                                         <td>
                                             <i class="{{ $bc->category?->icon ?? 'bi-tag' }}" style="color:{{ $bc->category?->color ?? 'var(--text-muted)' }}"></i>
                                             {{ locale_name($bc->category ?? new stdClass) }}
+                                            @if($bc->percentage !== null)
+                                                <span class="badge badge-custom ms-1" style="background:rgba(34,197,94,0.12); color:var(--success); font-size:11px">{{ (float) $bc->percentage }}%</span>
+                                            @endif
                                         </td>
                                         <td class="text-end">{{ number_format($bc->allocated_amount, 2) }}</td>
                                         <td text-start fw-bold style="color:var(--danger)">{{ number_format($bc->spent_amount, 2) }}</td>

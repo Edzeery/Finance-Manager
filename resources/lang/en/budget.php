@@ -35,4 +35,10 @@ return [
     'without_budget' => ':count categories without budget',
     'total_categories' => ':count total categories',
     'auto_end_date_hint' => 'The budget will automatically end on this date.',
+    'amount' => 'Amount',
+    'percentage' => 'Percentage',
+    'default_budget_percentage' => 'Default Budget %',
+    'default_percentage' => 'Default: :percent%',
+    'percentage_sum' => 'Percentages Total',
+    'percentage_sum_exceeds' => 'Total of percentages (:total%) cannot exceed 100%.',
 ];

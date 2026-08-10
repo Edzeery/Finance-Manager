@@ -16,5 +16,6 @@
         defaultColor="#EF4444"
         defaultIcon="bi-cart"
         badgeClass="badge-expense"
+        showBudgetPercentage="true"
     />
 </x-app-layout>

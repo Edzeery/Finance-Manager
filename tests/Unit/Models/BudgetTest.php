@@ -54,4 +54,29 @@ class BudgetTest extends TestCase
 
         $this->assertEquals(1, Budget::active()->count());
     }
+
+    public function test_budget_category_percentage_is_cast_to_decimal(): void
+    {
+        $user = User::factory()->create();
+        $budget = Budget::factory()->create(['user_id' => $user->id]);
+        $bc = BudgetCategory::factory()->create([
+            'budget_id' => $budget->id,
+            'allocated_amount' => 500,
+            'percentage' => 25,
+        ]);
+
+        $this->assertEquals('25.00', $bc->fresh()->percentage);
+    }
+
+    public function test_budget_category_percentage_is_nullable(): void
+    {
+        $user = User::factory()->create();
+        $budget = Budget::factory()->create(['user_id' => $user->id]);
+        $bc = BudgetCategory::factory()->create([
+            'budget_id' => $budget->id,
+            'allocated_amount' => 500,
+        ]);
+
+        $this->assertNull($bc->fresh()->percentage);
+    }
 }

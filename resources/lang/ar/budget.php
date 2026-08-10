@@ -35,4 +35,10 @@ return [
     'without_budget' => ':count صنف بدون ميزانية',
     'total_categories' => ':count إجمالي الأصناف',
     'auto_end_date_hint' => 'ستنتهي الميزانية تلقائياً في هذا التاريخ.',
+    'amount' => 'مبلغ',
+    'percentage' => 'نسبة مئوية',
+    'default_budget_percentage' => 'النسبة الافتراضية من الميزانية',
+    'default_percentage' => 'الافتراضية: :percent%',
+    'percentage_sum' => 'إجمالي النسب المئوية',
+    'percentage_sum_exceeds' => 'مجموع النسب المئوية (:total%) يتجاوز 100%.',
 ];

@@ -249,4 +249,170 @@ class BudgetControllerTest extends TestCase
             ->assertOk()
             ->assertViewIs('budget.index');
     }
+
+    public function test_store_with_percentage_computes_allocated_amount(): void
+    {
+        $data = [
+            'name_ar' => 'ميزانية',
+            'name_fr' => 'Budget',
+            'name_en' => 'Budget',
+            'type' => 'monthly',
+            'total_amount' => 10000,
+            'start_date' => '2026-06-01',
+            'categories' => [
+                ['category_id' => $this->category->id, 'use_percentage' => 1, 'percentage' => 25, 'allocated_amount' => 0],
+            ],
+        ];
+
+        $this->actingAs($this->user)
+            ->post(route('budget.store'), $data)
+            ->assertRedirect(route('budget.index'));
+
+        $this->assertDatabaseHas('budget_categories', [
+            'expense_category_id' => $this->category->id,
+            'allocated_amount' => 2500,
+            'percentage' => 25,
+        ]);
+    }
+
+    public function test_store_with_amount_mode_keeps_allocated_amount_and_null_percentage(): void
+    {
+        $data = [
+            'name_ar' => 'ميزانية',
+            'name_fr' => 'Budget',
+            'name_en' => 'Budget',
+            'type' => 'monthly',
+            'total_amount' => 10000,
+            'start_date' => '2026-06-01',
+            'categories' => [
+                ['category_id' => $this->category->id, 'allocated_amount' => 5000],
+            ],
+        ];
+
+        $this->actingAs($this->user)
+            ->post(route('budget.store'), $data)
+            ->assertRedirect(route('budget.index'));
+
+        $this->assertDatabaseHas('budget_categories', [
+            'expense_category_id' => $this->category->id,
+            'allocated_amount' => 5000,
+            'percentage' => null,
+        ]);
+    }
+
+    public function test_store_rejects_percentage_above_100(): void
+    {
+        $data = [
+            'name_ar' => 'ميزانية',
+            'name_fr' => 'Budget',
+            'name_en' => 'Budget',
+            'type' => 'monthly',
+            'total_amount' => 10000,
+            'start_date' => '2026-06-01',
+            'categories' => [
+                ['category_id' => $this->category->id, 'use_percentage' => 1, 'percentage' => 150],
+            ],
+        ];
+
+        $this->actingAs($this->user)
+            ->post(route('budget.store'), $data)
+            ->assertSessionHasErrors('categories.0.percentage');
+    }
+
+    public function test_store_rejects_percentages_summing_over_100(): void
+    {
+        $secondCategory = ExpenseCategory::factory()->create(['user_id' => $this->user->id]);
+        $data = [
+            'name_ar' => 'ميزانية',
+            'name_fr' => 'Budget',
+            'name_en' => 'Budget',
+            'type' => 'monthly',
+            'total_amount' => 10000,
+            'start_date' => '2026-06-01',
+            'categories' => [
+                ['category_id' => $this->category->id, 'use_percentage' => 1, 'percentage' => 60],
+                ['category_id' => $secondCategory->id, 'use_percentage' => 1, 'percentage' => 50],
+            ],
+        ];
+
+        $this->actingAs($this->user)
+            ->post(route('budget.store'), $data)
+            ->assertSessionHasErrors('categories');
+    }
+
+    public function test_update_with_percentage_computes_allocation(): void
+    {
+        $budget = Budget::factory()->create([
+            'user_id' => $this->user->id,
+            'workspace_id' => $this->workspace->id,
+            'total_amount' => 2000,
+            'name_ar' => 'ميزانية',
+            'name_fr' => 'Budget',
+            'name_en' => 'Budget',
+            'type' => 'monthly',
+            'start_date' => '2026-06-01',
+        ]);
+
+        $this->actingAs($this->user)
+            ->put(route('budget.update', $budget), [
+                'name_ar' => 'ميزانية',
+                'name_fr' => 'Budget',
+                'name_en' => 'Budget',
+                'type' => 'monthly',
+                'total_amount' => 2000,
+                'start_date' => '2026-06-01',
+                'categories' => [
+                    ['category_id' => $this->category->id, 'use_percentage' => 1, 'percentage' => 50],
+                ],
+            ])
+            ->assertRedirect(route('budget.index'));
+
+        $this->assertDatabaseHas('budget_categories', [
+            'budget_id' => $budget->id,
+            'expense_category_id' => $this->category->id,
+            'allocated_amount' => 1000,
+            'percentage' => 50,
+        ]);
+    }
+
+    public function test_update_switching_to_amount_mode_clears_percentage(): void
+    {
+        $budget = Budget::factory()->create([
+            'user_id' => $this->user->id,
+            'workspace_id' => $this->workspace->id,
+            'total_amount' => 2000,
+            'name_ar' => 'ميزانية',
+            'name_fr' => 'Budget',
+            'name_en' => 'Budget',
+            'type' => 'monthly',
+            'start_date' => '2026-06-01',
+        ]);
+        $budget->categories()->create([
+            'expense_category_id' => $this->category->id,
+            'allocated_amount' => 1000,
+            'percentage' => 50,
+            'spent_amount' => 0,
+        ]);
+
+        $this->actingAs($this->user)
+            ->put(route('budget.update', $budget), [
+                'name_ar' => 'ميزانية',
+                'name_fr' => 'Budget',
+                'name_en' => 'Budget',
+                'type' => 'monthly',
+                'total_amount' => 2000,
+                'start_date' => '2026-06-01',
+                'categories' => [
+                    ['category_id' => $this->category->id, 'allocated_amount' => 1500],
+                ],
+            ])
+            ->assertRedirect(route('budget.index'));
+
+        $this->assertDatabaseHas('budget_categories', [
+            'budget_id' => $budget->id,
+            'expense_category_id' => $this->category->id,
+            'allocated_amount' => 1500,
+            'percentage' => null,
+        ]);
+    }
 }

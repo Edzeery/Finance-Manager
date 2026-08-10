@@ -20,11 +20,14 @@ class ExpenseCategory extends Model
         static::addGlobalScope(new WorkspaceScope);
     }
 
-    protected $fillable = ['user_id', 'workspace_id', 'name_ar', 'name_fr', 'name_en', 'icon', 'color', 'type', 'is_active', 'sort_order'];
+    protected $fillable = ['user_id', 'workspace_id', 'name_ar', 'name_fr', 'name_en', 'icon', 'color', 'type', 'is_active', 'sort_order', 'default_budget_percentage'];
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean'];
+        return [
+            'is_active' => 'boolean',
+            'default_budget_percentage' => 'decimal:2',
+        ];
     }
 
     public function expenses(): HasMany

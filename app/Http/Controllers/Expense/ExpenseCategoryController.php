@@ -22,6 +22,7 @@ class ExpenseCategoryController extends CategoryController
             'color' => ['nullable', 'string', 'max:7'],
             'type' => ['required', 'in:fixed,variable,periodic'],
             'is_active' => ['boolean'],
+            'default_budget_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
     }
 

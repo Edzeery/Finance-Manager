@@ -17,13 +17,14 @@ class BudgetCategory extends Model
         static::addGlobalScope(new WorkspaceScope);
     }
 
-    protected $fillable = ['budget_id', 'workspace_id', 'expense_category_id', 'allocated_amount', 'spent_amount'];
+    protected $fillable = ['budget_id', 'workspace_id', 'expense_category_id', 'allocated_amount', 'spent_amount', 'percentage'];
 
     protected function casts(): array
     {
         return [
             'allocated_amount' => 'decimal:2',
             'spent_amount' => 'decimal:2',
+            'percentage' => 'decimal:2',
         ];
     }
 

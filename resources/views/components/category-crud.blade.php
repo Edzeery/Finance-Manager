@@ -8,6 +8,7 @@
     'defaultColor' => '#EF4444',
     'defaultIcon' => 'bi-cart',
     'badgeClass' => 'badge-expense',
+    'showBudgetPercentage' => false,
 ])
 
 @php
@@ -28,6 +29,7 @@
     $noDataLabel = __('general.no_data');
     $noResultsLabel = __('messages.no_results');
     $confirmDeleteMsg = __('messages.confirm_delete');
+    $defaultBudgetPercentageLabel = __('budget.default_budget_percentage');
 @endphp
 
 <div class="row g-4">
@@ -66,6 +68,16 @@
                             @endforeach
                         </select>
                     </div>
+                    @if($showBudgetPercentage)
+                    <div class="mb-3">
+                        <label class="form-label-custom">{{ $defaultBudgetPercentageLabel }}</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0" max="100" name="default_budget_percentage" class="form-custom @error('default_budget_percentage') is-invalid @enderror" value="{{ old('default_budget_percentage') }}" placeholder="0">
+                            <span class="input-group-text" style="background:var(--bg); border:1px solid var(--border); border-radius:0 8px 8px 0; color:var(--text-muted); font-size:13px">%</span>
+                        </div>
+                        @error('default_budget_percentage') <div class="text-danger mt-1" style="font-size:13px">{{ $message }}</div> @enderror
+                    </div>
+                    @endif
                     <div class="mb-3">
                         <x-toggle-switch name="is_active" :checked="old('is_active', '1')" :label="$activeLabel" />
                     </div>
@@ -87,6 +99,9 @@
                                 <th>{{ $iconLabel }}</th>
                                 <th>{{ $nameLabel }}</th>
                                 <th>{{ $typeLabel }}</th>
+                                @if($showBudgetPercentage)
+                                    <th class="text-center" style="width:110px">{{ $defaultBudgetPercentageLabel }}</th>
+                                @endif
                                 <th>{{ $statusLabel }}</th>
                                 <th class="text-center" style="width:100px">{{ $actionsLabel }}</th>
                             </tr>
@@ -107,6 +122,15 @@
                                     <td>
                                         <span class="badge badge-custom {{ $badgeClass }}">{{ $types[$cat->type] ?? $cat->type }}</span>
                                     </td>
+                                    @if($showBudgetPercentage)
+                                    <td class="text-center">
+                                        @if($cat->default_budget_percentage !== null)
+                                            <span class="badge badge-custom" style="background:rgba(34,197,94,0.12); color:var(--success); font-size:11px">{{ (float) $cat->default_budget_percentage }}%</span>
+                                        @else
+                                            <span style="color:var(--text-muted); font-size:12px">-</span>
+                                        @endif
+                                    </td>
+                                    @endif
                                     <td>
                                         <x-status-badge domain="general" :status="$cat->is_active ? 'active' : 'inactive'" set="bi" />
                                     </td>
@@ -177,6 +201,15 @@
                             @endforeach
                         </select>
                     </div>
+                    @if($showBudgetPercentage)
+                    <div class="mb-3">
+                        <label class="form-label-custom">{{ $defaultBudgetPercentageLabel }}</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0" max="100" name="default_budget_percentage" id="edit_default_budget_percentage" class="form-custom" placeholder="0">
+                            <span class="input-group-text" style="background:var(--bg); border:1px solid var(--border); border-radius:0 8px 8px 0; color:var(--text-muted); font-size:13px">%</span>
+                        </div>
+                    </div>
+                    @endif
                     <div>
                         <x-toggle-switch name="is_active" id="edit_is_active" :description="$activeLabel" />
                     </div>
@@ -239,6 +272,8 @@
         }
         document.getElementById('edit_color').value = cat.color || defaultColor;
         document.getElementById('edit_type').value = cat.type;
+        var pctInput = document.getElementById('edit_default_budget_percentage');
+        if (pctInput) pctInput.value = cat.default_budget_percentage !== null && cat.default_budget_percentage !== undefined ? cat.default_budget_percentage : '';
         setToggle('edit_is_active', Boolean(cat.is_active));
         form.action = updateRoute.replace(':id', id);
         const modalEl = document.getElementById('editModal');
