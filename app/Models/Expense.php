@@ -54,8 +54,10 @@ class Expense extends Model
             $dates[] = $this->getOriginal('date');
         }
 
-        $categories = BudgetCategory::whereHas('budget', fn ($q) => $q->where('user_id', $this->user_id)
-        )->whereIn('expense_category_id', array_unique($categoryIds))->get();
+        $categories = BudgetCategory::whereHas('budget')
+            ->whereIn('expense_category_id', array_unique($categoryIds))
+            ->with('budget')
+            ->get();
 
         foreach ($categories as $bc) {
             $start = $bc->budget->start_date;

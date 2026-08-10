@@ -37,11 +37,34 @@ class BudgetCategory extends Model
         return $this->belongsTo(ExpenseCategory::class, 'expense_category_id');
     }
 
+    /**
+     * يحسب إجمالي المصروف الفعلي لتصنيف مصروفات معيّن ضمن فترة زمنية،
+     * على مستوى الـ workspace بالكامل (لا يُفلتر حسب user_id — قرار معماري مقصود
+     * ليتوافق مع عمل الفريق: كل مصروفات الـ workspace بنفس التصنيف تُحتسب).
+     */
+    public static function calculateSpentAmount(
+        int $expenseCategoryId,
+        $startDate,
+        $endDate,
+        ?int $excludeExpenseId = null
+    ): float {
+        $query = Expense::where('category_id', $expenseCategoryId)
+            ->whereBetween('date', [$startDate, $endDate]);
+
+        if ($excludeExpenseId) {
+            $query->where('id', '!=', $excludeExpenseId);
+        }
+
+        return (float) $query->sum('amount');
+    }
+
     public function recalculateSpentAmount(): void
     {
-        $total = Expense::where('category_id', $this->expense_category_id)
-            ->whereBetween('date', [$this->budget->start_date, $this->budget->end_date ?? now()])
-            ->sum('amount');
+        $total = self::calculateSpentAmount(
+            $this->expense_category_id,
+            $this->budget->start_date,
+            $this->budget->end_date ?? now()
+        );
 
         $this->update(['spent_amount' => $total]);
     }

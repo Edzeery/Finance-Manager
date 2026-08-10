@@ -8,7 +8,6 @@ use App\Http\Requests\Budget\StoreBudgetRequest;
 use App\Http\Requests\Budget\UpdateBudgetRequest;
 use App\Models\Budget;
 use App\Models\BudgetCategory;
-use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
 
@@ -174,29 +173,34 @@ class BudgetController extends BaseCrudController
         $this->addBreadcrumb(__('general.budget'), route('budget.index'), 'bi-calculator-fill');
         $this->addBreadcrumb(__('budget.categories'), null, 'bi-tags');
 
+        // استعلام واحد مُحمَّل مسبقاً (بدل N+1)، مع ترجيح حتمي صريح عند التعارض:
+        // الميزانية الأحدث start_date تفوز، وعند التساوي تفوز الأعلى id.
+        // الفرز الثانوي بالـ id أولاً ثم الفرز المستقر (stable) بالتاريخ يعطي
+        // newest-start_date أولاً، والأعلى id أولاً ضمن نفس التاريخ.
+        $budgetCategories = BudgetCategory::whereHas('budget', fn ($q) => $q->active()->current())
+            ->where('allocated_amount', '>', 0)
+            ->with('budget')
+            ->get()
+            ->sortByDesc('id')
+            ->sortByDesc(fn ($bc) => $bc->budget->start_date->format('Y-m-d'))
+            ->unique('expense_category_id')
+            ->keyBy('expense_category_id');
+
         $categories = ExpenseCategory::where('is_active', true)
             ->orderBy('sort_order')
             ->get()
-            ->map(function ($category) {
-                $bc = BudgetCategory::whereHas('budget', fn ($q) => $q->active()->current())
-                    ->where('expense_category_id', $category->id)
-                    ->where('allocated_amount', '>', 0)
-                    ->with('budget')
-                    ->first();
+            ->map(function ($category) use ($budgetCategories) {
+                $bc = $budgetCategories->get($category->id);
 
                 $category->budgetInfo = null;
 
                 if ($bc) {
-                    $totalSpent = Expense::where('category_id', $category->id)
-                        ->whereBetween('date', [$bc->budget->start_date, $bc->budget->end_date ?? now()])
-                        ->sum('amount');
-
                     $category->budgetInfo = [
                         'budget_id' => $bc->budget->id,
                         'budget_name' => locale_name($bc->budget),
                         'allocated' => (float) $bc->allocated_amount,
-                        'spent' => (float) $totalSpent,
-                        'remaining' => max(0, $bc->allocated_amount - $totalSpent),
+                        'spent' => (float) $bc->spent_amount,
+                        'remaining' => max(0, (float) $bc->allocated_amount - (float) $bc->spent_amount),
                     ];
                 }
 

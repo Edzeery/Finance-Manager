@@ -96,8 +96,10 @@ class ExpenseRepository extends BaseRepository implements ExpenseRepositoryInter
     private function syncBudgetForExpenses(Collection $expenses): void
     {
         foreach ($expenses as $expense) {
-            $categories = BudgetCategory::whereHas('budget', fn ($q) => $q->where('user_id', $expense->user_id)
-            )->where('expense_category_id', $expense->category_id)->get();
+            $categories = BudgetCategory::whereHas('budget')
+                ->where('expense_category_id', $expense->category_id)
+                ->with('budget')
+                ->get();
 
             foreach ($categories as $bc) {
                 $start = $bc->budget->start_date;

@@ -14,6 +14,8 @@ class StoreBudgetRequest extends FormRequest
 
     public function rules(): array
     {
+        $workspaceId = auth()->user()->currentWorkspace->id;
+
         return [
             'name_ar' => ['required', 'string', 'max:255'],
             'name_fr' => ['nullable', 'string', 'max:255'],
@@ -25,7 +27,13 @@ class StoreBudgetRequest extends FormRequest
             'is_active' => ['boolean'],
             'notes' => ['nullable', 'string', 'max:1000'],
             'categories' => ['nullable', 'array'],
-            'categories.*.category_id' => ['required', 'exists:expense_categories,id'],
+            'categories.*.category_id' => [
+                'required',
+                Rule::exists('expense_categories', 'id')
+                    ->where(fn ($query) => $query
+                        ->where('workspace_id', $workspaceId)
+                        ->orWhereNull('workspace_id')),
+            ],
             'categories.*.allocated_amount' => ['required', 'numeric', 'min:0'],
         ];
     }

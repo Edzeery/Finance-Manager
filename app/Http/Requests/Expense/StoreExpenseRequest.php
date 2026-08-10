@@ -4,7 +4,6 @@ namespace App\Http\Requests\Expense;
 
 use App\Enums\RecurringFrequency;
 use App\Models\BudgetCategory;
-use App\Models\Expense;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -68,9 +67,7 @@ class StoreExpenseRequest extends FormRequest
             $start = $bc->budget->start_date;
             $end = $bc->budget->end_date ?? now();
 
-            $totalSpent = Expense::where('category_id', $categoryId)
-                ->whereBetween('date', [$start, $end])
-                ->sum('amount');
+            $totalSpent = BudgetCategory::calculateSpentAmount($categoryId, $start, $end);
 
             $remaining = $bc->allocated_amount - $totalSpent;
 

@@ -65,14 +65,7 @@ class UpdateExpenseRequest extends FormRequest
             $start = $bc->budget->start_date;
             $end = $bc->budget->end_date ?? now();
 
-            $query = Expense::where('category_id', $categoryId)
-                ->whereBetween('date', [$start, $end]);
-
-            if ($excludeId) {
-                $query->where('id', '!=', $excludeId);
-            }
-
-            $totalSpent = $query->sum('amount');
+            $totalSpent = BudgetCategory::calculateSpentAmount($categoryId, $start, $end, $excludeId);
 
             $remaining = $bc->allocated_amount - $totalSpent;
 
